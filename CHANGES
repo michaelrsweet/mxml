@@ -1,11 +1,12 @@
-README - 06/05/2003
+README - 06/07/2003
 -------------------
 
 
 CHANGES IN Mini-XML 0.94
 
-	- The mxmldoc program now handles function arguments
-	  properly.
+	- The mxmldoc program now handles function arguments,
+	  structures, unions, enumerations, classes, and
+	  typedefs properly.  Finally some documentation...
 
 
 CHANGES IN Mini-XML 0.93

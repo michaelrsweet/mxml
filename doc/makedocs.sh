@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# "$Id: makedocs.sh,v 1.1 2004/05/03 03:21:16 mike Exp $"
+# "$Id: makedocs.sh,v 1.2 2004/05/21 02:06:04 mike Exp $"
 #
 # Script to make documentation...
 #
@@ -18,12 +18,17 @@
 #
 
 htmldoc --verbose --batch mxml.book -f mxml.pdf
+
 htmldoc --verbose --batch mxml.book -f mxml.html
+
+htmldoc --verbose --batch mxml.book -f mxml.ps
+rm -f mxml.ps.gz
+gzip -v9 mxml.ps
 
 rm -rf mxml.d
 mkdir mxml.d
 htmldoc --verbose --batch mxml.book -t htmlsep -d mxml.d
 
 #
-# End of "$Id: makedocs.sh,v 1.1 2004/05/03 03:21:16 mike Exp $".
+# End of "$Id: makedocs.sh,v 1.2 2004/05/21 02:06:04 mike Exp $".
 #

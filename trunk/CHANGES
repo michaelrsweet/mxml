@@ -4,6 +4,7 @@ CHANGES - 07/11/2004
 CHANGES IN Mini-XML 2.1
 
 	- Added mxmlLoadFd() and mxmlSaveFd() functions.
+	- Fixed multi-word UTF-16 handling.
 
 
 CHANGES IN Mini-XML 2.0

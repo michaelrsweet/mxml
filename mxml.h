@@ -1,5 +1,5 @@
 /*
- * "$Id: mxml.h,v 1.4 2003/06/04 02:34:30 mike Exp $"
+ * "$Id: mxml.h,v 1.5 2003/06/04 16:30:40 mike Exp $"
  *
  * Header file for mini-XML, a small XML-like file parsing library.
  *
@@ -31,6 +31,7 @@
 #  include <stdlib.h>
 #  include <string.h>
 #  include <ctype.h>
+#  include <errno.h>
 
 
 /*
@@ -38,7 +39,12 @@
  */
 
 #  define MXML_NO_CALLBACK	(mxml_type_t (*)(mxml_node_t *))0
-#  define MXML_WRAP		72
+					/* Don't use a type callback */
+#  define MXML_WRAP		72	/* Wrap XML output at this column position */
+
+#  define MXML_DESCEND		1	/* Descend when finding/walking */
+#  define MXML_NO_DESCEND	0	/* Don't descend when finding/walking */
+#  define MXML_DESCEND_FIRST	-1	/* Descend for first find */
 
 
 /*
@@ -109,7 +115,8 @@ extern const char	*mxmlElementGetAttr(mxml_node_t *node, const char *name);
 extern void		mxmlElementSetAttr(mxml_node_t *node, const char *name,
 			                   const char *value);
 extern mxml_node_t	*mxmlFindElement(mxml_node_t *node, mxml_node_t *top,
-			                 const char *name);
+			                 const char *name, const char *attr,
+					 const char *value, int descend);
 extern mxml_node_t	*mxmlLoadFile(mxml_node_t *top, FILE *fp,
 			              mxml_type_t (*cb)(mxml_node_t *));
 extern mxml_node_t	*mxmlNewElement(mxml_node_t *parent, const char *name);
@@ -119,8 +126,10 @@ extern mxml_node_t	*mxmlNewReal(mxml_node_t *parent, double real);
 extern mxml_node_t	*mxmlNewText(mxml_node_t *parent, int whitespace,
 			             const char *string);
 extern int		mxmlSaveFile(mxml_node_t *node, FILE *fp);
-extern mxml_node_t	*mxmlWalkNext(mxml_node_t *node, mxml_node_t *top);
-extern mxml_node_t	*mxmlWalkPrev(mxml_node_t *node, mxml_node_t *top);
+extern mxml_node_t	*mxmlWalkNext(mxml_node_t *node, mxml_node_t *top,
+			              int descend);
+extern mxml_node_t	*mxmlWalkPrev(mxml_node_t *node, mxml_node_t *top,
+			              int descend);
 
 
 /*
@@ -134,5 +143,5 @@ extern mxml_node_t	*mxmlWalkPrev(mxml_node_t *node, mxml_node_t *top);
 
 
 /*
- * End of "$Id: mxml.h,v 1.4 2003/06/04 02:34:30 mike Exp $".
+ * End of "$Id: mxml.h,v 1.5 2003/06/04 16:30:40 mike Exp $".
  */

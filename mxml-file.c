@@ -1,5 +1,5 @@
 /*
- * "$Id: mxml-file.c,v 1.5 2003/06/04 02:34:29 mike Exp $"
+ * "$Id: mxml-file.c,v 1.6 2003/06/04 16:30:40 mike Exp $"
  *
  * File loading code for mini-XML, a small XML-like file parsing library.
  *
@@ -131,6 +131,32 @@ mxmlLoadFile(mxml_node_t *top,		/* I - Top node */
 	break;
       }
     }
+    else if (isspace(ch) && type == MXML_TEXT)
+      whitespace = 1;
+
+   /*
+    * Add lone whitespace node if we are starting a new element and have
+    * existing whitespace...
+    */
+
+    if (ch == '<' && whitespace && type == MXML_TEXT)
+    {
+     /*
+      * Peek at the next character and only do this if we are starting
+      * an open tag...
+      */
+
+      ch = getc(fp);
+      ungetc(ch, fp);
+
+      if (ch != '/')
+      {
+	mxmlNewText(parent, whitespace, "");
+	whitespace = 0;
+      }
+
+      ch = '<';
+    }
 
     if (ch == '<')
     {
@@ -144,40 +170,114 @@ mxmlLoadFile(mxml_node_t *top,		/* I - Top node */
         if (isspace(ch) || ch == '>' || (ch == '/' && bufptr > buffer))
 	  break;
 	else if (bufptr < (buffer + sizeof(buffer) - 1))
+	{
 	  *bufptr++ = ch;
 
+	  if ((bufptr - buffer) == 3 && !strncmp(buffer, "!--", 3))
+	    break;
+        }
+
       *bufptr = '\0';
-      bufptr  = buffer;
 
       if (!strcmp(buffer, "!--"))
       {
        /*
-        * Skip comment...
+        * Gather rest of comment...
 	*/
-
-        buffer[3] = '\0';
 
 	while ((ch = getc(fp)) != EOF)
 	{
-	  *bufptr++ = ch;
-
-	  if ((bufptr - buffer) == 3)
+	  if (ch == '>' && bufptr > (buffer + 4) &&
+	      !strncmp(bufptr - 2, "--", 2))
+	    break;
+	  else if (bufptr < (buffer + sizeof(buffer) - 1))
+            *bufptr++ = ch;
+	  else
 	  {
-	    if (!strcmp(buffer, "-->"))
-	      break;
-
-            buffer[0] = buffer[1];
-	    buffer[1] = buffer[2];
-	    bufptr --;
+            fprintf(stderr, "Comment too long in file under parent <%s>!\n",
+	            parent ? parent->value.element.name : "null");
+	    break;
 	  }
 	}
 
-        bufptr = buffer;
+       /*
+        * Error out if we didn't get the whole comment...
+	*/
 
-        if (ch == EOF)
+        if (ch != '>')
 	  break;
-	else
-	  continue;
+
+       /*
+        * Otherwise add this as an element under the current parent...
+	*/
+
+	*bufptr = '\0';
+
+	if (!mxmlNewElement(parent, buffer))
+	{
+	 /*
+	  * Just print error for now...
+	  */
+
+	  fprintf(stderr, "Unable to add comment node to parent <%s>!\n",
+	          parent ? parent->value.element.name : "null");
+	  break;
+	}
+      }
+      else if (buffer[0] == '!')
+      {
+       /*
+        * Gather rest of declaration...
+	*/
+
+	do
+	{
+	  if (ch == '>')
+	    break;
+	  else if (bufptr < (buffer + sizeof(buffer) - 1))
+            *bufptr++ = ch;
+	  else
+	  {
+            fprintf(stderr, "Declaration too long in file under parent <%s>!\n",
+	            parent ? parent->value.element.name : "null");
+	    break;
+	  }
+	}
+        while ((ch = getc(fp)) != EOF);
+
+       /*
+        * Error out if we didn't get the whole declaration...
+	*/
+
+        if (ch != '>')
+	  break;
+
+       /*
+        * Otherwise add this as an element under the current parent...
+	*/
+
+	*bufptr = '\0';
+
+	node = mxmlNewElement(parent, buffer);
+	if (!node)
+	{
+	 /*
+	  * Just print error for now...
+	  */
+
+	  fprintf(stderr, "Unable to add declaration node to parent <%s>!\n",
+	          parent ? parent->value.element.name : "null");
+	  break;
+	}
+
+       /*
+	* Descend into this node, setting the value type as needed...
+	*/
+
+	parent = node;
+
+	if (cb)
+	  type = (*cb)(parent);
       }
       else if (buffer[0] == '/')
       {
@@ -260,6 +360,8 @@ mxmlLoadFile(mxml_node_t *top,		/* I - Top node */
 	    type = (*cb)(parent);
 	}
       }
+
+      bufptr  = buffer;
     }
     else if (ch == '&')
     {
@@ -635,7 +737,7 @@ mxml_write_node(mxml_node_t *node,	/* I - Node to write */
 	  if (node->child)
 	  {
            /*
-	    * The ?xml element is a special-case and has no end tag...
+	    * The ? and ! elements are special-cases and have no end tags...
 	    */
 
 	    if (node->value.element.name[0] == '?')
@@ -653,7 +755,8 @@ mxml_write_node(mxml_node_t *node,	/* I - Node to write */
 	    if ((col = mxml_write_node(node->child, fp, col)) < 0)
 	      return (-1);
 
-            if (node->value.element.name[0] != '?')
+            if (node->value.element.name[0] != '?' &&
+	        node->value.element.name[0] != '!')
 	    {
 	      if ((n = fprintf(fp, "</%s>", node->value.element.name)) < 0)
 	        return (-1);
@@ -661,6 +764,13 @@ mxml_write_node(mxml_node_t *node,	/* I - Node to write */
               col += n;
 	    }
 	  }
+	  else if (node->value.element.name[0] == '!')
+	  {
+	    if (putc('>', fp) < 0)
+	      return (-1);
+	    else
+	      col ++;
+          }
 	  else if (fputs("/>", fp) < 0)
 	    return (-1);
 	  else
@@ -772,6 +882,45 @@ mxml_write_string(const char *s,	/* I - String to write */
       if (fputs("&lt;", fp) < 0)
         return (-1);
     }
+    else if (*s == '>')
+    {
+      if (fputs("&gt;", fp) < 0)
+        return (-1);
+    }
+    else if (*s & 128)
+    {
+     /*
+      * Convert UTF-8 to Unicode constant...
+      */
+
+      int	ch;			/* Unicode character */
+
+
+      ch = *s & 255;
+
+      if ((ch & 0xe0) == 0xc0)
+      {
+        ch = ((ch & 0x1f) << 6) | (s[1] & 0x3f);
+	s ++;
+      }
+      else if ((ch & 0xf0) == 0xe0)
+      {
+        ch = ((((ch * 0x0f) << 6) | (s[1] & 0x3f)) << 6) | (s[2] & 0x3f);
+	s += 2;
+      }
+
+      if (ch == 0xa0)
+      {
+       /*
+        * Handle non-breaking space as-is...
+	*/
+
+        if (fputs("&nbsp;", fp) < 0)
+	  return (-1);
+      }
+      else if (fprintf(fp, "&#x%x;", ch) < 0)
+	return (-1);
+    }
     else if (putc(*s, fp) < 0)
       return (-1);
 
@@ -784,5 +933,5 @@ mxml_write_string(const char *s,	/* I - String to write */
 
 
 /*
- * End of "$Id: mxml-file.c,v 1.5 2003/06/04 02:34:29 mike Exp $".
+ * End of "$Id: mxml-file.c,v 1.6 2003/06/04 16:30:40 mike Exp $".
  */

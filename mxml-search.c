@@ -1,5 +1,5 @@
 /*
- * "$Id: mxml-search.c,v 1.2 2003/06/03 20:40:01 mike Exp $"
+ * "$Id: mxml-search.c,v 1.3 2003/06/04 16:30:40 mike Exp $"
  *
  * Search/navigation functions for mini-XML, a small XML-like file
  * parsing library.
@@ -21,7 +21,6 @@
  *   mxmlFindElement() - Find the named element.
  *   mxmlWalkNext()    - Walk to the next logical node in the tree.
  *   mxmlWalkPrev()    - Walk to the previous logical node in the tree.
- *   mxml_walk_next()  - Walk to the next logical node in the tree.
  */
 
 /*
@@ -32,27 +31,32 @@
 
 
 /*
- * Local functions...
- */
-
-mxml_node_t	*mxml_walk_next(mxml_node_t *node, mxml_node_t *top,
-		                int descend);
-
-
-/*
  * 'mxmlFindElement()' - Find the named element.
  */
 
 mxml_node_t *				/* O - Element node or NULL */
 mxmlFindElement(mxml_node_t *node,	/* I - Current node */
                 mxml_node_t *top,	/* I - Top node */
-                const char  *name)	/* I - Element name */
+                const char  *name,	/* I - Element name or NULL for any */
+		const char  *attr,	/* I - Attribute name, or NULL for none */
+		const char  *value,	/* I - Attribute value, or NULL for any */
+		int         descend)	/* I - Descend into tree? */
 {
+  const char	*temp;			/* Current attribute value */
+
+
+ /*
+  * Range check input...
+  */
+
+  if (!node || !top || (!attr && value))
+    return (NULL);
+
  /*
   * Start with the next node...
   */
 
-  node = mxmlWalkNext(node, top);
+  node = mxmlWalkNext(node, top, descend);
 
  /*
   * Loop until we find a matching element...
@@ -66,14 +70,38 @@ mxmlFindElement(mxml_node_t *node,	/* I - Current node */
 
     if (node->type == MXML_ELEMENT &&
         node->value.element.name &&
-	!strcmp(node->value.element.name, name))
-      return (node);
+	(!name || !strcmp(node->value.element.name, name)))
+    {
+     /*
+      * See if we need to check for an attribute...
+      */
+
+      if (!attr)
+        return (node);			/* No attribute search, return it... */
+
+     /*
+      * Check for the attribute...
+      */
+
+      if ((temp = mxmlElementGetAttr(node, attr)) != NULL)
+      {
+       /*
+        * OK, we have the attribute, does it match?
+	*/
+
+	if (!value || !strcmp(value, temp))
+	  return (node);		/* Yes, return it... */
+      }
+    }
 
    /*
-    * Nope, move on to the next...
+    * No match, move on to the next node...
     */
 
-    node = mxmlWalkNext(node, top);
+    if (descend == MXML_DESCEND)
+      node = mxmlWalkNext(node, top, MXML_DESCEND);
+    else
+      node = node->next;
   }
 
   return (NULL);
@@ -86,9 +114,29 @@ mxmlFindElement(mxml_node_t *node,	/* I - Current node */
 
 mxml_node_t *				/* O - Next node or NULL */
 mxmlWalkNext(mxml_node_t *node,		/* I - Current node */
-             mxml_node_t *top)		/* I - Top node */
+             mxml_node_t *top,		/* I - Top node */
+             int         descend)	/* I - Descend into tree? */
 {
-  return (mxml_walk_next(node, top, 1));
+  if (!node)
+    return (NULL);
+  else if (node->child && descend)
+    return (node->child);
+  else if (node->next)
+    return (node->next);
+  else if (node->parent != top)
+  {
+    node = node->parent;
+
+    while (!node->next)
+      if (node->parent == top)
+        return (NULL);
+      else
+        node = node->parent;
+
+    return (node->next);
+  }
+  else
+    return (NULL);
 }
 
 
@@ -98,12 +146,29 @@ mxmlWalkNext(mxml_node_t *node,		/* I - Current node */
 
 mxml_node_t *				/* O - Previous node or NULL */
 mxmlWalkPrev(mxml_node_t *node,		/* I - Current node */
-             mxml_node_t *top)		/* I - Top node */
+             mxml_node_t *top,		/* I - Top node */
+             int         descend)	/* I - Descend into tree? */
 {
   if (!node)
     return (NULL);
   else if (node->prev)
-    return (node->prev);
+  {
+    if (node->prev->last_child && descend)
+    {
+     /*
+      * Find the last child under the previous node...
+      */
+
+      node = node->prev->last_child;
+
+      while (node->last_child)
+        node = node->last_child;
+
+      return (node);
+    }
+    else
+      return (node->prev);
+  }
   else if (node->parent != top)
     return (node->parent);
   else
@@ -112,27 +177,5 @@ mxmlWalkPrev(mxml_node_t *node,		/* I - Current node */
 
 
 /*
- * 'mxml_walk_next()' - Walk to the next logical node in the tree.
- */
-
-mxml_node_t *				/* O - Next node or NULL */
-mxml_walk_next(mxml_node_t *node,	/* I - Current node */
-               mxml_node_t *top,	/* I - Top node */
-               int         descend)	/* I - 1 = descend, 0 = don't */
-{
-  if (!node)
-    return (NULL);
-  else if (node->child && descend)
-    return (node->child);
-  else if (node->next)
-    return (node->next);
-  else if (node->parent != top)
-    return (mxml_walk_next(node->parent, top, 0));
-  else
-    return (NULL);
-}
-
-
-/*
- * End of "$Id: mxml-search.c,v 1.2 2003/06/03 20:40:01 mike Exp $".
+ * End of "$Id: mxml-search.c,v 1.3 2003/06/04 16:30:40 mike Exp $".
  */

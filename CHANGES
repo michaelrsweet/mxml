@@ -1,4 +1,4 @@
-README - 06/03/2003
+README - 06/04/2003
 -------------------
 
 
@@ -9,6 +9,17 @@ CHANGES IN Mini-XML 0.93
 	  character entities.
 	- mxmlSaveFile() now uses newlines as whitespace
 	  when valid to do so.
+	- mxmlFindElement() now also takes attribute name and
+	  attribute value string arguments to limit the search
+	  to specific elements with attributes and/or values.
+	  NULL pointers can be used as "wildcards".
+	- Added uninstall target to makefile, and auto-reconfig
+	  if Makefile.in or configure.in are changed.
+	- mxmlFindElement(), mxmlWalkNext(), and mxmlWalkPrev()
+	  now all provide "descend" arguments to control whether
+	  they descend into child nodes in the tree.
+	- Fixed some whitespace issues in mxmlLoadFile().
+	- Fixed Unicode output issues in mxmlSaveFile().
 
 
 CHANGES IN Mini-XML 0.92

@@ -1,4 +1,33 @@
-TODO - 12/17/2003
+TODO - 04/29/2004
 -----------------
 
-	- Add C++ class.
+	- Update write callback to return a string.
+	  -- Return const char *
+	  -- Loop through chars to figure out correct output column
+	- UTF-16 support.
+	  -- Auto-detect in strings via initial FFFE or FEFF BOM
+	  -- Convert to UTF-8
+	  -- Read UTF-8 or UTF-16, write UTF-8
+	- New documentation.
+	  -- Use HTMLDOC to generate
+	  -- Provide more tutorials
+	  -- Release notes
+	- Add indexing support.
+	  -- Build static index of nodes based on element and/or attribute
+	     (i.e. index elements, index attributes, or index attributes of
+	      a specific element)
+	  -- Provide functions to create, destroy, find first, and find next
+	  -- Provide additional index for first character?
+	- Add access methods and make node structure opaque.
+	  -- To allow for C++ migration
+	  -- To make future binary compatibility easier
+	- Build test file for mxmldoc.
+	  -- C++ class documentation doesn't seem to work.
+	  -- Do examples of all types of comments/code that mxmldoc is
+	     supposed to handle.
+	- Add VC++/VC++.NET project files.
+	  -- Include DLL .def file for making a DLL.
+	- Add C++ class/struct.
+	  -- Make this the core implementation which the C API accesses?
+	  -- Class would allow for subclassing, is that necessary?
+	- Binary XML support???

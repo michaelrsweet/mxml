@@ -841,8 +841,4 @@ the walk to the node's children.</description>
   <variable default="= 1" name="num_callbacks">
     <type>static int</type>
   </variable>
-  <variable name="sort_attr_name">
-    <type>static const char *</type>
-    <description>Current attribute to sort on</description>
-  </variable>
 </mxmldoc>

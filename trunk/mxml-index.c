@@ -1,5 +1,5 @@
 /*
- * "$Id: mxml-index.c,v 1.2 2004/05/16 13:09:44 mike Exp $"
+ * "$Id: mxml-index.c,v 1.3 2004/05/16 13:45:56 mike Exp $"
  *
  * Index support code for Mini-XML, a small XML-like file parsing library.
  *
@@ -23,9 +23,9 @@
  *   mxmlIndexNew()      - Create a new index.
  *   mxmlIndexReset()    - Reset the enumeration/find pointer in the index and
  *                         return the first node in the index.
- *   sort_attr()         - Sort by attribute value...
- *   sort_attr()         - Sort by element name...
- *   sort_element_attr() - Sort by element name and attribute value...
+ *   index_compare()     - Compare two nodes.
+ *   index_find()        - Compare a node with index values.
+ *   index_sort()        - Sort the nodes in the index...
  */
 
 /*
@@ -40,18 +40,11 @@
  * Sort functions...
  */
 
-static int	index_compare(mxml_index_t *ind, const char *element,
-		              const char *value, mxml_node_t *node);
-static int	sort_attr(const void *a, const void *b);
-static int	sort_element(const void *a, const void *b);
-static int	sort_element_attr(const void *a, const void *b);
-
-
-/*
- * Sort attribute...
- */
-
-static const char *sort_attr_name;	/* Current attribute to sort on */
+static int	index_compare(mxml_index_t *ind, mxml_node_t *first,
+		              mxml_node_t *second);
+static int	index_find(mxml_index_t *ind, const char *element,
+		           const char *value, mxml_node_t *node);
+static void	index_sort(mxml_index_t *ind, int left, int right);
 
 
 /*
@@ -168,14 +161,14 @@ mxmlIndexFind(mxml_index_t *ind,	/* I - Index to search */
     {
       current = (first + last) / 2;
 
-      if ((diff = index_compare(ind, element, value, ind->nodes[current])) == 0)
+      if ((diff = index_find(ind, element, value, ind->nodes[current])) == 0)
       {
        /*
         * Found a match, move back to find the first...
 	*/
 
         while (current > 0 &&
-	       !index_compare(ind, element, value, ind->nodes[current - 1]))
+	       !index_find(ind, element, value, ind->nodes[current - 1]))
 	  current --;
 
        /*
@@ -199,7 +192,7 @@ mxmlIndexFind(mxml_index_t *ind,	/* I - Index to search */
     current       = (first + last) / 2;
     ind->cur_node = ind->num_nodes;
 
-    if (!index_compare(ind, element, value, ind->nodes[current]))
+    if (!index_find(ind, element, value, ind->nodes[current]))
     {
      /*
       * Found exactly one match...
@@ -217,7 +210,7 @@ mxmlIndexFind(mxml_index_t *ind,	/* I - Index to search */
     }
   }
   else if (ind->cur_node < ind->num_nodes &&
-           !index_compare(ind, element, value, ind->nodes[ind->cur_node]))
+           !index_find(ind, element, value, ind->nodes[ind->cur_node]))
   {
    /*
     * Return the next matching node...
@@ -306,42 +299,8 @@ mxmlIndexNew(mxml_node_t *node,		/* I - XML node tree */
   * Sort nodes based upon the search criteria...
   */
 
-  if (ind->num_nodes > 0)
-  {
-    if (!element && attr)
-    {
-     /*
-      * Sort based upon the element name and attribute value...
-      */
-
-      sort_attr_name = attr;
-      ind->attr      = strdup(attr);
-
-      qsort(ind->nodes, ind->num_nodes, sizeof(mxml_node_t *),
-            sort_element_attr);
-    }
-    else if (!element && !attr)
-    {
-     /*
-      * Sort based upon the element name...
-      */
-
-      qsort(ind->nodes, ind->num_nodes, sizeof(mxml_node_t *),
-            sort_element);
-    }
-    else if (attr)
-    {
-     /*
-      * Sort based upon the attribute value...
-      */
-
-      sort_attr_name = attr;
-      ind->attr      = strdup(attr);
-
-      qsort(ind->nodes, ind->num_nodes, sizeof(mxml_node_t *),
-            sort_attr);
-    }
-  }
+  if (ind->num_nodes > 1)
+    index_sort(ind, 0, ind->num_nodes - 1);
 
  /*
   * Return the new index...
@@ -387,14 +346,53 @@ mxmlIndexReset(mxml_index_t *ind)	/* I - Index to reset */
 
 
 /*
- * 'index_compare()' - Compare a node with index values.
+ * 'index_compare()' - Compare two nodes.
  */
 
 static int				/* O - Result of comparison */
 index_compare(mxml_index_t *ind,	/* I - Index */
-              const char   *element,	/* I - Element name or NULL */
-	      const char   *value,	/* I - Attribute value or NULL */
-              mxml_node_t  *node)	/* I - Node */
+              mxml_node_t  *first,	/* I - First node */
+              mxml_node_t  *second)	/* I - Second node */
+{
+  int	diff;				/* Difference */
+
+
+ /*
+  * Check the element name...
+  */
+
+  if ((diff = strcmp(first->value.element.name,
+                     second->value.element.name)) != 0)
+    return (diff);
+
+ /*
+  * Check the attribute value...
+  */
+
+  if (ind->attr)
+  {
+    if ((diff = strcmp(mxmlElementGetAttr(first, ind->attr),
+                       mxmlElementGetAttr(second, ind->attr))) != 0)
+      return (diff);
+  }
+
+ /*
+  * No difference, return 0...
+  */
+
+  return (0);
+}
+
+
+/*
+ * 'index_find()' - Compare a node with index values.
+ */
+
+static int				/* O - Result of comparison */
+index_find(mxml_index_t *ind,		/* I - Index */
+           const char   *element,	/* I - Element name or NULL */
+	   const char   *value,		/* I - Attribute value or NULL */
+           mxml_node_t  *node)		/* I - Node */
 {
   int	diff;				/* Difference */
 
@@ -428,51 +426,78 @@ index_compare(mxml_index_t *ind,	/* I - Index */
 
 
 /*
- * 'sort_attr()' - Sort by attribute value...
+ * 'index_sort()' - Sort the nodes in the index...
+ *
+ * This function implements the classic quicksort algorithm...
  */
 
-static int				/* O - Result of comparison */
-sort_attr(const void *a,		/* I - First node */
-          const void *b)		/* I - Second node */
+static void
+index_sort(mxml_index_t *ind,		/* I - Index to sort */
+           int          left,		/* I - Left node in partition */
+	   int          right)		/* I - Right node in partition */
 {
-  return (strcmp(mxmlElementGetAttr((mxml_node_t *)a, sort_attr_name),
-                 mxmlElementGetAttr((mxml_node_t *)b, sort_attr_name)));
+  mxml_node_t	*pivot,			/* Pivot node */
+		*temp;			/* Swap node */
+  int		templ,			/* Temporary left node */
+		tempr;			/* Temporary right node */
+
+
+ /*
+  * Sort the pivot in the current partition...
+  */
+
+  pivot = ind->nodes[left];
+
+  for (templ = left, tempr = right; templ < tempr;)
+  {
+   /*
+    * Move left while left node <= pivot node...
+    */
+
+    while ((templ < right) &&
+           index_compare(ind, ind->nodes[templ], pivot) <= 0)
+      templ ++;
+
+   /*
+    * Move right while right node > pivot node...
+    */
+
+    while ((tempr > left) &&
+           index_compare(ind, ind->nodes[tempr], pivot) > 0)
+      tempr --;
+
+   /*
+    * Swap nodes if needed...
+    */
+
+    if (templ < tempr)
+    {
+      temp              = ind->nodes[templ];
+      ind->nodes[templ] = ind->nodes[tempr];
+      ind->nodes[tempr] = temp;
+    }
+  }
+
+ /*
+  * When we get here, the right (tempr) node is the new position for the
+  * pivot node...
+  */
+
+  ind->nodes[left]  = ind->nodes[tempr];
+  ind->nodes[tempr] = pivot;
+
+ /*
+  * Recursively sort the left and right partitions as needed...
+  */
+
+  if (left < (tempr - 1))
+    index_sort(ind, left, tempr - 1);
+
+  if (right > (tempr + 1))
+    index_sort(ind, tempr + 1, right);
 }
 
 
 /*
- * 'sort_element()' - Sort by element name...
- */
-
-static int				/* O - Result of comparison */
-sort_element(const void *a,		/* I - First node */
-             const void *b)		/* I - Second node */
-{
-  return (strcmp(((mxml_node_t *)a)->value.element.name,
-                 ((mxml_node_t *)b)->value.element.name));
-}
-
-
-/*
- * 'sort_element_attr()' - Sort by element name and attribute value...
- */
-
-static int				/* O - Result of comparison */
-sort_element_attr(const void *a,	/* I - First node */
-                  const void *b)	/* I - Second node */
-{
-  int	i;				/* Result of comparison */
-
-
-  if ((i = strcmp(((mxml_node_t *)a)->value.element.name,
-                  ((mxml_node_t *)b)->value.element.name)) != 0)
-    return (i);
-  else
-    return (strcmp(mxmlElementGetAttr((mxml_node_t *)a, sort_attr_name),
-                   mxmlElementGetAttr((mxml_node_t *)b, sort_attr_name)));
-}
-
-
-/*
- * End of "$Id: mxml-index.c,v 1.2 2004/05/16 13:09:44 mike Exp $".
+ * End of "$Id: mxml-index.c,v 1.3 2004/05/16 13:45:56 mike Exp $".
  */

@@ -1,7 +1,7 @@
 /*
- * "$Id: mxml.h,v 1.1 2003/06/03 19:46:30 mike Exp $"
+ * "$Id: mxml.h,v 1.2 2003/06/03 20:24:28 mike Exp $"
  *
- * for mini-XML, a small XML-like file parsing library.
+ * Header file for mini-XML, a small XML-like file parsing library.
  *
  * Copyright 2003 by Michael Sweet.
  *
@@ -132,5 +132,5 @@ extern mxml_node_t	*mxmlWalkPrev(mxml_node_t *node, mxml_node_t *top);
 
 
 /*
- * End of "$Id: mxml.h,v 1.1 2003/06/03 19:46:30 mike Exp $".
+ * End of "$Id: mxml.h,v 1.2 2003/06/03 20:24:28 mike Exp $".
  */

@@ -1,5 +1,5 @@
 /*
- * "$Id: testmxml.c,v 1.1 2003/06/03 19:46:30 mike Exp $"
+ * "$Id: testmxml.c,v 1.2 2003/06/03 20:24:28 mike Exp $"
  *
  * Test program for mini-XML, a small XML-like file parsing library.
  *
@@ -85,8 +85,6 @@ main(int  argc,				/* I - Number of command-line args */
   * Print the XML tree...
   */
 
-  setbuf(stdout, NULL);
-
   mxmlSaveFile(tree, stdout);
   puts("");
 
@@ -129,5 +127,5 @@ type_cb(mxml_node_t *node)		/* I - Element node */
 
 
 /*
- * End of "$Id: testmxml.c,v 1.1 2003/06/03 19:46:30 mike Exp $".
+ * End of "$Id: testmxml.c,v 1.2 2003/06/03 20:24:28 mike Exp $".
  */

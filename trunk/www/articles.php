@@ -1,6 +1,6 @@
 <?php
 //
-// "$Id: articles.php,v 1.5 2004/05/19 00:57:33 mike Exp $"
+// "$Id: articles.php,v 1.6 2004/05/19 02:57:18 mike Exp $"
 //
 // Web form for the article table...
 //
@@ -407,7 +407,7 @@ switch ($op)
           $id   = $row['id'];
 	  $link = "<a href='$PHP_SELF?L$id$options' alt='Article #$id'>";
 
-          print("<td align='center' nowrap>");
+          print("<td nowrap>");
           if ($LOGIN_USER)
 	    print("<input type='checkbox' name='ID_$row[id]'>");
           print("$link$id</a></td>");
@@ -437,7 +437,7 @@ switch ($op)
 	{
 	  html_start_row("header");
 
-	  print("<th colspan='4'>Published:&nbsp;");
+	  print("<th colspan='4'>&nbsp;<br />Published:&nbsp;");
 	  select_is_published();
 	  print("<input type='submit' value='Modify Selected Articles'/></th>\n");
 
@@ -716,6 +716,6 @@ switch ($op)
 
 
 //
-// End of "$Id: articles.php,v 1.5 2004/05/19 00:57:33 mike Exp $".
+// End of "$Id: articles.php,v 1.6 2004/05/19 02:57:18 mike Exp $".
 //
 ?>

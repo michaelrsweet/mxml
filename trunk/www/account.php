@@ -1,6 +1,6 @@
 <?php
 //
-// "$Id: account.php,v 1.6 2004/05/19 01:39:04 mike Exp $"
+// "$Id: account.php,v 1.7 2004/05/19 02:57:18 mike Exp $"
 //
 // Account management page...
 //
@@ -14,6 +14,38 @@ include_once "phplib/common.php";
 include_once "phplib/str.php";
 
 
+//
+// Access levels...
+//
+
+$levels = array(
+  0 => "User",
+  50 => "Devel",
+  100 => "Admin"
+);
+
+
+//
+// 'account_header()' - Show standard account page header...
+//
+
+function
+account_header($title)
+{
+  html_header("$title");
+
+  html_start_links(1);
+  html_link("$title", "$PHP_SELF?L");
+  html_link("Manage Accounts", "$PHP_SELF?A");
+  html_link("Manage Comments", "comment.php?l");
+  html_link("Change Password", "$PHP_SELF?P");
+  html_link("Logout", "$PHP_SELF?X");
+  html_end_links();
+
+  print("<h1>$title</h1>\n");
+}
+
+
 if ($argc == 1 && $argv[0] == "X")
   auth_logout();
 
@@ -23,25 +55,362 @@ if ($LOGIN_USER == "")
   exit(0);
 }
 
-if ($argc == 1)
-  $op = "$argv[0]";
+if ($argc >= 1)
+{
+  $op   = $argv[0][0];
+  $data = substr($argv[0], 1);
+}
 else
   $op = "L";
 
 switch ($op)
 {
+  case 'A' :
+      // Manage accounts...
+      if ($data == "add")
+      {
+	if ($REQUEST_METHOD == "POST")
+	{
+	  // Get data from form...
+	  if (array_key_exists("IS_PUBLISHED", $_POST))
+	    $is_published = (int)$_POST["IS_PUBLISHED"];
+	  else
+	    $is_published = 1;
+
+          if (array_key_exists("NAME", $_POST))
+	    $name = $_POST["NAME"];
+	  else
+	    $name = "";
+
+          if (array_key_exists("EMAIL", $_POST))
+	    $email = $_POST["EMAIL"];
+	  else
+	    $email = "";
+
+	  if (array_key_exists("PASSWORD", $_POST))
+	    $password = $_POST["PASSWORD"];
+	  else
+	    $password = "";
+
+	  if (array_key_exists("PASSWORD2", $_POST))
+	    $password2 = $_POST["PASSWORD2"];
+	  else
+	    $password2 = "";
+
+          if (array_key_exists("LEVEL", $_POST))
+	    $level = (int)$_POST["LEVEL"];
+	  else
+	    $level = 0;
+
+          if ($name != "" && $email != "" &&
+	      (($password == "" && $password2 == "") ||
+	       $password == $password2))
+	    $havedata = 1;
+	  else
+	    $havedata = 0;
+	}
+	else
+	{
+	  // Use blank account info...
+	  $name         = "";
+	  $is_published = 0;
+	  $email        = $row["email"];
+	  $level        = $row["level"];
+	  $password     = "";
+	  $password2    = "";
+	  $havedata     = 0;
+	}
+
+	account_header("Manage Accounts");
+
+	if ($havedata)
+	{
+          // Store new data...
+	  $hash  = md5("$name:$password");
+	  $name  = db_escape($name);
+	  $email = db_escape($email);
+	  $date  = time();
+
+	  db_query("INSERT INTO users VALUES(NULL,$is_published,"
+	          ."'$name','$email','$hash',$level,$date,'$LOGIN_USER',"
+		  ."$date,'$LOGIN_USER')");
+
+	  print("<p>Account added successfully!</p>\n");
+
+	  html_start_links(1);
+	  html_link("Return to Manage Accounts", "$PHP_SELF?A");
+	  html_end_links();
+	}
+	else
+	{
+	  $name  = htmlspecialchars($name, ENT_QUOTES);
+	  $email = htmlspecialchars($email, ENT_QUOTES);
+
+	  print("<form method='POST' action='$PHP_SELF?Aadd'>"
+	       ."<p><table width='100%'>\n"
+	       ."<tr><th align='right'>Published:</th>"
+	       ."<td>");
+          select_is_published($is_published);
+	  print("</td></tr>\n"
+	       ."<tr><th align='right'>Username:</th>"
+	       ."<td><input type='text' name='NAME' size='40' "
+	       ."maxsize='255' value='$name'/></td></tr>\n"
+	       ."<tr><th align='right'>EMail:</th>"
+	       ."<td><input type='text' name='EMAIL' size='40' "
+	       ."maxsize='255' value='$email'/></td></tr>\n"
+	       ."<tr><th align='right'>Access Level:</th>"
+	       ."<td><select name='LEVEL'>");
+
+          if ($level == 0)
+	    print("<option value='0' selected>User</option>");
+	  else
+	    print("<option value='0'>User</option>");
+
+          if ($level == 50)
+	    print("<option value='50' selected>Devel</option>");
+	  else
+	    print("<option value='50'>Devel</option>");
+
+          if ($level == 100)
+	    print("<option value='100' selected>Admin</option>");
+	  else
+	    print("<option value='100'>Admin</option>");
+
+	  print("</select></td></tr>\n"
+	       ."<tr><th align='right'>Password:</th>"
+	       ."<td><input type='password' name='PASSWORD' size='16' "
+	       ."maxsize='255'/></td></tr>\n"
+	       ."<tr><th align='right'>Password Again:</th>"
+	       ."<td><input type='password' name='PASSWORD2' size='16' "
+	       ."maxsize='255'/></td></tr>\n"
+	       ."<tr><th></th><td><input type='submit' value='Add Account'/>"
+	       ."</td></tr>\n"
+               ."</table></p></form>\n");
+	}
+
+	html_footer();
+      }
+      else if ($data == "disable")
+      {
+        // Disable accounts...
+	if ($REQUEST_METHOD == "POST")
+	{
+          db_query("BEGIN TRANSACTION");
+
+          reset($_POST);
+          while (list($key, $val) = each($_POST))
+            if (substr($key, 0, 3) == "ID_")
+	    {
+	      $id = (int)substr($key, 3);
+
+              db_query("UPDATE users SET is_published = 0 WHERE id = $id");
+	    }
+
+          db_query("COMMIT TRANSACTION");
+	}
+
+	header("Location: $PHP_SELF?A");
+      }
+      else if ($data == "modify")
+      {
+        // Modify account...
+        if ($argc != 2 || $argv[1] == "")
+	{
+	  header("Location: $PHP_SELF?A");
+	  exit();
+	}
+
+        $name = $argv[1];
+
+	if ($REQUEST_METHOD == "POST")
+	{
+	  // Get data from form...
+	  if (array_key_exists("IS_PUBLISHED", $_POST))
+	    $is_published = (int)$_POST["IS_PUBLISHED"];
+	  else
+	    $is_published = 1;
+
+          if (array_key_exists("EMAIL", $_POST))
+	    $email = $_POST["EMAIL"];
+	  else
+	    $email = "";
+
+	  if (array_key_exists("PASSWORD", $_POST))
+	    $password = $_POST["PASSWORD"];
+	  else
+	    $password = "";
+
+	  if (array_key_exists("PASSWORD2", $_POST))
+	    $password2 = $_POST["PASSWORD2"];
+	  else
+	    $password2 = "";
+
+          if (array_key_exists("LEVEL", $_POST))
+	    $level = (int)$_POST["LEVEL"];
+	  else
+	    $level = 0;
+
+          if ($email != "" &&
+	      (($password == "" && $password2 == "") ||
+	       $password == $password2))
+	    $havedata = 1;
+	  else
+	    $havedata = 0;
+	}
+	else
+	{
+	  // Get data from existing account...
+	  $result = db_query("SELECT * FROM users WHERE "
+	                    ."name='" . db_escape($name) ."'");
+          if (db_count($result) != 1)
+	  {
+	    header("Location: $PHP_SELF?A");
+	    exit();
+	  }
+
+	  $row          = db_next($result);
+	  $is_published = $row["is_published"];
+	  $email        = $row["email"];
+	  $level        = $row["level"];
+	  $password     = "";
+	  $password2    = "";
+	  $havedata     = 0;
+
+	  db_free($result);
+	}
+
+	account_header("Manage Accounts");
+
+	if ($havedata)
+	{
+          // Store new data...
+	  if ($password != "")
+	    $hash = ", hash='" . md5("$name:$password") . "'";
+	  else
+	    $hash = "";
+
+	  $name  = db_escape($name);
+	  $email = db_escape($email);
+	  $date  = time();
+
+	  db_query("UPDATE users SET "
+	          ."email='$email'$hash, level='$level', "
+		  ."is_published=$is_published, modify_user='$LOGIN_USER', "
+		  ."modify_date = $date WHERE name='$name'");
+
+	  print("<p>Account modified successfully!</p>\n");
+
+	  html_start_links(1);
+	  html_link("Return to Manage Accounts", "$PHP_SELF?A");
+	  html_end_links();
+	}
+	else
+	{
+	  $name  = htmlspecialchars($name, ENT_QUOTES);
+	  $email = htmlspecialchars($email, ENT_QUOTES);
+
+	  print("<form method='POST' action='$PHP_SELF?Amodify+$name'>"
+	       ."<p><table width='100%'>\n"
+	       ."<tr><th align='right'>Published:</th>"
+	       ."<td>");
+          select_is_published($is_published);
+	  print("</td></tr>\n"
+	       ."<tr><th align='right'>Username:</th>"
+	       ."<td>$name</td></tr>\n"
+	       ."<tr><th align='right'>EMail:</th>"
+	       ."<td><input type='text' name='EMAIL' size='40' "
+	       ."maxsize='255' value='$email'/></td></tr>\n"
+	       ."<tr><th align='right'>Access Level:</th>"
+	       ."<td>");
+
+          if ($LOGIN_USER == $name)
+	    print("<input type='hidden' name='LEVEL' value='$level'/>"
+	         . $levels[$level]);
+	  else
+	  {
+	    print("<select name='LEVEL'>");
+
+            if ($level == 0)
+	      print("<option value='0' selected>User</option>");
+	    else
+	      print("<option value='0'>User</option>");
+
+            if ($level == 50)
+	      print("<option value='50' selected>Devel</option>");
+	    else
+	      print("<option value='50'>Devel</option>");
+
+            if ($level == 100)
+	      print("<option value='100' selected>Admin</option>");
+	    else
+	      print("<option value='100'>Admin</option>");
+
+	    print("</select>");
+	  }
+
+	  print("</td></tr>\n"
+	       ."<tr><th align='right'>Password:</th>"
+	       ."<td><input type='password' name='PASSWORD' size='16' "
+	       ."maxsize='255'/></td></tr>\n"
+	       ."<tr><th align='right'>Password Again:</th>"
+	       ."<td><input type='password' name='PASSWORD2' size='16' "
+	       ."maxsize='255'/></td></tr>\n"
+	       ."<tr><th></th><td><input type='submit' value='Modify Account'/>"
+	       ."</td></tr>\n"
+               ."</table></p></form>\n");
+	}
+
+	html_footer();
+      }
+      else
+      {
+        // List accounts...
+	account_header("Manage Accounts");
+
+	$result = db_query("SELECT * FROM users ORDER BY name");
+
+        print("<form method='POST' action='$PHP_SELF?Adisable'>\n");
+
+        html_start_table(array("Username", "EMail", "Level"));
+
+	while ($row = db_next($result))
+	{
+	  $name  = htmlspecialchars($row["name"], ENT_QUOTES);
+	  $email = htmlspecialchars($row["email"], ENT_QUOTES);
+	  $level = $levels[$row["level"]];
+
+          if ($row["is_published"] == 0)
+	    $email .= " <img src='images/private.gif' width='16' height='16' "
+	             ."border='0' align='middle' alt='Private'/>";
+
+	  html_start_row();
+	  print("<td nowrap><input type='checkbox' name='ID_$row[id]'/>"
+	       ."<a href='$PHP_SELF?Amodify+$name'>$name</a></td>"
+	       ."<td align='center'><a href='$PHP_SELF?Amodify+$name'>"
+	       ."$email</a></td>"
+	       ."<td align='center'><a href='$PHP_SELF?Amodify+$name'>"
+	       ."$level</a></td>");
+	  html_end_row();
+	}
+
+        html_start_row("header");
+	print("<td align='center' colspan='3'>&nbsp;<br /><input type='submit' "
+	     ."value='Disable Checked Accounts'/></td>");
+	html_end_row();
+
+	html_end_table();
+
+	html_start_links(1);
+	html_link("Add Account", "$PHP_SELF?Aadd");
+	html_end_links();
+
+        html_footer();
+      }
+      break;
+
   case 'L' :
       // List
-      html_header("New/Pending");
-
-      html_start_links(1);
-      html_link("New/Pending", "$PHP_SELF?L");
-      html_link("Manage Comments", "comment.php?l");
-      html_link("Change Password", "$PHP_SELF?P");
-      html_link("Logout", "$PHP_SELF?X");
-      html_end_links();
-
-      print("<h1>New/Pending</h1>\n");
+      account_header("New/Pending");
 
       $email = db_escape($_COOKIE["FROM"]);
 
@@ -151,15 +520,7 @@ switch ($op)
 
   case 'P' :
       // Change password
-      html_header("Change Password");
-
-      html_start_links(1);
-      html_link("New/Pending", "$PHP_SELF?L");
-      html_link("Change Password", "$PHP_SELF?P");
-      html_link("Logout", "$PHP_SELF?X");
-      html_end_links();
-
-      print("<h1>Change Password</h1>\n");
+      account_header("Change Password");
 
       if ($REQUEST_METHOD == "POST" &&
           array_key_exists("PASSWORD", $_POST) &&
@@ -190,6 +551,6 @@ switch ($op)
 
 
 //
-// End of "$Id: account.php,v 1.6 2004/05/19 01:39:04 mike Exp $".
+// End of "$Id: account.php,v 1.7 2004/05/19 02:57:18 mike Exp $".
 //
 ?>

@@ -1,6 +1,6 @@
 <?php
 //
-// "$Id: str.php,v 1.7 2004/05/19 00:57:33 mike Exp $"
+// "$Id: str.php,v 1.8 2004/05/19 02:57:18 mike Exp $"
 //
 // Software Trouble Report page...
 //
@@ -863,7 +863,7 @@ switch ($op)
         if ($LOGIN_USER)
 	{
 	  html_start_row("header");
-	  print("<th colspan='8'>");
+	  print("<th colspan='8'>&nbsp;<br />");
 
           print("Status:&nbsp;<select name='STATUS'>"
 	       ."<option value=''>No Change</option>");
@@ -1852,6 +1852,6 @@ switch ($op)
 }
 
 //
-// End of "$Id: str.php,v 1.7 2004/05/19 00:57:33 mike Exp $".
+// End of "$Id: str.php,v 1.8 2004/05/19 02:57:18 mike Exp $".
 //
 ?>

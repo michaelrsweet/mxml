@@ -1,7 +1,7 @@
-README - 06/18/2003
+README - 07/20/2003
 -------------------
 
-CHANGES IN Mini-XML 1.0.1
+CHANGES IN Mini-XML 1.1
 
 	- The mxmlLoadFile() function now uses dynamically
 	  allocated string buffers for element names, attribute
@@ -9,6 +9,8 @@ CHANGES IN Mini-XML 1.0.1
 	  capped at 16383, 255, and 255 bytes, respectively.
 	- Added a new mxmlLoadString() function for loading an
 	  XML node tree from a string.
+	- Add emulation of strdup() if the local platform does
+	  not provide the function.
 
 
 CHANGES IN Mini-XML 1.0

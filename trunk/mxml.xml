@@ -207,6 +207,11 @@ name="child"><type>mxml_node_t *</type><description>First child node</descriptio
 <variable name="value"><type>mxml_value_t</type><description>Node value</description></variable>
 </struct>
 <typedef name="mxml_node_t"><type>struct mxml_node_s</type><description>An XML node.</description><description>An XML node.</description></typedef>
+<function name="mxml_strdup"><returnvalue><description>New string pointer</description><type>char
+*</type></returnvalue>
+<description>Duplicate a string.</description><argument name="s"
+direction="I"><type>const char *</type><description>String to duplicate</description></argument>
+</function>
 <struct name="mxml_text_s"><description>An XML text value.</description><variable
 name="string"><type>char *</type><description>Fragment string</description></variable>
 <variable name="whitespace"><type>int</type><description>Leading whitespace?</description></variable>

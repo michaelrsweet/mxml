@@ -1,5 +1,5 @@
 /*
- * "$Id: mxmldoc.c,v 1.12 2003/06/14 23:56:47 mike Exp $"
+ * "$Id: mxmldoc.c,v 1.13 2003/07/20 13:41:17 mike Exp $"
  *
  * Documentation generator using mini-XML, a small XML-like file parsing
  * library.
@@ -35,6 +35,7 @@
  */
 
 #include "mxml.h"
+#include "config.h"
 
 
 /*
@@ -2079,5 +2080,5 @@ ws_cb(mxml_node_t *node,		/* I - Element node */
 
 
 /*
- * End of "$Id: mxmldoc.c,v 1.12 2003/06/14 23:56:47 mike Exp $".
+ * End of "$Id: mxmldoc.c,v 1.13 2003/07/20 13:41:17 mike Exp $".
  */

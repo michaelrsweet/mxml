@@ -1,5 +1,5 @@
 dnl
-dnl "$Id: configure.in,v 1.5 2003/06/15 01:37:32 mike Exp $"
+dnl "$Id: configure.in,v 1.6 2003/07/20 13:41:17 mike Exp $"
 dnl
 dnl Configuration script for mini-XML, a small XML-like file parsing library.
 dnl
@@ -16,11 +16,14 @@ dnl MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 dnl GNU General Public License for more details.
 dnl
 
+dnl Specify a source file from the distribution...
 AC_INIT(mxml.h)
+
+dnl Set the name of the config header file...
+AC_CONFIG_HEADER(config.h)
 
 dnl Clear default debugging options and set normal optimization by
 dnl default unless the user asks for debugging specifically.
-
 CFLAGS="${CFLAGS:=}"
 CXXFLAGS="${CXXFLAGS:=}"
 LDFLAGS="${LDFLAGS:=}"
@@ -41,6 +44,13 @@ AC_ARG_WITH(docdir, [  --with-docdir           set directory for documentation],
 
 AC_SUBST(docdir)
 
+dnl Get the operating system and version number...
+uname=`uname`
+uversion=`uname -r | sed -e '1,$s/[[^0-9]]//g'`
+if test x$uname = xIRIX64; then
+	uname="IRIX"
+fi
+
 dnl Checks for programs...
 AC_PROG_CC
 AC_PROG_CXX
@@ -60,7 +70,7 @@ fi
 AC_PATH_PROG(RM,rm)
 
 dnl Flags for "ar" command...
-case "`uname`" in
+case "$uname" in
         Darwin* | *BSD*)
                 ARFLAGS="-rcv"
                 ;;
@@ -70,6 +80,9 @@ case "`uname`" in
 esac
 
 AC_SUBST(ARFLAGS)
+
+dnl Checks for string functions.
+AC_CHECK_FUNCS(strdup strlcat strlcpy)
 
 dnl Add -Wall for GCC...
 if test -n "$GCC"; then
@@ -93,7 +106,7 @@ fi
 
 dnl Fix "mandir" variable if it hasn't been specified...
 if test "$mandir" = "\${prefix}/man" -a "$prefix" = "/usr"; then
-	case "`uname`" in
+	case "$uname" in
         	*BSD* | Darwin* | Linux*)
         		# BSD, Darwin (MacOS X), and Linux
         		mandir="/usr/share/man"
@@ -110,7 +123,7 @@ if test "$mandir" = "\${prefix}/man" -a "$prefix" = "/usr"; then
 fi
 
 dnl More manpage stuff...
-case "`uname`" in
+case "$uname" in
         *BSD* | Darwin*)
         	# *BSD
         	CAT1EXT="0"
@@ -136,5 +149,5 @@ dnl Output the makefile, etc...
 AC_OUTPUT(Makefile mxml.list)
 
 dnl
-dnl End of "$Id: configure.in,v 1.5 2003/06/15 01:37:32 mike Exp $".
+dnl End of "$Id: configure.in,v 1.6 2003/07/20 13:41:17 mike Exp $".
 dnl

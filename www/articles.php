@@ -1,6 +1,6 @@
 <?php
 //
-// "$Id: articles.php,v 1.6 2004/05/19 02:57:18 mike Exp $"
+// "$Id: articles.php,v 1.7 2004/05/19 03:26:36 mike Exp $"
 //
 // Web form for the article table...
 //
@@ -12,13 +12,6 @@
 
 include_once "phplib/html.php";
 include_once "phplib/common.php";
-
-
-//
-// Maximum number of articles per page...
-//
-
-$PAGE_MAX = 10;
 
 
 // Get command-line options...
@@ -716,6 +709,6 @@ switch ($op)
 
 
 //
-// End of "$Id: articles.php,v 1.6 2004/05/19 02:57:18 mike Exp $".
+// End of "$Id: articles.php,v 1.7 2004/05/19 03:26:36 mike Exp $".
 //
 ?>

@@ -1,6 +1,6 @@
 <?php
 //
-// "$Id: comment.php,v 1.3 2004/05/19 00:57:33 mike Exp $"
+// "$Id: comment.php,v 1.4 2004/05/19 03:26:36 mike Exp $"
 //
 // Comment and moderation interface for PHP pages...
 //
@@ -168,10 +168,11 @@ else
 	    $create_date = time();
 	    db_query("INSERT INTO comment VALUES(NULL,$refer_id,2,'$file',"
 	            ."'$contents',$create_date,'$create_user')");
+            $id = db_insert_id();
 	  }
 
           $location = str_replace("_", "?", $path);
-	  header("Location: $location");
+	  header("Location: $location#_USER_COMMENT_$id");
         }
 	else
 	{
@@ -349,18 +350,13 @@ else
 	  db_free($result);
         }
 
-        if ($LOGIN_USER)
-          header("Location: $PHP_SELF");
-	else
-        {
-          $location = str_replace("_", "?", $path);
-	  header("Location: $location");
-        }
+        $location = str_replace("_", "?", $path);
+	header("Location: $location#_USER_COMMENT_$id");
 	break;      
   }
 }
 
 //
-// End of "$Id: comment.php,v 1.3 2004/05/19 00:57:33 mike Exp $".
+// End of "$Id: comment.php,v 1.4 2004/05/19 03:26:36 mike Exp $".
 //
 ?>

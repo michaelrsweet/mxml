@@ -1,0 +1,8 @@
+config.cache
+config.log
+config.status
+Makefile
+libmxml.a
+testmxml
+*.bck
+*.bak

@@ -1,11 +1,6 @@
-Mini-XML 2.0 is now available for download from:
+Mini-XML 2.1 is now available for download from:
 
     http://www.easysw.com/~mike/mxml/software.php
 
-Mini-XML 2.0 adds a new programmers manual, support for reading
-UTF-16 encoded files and strings (all output is still encoded
-using UTF-8), a new indexing API to support fast searches of
-large XML databases, new character entity and whitespace
-callbacks, and several improvements and bug fixes for the
-mxmldoc utility. The new release also fixes some makefile
-problems.
+Mini-XML 2.1 adds support for custom data types and fixes a
+number of small bugs.

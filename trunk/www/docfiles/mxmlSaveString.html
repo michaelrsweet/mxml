@@ -1,14 +1,14 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
 <HTML>
 <HEAD>
-<TITLE>Mini-XML Programmers Manual, Version 2.0</TITLE>
+<TITLE>Mini-XML Programmers Manual, Version 2.1</TITLE>
 <META NAME="author" CONTENT="Michael Sweet">
 <META NAME="copyright" CONTENT="Copyright 2003-2004">
 <META HTTP-EQUIV="Content-Type" CONTENT="text/html; CHARSET=iso-iso-8859-1">
 <LINK REL="Start" HREF="index.html">
 <LINK REL="Contents" HREF="toc.html">
 <LINK REL="Prev" HREF="mxmlSaveFile.html">
-<LINK REL="Next" HREF="mxmlSetElement.html">
+<LINK REL="Next" HREF="mxmlSetCustom.html">
 <STYLE TYPE="text/css"><!--
 BODY { font-family: serif }
 H1 { font-family: sans-serif }
@@ -25,14 +25,18 @@ PRE { font-family: monospace }
 <BODY>
 <A HREF="toc.html">Contents</A>
 <A HREF="mxmlSaveFile.html">Previous</A>
-<A HREF="mxmlSetElement.html">Next</A>
+<A HREF="mxmlSetCustom.html">Next</A>
 <HR NOSHADE>
 <H3><A name="mxmlSaveString">mxmlSaveString()</A></H3>
 <HR noshade/>
 <H4>Description</H4>
 <P>Save an XML node tree to a string. This function returns the total
  number of bytes that would be required for the string but only copies
- (bufsize - 1) characters into the specified buffer.</P>
+ (bufsize - 1) characters into the specified buffer. The callback
+ argument specifies a function that returns a whitespace string or NULL
+ before and after each element. If MXML_NO_CALLBACK is specified,
+ whitespace will only be added before MXML_TEXT nodes with leading
+ whitespace and before attribute names inside opening element tags.</P>
 <H4>Syntax</H4>
 <PRE>
 int
@@ -61,6 +65,6 @@ mxmlSaveString(
 <HR NOSHADE>
 <A HREF="toc.html">Contents</A>
 <A HREF="mxmlSaveFile.html">Previous</A>
-<A HREF="mxmlSetElement.html">Next</A>
+<A HREF="mxmlSetCustom.html">Next</A>
 </BODY>
 </HTML>

@@ -1,5 +1,5 @@
 /*
- * "$Id: mxml-file.c,v 1.10 2003/06/14 23:56:47 mike Exp $"
+ * "$Id: mxml-file.c,v 1.11 2003/06/15 21:31:45 mike Exp $"
  *
  * File loading code for mini-XML, a small XML-like file parsing library.
  *
@@ -36,6 +36,7 @@
  * Local functions...
  */
 
+static int	mxml_add_char(int ch, char **ptr, char **buffer, int *bufsize);
 static int	mxml_parse_element(mxml_node_t *node, FILE *fp);
 static int	mxml_write_node(mxml_node_t *node, FILE *fp,
 		                int (*cb)(mxml_node_t *, int), int col);
@@ -65,8 +66,9 @@ mxmlLoadFile(mxml_node_t *top,		/* I - Top node */
 		*parent;		/* Current parent node */
   int		ch,			/* Character from file */
 		whitespace;		/* Non-zero if whitespace seen */
-  char		buffer[16384],		/* String buffer */
+  char		*buffer,		/* String buffer */
 		*bufptr;		/* Pointer into buffer */
+  int		bufsize;		/* Size of buffer */
   mxml_type_t	type;			/* Current node type */
 
 
@@ -74,6 +76,13 @@ mxmlLoadFile(mxml_node_t *top,		/* I - Top node */
   * Read elements and other nodes from the file...
   */
 
+  if ((buffer = malloc(64)) == NULL)
+  {
+    fputs("Unable to allocate string buffer!\n", stderr);
+    return (NULL);
+  }
+
+  bufsize    = 64;
   bufptr     = buffer;
   parent     = top;
   whitespace = 0;
@@ -180,13 +189,13 @@ mxmlLoadFile(mxml_node_t *top,		/* I - Top node */
       while ((ch = getc(fp)) != EOF)
         if (isspace(ch) || ch == '>' || (ch == '/' && bufptr > buffer))
 	  break;
-	else if (bufptr < (buffer + sizeof(buffer) - 1))
+	else if (mxml_add_char(ch, &bufptr, &buffer, &bufsize))
 	{
-	  *bufptr++ = ch;
-
-	  if ((bufptr - buffer) == 3 && !strncmp(buffer, "!--", 3))
-	    break;
-        }
+          free(buffer);
+	  return (NULL);
+	}
+	else if ((bufptr - buffer) == 3 && !strncmp(buffer, "!--", 3))
+	  break;
 
       *bufptr = '\0';
 
@@ -201,13 +210,10 @@ mxmlLoadFile(mxml_node_t *top,		/* I - Top node */
 	  if (ch == '>' && bufptr > (buffer + 4) &&
 	      !strncmp(bufptr - 2, "--", 2))
 	    break;
-	  else if (bufptr < (buffer + sizeof(buffer) - 1))
-            *bufptr++ = ch;
-	  else
+	  else if (mxml_add_char(ch, &bufptr, &buffer, &bufsize))
 	  {
-            fprintf(stderr, "Comment too long in file under parent <%s>!\n",
-	            parent ? parent->value.element.name : "null");
-	    break;
+            free(buffer);
+	    return (NULL);
 	  }
 	}
 
@@ -245,13 +251,10 @@ mxmlLoadFile(mxml_node_t *top,		/* I - Top node */
 	{
 	  if (ch == '>')
 	    break;
-	  else if (bufptr < (buffer + sizeof(buffer) - 1))
-            *bufptr++ = ch;
-	  else
+	  else if (mxml_add_char(ch, &bufptr, &buffer, &bufsize))
 	  {
-            fprintf(stderr, "Declaration too long in file under parent <%s>!\n",
-	            parent ? parent->value.element.name : "null");
-	    break;
+            free(buffer);
+	    return (NULL);
 	  }
 	}
         while ((ch = getc(fp)) != EOF);
@@ -439,13 +442,10 @@ mxmlLoadFile(mxml_node_t *top,		/* I - Top node */
         * Plain ASCII doesn't need special encoding...
 	*/
 
-	if (bufptr < (buffer + sizeof(buffer) - 1))
-          *bufptr++ = ch;
-	else
+	if (mxml_add_char(ch, &bufptr, &buffer, &bufsize))
 	{
-          fprintf(stderr, "String too long in file under parent <%s>!\n",
-	          parent ? parent->value.element.name : "null");
-	  break;
+          free(buffer);
+	  return (NULL);
 	}
       }
       else
@@ -454,32 +454,59 @@ mxmlLoadFile(mxml_node_t *top,		/* I - Top node */
         * Use UTF-8 encoding for the Unicode char...
 	*/
 
-	if (bufptr < (buffer + sizeof(buffer) - 5))
+	if (ch < 2048)
 	{
-	  if (ch < 2048)
+	  if (mxml_add_char(0xc0 | (ch >> 6), &bufptr, &buffer, &bufsize))
 	  {
-	    *bufptr++ = 0xc0 | (ch >> 6);
-	    *bufptr++ = 0x80 | (ch & 63);
-          }
-	  else if (ch < 65536)
-	  {
-	    *bufptr++ = 0xe0 | (ch >> 12);
-	    *bufptr++ = 0x80 | ((ch >> 6) & 63);
-	    *bufptr++ = 0x80 | (ch & 63);
+            free(buffer);
+	    return (NULL);
 	  }
-	  else
+	  if (mxml_add_char(0x80 | (ch & 63), &bufptr, &buffer, &bufsize))
 	  {
-	    *bufptr++ = 0xf0 | (ch >> 18);
-	    *bufptr++ = 0x80 | ((ch >> 12) & 63);
-	    *bufptr++ = 0x80 | ((ch >> 6) & 63);
-	    *bufptr++ = 0x80 | (ch & 63);
+            free(buffer);
+	    return (NULL);
+	  }
+        }
+	else if (ch < 65536)
+	{
+	  if (mxml_add_char(0xe0 | (ch >> 12), &bufptr, &buffer, &bufsize))
+	  {
+            free(buffer);
+	    return (NULL);
+	  }
+	  if (mxml_add_char(0x80 | ((ch >> 6) & 63), &bufptr, &buffer, &bufsize))
+	  {
+            free(buffer);
+	    return (NULL);
+	  }
+	  if (mxml_add_char(0x80 | (ch & 63), &bufptr, &buffer, &bufsize))
+	  {
+            free(buffer);
+	    return (NULL);
 	  }
 	}
 	else
 	{
-          fprintf(stderr, "String too long in file under parent <%s>!\n",
-	          parent ? parent->value.element.name : "null");
-	  break;
+	  if (mxml_add_char(0xf0 | (ch >> 18), &bufptr, &buffer, &bufsize))
+	  {
+            free(buffer);
+	    return (NULL);
+	  }
+	  if (mxml_add_char(0x80 | ((ch >> 12) & 63), &bufptr, &buffer, &bufsize))
+	  {
+            free(buffer);
+	    return (NULL);
+	  }
+	  if (mxml_add_char(0x80 | ((ch >> 6) & 63), &bufptr, &buffer, &bufsize))
+	  {
+            free(buffer);
+	    return (NULL);
+	  }
+	  if (mxml_add_char(0x80 | (ch & 63), &bufptr, &buffer, &bufsize))
+	  {
+            free(buffer);
+	    return (NULL);
+	  }
 	}
       }
     }
@@ -489,16 +516,19 @@ mxmlLoadFile(mxml_node_t *top,		/* I - Top node */
       * Add character to current buffer...
       */
 
-      if (bufptr < (buffer + sizeof(buffer) - 1))
-        *bufptr++ = ch;
-      else
+      if (mxml_add_char(ch, &bufptr, &buffer, &bufsize))
       {
-        fprintf(stderr, "String too long in file under parent <%s>!\n",
-	        parent ? parent->value.element.name : "null");
-	break;
+        free(buffer);
+	return (NULL);
       }
     }
   }
+
+ /*
+  * Free the string buffer - we don't need it anymore...
+  */
+
+  free(buffer);
 
  /*
   * Find the top element and return it...
@@ -553,6 +583,49 @@ mxmlSaveFile(mxml_node_t *node,		/* I - Node to write */
 
 
 /*
+ * 'mxml_add_char()' - Add a character to a buffer, expanding as needed.
+ */
+
+static int				/* O  - 0 on success, -1 on error */
+mxml_add_char(int  ch,			/* I  - Character to add */
+              char **bufptr,		/* IO - Current position in buffer */
+	      char **buffer,		/* IO - Current buffer */
+	      int  *bufsize)		/* IO - Current buffer size */
+{
+  char	*newbuffer;			/* New buffer value */
+
+
+  if (*bufptr >= (*buffer + *bufsize - 1))
+  {
+   /*
+    * Increase the size of the buffer...
+    */
+
+    if (*bufsize < 1024)
+      (*bufsize) *= 2;
+    else
+      (*bufsize) += 1024;
+
+    if ((newbuffer = realloc(*buffer, *bufsize)) == NULL)
+    {
+      free(*buffer);
+
+      fprintf(stderr, "Unable to expand string buffer to %d bytes!\n",
+	      *bufsize);
+
+      return (-1);
+    }
+
+    *bufptr = newbuffer + (*bufptr - *buffer);
+  }
+
+  *(*bufptr)++ = ch;
+
+  return (0);
+}
+
+
+/*
  * 'mxml_parse_element()' - Parse an element for any attributes...
  */
 
@@ -562,10 +635,33 @@ mxml_parse_element(mxml_node_t *node,	/* I - Element node */
 {
   int	ch,				/* Current character in file */
 	quote;				/* Quoting character */
-  char	name[256],			/* Attribute name */
-	value[256],			/* Attribute value */
+  char	*name,				/* Attribute name */
+	*value,				/* Attribute value */
 	*ptr;				/* Pointer into name/value */
+  int	namesize,			/* Size of name string */
+	valsize;			/* Size of value string */
 
+
+ /*
+  * Initialize the name and value buffers...
+  */
+
+  if ((name = malloc(64)) == NULL)
+  {
+    fputs("Unable to allocate memory for name!\n", stderr);
+    return (EOF);
+  }
+
+  namesize = 64;
+
+  if ((value = malloc(64)) == NULL)
+  {
+    free(name);
+    fputs("Unable to allocate memory for value!\n", stderr);
+    return (EOF);
+  }
+
+  valsize = 64;
 
  /*
   * Loop until we hit a >, /, ?, or EOF...
@@ -614,13 +710,11 @@ mxml_parse_element(mxml_node_t *node,	/* I - Element node */
     while ((ch = getc(fp)) != EOF)
       if (isspace(ch) || ch == '=' || ch == '/' || ch == '>' || ch == '?')
         break;
-      else if (ptr < (name + sizeof(name) - 1))
-        *ptr++ = ch;
-      else
+      else if (mxml_add_char(ch, &ptr, &name, &namesize))
       {
-        fprintf(stderr, "Attribute name too long for element %s!\n",
-	        node->value.element.name);
-        return (EOF);
+        free(name);
+	free(value);
+	return (EOF);
       }
 
     *ptr = '\0';
@@ -650,13 +744,11 @@ mxml_parse_element(mxml_node_t *node,	/* I - Element node */
         while ((ch = getc(fp)) != EOF)
 	  if (ch == quote)
 	    break;
-	  else if (ptr < (value + sizeof(value) - 1))
-            *ptr++ = ch;
-	  else
+	  else if (mxml_add_char(ch, &ptr, &value, &valsize))
 	  {
-            fprintf(stderr, "Attribute value too long for attribute '%s' in element %s!\n",
-	            name, node->value.element.name);
-            return (EOF);
+            free(name);
+	    free(value);
+	    return (EOF);
 	  }
 
         *ptr = '\0';
@@ -673,13 +765,11 @@ mxml_parse_element(mxml_node_t *node,	/* I - Element node */
 	while ((ch = getc(fp)) != EOF)
 	  if (isspace(ch) || ch == '=' || ch == '/' || ch == '>')
             break;
-	  else if (ptr < (value + sizeof(value) - 1))
-            *ptr++ = ch;
-	  else
+	  else if (mxml_add_char(ch, &ptr, &value, &valsize))
 	  {
-            fprintf(stderr, "Attribute value too long for attribute '%s' in element %s!\n",
-	            name, node->value.element.name);
-            return (EOF);
+            free(name);
+	    free(value);
+	    return (EOF);
 	  }
 
         *ptr = '\0';
@@ -701,6 +791,13 @@ mxml_parse_element(mxml_node_t *node,	/* I - Element node */
 
     mxmlElementSetAttr(node, name, value);
   }
+
+ /*
+  * Free the name and value buffers and return...
+  */
+
+  free(name);
+  free(value);
 
   return (ch);
 }
@@ -1012,5 +1109,5 @@ mxml_write_ws(mxml_node_t *node,	/* I - Current node */
 
 
 /*
- * End of "$Id: mxml-file.c,v 1.10 2003/06/14 23:56:47 mike Exp $".
+ * End of "$Id: mxml-file.c,v 1.11 2003/06/15 21:31:45 mike Exp $".
  */

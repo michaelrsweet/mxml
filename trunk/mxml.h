@@ -1,5 +1,5 @@
 /*
- * "$Id: mxml.h,v 1.23 2004/10/28 02:58:00 mike Exp $"
+ * "$Id: mxml.h,v 1.24 2004/10/31 15:32:14 mike Exp $"
  *
  * Header file for Mini-XML, a small XML-like file parsing library.
  *
@@ -139,7 +139,7 @@ typedef struct mxml_index_s		/**** An XML node index. ****/
 typedef int (*mxml_custom_load_cb_t)(mxml_node_t *, const char *);
 					/**** Custom data load callback function ****/
 
-typedef const char *(*mxml_custom_save_cb_t)(mxml_node_t *);  
+typedef char *(*mxml_custom_save_cb_t)(mxml_node_t *);  
 					/**** Custom data save callback function ****/
 
 
@@ -250,5 +250,5 @@ extern mxml_type_t	mxml_real_cb(mxml_node_t *node);
 
 
 /*
- * End of "$Id: mxml.h,v 1.23 2004/10/28 02:58:00 mike Exp $".
+ * End of "$Id: mxml.h,v 1.24 2004/10/31 15:32:14 mike Exp $".
  */

@@ -1,6 +1,6 @@
 <?php
 //
-// "$Id: str.php,v 1.13 2004/06/01 00:25:29 mike Exp $"
+// "$Id: str.php,v 1.14 2004/07/26 15:03:43 mike Exp $"
 //
 // Software Trouble Report page...
 //
@@ -50,8 +50,8 @@ $subsystems = array(
 
 $versions = array(
   "CVS",
-  "+2.0",
-  "+2.0rc2",
+  "+2.0.1",
+  "2.0",
   "2.0rc1",
   "1.3",
   "1.2",
@@ -1897,6 +1897,6 @@ switch ($op)
 }
 
 //
-// End of "$Id: str.php,v 1.13 2004/06/01 00:25:29 mike Exp $".
+// End of "$Id: str.php,v 1.14 2004/07/26 15:03:43 mike Exp $".
 //
 ?>

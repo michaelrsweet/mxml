@@ -1,9 +1,9 @@
 #
-# "$Id: mxml.spec,v 1.14 2004/11/13 18:26:32 mike Exp $"
+# "$Id$"
 #
-# RPM "spec" file for Mini-XML, a small XML-like file parsing library.
+# RPM "spec" file for Mini-XML, a small XML library.
 #
-# Copyright 2003-2004 by Michael Sweet.
+# Copyright 2003-2005 by Michael Sweet.
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Library General Public
@@ -18,7 +18,7 @@
 
 Summary: Miniature XML development library
 Name: mxml
-Version: 2.1
+Version: 2.2
 Release: 1
 Copyright: GPL
 Group: Development/Libraries
@@ -58,7 +58,7 @@ those required by the XML specification.
 %setup
 
 %build
-CFLAGS="$RPM_OPT_FLAGS" CXXFLAGS="$RPM_OPT_FLAGS" LDFLAGS="$RPM_OPT_FLAGS" ./configure --prefix=/usr
+CFLAGS="$RPM_OPT_FLAGS" CXXFLAGS="$RPM_OPT_FLAGS" LDFLAGS="$RPM_OPT_FLAGS" ./configure --enable-shared --prefix=/usr
 
 # If we got this far, all prerequisite libraries must be here.
 make
@@ -80,7 +80,7 @@ rm -rf $RPM_BUILD_ROOT
 %dir /usr/include
 /usr/include/mxml.h
 %dir /usr/lib
-/usr/lib/libmxml.a
+/usr/lib/*
 %dir /usr/lib/pkgconfig
 /usr/lib/pkgconfig/mxml.pc
 %dir /usr/share/doc/mxml
@@ -95,5 +95,5 @@ rm -rf $RPM_BUILD_ROOT
 /usr/share/man/man3/*
 
 #
-# End of "$Id: mxml.spec,v 1.14 2004/11/13 18:26:32 mike Exp $".
+# End of "$Id$".
 #

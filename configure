@@ -272,7 +272,7 @@ PACKAGE_STRING=
 PACKAGE_BUGREPORT=
 
 ac_unique_file="mxml.h"
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS VERSION LDFLAGS OPTIM docdir CC CFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT CXX CXXFLAGS ac_ct_CXX RANLIB ac_ct_RANLIB AR CP MKDIR NROFF GROFF RM ARFLAGS CAT1EXT CAT3EXT MAN1EXT MAN3EXT PC_CFLAGS PC_LIBS LIBOBJS LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS VERSION LDFLAGS OPTIM docdir CC CFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT CXX CXXFLAGS ac_ct_CXX RANLIB ac_ct_RANLIB AR CP LN MKDIR NROFF GROFF RM ARFLAGS DSO DSOFLAGS LIBMXML PICFLAG CAT1EXT CAT3EXT MAN1EXT MAN3EXT PC_CFLAGS PC_LIBS LIBOBJS LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -808,6 +808,7 @@ Optional Features:
   --disable-FEATURE       do not include FEATURE (same as --enable-FEATURE=no)
   --enable-FEATURE[=ARG]  include FEATURE [ARG=yes]
   --enable-debug          turn on debugging, default=no
+  --enable-shared         turn on shared libraries, default=no
 
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
@@ -2770,6 +2771,45 @@ else
 echo "${ECHO_T}no" >&6
 fi
 
+# Extract the first word of "ln", so it can be a program name with args.
+set dummy ln; ac_word=$2
+echo "$as_me:$LINENO: checking for $ac_word" >&5
+echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6
+if test "${ac_cv_path_LN+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  case $LN in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_LN="$LN" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+  for ac_exec_ext in '' $ac_executable_extensions; do
+  if $as_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_path_LN="$as_dir/$ac_word$ac_exec_ext"
+    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+done
+
+  ;;
+esac
+fi
+LN=$ac_cv_path_LN
+
+if test -n "$LN"; then
+  echo "$as_me:$LINENO: result: $LN" >&5
+echo "${ECHO_T}$LN" >&6
+else
+  echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6
+fi
+
 # Extract the first word of "mkdir", so it can be a program name with args.
 set dummy mkdir; ac_word=$2
 echo "$as_me:$LINENO: checking for $ac_word" >&5
@@ -3156,12 +3196,119 @@ done
 
 fi
 
+DSO="${DSO:=:}"
+DSOFLAGS="${DSOFLAGS:=}"
+
+# Check whether --enable-shared or --disable-shared was given.
+if test "${enable_shared+set}" = set; then
+  enableval="$enable_shared"
+
+fi;
+
+if test x$enable_shared = xyes; then
+	echo "$as_me:$LINENO: checking for shared library support" >&5
+echo $ECHO_N "checking for shared library support... $ECHO_C" >&6
+	PICFLAG=1
+
+	case "$uname" in
+		SunOS* | UNIX_S*)
+			echo "$as_me:$LINENO: result: yes" >&5
+echo "${ECHO_T}yes" >&6
+			LIBMXML="libmxml.so.1.0"
+			DSO="\$(CC)"
+			DSOFLAGS="$DSOFLAGS -Wl,-h,libmxml.so.1 -G -R\$(libdir) \$(OPTIM)"
+			LDFLAGS="$LDFLAGS -R\$(libdir)"
+                	;;
+
+		HP-UX*)
+			echo "$as_me:$LINENO: result: yes" >&5
+echo "${ECHO_T}yes" >&6
+			LIBMXML="libmxml.sl.1"
+			DSO="ld"
+			DSOFLAGS="$DSOFLAGS -b -z +h libmxml.sl.1 +s +b \$(libdir)"
+			LDFLAGS="$LDFLAGS -Wl,+s,+b,\$(libdir)"
+			;;
+
+		IRIX)
+			echo "$as_me:$LINENO: result: yes" >&5
+echo "${ECHO_T}yes" >&6
+			LIBMXML="libmxml.so.1.0"
+			DSO="\$(CC)"
+			DSOFLAGS="$DSOFLAGS -Wl,-rpath,\$(libdir),-set_version,sgi1.0,-soname,libmxml.so.1 -shared \$(OPTIM)"
+			;;
+
+		OSF1* | Linux | GNU)
+			echo "$as_me:$LINENO: result: yes" >&5
+echo "${ECHO_T}yes" >&6
+			LIBMXML="libmxml.so.1.0"
+			DSO="\$(CC)"
+			DSOFLAGS="$DSOFLAGS -Wl,-soname,libmxml.so.1,-rpath,\$(libdir) -shared \$(OPTIM)"
+                        LDFLAGS="$LDFLAGS -Wl,-rpath,\$(libdir)"
+			;;
+
+		*BSD*)
+			echo "$as_me:$LINENO: result: yes" >&5
+echo "${ECHO_T}yes" >&6
+			LIBMXML="libmxml.so.1.0"
+			DSO="\$(CC)"
+			DSOFLAGS="$DSOFLAGS -Wl,-soname,libmxml.so.1,-R\$(libdir) -shared \$(OPTIM)"
+			LDFLAGS="$LDFLAGS -Wl,-R\$(libdir)"
+                        ;;
+
+		Darwin*)
+			echo "$as_me:$LINENO: result: yes" >&5
+echo "${ECHO_T}yes" >&6
+			LIBMXML="libmxml.1.dylib"
+			DSO="\$(CC)"
+			DSOFLAGS="$DSOFLAGS \$(RC_CFLAGS) -dynamiclib -lc"
+			;;
+
+		*)
+			echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6
+			{ echo "$as_me:$LINENO: WARNING: shared libraries not supported on this platform." >&5
+echo "$as_me: WARNING: shared libraries not supported on this platform." >&2;}
+			PICFLAG=0
+			LIBMXML="libmxml.a"
+			;;
+	esac
+else
+	PICFLAG=0
+	LIBMXML="libmxml.a"
+fi
+
+
+
+
+
+
 if test -n "$GCC"; then
 	CFLAGS="-Wall $CFLAGS"
 
 	if test "x$use_ansi" = xyes; then
 		CFLAGS="-ansi -pedantic $CFLAGS"
 	fi
+
+	if test $PICFLAG = 1 -a $uname != AIX; then
+    		OPTIM="-fPIC $OPTIM"
+	fi
+else
+	case $uname in
+		HP-UX*)
+			CFLAGS="-Ae $CFLAGS"
+			OPTIM="+DAportable $OPTIM"
+
+			if test $PICFLAG = 1; then
+				OPTIM="+z $OPTIM"
+			fi
+			;;
+
+		UNIX_SVR* | SunOS*)
+			if test $PICFLAG = 1; then
+				OPTIM="-KPIC $OPTIM"
+			fi
+			;;
+	esac
 fi
 
 if test "$prefix" = "NONE"; then
@@ -3860,11 +4007,16 @@ s,@RANLIB@,$RANLIB,;t t
 s,@ac_ct_RANLIB@,$ac_ct_RANLIB,;t t
 s,@AR@,$AR,;t t
 s,@CP@,$CP,;t t
+s,@LN@,$LN,;t t
 s,@MKDIR@,$MKDIR,;t t
 s,@NROFF@,$NROFF,;t t
 s,@GROFF@,$GROFF,;t t
 s,@RM@,$RM,;t t
 s,@ARFLAGS@,$ARFLAGS,;t t
+s,@DSO@,$DSO,;t t
+s,@DSOFLAGS@,$DSOFLAGS,;t t
+s,@LIBMXML@,$LIBMXML,;t t
+s,@PICFLAG@,$PICFLAG,;t t
 s,@CAT1EXT@,$CAT1EXT,;t t
 s,@CAT3EXT@,$CAT3EXT,;t t
 s,@MAN1EXT@,$MAN1EXT,;t t

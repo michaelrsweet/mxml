@@ -1,5 +1,5 @@
 dnl
-dnl "$Id: configure.in,v 1.1 2003/06/03 19:46:30 mike Exp $"
+dnl "$Id: configure.in,v 1.2 2003/06/04 00:30:04 mike Exp $"
 dnl
 dnl Configuration script for mini-XML, a small XML-like file parsing library.
 dnl
@@ -37,9 +37,14 @@ esac
 
 AC_SUBST(ARFLAGS)
 
+dnl Add -Wall for GCC...
+if test -n "$GCC"; then
+	CFLAGS="-Wall $CFLAGS"
+fi
+
 dnl Output the makefile...
 AC_OUTPUT(Makefile)
 
 dnl
-dnl End of "$Id: configure.in,v 1.1 2003/06/03 19:46:30 mike Exp $".
+dnl End of "$Id: configure.in,v 1.2 2003/06/04 00:30:04 mike Exp $".
 dnl

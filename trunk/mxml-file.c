@@ -1,5 +1,5 @@
 /*
- * "$Id: mxml-file.c,v 1.37 2004/10/28 02:58:00 mike Exp $"
+ * "$Id$"
  *
  * File loading code for Mini-XML, a small XML-like file parsing library.
  *
@@ -37,6 +37,7 @@
  *   mxml_load_data()        - Load data into an XML node tree.
  *   mxml_parse_element()    - Parse an element for any attributes...
  *   mxml_string_getc()      - Get a character from a string.
+ *   mxml_string_putc()      - Write a character to a string.
  *   mxml_write_name()       - Write a name string.
  *   mxml_write_node()       - Save an XML node to a file.
  *   mxml_write_string()     - Write a string, escaping & and < as needed.
@@ -984,8 +985,14 @@ mxml_file_getc(void *p,			/* I  - Pointer to file */
 	*/
 
 	if (!(ch & 0x80))
+	{
+#if DEBUG > 1
+          printf("mxml_file_getc: %c (0x%04x)\n", ch < ' ' ? '.' : ch, ch);
+#endif /* DEBUG > 1 */
+
 	  return (ch);
-        else if (ch == 0xfe)
+        }
+	else if (ch == 0xfe)
 	{
 	 /*
 	  * UTF-16 big-endian BOM?
@@ -1118,6 +1125,10 @@ mxml_file_getc(void *p,			/* I  - Pointer to file */
 	}
 	break;
   }
+
+#if DEBUG > 1
+  printf("mxml_file_getc: %c (0x%04x)\n", ch < ' ' ? '.' : ch, ch);
+#endif /* DEBUG > 1 */
 
   return (ch);
 }
@@ -1392,7 +1403,9 @@ mxml_load_data(mxml_node_t *top,	/* I - Top node */
 	}
 	else if (mxml_add_char(ch, &bufptr, &buffer, &bufsize))
 	  goto error;
-	else if ((bufptr - buffer) == 3 && !strncmp(buffer, "!--", 3))
+	else if (((bufptr - buffer) == 1 && buffer[0] == '?') ||
+	         ((bufptr - buffer) == 3 && !strncmp(buffer, "!--", 3)) ||
+	         ((bufptr - buffer) == 8 && !strncmp(buffer, "![CDATA[", 8)))
 	  break;
 
       *bufptr = '\0';
@@ -1406,17 +1419,10 @@ mxml_load_data(mxml_node_t *top,	/* I - Top node */
 	while ((ch = (*getc_cb)(p, &encoding)) != EOF)
 	{
 	  if (ch == '>' && bufptr > (buffer + 4) &&
-	      !strncmp(bufptr - 2, "--", 2))
+	      bufptr[-3] != '-' && bufptr[-2] == '-' && bufptr[-1] == '-')
 	    break;
-	  else
-	  {
-            if (ch == '&')
-	      if ((ch = mxml_get_entity(parent, p, &encoding, getc_cb)) == EOF)
-		goto error;
-
-	    if (mxml_add_char(ch, &bufptr, &buffer, &bufsize))
-	      goto error;
-	  }
+	  else if (mxml_add_char(ch, &bufptr, &buffer, &bufsize))
+	    goto error;
 	}
 
        /*
@@ -1442,6 +1448,85 @@ mxml_load_data(mxml_node_t *top,	/* I - Top node */
 	             parent ? parent->value.element.name : "null");
 	  break;
 	}
+      }
+      else if (!strcmp(buffer, "![CDATA["))
+      {
+       /*
+        * Gather CDATA section...
+	*/
+
+	while ((ch = (*getc_cb)(p, &encoding)) != EOF)
+	{
+	  if (ch == '>' && !strncmp(bufptr - 2, "]]", 2))
+	    break;
+	  else if (mxml_add_char(ch, &bufptr, &buffer, &bufsize))
+	    goto error;
+	}
+
+       /*
+        * Error out if we didn't get the whole comment...
+	*/
+
+        if (ch != '>')
+	  break;
+
+       /*
+        * Otherwise add this as an element under the current parent...
+	*/
+
+	*bufptr = '\0';
+
+	if (!mxmlNewElement(parent, buffer))
+	{
+	 /*
+	  * Just print error for now...
+	  */
+
+	  mxml_error("Unable to add comment node to parent <%s>!",
+	             parent ? parent->value.element.name : "null");
+	  break;
+	}
+      }
+      else if (buffer[0] == '?')
+      {
+       /*
+        * Gather rest of processing instruction...
+	*/
+
+	while ((ch = (*getc_cb)(p, &encoding)) != EOF)
+	{
+	  if (ch == '>' && bufptr > buffer && bufptr[-1] == '?')
+	    break;
+	  else if (mxml_add_char(ch, &bufptr, &buffer, &bufsize))
+	    goto error;
+	}
+
+       /*
+        * Error out if we didn't get the whole comment...
+	*/
+
+        if (ch != '>')
+	  break;
+
+       /*
+        * Otherwise add this as an element under the current parent...
+	*/
+
+	*bufptr = '\0';
+
+	if (!(parent = mxmlNewElement(parent, buffer)))
+	{
+	 /*
+	  * Just print error for now...
+	  */
+
+	  mxml_error("Unable to add comment node to parent <%s>!",
+	             parent ? parent->value.element.name : "null");
+	  break;
+	}
+
+	if (cb)
+	  type = (*cb)(parent);
       }
       else if (buffer[0] == '!')
       {
@@ -1496,7 +1581,7 @@ mxml_load_data(mxml_node_t *top,	/* I - Top node */
 
 	parent = node;
 
-	if (cb && parent)
+	if (cb)
 	  type = (*cb)(parent);
       }
       else if (buffer[0] == '/')
@@ -1921,7 +2006,13 @@ mxml_string_getc(void *p,		/* I  - Pointer to file */
     {
       case ENCODE_UTF8 :
 	  if (!(ch & 0x80))
+	  {
+#if DEBUG > 1
+            printf("mxml_string_getc: %c (0x%04x)\n", ch < ' ' ? '.' : ch, ch);
+#endif /* DEBUG > 1 */
+
 	    return (ch);
+	  }
 	  else if (ch == 0xfe)
 	  {
 	   /*
@@ -1966,6 +2057,10 @@ mxml_string_getc(void *p,		/* I  - Pointer to file */
 	    if (ch < 0x80)
 	      return (EOF);
 
+#if DEBUG > 1
+            printf("mxml_string_getc: %c (0x%04x)\n", ch < ' ' ? '.' : ch, ch);
+#endif /* DEBUG > 1 */
+
 	    return (ch);
 	  }
 	  else if ((ch & 0xf0) == 0xe0)
@@ -1984,6 +2079,10 @@ mxml_string_getc(void *p,		/* I  - Pointer to file */
 
 	    if (ch < 0x800)
 	      return (EOF);
+
+#if DEBUG > 1
+            printf("mxml_string_getc: %c (0x%04x)\n", ch < ' ' ? '.' : ch, ch);
+#endif /* DEBUG > 1 */
 
 	    return (ch);
 	  }
@@ -2005,6 +2104,10 @@ mxml_string_getc(void *p,		/* I  - Pointer to file */
 
 	    if (ch < 0x10000)
 	      return (EOF);
+
+#if DEBUG > 1
+            printf("mxml_string_getc: %c (0x%04x)\n", ch < ' ' ? '.' : ch, ch);
+#endif /* DEBUG > 1 */
 
 	    return (ch);
 	  }
@@ -2039,6 +2142,10 @@ mxml_string_getc(void *p,		/* I  - Pointer to file */
 
             ch = (((ch & 0x3ff) << 10) | (lch & 0x3ff)) + 0x10000;
 	  }
+
+#if DEBUG > 1
+          printf("mxml_string_getc: %c (0x%04x)\n", ch < ' ' ? '.' : ch, ch);
+#endif /* DEBUG > 1 */
 
 	  return (ch);
 
@@ -2077,6 +2184,10 @@ mxml_string_getc(void *p,		/* I  - Pointer to file */
 
             ch = (((ch & 0x3ff) << 10) | (lch & 0x3ff)) + 0x10000;
 	  }
+
+#if DEBUG > 1
+          printf("mxml_string_getc: %c (0x%04x)\n", ch < ' ' ? '.' : ch, ch);
+#endif /* DEBUG > 1 */
 
 	  return (ch);
     }
@@ -2266,7 +2377,30 @@ mxml_write_node(mxml_node_t *node,	/* I - Node to write */
 
           if ((*putc_cb)('<', p) < 0)
 	    return (-1);
-	  if (mxml_write_name(node->value.element.name, p, putc_cb) < 0)
+          if (node->value.element.name[0] == '?' ||
+	      !strncmp(node->value.element.name, "!--", 3) ||
+	      !strncmp(node->value.element.name, "![CDATA[", 8))
+          {
+	   /*
+	    * Comments, CDATA, and processing instructions do not
+	    * use character entities.
+	    */
+
+	    const char	*ptr;		/* Pointer into name */
+
+
+	    for (ptr = node->value.element.name; *ptr; ptr ++)
+	      if ((*putc_cb)(*ptr, p) < 0)
+	        return (-1);
+
+           /*
+	    * Prefer a newline for whitespace after ?xml...
+	    */
+
+            if (!strncmp(node->value.element.name, "?xml", 4))
+              col = MXML_WRAP;
+	  }
+	  else if (mxml_write_name(node->value.element.name, p, putc_cb) < 0)
 	    return (-1);
 
           col += strlen(node->value.element.name) + 1;
@@ -2316,21 +2450,10 @@ mxml_write_node(mxml_node_t *node,	/* I - Node to write */
 	  if (node->child)
 	  {
            /*
-	    * The ? and ! elements are special-cases and have no end tags...
+	    * Write children...
 	    */
 
-	    if (node->value.element.name[0] == '?')
-	    {
-              if ((*putc_cb)('?', p) < 0)
-		return (-1);
-              if ((*putc_cb)('>', p) < 0)
-		return (-1);
-              if ((*putc_cb)('\n', p) < 0)
-		return (-1);
-
-              col = 0;
-            }
-	    else if ((*putc_cb)('>', p) < 0)
+	    if ((*putc_cb)('>', p) < 0)
 	      return (-1);
 	    else
 	      col ++;
@@ -2340,8 +2463,12 @@ mxml_write_node(mxml_node_t *node,	/* I - Node to write */
 	    if ((col = mxml_write_node(node->child, p, cb, col, putc_cb)) < 0)
 	      return (-1);
 
-            if (node->value.element.name[0] != '?' &&
-	        node->value.element.name[0] != '!')
+           /*
+	    * The ? and ! elements are special-cases and have no end tags...
+	    */
+
+            if (node->value.element.name[0] != '!' &&
+	        node->value.element.name[0] != '?')
 	    {
               col = mxml_write_ws(node, p, cb, MXML_WS_BEFORE_CLOSE, col, putc_cb);
 
@@ -2359,8 +2486,13 @@ mxml_write_node(mxml_node_t *node,	/* I - Node to write */
               col = mxml_write_ws(node, p, cb, MXML_WS_AFTER_CLOSE, col, putc_cb);
 	    }
 	  }
-	  else if (node->value.element.name[0] == '!')
+	  else if (node->value.element.name[0] == '!' ||
+	           node->value.element.name[0] == '?')
 	  {
+           /*
+	    * The ? and ! elements are special-cases...
+	    */
+
 	    if ((*putc_cb)('>', p) < 0)
 	      return (-1);
 	    else
@@ -2370,12 +2502,14 @@ mxml_write_node(mxml_node_t *node,	/* I - Node to write */
           }
 	  else
 	  {
+            if ((*putc_cb)(' ', p) < 0)
+	      return (-1);
             if ((*putc_cb)('/', p) < 0)
 	      return (-1);
             if ((*putc_cb)('>', p) < 0)
 	      return (-1);
 
-	    col += 2;
+	    col += 3;
 
             col = mxml_write_ws(node, p, cb, MXML_WS_AFTER_OPEN, col, putc_cb);
 	  }
@@ -2575,5 +2709,5 @@ mxml_write_ws(mxml_node_t *node,	/* I - Current node */
 
 
 /*
- * End of "$Id: mxml-file.c,v 1.37 2004/10/28 02:58:00 mike Exp $".
+ * End of "$Id$".
  */

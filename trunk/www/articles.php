@@ -1,6 +1,6 @@
 <?php
 //
-// "$Id: articles.php,v 1.10 2004/05/19 21:17:47 mike Exp $"
+// "$Id: articles.php,v 1.11 2004/05/20 21:37:57 mike Exp $"
 //
 // Web form for the article table...
 //
@@ -41,7 +41,7 @@ notify_users($id,			// I - Article #
 		 ."Please approve or delete this article via the following "
 		 ."page:\n\n"
 		 ."    $PHP_URL?L$id\n"),
-	 "From: noreply@easysw.com\r\n");
+	 "From: $PROJECT_EMAIL\r\n");
   }
 }
 
@@ -253,7 +253,7 @@ switch ($op)
         $temp = htmlspecialchars($row["abstract"]);
         print("<tr><th align='right'>Abstract:</th><td class='left'>$temp</td></tr>\n");
 
-        $temp = htmlspecialchars($row["contents"]);
+        $temp = fomat_text($row["contents"]);
         print("<tr><th align='right'>Contents:</th><td class='left'>$temp</td></tr>\n");
 
         print("<tr><th colspan='2'>"
@@ -401,7 +401,7 @@ switch ($op)
 	}
 
         $result = db_query("SELECT * FROM article $query "
-	                  ."ORDER BY modify_date");
+	                  ."ORDER BY modify_date DESC");
         $count  = db_count($result);
 
         if ($count == 0)
@@ -665,7 +665,7 @@ switch ($op)
 	else
 	  print("<tr><th align='right' valign='top'>Contents:</th>");
 	print("<td><textarea name='CONTENTS' "
-	     ."cols='80' rows='10' wrap='virtual'>"
+	     ."cols='72' rows='12' wrap='virtual'>"
 	     ."$contents</textarea>\n"
 	     ."<p>The contents of the article may contain the following "
 	     ."HTML elements: <tt>A</tt>, <tt>B</tt>, <tt>BLOCKQUOTE</tt>, "
@@ -840,7 +840,7 @@ switch ($op)
       else
 	print("<tr><th align='right' valign='top'>Contents:</th>");
       print("<td><textarea name='CONTENTS' "
-	   ."cols='80' rows='10' wrap='virtual'>"
+	   ."cols='72' rows='12' wrap='virtual'>"
 	   ."$contents</textarea>\n"
 	   ."<p>The contents of the article may contain the following "
 	   ."HTML elements: <tt>A</tt>, <tt>B</tt>, <tt>BLOCKQUOTE</tt>, "
@@ -859,6 +859,6 @@ switch ($op)
 
 
 //
-// End of "$Id: articles.php,v 1.10 2004/05/19 21:17:47 mike Exp $".
+// End of "$Id: articles.php,v 1.11 2004/05/20 21:37:57 mike Exp $".
 //
 ?>

@@ -1,6 +1,6 @@
 <?
 //
-// "$Id: common.php,v 1.11 2004/05/20 03:38:42 mike Exp $"
+// "$Id: common.php,v 1.12 2004/05/20 21:37:57 mike Exp $"
 //
 // Common utility functions for PHP pages...
 //
@@ -128,46 +128,46 @@ format_text($text)			// I - Original string
     {
       case '<' :
           $col ++;
-	  if (tolower(substr($text, $i, 8)) == "<a href=" ||
-	      tolower(substr($text, $i, 8)) == "<a name=" ||
-	      tolower(substr($text, $i, 4)) == "</a>" ||
-	      tolower(substr($text, $i, 3)) == "<b>" ||
-	      tolower(substr($text, $i, 4)) == "</b>" ||
-	      tolower(substr($text, $i, 12)) == "<blockquote>" ||
-	      tolower(substr($text, $i, 13)) == "</blockquote>" ||
-	      tolower(substr($text, $i, 6)) == "<code>" ||
-	      tolower(substr($text, $i, 7)) == "</code>" ||
-	      tolower(substr($text, $i, 4)) == "<em>" ||
-	      tolower(substr($text, $i, 5)) == "</em>" ||
-	      tolower(substr($text, $i, 4)) == "<h1>" ||
-	      tolower(substr($text, $i, 5)) == "</h1>" ||
-	      tolower(substr($text, $i, 4)) == "<h2>" ||
-	      tolower(substr($text, $i, 5)) == "</h2>" ||
-	      tolower(substr($text, $i, 4)) == "<h3>" ||
-	      tolower(substr($text, $i, 5)) == "</h3>" ||
-	      tolower(substr($text, $i, 4)) == "<h4>" ||
-	      tolower(substr($text, $i, 5)) == "</h4>" ||
-	      tolower(substr($text, $i, 4)) == "<h5>" ||
-	      tolower(substr($text, $i, 5)) == "</h5>" ||
-	      tolower(substr($text, $i, 4)) == "<h6>" ||
-	      tolower(substr($text, $i, 5)) == "</h6>" ||
-	      tolower(substr($text, $i, 3)) == "<i>" ||
-	      tolower(substr($text, $i, 4)) == "</i>" ||
-	      tolower(substr($text, $i, 5)) == "<img " ||
-	      tolower(substr($text, $i, 4)) == "<li>" ||
-	      tolower(substr($text, $i, 5)) == "</li>" ||
-	      tolower(substr($text, $i, 4)) == "<ol>" ||
-	      tolower(substr($text, $i, 5)) == "</ol>" ||
-	      tolower(substr($text, $i, 3)) == "<p>" ||
-	      tolower(substr($text, $i, 4)) == "</p>" ||
-	      tolower(substr($text, $i, 5)) == "<pre>" ||
-	      tolower(substr($text, $i, 6)) == "</pre>" ||
-	      tolower(substr($text, $i, 4)) == "<tt>" ||
-	      tolower(substr($text, $i, 5)) == "</tt>" ||
-	      tolower(substr($text, $i, 3)) == "<u>" ||
-	      tolower(substr($text, $i, 4)) == "</u>" ||
-	      tolower(substr($text, $i, 4)) == "<ul>" ||
-	      tolower(substr($text, $i, 5)) == "</ul>")
+	  if (strtolower(substr($text, $i, 8)) == "<a href=" ||
+	      strtolower(substr($text, $i, 8)) == "<a name=" ||
+	      strtolower(substr($text, $i, 4)) == "</a>" ||
+	      strtolower(substr($text, $i, 3)) == "<b>" ||
+	      strtolower(substr($text, $i, 4)) == "</b>" ||
+	      strtolower(substr($text, $i, 12)) == "<blockquote>" ||
+	      strtolower(substr($text, $i, 13)) == "</blockquote>" ||
+	      strtolower(substr($text, $i, 6)) == "<code>" ||
+	      strtolower(substr($text, $i, 7)) == "</code>" ||
+	      strtolower(substr($text, $i, 4)) == "<em>" ||
+	      strtolower(substr($text, $i, 5)) == "</em>" ||
+	      strtolower(substr($text, $i, 4)) == "<h1>" ||
+	      strtolower(substr($text, $i, 5)) == "</h1>" ||
+	      strtolower(substr($text, $i, 4)) == "<h2>" ||
+	      strtolower(substr($text, $i, 5)) == "</h2>" ||
+	      strtolower(substr($text, $i, 4)) == "<h3>" ||
+	      strtolower(substr($text, $i, 5)) == "</h3>" ||
+	      strtolower(substr($text, $i, 4)) == "<h4>" ||
+	      strtolower(substr($text, $i, 5)) == "</h4>" ||
+	      strtolower(substr($text, $i, 4)) == "<h5>" ||
+	      strtolower(substr($text, $i, 5)) == "</h5>" ||
+	      strtolower(substr($text, $i, 4)) == "<h6>" ||
+	      strtolower(substr($text, $i, 5)) == "</h6>" ||
+	      strtolower(substr($text, $i, 3)) == "<i>" ||
+	      strtolower(substr($text, $i, 4)) == "</i>" ||
+	      strtolower(substr($text, $i, 5)) == "<img " ||
+	      strtolower(substr($text, $i, 4)) == "<li>" ||
+	      strtolower(substr($text, $i, 5)) == "</li>" ||
+	      strtolower(substr($text, $i, 4)) == "<ol>" ||
+	      strtolower(substr($text, $i, 5)) == "</ol>" ||
+	      strtolower(substr($text, $i, 3)) == "<p>" ||
+	      strtolower(substr($text, $i, 4)) == "</p>" ||
+	      strtolower(substr($text, $i, 5)) == "<pre>" ||
+	      strtolower(substr($text, $i, 6)) == "</pre>" ||
+	      strtolower(substr($text, $i, 4)) == "<tt>" ||
+	      strtolower(substr($text, $i, 5)) == "</tt>" ||
+	      strtolower(substr($text, $i, 3)) == "<u>" ||
+	      strtolower(substr($text, $i, 4)) == "</u>" ||
+	      strtolower(substr($text, $i, 4)) == "<ul>" ||
+	      strtolower(substr($text, $i, 5)) == "</ul>")
           {
 	    while ($i < $len && $text[$i] != '>')
 	    {
@@ -326,6 +326,9 @@ format_text($text)			// I - Original string
 
   if ($list)
     $ftext .= "</ul>";
+
+  if ($pre)
+    $ftext .= "</pre>";
 
   return ($ftext);
 }
@@ -673,6 +676,6 @@ validate_email($email)			// I - Email address
 
 
 //
-// End of "$Id: common.php,v 1.11 2004/05/20 03:38:42 mike Exp $".
+// End of "$Id: common.php,v 1.12 2004/05/20 21:37:57 mike Exp $".
 //
 ?>

@@ -1,6 +1,6 @@
 <?php
 //
-// "$Id: account.php,v 1.9 2004/05/20 02:04:44 mike Exp $"
+// "$Id: account.php,v 1.10 2004/05/20 21:37:57 mike Exp $"
 //
 // Account management page...
 //
@@ -470,6 +470,46 @@ switch ($op)
 
       db_free($result);
 
+      print("<h2>New/Pending Links:</h2>\n");
+
+      $result = db_query("SELECT * FROM link WHERE is_published = 0 "
+	                ."ORDER BY modify_date");
+      $count  = db_count($result);
+
+      if ($count == 0)
+	print("<p>No new/pending links found.</p>\n");
+      else
+      {
+        html_start_table(array("Id", "Name/Version", "Last Updated"));
+
+	while ($row = db_next($result))
+	{
+	  $id       = $row['id'];
+          $title    = htmlspecialchars($row['name'], ENT_QUOTES) . " " .
+	              htmlspecialchars($row['version'], ENT_QUOTES) .
+	              " <img src='images/private.gif' width='16' height='16' "
+	             ."border='0' align='middle' alt='Private'/>";
+	  $date     = date("M d, Y", $row['modify_date']);
+
+          if ($row["is_category"])
+	    $link = "<a href='links.php?UC$id'>";
+	  else
+	    $link = "<a href='links.php?UL$id'>";
+
+          html_start_row();
+
+          print("<td align='center' nowrap>$link$id</a></td>"
+	       ."<td width='67%' align='center'>$link$title</a></td>"
+	       ."<td align='center'>$link$date</a></td>");
+
+	  html_end_row();
+	}
+
+        html_end_table();
+      }
+
+      db_free($result);
+
       print("<h2>New/Pending STRs:</h2>\n");
 
       $result = db_query("SELECT * FROM str WHERE status >= $STR_STATUS_PENDING "
@@ -612,6 +652,6 @@ switch ($op)
 
 
 //
-// End of "$Id: account.php,v 1.9 2004/05/20 02:04:44 mike Exp $".
+// End of "$Id: account.php,v 1.10 2004/05/20 21:37:57 mike Exp $".
 //
 ?>

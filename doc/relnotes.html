@@ -3,6 +3,29 @@
 
 <h1 align='right'><a name='RELNOTES'>B - Release Notes</a></h1>
 
+<h2>Changes in Mini-XML 2.2</h2>
+
+<ul>
+
+	<li>Added shared library support (STR #17)</li>
+
+	<li>mxmlLoad*() now returns an error when an XML stream
+	contains illegal control characters (STR #10)</li>
+
+	<li>mxmlLoad*() now returns an error when an element
+	contains two attributes with the same name in
+	conformance with the XML spec (STR #16)</li>
+
+	<li>Added support for CDATA (STR #14, STR #15)</li>
+
+	<li>Updated comment and processing instruction handling -
+	no entity support per XML specification.</li>
+
+	<li>Added checking for invalid comment termination ("--->"
+	is not allowed)</li>
+
+</ul>
+
 <h2>Changes in Mini-XML 2.1</h2>
 
 <ul>

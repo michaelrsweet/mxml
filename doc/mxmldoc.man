@@ -1,9 +1,9 @@
 .\"
-.\" "$Id: mxmldoc.man,v 1.1 2004/05/01 23:41:51 mike Exp $"
+.\" "$Id$"
 .\"
 .\" mxmldoc man page for mini-XML, a small XML-like file parsing library.
 .\"
-.\" Copyright 2003-2004 by Michael Sweet.
+.\" Copyright 2003-2005 by Michael Sweet.
 .\"
 .\" This program is free software; you can redistribute it and/or
 .\" modify it under the terms of the GNU Library General Public
@@ -15,7 +15,7 @@
 .\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 .\" GNU General Public License for more details.
 .\"
-.TH mxmldoc 1 "mini-XML" "1 May 2004" "Michael Sweet"
+.TH mxmldoc 1 "mini-XML" "25 February 2005" "Michael Sweet"
 .SH NAME
 mxmldoc \- mini-xml documentation generator
 .SH SYNOPSIS
@@ -42,7 +42,7 @@ Configuration Management Plan which is available at
 .SH SEE ALSO
 mxml(3), Mini-XML Programmers Manual, http://www.easysw.com/~mike/mxml/
 .SH COPYRIGHT
-Copyright 2003-2004 by Michael Sweet.
+Copyright 2003-2005 by Michael Sweet.
 .\"
-.\" End of "$Id: mxmldoc.man,v 1.1 2004/05/01 23:41:51 mike Exp $".
+.\" End of "$Id$".
 .\"

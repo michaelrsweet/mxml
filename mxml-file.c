@@ -74,7 +74,7 @@
 
 
 /*
- * File descriptor buffer...
+ * Structures...
  */
 
 typedef struct mxml_fdbuf_s		/**** File descriptor buffer (@private) ****/

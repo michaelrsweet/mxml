@@ -628,6 +628,27 @@ scan_file(const char  *filename,	/* I - Filename */
                   fprintf(stderr, "    scope = %s\n", scope ? scope : "(null)");
 #endif /* DEBUG */
 
+                  if (comment->last_child &&
+		      strstr(comment->last_child->value.text.string, "@private"))
+		  {
+		    mxmlDelete(type);
+		    type = NULL;
+
+                    if (typedefnode)
+		    {
+		      mxmlDelete(typedefnode);
+		      typedefnode = NULL;
+		    }
+
+		    mxmlDelete(structclass);
+		    structclass = NULL;
+
+	            braces ++;
+		    function = NULL;
+		    variable = NULL;
+		    break;
+		  }
+
                   if (type->child->next)
 		  {
 		    mxmlElementSetAttr(structclass, "name",
@@ -1491,6 +1512,19 @@ scan_file(const char  *filename,	/* I - Filename */
 		 /*
 	          * Variable definition...
 		  */
+
+	          if (type->child &&
+		      !strcmp(type->child->value.text.string, "static") &&
+		      !strcmp(tree->value.element.name, "mxmldoc"))
+		  {
+		   /*
+		    * Remove static functions...
+		    */
+
+		    mxmlDelete(type);
+		    type = NULL;
+		    break;
+		  }
 
 	          mxmlNewText(type, type->child != NULL &&
 		                    type->last_child->value.text.string[0] != '(' &&

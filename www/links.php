@@ -1,6 +1,6 @@
 <?
 //
-// "$Id: links.php,v 1.4 2004/05/31 22:54:19 mike Exp $"
+// "$Id$"
 //
 // Hierarchical link interface.
 //
@@ -176,11 +176,11 @@ for ($i = 0; $i < $argc; $i ++)
 	break;
 
     case 'Q' : // Set search text
-        $search = $option;
+        $search = urldecode($option);
 	$i ++;
 	while ($i < $argc)
 	{
-	  $search .= " $argv[$i]";
+	  $search .= urldecode(" $argv[$i]");
 	  $i ++;
 	}
 	break;
@@ -1035,6 +1035,6 @@ db_close();
 
 
 //
-// End of "$Id: links.php,v 1.4 2004/05/31 22:54:19 mike Exp $".
+// End of "$Id$".
 //
 ?>

@@ -17,7 +17,6 @@
 	<li><a href='#_structures'>Structures</a></li>
 	<li><a href='#_types'>Types</a></li>
 	<li><a href='#_unions'>Unions</a></li>
-	<li><a href='#_variables'>Variables</a></li>
 </ul>
 <!-- NEW PAGE -->
 <h2><a name='_enumerations'>Enumerations</a></h2>
@@ -1142,7 +1141,6 @@ mxmlWalkPrev(
 <ul>
 	<li><a href='#mxml_attr_s'><tt>mxml_attr_s</tt></a></li>
 	<li><a href='#mxml_custom_s'><tt>mxml_custom_s</tt></a></li>
-	<li><a href='#mxml_fdbuf_s'><tt>mxml_fdbuf_s</tt></a></li>
 	<li><a href='#mxml_index_s'><tt>mxml_index_s</tt></a></li>
 	<li><a href='#mxml_node_s'><tt>mxml_node_s</tt></a></li>
 	<li><a href='#mxml_text_s'><tt>mxml_text_s</tt></a></li>
@@ -1185,28 +1183,6 @@ struct mxml_custom_s
 <thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td><tt>data</tt></td><td>Pointer to (allocated) custom data</td></tr>
-</tbody></table></p>
-<!-- NEW PAGE -->
-<h3><a name='mxml_fdbuf_s'>mxml_fdbuf_s</a></h3>
-<hr noshade/>
-<h4>Description</h4>
-<p>File descriptor buffer (@private)</p>
-<h4>Definition</h4>
-<pre>
-struct mxml_fdbuf_s
-{
-  end buffer[8192];
-  unsigned char * current;
-  int fd;
-};
-</pre>
-<h4>Members</h4>
-<p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
-<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
-<tbody>
-<tr><td><tt>buffer[8192]</tt></td><td>Character buffer</td></tr>
-<tr><td><tt>current</tt></td><td>Current position in buffer</td></tr>
-<tr><td><tt>fd</tt></td><td>File descriptor</td></tr>
 </tbody></table></p>
 <!-- NEW PAGE -->
 <h3><a name='mxml_index_s'>mxml_index_s</a></h3>
@@ -1312,7 +1288,6 @@ struct mxml_value_s
 	<li><a href='#mxml_attr_t'><tt>mxml_attr_t</tt></a></li>
 	<li><a href='#mxml_custom_t'><tt>mxml_custom_t</tt></a></li>
 	<li><a href='#mxml_element_t'><tt>mxml_element_t</tt></a></li>
-	<li><a href='#mxml_fdbuf_t'><tt>mxml_fdbuf_t</tt></a></li>
 	<li><a href='#mxml_index_t'><tt>mxml_index_t</tt></a></li>
 	<li><a href='#mxml_node_t'><tt>mxml_node_t</tt></a></li>
 	<li><a href='#mxml_text_t'><tt>mxml_text_t</tt></a></li>
@@ -1345,15 +1320,6 @@ typedef struct <a href='#mxml_custom_s'>mxml_custom_s</a> mxml_custom_t;
 <h4>Definition</h4>
 <pre>
 typedef struct <a href='#mxml_value_s'>mxml_value_s</a> mxml_element_t;
-</pre>
-<!-- NEW PAGE -->
-<h3><a name='mxml_fdbuf_t'>mxml_fdbuf_t</a></h3>
-<hr noshade/>
-<h4>Description</h4>
-<p>File descriptor buffer (@private)</p>
-<h4>Definition</h4>
-<pre>
-typedef struct <a href='#mxml_fdbuf_s'>mxml_fdbuf_s</a> mxml_fdbuf_t;
 </pre>
 <!-- NEW PAGE -->
 <h3><a name='mxml_index_t'>mxml_index_t</a></h3>
@@ -1433,32 +1399,5 @@ union mxml_value_u
 <tr><td><tt>real</tt></td><td>Real number</td></tr>
 <tr><td><tt>text</tt></td><td>Text fragment</td></tr>
 </tbody></table></p>
-<!-- NEW PAGE -->
-<h2><a name='_variables'>Variables</a></h2>
-<ul>
-	<li><a href='#mxml_custom_load_cb'><tt>mxml_custom_load_cb</tt></a></li>
-	<li><a href='#mxml_custom_save_cb'><tt>mxml_custom_save_cb</tt></a></li>
-	<li><a href='#num_callbacks'><tt>num_callbacks</tt></a></li>
-</ul>
-<!-- NEW PAGE -->
-<h3><a name='mxml_custom_load_cb'>mxml_custom_load_cb</a></h3>
-<hr noshade/><h4>Definition</h4>
-<pre>
-static mxml_custom_load_cb_t mxml_custom_load_cb = NULL;
-</pre>
-<!-- NEW PAGE -->
-<h3><a name='mxml_custom_save_cb'>mxml_custom_save_cb</a></h3>
-<hr noshade/><h4>Description</h4>
-<p>Local functions...</p>
-<h4>Definition</h4>
-<pre>
-static mxml_custom_save_cb_t mxml_custom_save_cb = NULL;
-</pre>
-<!-- NEW PAGE -->
-<h3><a name='num_callbacks'>num_callbacks</a></h3>
-<hr noshade/><h4>Definition</h4>
-<pre>
-static int num_callbacks = 1;
-</pre>
 </body>
 </html>

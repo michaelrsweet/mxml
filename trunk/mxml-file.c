@@ -1,5 +1,5 @@
 /*
- * "$Id: mxml-file.c,v 1.21 2003/09/28 21:09:04 mike Exp $"
+ * "$Id: mxml-file.c,v 1.22 2003/12/01 15:27:47 mike Exp $"
  *
  * File loading code for mini-XML, a small XML-like file parsing library.
  *
@@ -27,6 +27,7 @@
  *   mxml_load_data()      - Load data into an XML node tree.
  *   mxml_parse_element()  - Parse an element for any attributes...
  *   mxml_string_getc()    - Get a character from a string.
+ *   mxml_write_name()     - Write a name string.
  *   mxml_write_node()     - Save an XML node to a file.
  *   mxml_write_string()   - Write a string, escaping & and < as needed.
  *   mxml_write_ws()       - Do whitespace callback...
@@ -55,6 +56,8 @@ static int		mxml_parse_element(mxml_node_t *node, void *p,
 			                   int (*getc_cb)(void *));
 static int		mxml_string_getc(void *p);
 static int		mxml_string_putc(int ch, void *p);
+static int		mxml_write_name(const char *s, void *p,
+					int (*putc_cb)(int, void *));
 static int		mxml_write_node(mxml_node_t *node, void *p,
 			                int (*cb)(mxml_node_t *, int),
 					int col,
@@ -896,15 +899,43 @@ mxml_parse_element(mxml_node_t *node,	/* I - Element node */
     name[0] = ch;
     ptr     = name + 1;
 
-    while ((ch = (*getc_cb)(p)) != EOF)
-      if (isspace(ch) || ch == '=' || ch == '/' || ch == '>' || ch == '?')
-        break;
-      else if (mxml_add_char(ch, &ptr, &name, &namesize))
+    if (ch == '\"' || ch == '\'')
+    {
+     /*
+      * Name is in quotes, so get a quoted string...
+      */
+
+      quote = ch;
+
+      while ((ch = (*getc_cb)(p)) != EOF)
       {
-        free(name);
-	free(value);
-	return (EOF);
+	if (mxml_add_char(ch, &ptr, &name, &namesize))
+	{
+          free(name);
+	  free(value);
+	  return (EOF);
+	}
+
+	if (ch == quote)
+          break;
       }
+    }
+    else
+    {
+     /*
+      * Grab an normal, non-quoted name...
+      */
+
+      while ((ch = (*getc_cb)(p)) != EOF)
+	if (isspace(ch) || ch == '=' || ch == '/' || ch == '>' || ch == '?')
+          break;
+	else if (mxml_add_char(ch, &ptr, &name, &namesize))
+	{
+          free(name);
+	  free(value);
+	  return (EOF);
+	}
+    }
 
     *ptr = '\0';
 
@@ -963,12 +994,24 @@ mxml_parse_element(mxml_node_t *node,	/* I - Element node */
 
         *ptr = '\0';
       }
+
+     /*
+      * Set the attribute with the given string value...
+      */
+
+      mxmlElementSetAttr(node, name, value);
     }
     else
-      value[0] = '\0';
+    {
+     /*
+      * Set the attribute with a NULL value...
+      */
+
+      mxmlElementSetAttr(node, name, NULL);
+    }
 
    /*
-    * Save last character in case we need it...
+    * Check the end character...
     */
 
     if (ch == '/' || ch == '?')
@@ -990,12 +1033,6 @@ mxml_parse_element(mxml_node_t *node,	/* I - Element node */
     }
     else if (ch == '>')
       break;
-
-   /*
-    * Set the attribute...
-    */
-
-    mxmlElementSetAttr(node, name, value);
   }
 
  /*
@@ -1055,6 +1092,166 @@ mxml_string_putc(int  ch,		/* I - Character to write */
 
 
 /*
+ * 'mxml_write_name()' - Write a name string.
+ */
+
+static int				/* O - 0 on success, -1 on failure */
+mxml_write_name(const char *s,		/* I - Name to write */
+                void       *p,		/* I - Write pointer */
+		int        (*putc_cb)(int, void *))
+					/* I - Write callback */
+{
+  char	buf[255],			/* Buffer */
+	*bufptr,			/* Pointer into buffer */
+	quote;				/* Quote character */
+
+
+  if (*s == '\"' || *s == '\'')
+  {
+   /*
+    * Write a quoted name string...
+    */
+
+    if ((*putc_cb)(*s, p) < 0)
+      return (-1);
+
+    quote = *s++;
+
+    while (*s && *s != quote)
+    {
+      if (*s == '&')
+      {
+	if ((*putc_cb)('&', p) < 0)
+          return (-1);
+	if ((*putc_cb)('a', p) < 0)
+          return (-1);
+	if ((*putc_cb)('m', p) < 0)
+          return (-1);
+	if ((*putc_cb)('p', p) < 0)
+          return (-1);
+	if ((*putc_cb)(';', p) < 0)
+          return (-1);
+      }
+      else if (*s == '<')
+      {
+	if ((*putc_cb)('&', p) < 0)
+          return (-1);
+	if ((*putc_cb)('l', p) < 0)
+          return (-1);
+	if ((*putc_cb)('t', p) < 0)
+          return (-1);
+	if ((*putc_cb)(';', p) < 0)
+          return (-1);
+      }
+      else if (*s == '>')
+      {
+	if ((*putc_cb)('&', p) < 0)
+          return (-1);
+	if ((*putc_cb)('g', p) < 0)
+          return (-1);
+	if ((*putc_cb)('t', p) < 0)
+          return (-1);
+	if ((*putc_cb)(';', p) < 0)
+          return (-1);
+      }
+      else if (*s == '\"')
+      {
+	if ((*putc_cb)('&', p) < 0)
+          return (-1);
+	if ((*putc_cb)('q', p) < 0)
+          return (-1);
+	if ((*putc_cb)('u', p) < 0)
+          return (-1);
+	if ((*putc_cb)('o', p) < 0)
+          return (-1);
+	if ((*putc_cb)('t', p) < 0)
+          return (-1);
+	if ((*putc_cb)(';', p) < 0)
+          return (-1);
+      }
+      else if (*s & 128)
+      {
+       /*
+	* Convert UTF-8 to Unicode constant...
+	*/
+
+	int	ch;			/* Unicode character */
+
+
+	ch = *s & 255;
+
+	if ((ch & 0xe0) == 0xc0)
+	{
+          ch = ((ch & 0x1f) << 6) | (s[1] & 0x3f);
+	  s ++;
+	}
+	else if ((ch & 0xf0) == 0xe0)
+	{
+          ch = ((((ch * 0x0f) << 6) | (s[1] & 0x3f)) << 6) | (s[2] & 0x3f);
+	  s += 2;
+	}
+
+	if (ch == 0xa0)
+	{
+	 /*
+          * Handle non-breaking space as-is...
+	  */
+
+	  if ((*putc_cb)('&', p) < 0)
+            return (-1);
+	  if ((*putc_cb)('n', p) < 0)
+            return (-1);
+	  if ((*putc_cb)('b', p) < 0)
+            return (-1);
+	  if ((*putc_cb)('s', p) < 0)
+            return (-1);
+	  if ((*putc_cb)('p', p) < 0)
+            return (-1);
+	  if ((*putc_cb)(';', p) < 0)
+            return (-1);
+	}
+	else
+	{
+          sprintf(buf, "&#x%x;", ch);
+
+	  for (bufptr = buf; *bufptr; bufptr ++)
+	    if ((*putc_cb)(*bufptr, p) < 0)
+	      return (-1);
+	}
+      }
+      else if ((*putc_cb)(*s, p) < 0)
+	return (-1);
+
+      s ++;
+    }
+
+   /*
+    * Write the end quote...
+    */
+
+    if ((*putc_cb)(quote, p) < 0)
+      return (-1);
+  }
+  else
+  {
+   /*
+    * Write a non-quoted name string...
+    */
+
+    while (*s)
+    {
+      if ((*putc_cb)(*s, p) < 0)
+	return (-1);
+
+      s ++;
+    }
+  }
+
+  return (0);
+}
+
+
+/*
  * 'mxml_write_node()' - Save an XML node to a file.
  */
 
@@ -1066,7 +1263,8 @@ mxml_write_node(mxml_node_t *node,	/* I - Node to write */
 		int         col,	/* I - Current column */
 		int         (*putc_cb)(int, void *))
 {
-  int		i;			/* Looping var */
+  int		i,			/* Looping var */
+		width;			/* Width of attr + value */
   mxml_attr_t	*attr;			/* Current attribute */
   char		s[255];			/* Temporary string */
 
@@ -1084,7 +1282,7 @@ mxml_write_node(mxml_node_t *node,	/* I - Node to write */
 
           if ((*putc_cb)('<', p) < 0)
 	    return (-1);
-	  if (mxml_write_string(node->value.element.name, p, putc_cb) < 0)
+	  if (mxml_write_name(node->value.element.name, p, putc_cb) < 0)
 	    return (-1);
 
           col += strlen(node->value.element.name) + 1;
@@ -1093,7 +1291,12 @@ mxml_write_node(mxml_node_t *node,	/* I - Node to write */
 	       i > 0;
 	       i --, attr ++)
 	  {
-	    if ((col + strlen(attr->name) + strlen(attr->value) + 3) > MXML_WRAP)
+	    width = strlen(attr->name);
+
+	    if (attr->value)
+	      width += strlen(attr->value) + 3;
+
+	    if ((col + width) > MXML_WRAP)
 	    {
 	      if ((*putc_cb)('\n', p) < 0)
 	        return (-1);
@@ -1108,18 +1311,22 @@ mxml_write_node(mxml_node_t *node,	/* I - Node to write */
 	      col ++;
 	    }
 
-            if (mxml_write_string(attr->name, p, putc_cb) < 0)
+            if (mxml_write_name(attr->name, p, putc_cb) < 0)
 	      return (-1);
-            if ((*putc_cb)('=', p) < 0)
-	      return (-1);
-            if ((*putc_cb)('\"', p) < 0)
-	      return (-1);
-	    if (mxml_write_string(attr->value, p, putc_cb) < 0)
-	      return (-1);
-            if ((*putc_cb)('\"', p) < 0)
-	      return (-1);
-	    
-            col += strlen(attr->name) + strlen(attr->value) + 3;
+
+	    if (attr->value)
+	    {
+              if ((*putc_cb)('=', p) < 0)
+		return (-1);
+              if ((*putc_cb)('\"', p) < 0)
+		return (-1);
+	      if (mxml_write_string(attr->value, p, putc_cb) < 0)
+		return (-1);
+              if ((*putc_cb)('\"', p) < 0)
+		return (-1);
+            }
+
+            col += width;
 	  }
 
 	  if (node->child)
@@ -1440,5 +1647,5 @@ mxml_write_ws(mxml_node_t *node,	/* I - Current node */
 
 
 /*
- * End of "$Id: mxml-file.c,v 1.21 2003/09/28 21:09:04 mike Exp $".
+ * End of "$Id: mxml-file.c,v 1.22 2003/12/01 15:27:47 mike Exp $".
  */

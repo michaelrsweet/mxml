@@ -1,5 +1,5 @@
 /*
- * "$Id: mxml-file.c,v 1.23 2003/12/03 03:59:04 mike Exp $"
+ * "$Id: mxml-file.c,v 1.24 2003/12/13 16:32:42 mike Exp $"
  *
  * File loading code for mini-XML, a small XML-like file parsing library.
  *
@@ -817,7 +817,7 @@ mxml_load_data(mxml_node_t *top,	/* I - Top node */
 
   if (parent)
   {
-    while (parent->parent != top)
+    while (parent->parent != top && parent->parent)
       parent = parent->parent;
   }
 
@@ -1661,5 +1661,5 @@ mxml_write_ws(mxml_node_t *node,	/* I - Current node */
 
 
 /*
- * End of "$Id: mxml-file.c,v 1.23 2003/12/03 03:59:04 mike Exp $".
+ * End of "$Id: mxml-file.c,v 1.24 2003/12/13 16:32:42 mike Exp $".
  */

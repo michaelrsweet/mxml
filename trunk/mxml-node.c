@@ -1,5 +1,5 @@
 /*
- * "$Id: mxml-node.c,v 1.7 2003/07/27 23:11:40 mike Exp $"
+ * "$Id: mxml-node.c,v 1.8 2003/09/28 12:44:39 mike Exp $"
  *
  * Node support code for mini-XML, a small XML-like file parsing library.
  *
@@ -24,7 +24,14 @@
  *   mxmlNewOpaque()  - Create a new opaque string.
  *   mxmlNewReal()    - Create a new real number node.
  *   mxmlNewText()    - Create a new text fragment node.
+ *   mxmlNewTextf()   - Create a new formatted text fragment node.
  *   mxmlRemove()     - Remove a node from its parent.
+ *   mxmlSetElement() - Set the name of an element node.
+ *   mxmlSetInteger() - Set the value of an integer node.
+ *   mxmlSetOpaque()  - Set the value of an opaque node.
+ *   mxmlSetReal()    - Set the value of a real number node.
+ *   mxmlSetText()    - Set the value of a text node.
+ *   mxmlSetTextf()   - Set the value of a text node to a formatted string.
  *   mxml_new()       - Create a new node.
  */
 
@@ -412,6 +419,51 @@ mxmlNewText(mxml_node_t *parent,	/* I - Parent node or MXML_NO_PARENT */
 
 
 /*
+ * 'mxmlNewTextf()' - Create a new formatted text fragment node.
+ *
+ * The new text node is added to the end of the specified parent's child
+ * list. The constant MXML_NO_PARENT can be used to specify that the new
+ * text node has no parent. The whitespace parameter is used to specify
+ * whether leading whitespace is present before the node. The format
+ * string must be nul-terminated and is formatted into the new node.  
+ */
+
+mxml_node_t *				/* O - New node */
+mxmlNewTextf(mxml_node_t *parent,	/* I - Parent node or MXML_NO_PARENT */
+             int         whitespace,	/* I - 1 = leading whitespace, 0 = no whitespace */
+	     const char  *format,	/* I - Printf-style frmat string */
+	     ...)			/* I - Additional args as needed */
+{
+  mxml_node_t	*node;			/* New node */
+  va_list	ap;			/* Pointer to arguments */
+
+
+ /*
+  * Range check input...
+  */
+
+  if (!parent || !format)
+    return (NULL);
+
+ /*
+  * Create the node and set the text value...
+  */
+
+  if ((node = mxml_new(parent, MXML_TEXT)) != NULL)
+  {
+    va_start(ap, format);
+
+    node->value.text.whitespace = whitespace;
+    node->value.text.string     = mxml_strdupf(format, ap);
+
+    va_end(ap);
+  }
+
+  return (node);
+}
+
+
+/*
  * 'mxmlRemove()' - Remove a node from its parent.
  *
  * Does not free memory used by the node - use mxmlDelete() for that.
@@ -447,6 +499,192 @@ mxmlRemove(mxml_node_t *node)		/* I - Node to remove */
   node->parent = NULL;
   node->prev   = NULL;
   node->next   = NULL;
+}
+
+
+/*
+ * 'mxmlSetElement()' - Set the name of an element node.
+ *
+ * If the node is not changed if it is not an element node.
+ */
+
+int					/* O - 0 on success, -1 on failure */
+mxmlSetElement(mxml_node_t *node,	/* I - Node to set */
+               const char  *name)	/* I - New name string */
+{
+ /*
+  * Range check input...
+  */
+
+  if (!node || node->type != MXML_ELEMENT || !name)
+    return (-1);
+
+ /*
+  * Free any old element value and set the new value...
+  */
+
+  if (node->value.element.name)
+    free(node->value.element.name);
+
+  node->value.element.name = strdup(name);
+
+  return (0);
+}
+
+
+/*
+ * 'mxmlSetInteger()' - Set the value of an integer node.
+ *
+ * If the node is not changed if it is not an integer node.
+ */
+
+int					/* O - 0 on success, -1 on failure */
+mxmlSetInteger(mxml_node_t *node,	/* I - Node to set */
+               int         integer)	/* I - Integer value */
+{
+ /*
+  * Range check input...
+  */
+
+  if (!node || node->type != MXML_INTEGER)
+    return (-1);
+
+ /*
+  * Set the new value and return...
+  */
+
+  node->value.integer = integer;
+
+  return (0);
+}
+
+
+/*
+ * 'mxmlSetOpaque()' - Set the value of an opaque node.
+ *
+ * If the node is not changed if it is not an opaque node.
+ */
+
+int					/* O - 0 on success, -1 on failure */
+mxmlSetOpaque(mxml_node_t *node,	/* I - Node to set */
+              const char  *opaque)	/* I - Opaque string */
+{
+ /*
+  * Range check input...
+  */
+
+  if (!node || node->type != MXML_OPAQUE || !opaque)
+    return (-1);
+
+ /*
+  * Free any old opaque value and set the new value...
+  */
+
+  if (node->value.opaque)
+    free(node->value.opaque);
+
+  node->value.opaque = strdup(opaque);
+
+  return (0);
+}
+
+
+/*
+ * 'mxmlSetReal()' - Set the value of a real number node.
+ *
+ * If the node is not changed if it is not a real number node.
+ */
+
+int					/* O - 0 on success, -1 on failure */
+mxmlSetReal(mxml_node_t *node,		/* I - Node to set */
+            double      real)		/* I - Real number value */
+{
+ /*
+  * Range check input...
+  */
+
+  if (!node || node->type != MXML_REAL)
+    return (-1);
+
+ /*
+  * Set the new value and return...
+  */
+
+  node->value.real = real;
+
+  return (0);
+}
+
+
+/*
+ * 'mxmlSetText()' - Set the value of a text node.
+ *
+ * If the node is not changed if it is not a text node.
+ */
+
+int					/* O - 0 on success, -1 on failure */
+mxmlSetText(mxml_node_t *node,		/* I - Node to set */
+            int         whitespace,	/* I - 1 = leading whitespace, 0 = no whitespace */
+	    const char  *string)	/* I - String */
+{
+ /*
+  * Range check input...
+  */
+
+  if (!node || node->type != MXML_TEXT || !string)
+    return (-1);
+
+ /*
+  * Free any old string value and set the new value...
+  */
+
+  if (node->value.text.string)
+    free(node->value.text.string);
+
+  node->value.text.whitespace = whitespace;
+  node->value.text.string     = strdup(string);
+
+  return (0);
+}
+
+
+/*
+ * 'mxmlSetTextf()' - Set the value of a text node to a formatted string.
+ *
+ * If the node is not changed if it is not a text node.
+ */
+
+int					/* O - 0 on success, -1 on failure */
+mxmlSetTextf(mxml_node_t *node,		/* I - Node to set */
+             int         whitespace,	/* I - 1 = leading whitespace, 0 = no whitespace */
+             const char  *format,	/* I - Printf-style format string */
+	     ...)			/* I - Additional arguments as needed */
+{
+  va_list	ap;			/* Pointer to arguments */
+
+
+ /*
+  * Range check input...
+  */
+
+  if (!node || node->type != MXML_TEXT || !format)
+    return (-1);
+
+ /*
+  * Free any old string value and set the new value...
+  */
+
+  if (node->value.text.string)
+    free(node->value.text.string);
+
+  va_start(ap, format);
+
+  node->value.text.whitespace = whitespace;
+  node->value.text.string     = mxml_strdupf(format, ap);
+
+  va_end(ap);
+
+  return (0);
 }
 
 
@@ -490,5 +728,5 @@ mxml_new(mxml_node_t *parent,		/* I - Parent node */
 
 
 /*
- * End of "$Id: mxml-node.c,v 1.7 2003/07/27 23:11:40 mike Exp $".
+ * End of "$Id: mxml-node.c,v 1.8 2003/09/28 12:44:39 mike Exp $".
  */

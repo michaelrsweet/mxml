@@ -1,5 +1,5 @@
 /*
- * "$Id: mxml.h,v 1.12 2003/07/22 10:29:19 mike Exp $"
+ * "$Id: mxml.h,v 1.13 2003/09/28 12:44:39 mike Exp $"
  *
  * Header file for mini-XML, a small XML-like file parsing library.
  *
@@ -42,6 +42,8 @@
 #  define MXML_TAB		8	/* Tabs every N columns */
 
 #  define MXML_NO_CALLBACK	0	/* Don't use a type callback */
+#  define MXML_OPAQUE_CALLBACK	_mxml_opaque_cb
+					/* Treat all data as opaque */
 #  define MXML_NO_PARENT	0	/* No parent for the node */
 
 #  define MXML_DESCEND		1	/* Descend when finding/walking */
@@ -144,6 +146,12 @@ extern mxml_node_t	*mxmlNewOpaque(mxml_node_t *parent, const char *opaque);
 extern mxml_node_t	*mxmlNewReal(mxml_node_t *parent, double real);
 extern mxml_node_t	*mxmlNewText(mxml_node_t *parent, int whitespace,
 			             const char *string);
+extern mxml_node_t	*mxmlNewTextf(mxml_node_t *parent, int whitespace,
+			              const char *format, ...)
+#    ifdef __GNUC__
+__attribute__ ((__format__ (__printf__, 3, 4)))
+#    endif /* __GNUC__ */
+;
 extern void		mxmlRemove(mxml_node_t *node);
 extern char		*mxmlSaveAllocString(mxml_node_t *node,
 			        	     int (*cb)(mxml_node_t *, int));
@@ -152,10 +160,29 @@ extern int		mxmlSaveFile(mxml_node_t *node, FILE *fp,
 extern int		mxmlSaveString(mxml_node_t *node, char *buffer,
 			               int bufsize,
 			               int (*cb)(mxml_node_t *, int));
+extern int		mxmlSetElement(mxml_node_t *node, const char *name);
+extern int		mxmlSetInteger(mxml_node_t *node, int integer);
+extern int		mxmlSetOpaque(mxml_node_t *node, const char *opaque);
+extern int		mxmlSetReal(mxml_node_t *node, double real);
+extern int		mxmlSetText(mxml_node_t *node, int whitespace,
+			            const char *string);
+extern int		mxmlSetTextf(mxml_node_t *node, int whitespace,
+			             const char *format, ...)
+#    ifdef __GNUC__
+__attribute__ ((__format__ (__printf__, 3, 4)))
+#    endif /* __GNUC__ */
+;
 extern mxml_node_t	*mxmlWalkNext(mxml_node_t *node, mxml_node_t *top,
 			              int descend);
 extern mxml_node_t	*mxmlWalkPrev(mxml_node_t *node, mxml_node_t *top,
 			              int descend);
+
+
+/*
+ * Private functions...
+ */
+
+extern mxml_type_t	_mxml_opaque_cb(mxml_node_t *node);
 
 
 /*
@@ -169,5 +196,5 @@ extern mxml_node_t	*mxmlWalkPrev(mxml_node_t *node, mxml_node_t *top,
 
 
 /*
- * End of "$Id: mxml.h,v 1.12 2003/07/22 10:29:19 mike Exp $".
+ * End of "$Id: mxml.h,v 1.13 2003/09/28 12:44:39 mike Exp $".
  */

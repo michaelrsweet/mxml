@@ -1,5 +1,5 @@
 dnl
-dnl "$Id: configure.in,v 1.7 2003/07/27 23:11:40 mike Exp $"
+dnl "$Id: configure.in,v 1.8 2003/09/28 12:44:39 mike Exp $"
 dnl
 dnl Configuration script for mini-XML, a small XML-like file parsing library.
 dnl
@@ -48,6 +48,10 @@ AC_ARG_WITH(docdir, [  --with-docdir           set directory for documentation, 
 
 AC_SUBST(docdir)
 
+AC_ARG_WITH(vsnprintf, [  --with-vsnprintf        use vsnprintf emulation functions, default=auto],
+	use_vsnprintf="$withval",
+	use_vsnprintf="no")
+
 dnl Get the operating system and version number...
 uname=`uname`
 uversion=`uname -r | sed -e '1,$s/[[^0-9]]//g'`
@@ -86,10 +90,12 @@ esac
 AC_SUBST(ARFLAGS)
 
 dnl Checks for string functions.
-AC_CHECK_FUNCS(strlcat strlcpy)
-
 if test "x$use_ansi" != xyes; then
 	AC_CHECK_FUNCS(strdup)
+fi
+
+if test "x$use_vsnprintf" != xyes; then
+	AC_CHECK_FUNCS(vsnprintf)
 fi
 
 dnl Add -Wall for GCC...
@@ -161,5 +167,5 @@ dnl Output the makefile, etc...
 AC_OUTPUT(Makefile mxml.list)
 
 dnl
-dnl End of "$Id: configure.in,v 1.7 2003/07/27 23:11:40 mike Exp $".
+dnl End of "$Id: configure.in,v 1.8 2003/09/28 12:44:39 mike Exp $".
 dnl

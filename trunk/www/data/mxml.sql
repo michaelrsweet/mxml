@@ -1,5 +1,5 @@
 --
--- "$Id: mxml.sql,v 1.4 2004/05/20 03:38:42 mike Exp $"
+-- "$Id: mxml.sql,v 1.5 2004/05/20 12:31:54 mike Exp $"
 --
 -- Database schema for the Mini-XML web pages.
 --
@@ -90,7 +90,7 @@ CREATE TABLE link (
   email VARCHAR(255),			-- Public email address
   homepage_url VARCHAR(255),		-- Home page
   download_url VARCHAR(255),		-- Download page
-  description TEXT,			-- HTML description of link
+  description TEXT,			-- Description of link
   rating_total INTEGER,			-- Total of all ratings
   rating_count INTEGER,			-- Number of ratings
   homepage_visits INTEGER,		-- Number of clicks to the home page
@@ -242,5 +242,5 @@ CREATE TABLE vote (
 );
 
 --
--- End of "$Id: mxml.sql,v 1.4 2004/05/20 03:38:42 mike Exp $".
+-- End of "$Id: mxml.sql,v 1.5 2004/05/20 12:31:54 mike Exp $".
 --

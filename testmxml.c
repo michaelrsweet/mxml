@@ -1,5 +1,5 @@
 /*
- * "$Id: testmxml.c,v 1.10 2003/07/20 13:41:17 mike Exp $"
+ * "$Id: testmxml.c,v 1.11 2003/07/20 13:49:09 mike Exp $"
  *
  * Test program for mini-XML, a small XML-like file parsing library.
  *
@@ -50,6 +50,7 @@ main(int  argc,				/* I - Number of command-line args */
   FILE			*fp;		/* File to read */
   mxml_node_t		*tree,		/* XML tree */
 			*node;		/* Node which should be in test.xml */
+  char			buffer[16384];	/* Save string */
   static const char	*types[] =	/* Strings for node types */
 			{
 			  "MXML_ELEMENT",
@@ -288,6 +289,13 @@ main(int  argc,				/* I - Number of command-line args */
   mxmlSaveFile(tree, stdout, whitespace_cb);
 
  /*
+  * Save the XML tree to a string and print it...
+  */
+
+  if (mxmlSaveString(tree, buffer, sizeof(buffer), whitespace_cb) > 0)
+    fputs(buffer, stderr);
+
+ /*
   * Delete the tree and return...
   */
 
@@ -384,5 +392,5 @@ whitespace_cb(mxml_node_t *node,	/* I - Element node */
 
 
 /*
- * End of "$Id: testmxml.c,v 1.10 2003/07/20 13:41:17 mike Exp $".
+ * End of "$Id: testmxml.c,v 1.11 2003/07/20 13:49:09 mike Exp $".
  */

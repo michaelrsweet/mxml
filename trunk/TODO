@@ -1,11 +1,5 @@
-TODO - 06/05/2003
+TODO - 06/15/2003
 -----------------
 
-	- Finish up documentation generator, specifically:
-
-		- Structure/class/enumeration/typedef support.
-		- Support for argument names with type info,
-		  e.g. "int (*cb)(mxml_node_t *)"
-		- Links at top to jump to specific sections?
-
-	- Code documentation cleanup to take advantage of mxmldoc...
+	- Dynamically allocate memory for attribute values.
+	- Add C++ class.

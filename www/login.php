@@ -1,6 +1,6 @@
 <?php
 //
-// "$Id: login.php,v 1.4 2004/05/21 02:59:52 mike Exp $"
+// "$Id$"
 //
 // Login/registration form...
 //
@@ -42,7 +42,7 @@ if ($REQUEST_METHOD == "POST")
   else
     $register = "";
 
-  if ($username != "" && !eregi("[a-z0-9._-]+", $username))
+  if ($username != "" && !eregi("^[-a-z0-9._]+\$", $username))
     $usererror = "Bad username - only letters, numbers, '.', '-', and '_' "
                 ."are allowed!";
   else if ($argc == 1 && $argv[0] == "A" && $username != "" &&
@@ -252,6 +252,6 @@ else
 
 
 //
-// End of "$Id: login.php,v 1.4 2004/05/21 02:59:52 mike Exp $".
+// End of "$Id$".
 //
 ?>

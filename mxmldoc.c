@@ -1,6 +1,5 @@
-//#define DEBUG 1
 /*
- * "$Id: mxmldoc.c,v 1.20 2003/12/03 22:17:57 mike Exp $"
+ * "$Id: mxmldoc.c,v 1.21 2003/12/03 22:22:49 mike Exp $"
  *
  * Documentation generator using mini-XML, a small XML-like file parsing
  * library.
@@ -608,6 +607,15 @@ scan_file(const char  *filename,	/* I - Filename */
 		  mxmlAdd(description, MXML_ADD_AFTER, MXML_ADD_TO_PARENT,
 		          comment->last_child);
 		}
+		else if (type && type->child &&
+		         !strcmp(type->child->value.text.string, "extern"))
+                {
+                  if (scan_file(filename, fp, tree))
+		  {
+		    mxmlDelete(comment);
+		    return (-1);
+		  }
+                }
 		else if (type)
 		{
 		  mxmlDelete(type);
@@ -2140,5 +2148,5 @@ ws_cb(mxml_node_t *node,		/* I - Element node */
 
 
 /*
- * End of "$Id: mxmldoc.c,v 1.20 2003/12/03 22:17:57 mike Exp $".
+ * End of "$Id: mxmldoc.c,v 1.21 2003/12/03 22:22:49 mike Exp $".
  */

@@ -1,5 +1,5 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<html xmlns='http://www.w3.org/1999/xhtml' xml:lang='en' lang='en'>
 <head>
 	<title>Documentation</title>
 	<style><!--
@@ -9,24 +9,24 @@
 	--></style>
 </head>
 <body>
-<h1>Contents</h1>
+<h2>Contents</h2>
 <ul>
-	<li><a href="#_enumerations">Enumerations</a></li>
-	<li><a href="#_functions">Functions</a></li>
-	<li><a href="#_structures">Structures</a></li>
-	<li><a href="#_types">Types</a></li>
-	<li><a href="#_unions">Unions</a></li>
+	<li><a href='#_enumerations'>Enumerations</a></li>
+	<li><a href='#_functions'>Functions</a></li>
+	<li><a href='#_structures'>Structures</a></li>
+	<li><a href='#_types'>Types</a></li>
+	<li><a href='#_unions'>Unions</a></li>
 </ul>
-<hr noshade/>
-<h1><a name="_enumerations">Enumerations</a></h1>
+<!-- NEW PAGE -->
+<h2><a name='_enumerations'>Enumerations</a></h2>
 <ul>
-	<li><a href="#mxml_type_e"><tt>mxml_type_e</tt></a></li>
+	<li><a href='#mxml_type_e'><tt>mxml_type_e</tt></a></li>
 </ul>
-<h2><a name="mxml_type_e">mxml_type_e</a></h2>
+<h3><a name='mxml_type_e'>mxml_type_e</a></h3>
 <p>The XML node type.</p>
-<h3>Values</h3>
-<p class="table"><table align="center" border="1" width="80%">
-<thead><tr><th>Name</th><th>Description</th></tr></thead>
+<h4>Values</h4>
+<p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
+<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td><tt>MXML_ELEMENT</tt></td><td>XML element with attributes</td></tr>
 <tr><td><tt>MXML_INTEGER</tt></td><td>Integer value</td></tr>
@@ -34,39 +34,39 @@
 <tr><td><tt>MXML_REAL</tt></td><td>Real value</td></tr>
 <tr><td><tt>MXML_TEXT</tt></td><td>Text fragment</td></tr>
 </tbody></table></p>
-<hr noshade/>
-<h1><a name="_functions">Functions</a></h1>
+<!-- NEW PAGE -->
+<h2><a name='_functions'>Functions</a></h2>
 <ul>
-	<li><a href="#mxmlAdd"><tt>mxmlAdd()</tt></a></li>
-	<li><a href="#mxmlDelete"><tt>mxmlDelete()</tt></a></li>
-	<li><a href="#mxmlElementGetAttr"><tt>mxmlElementGetAttr()</tt></a></li>
-	<li><a href="#mxmlElementSetAttr"><tt>mxmlElementSetAttr()</tt></a></li>
-	<li><a href="#mxmlEntityGetName"><tt>mxmlEntityGetName()</tt></a></li>
-	<li><a href="#mxmlEntityGetValue"><tt>mxmlEntityGetValue()</tt></a></li>
-	<li><a href="#mxmlFindElement"><tt>mxmlFindElement()</tt></a></li>
-	<li><a href="#mxmlLoadFile"><tt>mxmlLoadFile()</tt></a></li>
-	<li><a href="#mxmlLoadString"><tt>mxmlLoadString()</tt></a></li>
-	<li><a href="#mxmlNewElement"><tt>mxmlNewElement()</tt></a></li>
-	<li><a href="#mxmlNewInteger"><tt>mxmlNewInteger()</tt></a></li>
-	<li><a href="#mxmlNewOpaque"><tt>mxmlNewOpaque()</tt></a></li>
-	<li><a href="#mxmlNewReal"><tt>mxmlNewReal()</tt></a></li>
-	<li><a href="#mxmlNewText"><tt>mxmlNewText()</tt></a></li>
-	<li><a href="#mxmlNewTextf"><tt>mxmlNewTextf()</tt></a></li>
-	<li><a href="#mxmlRemove"><tt>mxmlRemove()</tt></a></li>
-	<li><a href="#mxmlSaveAllocString"><tt>mxmlSaveAllocString()</tt></a></li>
-	<li><a href="#mxmlSaveFile"><tt>mxmlSaveFile()</tt></a></li>
-	<li><a href="#mxmlSaveString"><tt>mxmlSaveString()</tt></a></li>
-	<li><a href="#mxmlSetElement"><tt>mxmlSetElement()</tt></a></li>
-	<li><a href="#mxmlSetErrorCallback"><tt>mxmlSetErrorCallback()</tt></a></li>
-	<li><a href="#mxmlSetInteger"><tt>mxmlSetInteger()</tt></a></li>
-	<li><a href="#mxmlSetOpaque"><tt>mxmlSetOpaque()</tt></a></li>
-	<li><a href="#mxmlSetReal"><tt>mxmlSetReal()</tt></a></li>
-	<li><a href="#mxmlSetText"><tt>mxmlSetText()</tt></a></li>
-	<li><a href="#mxmlSetTextf"><tt>mxmlSetTextf()</tt></a></li>
-	<li><a href="#mxmlWalkNext"><tt>mxmlWalkNext()</tt></a></li>
-	<li><a href="#mxmlWalkPrev"><tt>mxmlWalkPrev()</tt></a></li>
+	<li><a href='#mxmlAdd'><tt>mxmlAdd()</tt></a></li>
+	<li><a href='#mxmlDelete'><tt>mxmlDelete()</tt></a></li>
+	<li><a href='#mxmlElementGetAttr'><tt>mxmlElementGetAttr()</tt></a></li>
+	<li><a href='#mxmlElementSetAttr'><tt>mxmlElementSetAttr()</tt></a></li>
+	<li><a href='#mxmlEntityGetName'><tt>mxmlEntityGetName()</tt></a></li>
+	<li><a href='#mxmlEntityGetValue'><tt>mxmlEntityGetValue()</tt></a></li>
+	<li><a href='#mxmlFindElement'><tt>mxmlFindElement()</tt></a></li>
+	<li><a href='#mxmlLoadFile'><tt>mxmlLoadFile()</tt></a></li>
+	<li><a href='#mxmlLoadString'><tt>mxmlLoadString()</tt></a></li>
+	<li><a href='#mxmlNewElement'><tt>mxmlNewElement()</tt></a></li>
+	<li><a href='#mxmlNewInteger'><tt>mxmlNewInteger()</tt></a></li>
+	<li><a href='#mxmlNewOpaque'><tt>mxmlNewOpaque()</tt></a></li>
+	<li><a href='#mxmlNewReal'><tt>mxmlNewReal()</tt></a></li>
+	<li><a href='#mxmlNewText'><tt>mxmlNewText()</tt></a></li>
+	<li><a href='#mxmlNewTextf'><tt>mxmlNewTextf()</tt></a></li>
+	<li><a href='#mxmlRemove'><tt>mxmlRemove()</tt></a></li>
+	<li><a href='#mxmlSaveAllocString'><tt>mxmlSaveAllocString()</tt></a></li>
+	<li><a href='#mxmlSaveFile'><tt>mxmlSaveFile()</tt></a></li>
+	<li><a href='#mxmlSaveString'><tt>mxmlSaveString()</tt></a></li>
+	<li><a href='#mxmlSetElement'><tt>mxmlSetElement()</tt></a></li>
+	<li><a href='#mxmlSetErrorCallback'><tt>mxmlSetErrorCallback()</tt></a></li>
+	<li><a href='#mxmlSetInteger'><tt>mxmlSetInteger()</tt></a></li>
+	<li><a href='#mxmlSetOpaque'><tt>mxmlSetOpaque()</tt></a></li>
+	<li><a href='#mxmlSetReal'><tt>mxmlSetReal()</tt></a></li>
+	<li><a href='#mxmlSetText'><tt>mxmlSetText()</tt></a></li>
+	<li><a href='#mxmlSetTextf'><tt>mxmlSetTextf()</tt></a></li>
+	<li><a href='#mxmlWalkNext'><tt>mxmlWalkNext()</tt></a></li>
+	<li><a href='#mxmlWalkPrev'><tt>mxmlWalkPrev()</tt></a></li>
 </ul>
-<h2><a name="mxmlAdd">mxmlAdd()</a></h2>
+<h3><a name='mxmlAdd'>mxmlAdd()</a></h3>
 <p>Add a node to a tree.
 
 Adds the specified node to the parent. If the child argument is not
@@ -75,129 +75,129 @@ on the value of the where argument. If the child argument is NULL,
 puts the new node at the beginning of the child list (MXML_ADD_BEFORE)
 or at the end of the child list (MXML_ADD_AFTER). The constant
 MXML_ADD_TO_PARENT can be used to specify a NULL child pointer.</p>
-<h3>Syntax</h3>
+<h4>Syntax</h4>
 <pre>
 void
 mxmlAdd(
-    <a href="#mxml_node_t">mxml_node_t</a> * parent,
+    <a href='#mxml_node_t'>mxml_node_t</a> * parent,
     int where,
-    <a href="#mxml_node_t">mxml_node_t</a> * child,
-    <a href="#mxml_node_t">mxml_node_t</a> * node);
+    <a href='#mxml_node_t'>mxml_node_t</a> * child,
+    <a href='#mxml_node_t'>mxml_node_t</a> * node);
 </pre>
-<h3>Arguments</h3>
-<p class="table"><table align="center" border="1" width="80%">
-<thead><tr><th>Name</th><th>Description</th></tr></thead>
+<h4>Arguments</h4>
+<p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
+<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td><tt>parent</tt></td><td>Parent node</td></tr>
 <tr><td><tt>where</tt></td><td>Where to add, MXML_ADD_BEFORE or MXML_ADD_AFTER</td></tr>
 <tr><td><tt>child</tt></td><td>Child node for where or MXML_ADD_TO_PARENT</td></tr>
 <tr><td><tt>node</tt></td><td>Node to add</td></tr>
 </tbody></table></p>
-<h3>Returns</h3>
+<h4>Returns</h4>
 <p>Nothing.</p>
-<h2><a name="mxmlDelete">mxmlDelete()</a></h2>
+<h3><a name='mxmlDelete'>mxmlDelete()</a></h3>
 <p>Delete a node and all of its children.
 
 If the specified node has a parent, this function first removes the
 node from its parent using the mxmlRemove() function.</p>
-<h3>Syntax</h3>
+<h4>Syntax</h4>
 <pre>
 void
 mxmlDelete(
-    <a href="#mxml_node_t">mxml_node_t</a> * node);
+    <a href='#mxml_node_t'>mxml_node_t</a> * node);
 </pre>
-<h3>Arguments</h3>
-<p class="table"><table align="center" border="1" width="80%">
-<thead><tr><th>Name</th><th>Description</th></tr></thead>
+<h4>Arguments</h4>
+<p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
+<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td><tt>node</tt></td><td>Node to delete</td></tr>
 </tbody></table></p>
-<h3>Returns</h3>
+<h4>Returns</h4>
 <p>Nothing.</p>
-<h2><a name="mxmlElementGetAttr">mxmlElementGetAttr()</a></h2>
+<h3><a name='mxmlElementGetAttr'>mxmlElementGetAttr()</a></h3>
 <p>Get an attribute.
 
 This function returns NULL if the node is not an element or the
 named attribute does not exist.</p>
-<h3>Syntax</h3>
+<h4>Syntax</h4>
 <pre>
 const char *
 mxmlElementGetAttr(
-    <a href="#mxml_node_t">mxml_node_t</a> * node,
+    <a href='#mxml_node_t'>mxml_node_t</a> * node,
     const char * name);
 </pre>
-<h3>Arguments</h3>
-<p class="table"><table align="center" border="1" width="80%">
-<thead><tr><th>Name</th><th>Description</th></tr></thead>
+<h4>Arguments</h4>
+<p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
+<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td><tt>node</tt></td><td>Element node</td></tr>
 <tr><td><tt>name</tt></td><td>Name of attribute</td></tr>
 </tbody></table></p>
-<h3>Returns</h3>
+<h4>Returns</h4>
 <p>Attribute value or NULL</p>
-<h2><a name="mxmlElementSetAttr">mxmlElementSetAttr()</a></h2>
+<h3><a name='mxmlElementSetAttr'>mxmlElementSetAttr()</a></h3>
 <p>Set an attribute.
 
 If the named attribute already exists, the value of the attribute
 is replaced by the new string value. The string value is copied
 into the element node. This function does nothing if the node is
 not an element.</p>
-<h3>Syntax</h3>
+<h4>Syntax</h4>
 <pre>
 void
 mxmlElementSetAttr(
-    <a href="#mxml_node_t">mxml_node_t</a> * node,
+    <a href='#mxml_node_t'>mxml_node_t</a> * node,
     const char * name,
     const char * value);
 </pre>
-<h3>Arguments</h3>
-<p class="table"><table align="center" border="1" width="80%">
-<thead><tr><th>Name</th><th>Description</th></tr></thead>
+<h4>Arguments</h4>
+<p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
+<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td><tt>node</tt></td><td>Element node</td></tr>
 <tr><td><tt>name</tt></td><td>Name of attribute</td></tr>
 <tr><td><tt>value</tt></td><td>Attribute value</td></tr>
 </tbody></table></p>
-<h3>Returns</h3>
+<h4>Returns</h4>
 <p>Nothing.</p>
-<h2><a name="mxmlEntityGetName">mxmlEntityGetName()</a></h2>
+<h3><a name='mxmlEntityGetName'>mxmlEntityGetName()</a></h3>
 <p>Get the name that corresponds to the character value.
 
 If val does not need to be represented by a named entity, NULL is returned.</p>
-<h3>Syntax</h3>
+<h4>Syntax</h4>
 <pre>
 const char *
 mxmlEntityGetName(
     int val);
 </pre>
-<h3>Arguments</h3>
-<p class="table"><table align="center" border="1" width="80%">
-<thead><tr><th>Name</th><th>Description</th></tr></thead>
+<h4>Arguments</h4>
+<p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
+<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td><tt>val</tt></td><td>Character value</td></tr>
 </tbody></table></p>
-<h3>Returns</h3>
+<h4>Returns</h4>
 <p>Entity name or NULL</p>
-<h2><a name="mxmlEntityGetValue">mxmlEntityGetValue()</a></h2>
+<h3><a name='mxmlEntityGetValue'>mxmlEntityGetValue()</a></h3>
 <p>Get the character corresponding to a named entity.
 
 The entity name can also be a numeric constant. -1 is returned if the
 name is not known.</p>
-<h3>Syntax</h3>
+<h4>Syntax</h4>
 <pre>
 int
 mxmlEntityGetValue(
     const char * name);
 </pre>
-<h3>Arguments</h3>
-<p class="table"><table align="center" border="1" width="80%">
-<thead><tr><th>Name</th><th>Description</th></tr></thead>
+<h4>Arguments</h4>
+<p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
+<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td><tt>name</tt></td><td>Entity name</td></tr>
 </tbody></table></p>
-<h3>Returns</h3>
+<h4>Returns</h4>
 <p>Character value or -1 on error</p>
-<h2><a name="mxmlFindElement">mxmlFindElement()</a></h2>
+<h3><a name='mxmlFindElement'>mxmlFindElement()</a></h3>
 <p>Find the named element.
 
 The search is constrained by the name, attribute name, and value; any
@@ -208,20 +208,20 @@ whether the search descends into child nodes; normally you will use
 MXML_DESCEND_FIRST for the initial search and MXML_NO_DESCEND to find
 additional direct descendents of the node. The top node argument
 constrains the search to a particular node's children.</p>
-<h3>Syntax</h3>
+<h4>Syntax</h4>
 <pre>
-<a href="#mxml_node_t">mxml_node_t</a> *
+<a href='#mxml_node_t'>mxml_node_t</a> *
 mxmlFindElement(
-    <a href="#mxml_node_t">mxml_node_t</a> * node,
-    <a href="#mxml_node_t">mxml_node_t</a> * top,
+    <a href='#mxml_node_t'>mxml_node_t</a> * node,
+    <a href='#mxml_node_t'>mxml_node_t</a> * top,
     const char * name,
     const char * attr,
     const char * value,
     int descend);
 </pre>
-<h3>Arguments</h3>
-<p class="table"><table align="center" border="1" width="80%">
-<thead><tr><th>Name</th><th>Description</th></tr></thead>
+<h4>Arguments</h4>
+<p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
+<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td><tt>node</tt></td><td>Current node</td></tr>
 <tr><td><tt>top</tt></td><td>Top node</td></tr>
@@ -230,9 +230,9 @@ mxmlFindElement(
 <tr><td><tt>value</tt></td><td>Attribute value, or NULL for any</td></tr>
 <tr><td><tt>descend</tt></td><td>Descend into tree - MXML_DESCEND, MXML_NO_DESCEND, or MXML_DESCEND_FIRST</td></tr>
 </tbody></table></p>
-<h3>Returns</h3>
+<h4>Returns</h4>
 <p>Element node or NULL</p>
-<h2><a name="mxmlLoadFile">mxmlLoadFile()</a></h2>
+<h3><a name='mxmlLoadFile'>mxmlLoadFile()</a></h3>
 <p>Load a file into an XML node tree.
 
 The nodes in the specified file are added to the specified top node.
@@ -245,25 +245,25 @@ MXML_ELEMENT or MXML_TEXT nodes.
 The constants MXML_INTEGER_CALLBACK, MXML_OPAQUE_CALLBACK,
 MXML_REAL_CALLBACK, and MXML_TEXT_CALLBACK are defined for loading
 child nodes of the specified type.</p>
-<h3>Syntax</h3>
+<h4>Syntax</h4>
 <pre>
-<a href="#mxml_node_t">mxml_node_t</a> *
+<a href='#mxml_node_t'>mxml_node_t</a> *
 mxmlLoadFile(
-    <a href="#mxml_node_t">mxml_node_t</a> * top,
+    <a href='#mxml_node_t'>mxml_node_t</a> * top,
     FILE * fp,
-    <a href="#mxml_type_t">mxml_type_t</a> (*cb)(mxml_node_t *node));
+    <a href='#mxml_type_t'>mxml_type_t</a> (*cb)(mxml_node_t *node));
 </pre>
-<h3>Arguments</h3>
-<p class="table"><table align="center" border="1" width="80%">
-<thead><tr><th>Name</th><th>Description</th></tr></thead>
+<h4>Arguments</h4>
+<p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
+<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td><tt>top</tt></td><td>Top node</td></tr>
 <tr><td><tt>fp</tt></td><td>File to read from</td></tr>
 <tr><td><tt>(*cb)(mxml_node_t *node)</tt></td><td>Callback function or MXML_NO_CALLBACK</td></tr>
 </tbody></table></p>
-<h3>Returns</h3>
+<h4>Returns</h4>
 <p>First node or NULL if the file could not be read.</p>
-<h2><a name="mxmlLoadString">mxmlLoadString()</a></h2>
+<h3><a name='mxmlLoadString'>mxmlLoadString()</a></h3>
 <p>Load a string into an XML node tree.
 
 The nodes in the specified string are added to the specified top node.
@@ -276,114 +276,114 @@ MXML_ELEMENT or MXML_TEXT nodes.
 The constants MXML_INTEGER_CALLBACK, MXML_OPAQUE_CALLBACK,
 MXML_REAL_CALLBACK, and MXML_TEXT_CALLBACK are defined for loading
 child nodes of the specified type.</p>
-<h3>Syntax</h3>
+<h4>Syntax</h4>
 <pre>
-<a href="#mxml_node_t">mxml_node_t</a> *
+<a href='#mxml_node_t'>mxml_node_t</a> *
 mxmlLoadString(
-    <a href="#mxml_node_t">mxml_node_t</a> * top,
+    <a href='#mxml_node_t'>mxml_node_t</a> * top,
     const char * s,
-    <a href="#mxml_type_t">mxml_type_t</a> (*cb)(mxml_node_t *node));
+    <a href='#mxml_type_t'>mxml_type_t</a> (*cb)(mxml_node_t *node));
 </pre>
-<h3>Arguments</h3>
-<p class="table"><table align="center" border="1" width="80%">
-<thead><tr><th>Name</th><th>Description</th></tr></thead>
+<h4>Arguments</h4>
+<p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
+<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td><tt>top</tt></td><td>Top node</td></tr>
 <tr><td><tt>s</tt></td><td>String to load</td></tr>
 <tr><td><tt>(*cb)(mxml_node_t *node)</tt></td><td>Callback function or MXML_NO_CALLBACK</td></tr>
 </tbody></table></p>
-<h3>Returns</h3>
+<h4>Returns</h4>
 <p>First node or NULL if the string has errors.</p>
-<h2><a name="mxmlNewElement">mxmlNewElement()</a></h2>
+<h3><a name='mxmlNewElement'>mxmlNewElement()</a></h3>
 <p>Create a new element node.
 
 The new element node is added to the end of the specified parent's child
 list. The constant MXML_NO_PARENT can be used to specify that the new
 element node has no parent.</p>
-<h3>Syntax</h3>
+<h4>Syntax</h4>
 <pre>
-<a href="#mxml_node_t">mxml_node_t</a> *
+<a href='#mxml_node_t'>mxml_node_t</a> *
 mxmlNewElement(
-    <a href="#mxml_node_t">mxml_node_t</a> * parent,
+    <a href='#mxml_node_t'>mxml_node_t</a> * parent,
     const char * name);
 </pre>
-<h3>Arguments</h3>
-<p class="table"><table align="center" border="1" width="80%">
-<thead><tr><th>Name</th><th>Description</th></tr></thead>
+<h4>Arguments</h4>
+<p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
+<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td><tt>parent</tt></td><td>Parent node or MXML_NO_PARENT</td></tr>
 <tr><td><tt>name</tt></td><td>Name of element</td></tr>
 </tbody></table></p>
-<h3>Returns</h3>
+<h4>Returns</h4>
 <p>New node</p>
-<h2><a name="mxmlNewInteger">mxmlNewInteger()</a></h2>
+<h3><a name='mxmlNewInteger'>mxmlNewInteger()</a></h3>
 <p>Create a new integer node.
 
 The new integer node is added to the end of the specified parent's child
 list. The constant MXML_NO_PARENT can be used to specify that the new
 integer node has no parent.</p>
-<h3>Syntax</h3>
+<h4>Syntax</h4>
 <pre>
-<a href="#mxml_node_t">mxml_node_t</a> *
+<a href='#mxml_node_t'>mxml_node_t</a> *
 mxmlNewInteger(
-    <a href="#mxml_node_t">mxml_node_t</a> * parent,
+    <a href='#mxml_node_t'>mxml_node_t</a> * parent,
     int integer);
 </pre>
-<h3>Arguments</h3>
-<p class="table"><table align="center" border="1" width="80%">
-<thead><tr><th>Name</th><th>Description</th></tr></thead>
+<h4>Arguments</h4>
+<p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
+<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td><tt>parent</tt></td><td>Parent node or MXML_NO_PARENT</td></tr>
 <tr><td><tt>integer</tt></td><td>Integer value</td></tr>
 </tbody></table></p>
-<h3>Returns</h3>
+<h4>Returns</h4>
 <p>New node</p>
-<h2><a name="mxmlNewOpaque">mxmlNewOpaque()</a></h2>
+<h3><a name='mxmlNewOpaque'>mxmlNewOpaque()</a></h3>
 <p>Create a new opaque string.
 
 The new opaque node is added to the end of the specified parent's child
 list. The constant MXML_NO_PARENT can be used to specify that the new
 opaque node has no parent. The opaque string must be nul-terminated and
 is copied into the new node.</p>
-<h3>Syntax</h3>
+<h4>Syntax</h4>
 <pre>
-<a href="#mxml_node_t">mxml_node_t</a> *
+<a href='#mxml_node_t'>mxml_node_t</a> *
 mxmlNewOpaque(
-    <a href="#mxml_node_t">mxml_node_t</a> * parent,
+    <a href='#mxml_node_t'>mxml_node_t</a> * parent,
     const char * opaque);
 </pre>
-<h3>Arguments</h3>
-<p class="table"><table align="center" border="1" width="80%">
-<thead><tr><th>Name</th><th>Description</th></tr></thead>
+<h4>Arguments</h4>
+<p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
+<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td><tt>parent</tt></td><td>Parent node or MXML_NO_PARENT</td></tr>
 <tr><td><tt>opaque</tt></td><td>Opaque string</td></tr>
 </tbody></table></p>
-<h3>Returns</h3>
+<h4>Returns</h4>
 <p>New node</p>
-<h2><a name="mxmlNewReal">mxmlNewReal()</a></h2>
+<h3><a name='mxmlNewReal'>mxmlNewReal()</a></h3>
 <p>Create a new real number node.
 
 The new real number node is added to the end of the specified parent's
 child list. The constant MXML_NO_PARENT can be used to specify that
 the new real number node has no parent.</p>
-<h3>Syntax</h3>
+<h4>Syntax</h4>
 <pre>
-<a href="#mxml_node_t">mxml_node_t</a> *
+<a href='#mxml_node_t'>mxml_node_t</a> *
 mxmlNewReal(
-    <a href="#mxml_node_t">mxml_node_t</a> * parent,
+    <a href='#mxml_node_t'>mxml_node_t</a> * parent,
     double real);
 </pre>
-<h3>Arguments</h3>
-<p class="table"><table align="center" border="1" width="80%">
-<thead><tr><th>Name</th><th>Description</th></tr></thead>
+<h4>Arguments</h4>
+<p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
+<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td><tt>parent</tt></td><td>Parent node or MXML_NO_PARENT</td></tr>
 <tr><td><tt>real</tt></td><td>Real number value</td></tr>
 </tbody></table></p>
-<h3>Returns</h3>
+<h4>Returns</h4>
 <p>New node</p>
-<h2><a name="mxmlNewText">mxmlNewText()</a></h2>
+<h3><a name='mxmlNewText'>mxmlNewText()</a></h3>
 <p>Create a new text fragment node.
 
 The new text node is added to the end of the specified parent's child
@@ -391,25 +391,25 @@ list. The constant MXML_NO_PARENT can be used to specify that the new
 text node has no parent. The whitespace parameter is used to specify
 whether leading whitespace is present before the node. The text
 string must be nul-terminated and is copied into the new node.</p>
-<h3>Syntax</h3>
+<h4>Syntax</h4>
 <pre>
-<a href="#mxml_node_t">mxml_node_t</a> *
+<a href='#mxml_node_t'>mxml_node_t</a> *
 mxmlNewText(
-    <a href="#mxml_node_t">mxml_node_t</a> * parent,
+    <a href='#mxml_node_t'>mxml_node_t</a> * parent,
     int whitespace,
     const char * string);
 </pre>
-<h3>Arguments</h3>
-<p class="table"><table align="center" border="1" width="80%">
-<thead><tr><th>Name</th><th>Description</th></tr></thead>
+<h4>Arguments</h4>
+<p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
+<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td><tt>parent</tt></td><td>Parent node or MXML_NO_PARENT</td></tr>
 <tr><td><tt>whitespace</tt></td><td>1 = leading whitespace, 0 = no whitespace</td></tr>
 <tr><td><tt>string</tt></td><td>String</td></tr>
 </tbody></table></p>
-<h3>Returns</h3>
+<h4>Returns</h4>
 <p>New node</p>
-<h2><a name="mxmlNewTextf">mxmlNewTextf()</a></h2>
+<h3><a name='mxmlNewTextf'>mxmlNewTextf()</a></h3>
 <p>Create a new formatted text fragment node.
 
 The new text node is added to the end of the specified parent's child
@@ -417,46 +417,46 @@ list. The constant MXML_NO_PARENT can be used to specify that the new
 text node has no parent. The whitespace parameter is used to specify
 whether leading whitespace is present before the node. The format
 string must be nul-terminated and is formatted into the new node.</p>
-<h3>Syntax</h3>
+<h4>Syntax</h4>
 <pre>
-<a href="#mxml_node_t">mxml_node_t</a> *
+<a href='#mxml_node_t'>mxml_node_t</a> *
 mxmlNewTextf(
-    <a href="#mxml_node_t">mxml_node_t</a> * parent,
+    <a href='#mxml_node_t'>mxml_node_t</a> * parent,
     int whitespace,
     const char * format,
     ...);
 </pre>
-<h3>Arguments</h3>
-<p class="table"><table align="center" border="1" width="80%">
-<thead><tr><th>Name</th><th>Description</th></tr></thead>
+<h4>Arguments</h4>
+<p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
+<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td><tt>parent</tt></td><td>Parent node or MXML_NO_PARENT</td></tr>
 <tr><td><tt>whitespace</tt></td><td>1 = leading whitespace, 0 = no whitespace</td></tr>
 <tr><td><tt>format</tt></td><td>Printf-style frmat string</td></tr>
 <tr><td><tt>...</tt></td><td>Additional args as needed</td></tr>
 </tbody></table></p>
-<h3>Returns</h3>
+<h4>Returns</h4>
 <p>New node</p>
-<h2><a name="mxmlRemove">mxmlRemove()</a></h2>
+<h3><a name='mxmlRemove'>mxmlRemove()</a></h3>
 <p>Remove a node from its parent.
 
 Does not free memory used by the node - use mxmlDelete() for that.
 This function does nothing if the node has no parent.</p>
-<h3>Syntax</h3>
+<h4>Syntax</h4>
 <pre>
 void
 mxmlRemove(
-    <a href="#mxml_node_t">mxml_node_t</a> * node);
+    <a href='#mxml_node_t'>mxml_node_t</a> * node);
 </pre>
-<h3>Arguments</h3>
-<p class="table"><table align="center" border="1" width="80%">
-<thead><tr><th>Name</th><th>Description</th></tr></thead>
+<h4>Arguments</h4>
+<p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
+<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td><tt>node</tt></td><td>Node to remove</td></tr>
 </tbody></table></p>
-<h3>Returns</h3>
+<h4>Returns</h4>
 <p>Nothing.</p>
-<h2><a name="mxmlSaveAllocString">mxmlSaveAllocString()</a></h2>
+<h3><a name='mxmlSaveAllocString'>mxmlSaveAllocString()</a></h3>
 <p>Save an XML node tree to an allocated string.
 
 This function returns a pointer to a string containing the textual
@@ -464,23 +464,23 @@ representation of the XML node tree.  The string should be freed
 using the free() function when you are done with it.  NULL is returned
 if the node would produce an empty string or if the string cannot be
 allocated.</p>
-<h3>Syntax</h3>
+<h4>Syntax</h4>
 <pre>
 char *
 mxmlSaveAllocString(
-    <a href="#mxml_node_t">mxml_node_t</a> * node,
+    <a href='#mxml_node_t'>mxml_node_t</a> * node,
     int (*cb)(mxml_node_t *node, int ws));
 </pre>
-<h3>Arguments</h3>
-<p class="table"><table align="center" border="1" width="80%">
-<thead><tr><th>Name</th><th>Description</th></tr></thead>
+<h4>Arguments</h4>
+<p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
+<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td><tt>node</tt></td><td>Node to write</td></tr>
 <tr><td><tt>(*cb)(mxml_node_t *node, int ws)</tt></td><td>Whitespace callback or MXML_NO_CALLBACK</td></tr>
 </tbody></table></p>
-<h3>Returns</h3>
+<h4>Returns</h4>
 <p>Allocated string or NULL</p>
-<h2><a name="mxmlSaveFile">mxmlSaveFile()</a></h2>
+<h3><a name='mxmlSaveFile'>mxmlSaveFile()</a></h3>
 <p>Save an XML tree to a file.
 
 The callback argument specifies a function that returns a whitespace
@@ -488,251 +488,251 @@ character or nul (0) before and after each element. If MXML_NO_CALLBACK
 is specified, whitespace will only be added before MXML_TEXT nodes
 with leading whitespace and before attribute names inside opening
 element tags.</p>
-<h3>Syntax</h3>
+<h4>Syntax</h4>
 <pre>
 int
 mxmlSaveFile(
-    <a href="#mxml_node_t">mxml_node_t</a> * node,
+    <a href='#mxml_node_t'>mxml_node_t</a> * node,
     FILE * fp,
     int (*cb)(mxml_node_t *node, int ws));
 </pre>
-<h3>Arguments</h3>
-<p class="table"><table align="center" border="1" width="80%">
-<thead><tr><th>Name</th><th>Description</th></tr></thead>
+<h4>Arguments</h4>
+<p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
+<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td><tt>node</tt></td><td>Node to write</td></tr>
 <tr><td><tt>fp</tt></td><td>File to write to</td></tr>
 <tr><td><tt>(*cb)(mxml_node_t *node, int ws)</tt></td><td>Whitespace callback or MXML_NO_CALLBACK</td></tr>
 </tbody></table></p>
-<h3>Returns</h3>
+<h4>Returns</h4>
 <p>0 on success, -1 on error.</p>
-<h2><a name="mxmlSaveString">mxmlSaveString()</a></h2>
+<h3><a name='mxmlSaveString'>mxmlSaveString()</a></h3>
 <p>Save an XML node tree to a string.
 
 This function returns the total number of bytes that would be
 required for the string but only copies (bufsize - 1) characters
 into the specified buffer.</p>
-<h3>Syntax</h3>
+<h4>Syntax</h4>
 <pre>
 int
 mxmlSaveString(
-    <a href="#mxml_node_t">mxml_node_t</a> * node,
+    <a href='#mxml_node_t'>mxml_node_t</a> * node,
     char * buffer,
     int bufsize,
     int (*cb)(mxml_node_t *node, int ws));
 </pre>
-<h3>Arguments</h3>
-<p class="table"><table align="center" border="1" width="80%">
-<thead><tr><th>Name</th><th>Description</th></tr></thead>
+<h4>Arguments</h4>
+<p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
+<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td><tt>node</tt></td><td>Node to write</td></tr>
 <tr><td><tt>buffer</tt></td><td>String buffer</td></tr>
 <tr><td><tt>bufsize</tt></td><td>Size of string buffer</td></tr>
 <tr><td><tt>(*cb)(mxml_node_t *node, int ws)</tt></td><td>Whitespace callback or MXML_NO_CALLBACK</td></tr>
 </tbody></table></p>
-<h3>Returns</h3>
+<h4>Returns</h4>
 <p>Size of string</p>
-<h2><a name="mxmlSetElement">mxmlSetElement()</a></h2>
+<h3><a name='mxmlSetElement'>mxmlSetElement()</a></h3>
 <p>Set the name of an element node.
 
 The node is not changed if it is not an element node.</p>
-<h3>Syntax</h3>
+<h4>Syntax</h4>
 <pre>
 int
 mxmlSetElement(
-    <a href="#mxml_node_t">mxml_node_t</a> * node,
+    <a href='#mxml_node_t'>mxml_node_t</a> * node,
     const char * name);
 </pre>
-<h3>Arguments</h3>
-<p class="table"><table align="center" border="1" width="80%">
-<thead><tr><th>Name</th><th>Description</th></tr></thead>
+<h4>Arguments</h4>
+<p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
+<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td><tt>node</tt></td><td>Node to set</td></tr>
 <tr><td><tt>name</tt></td><td>New name string</td></tr>
 </tbody></table></p>
-<h3>Returns</h3>
+<h4>Returns</h4>
 <p>0 on success, -1 on failure</p>
-<h2><a name="mxmlSetErrorCallback">mxmlSetErrorCallback()</a></h2>
+<h3><a name='mxmlSetErrorCallback'>mxmlSetErrorCallback()</a></h3>
 <p>Set the error message callback.</p>
-<h3>Syntax</h3>
+<h4>Syntax</h4>
 <pre>
 void
 mxmlSetErrorCallback(
     void (*cb)(const char *));
 </pre>
-<h3>Arguments</h3>
-<p class="table"><table align="center" border="1" width="80%">
-<thead><tr><th>Name</th><th>Description</th></tr></thead>
+<h4>Arguments</h4>
+<p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
+<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td><tt>(*cb)(const char *)</tt></td><td>Error callback function</td></tr>
 </tbody></table></p>
-<h3>Returns</h3>
+<h4>Returns</h4>
 <p>Nothing.</p>
-<h2><a name="mxmlSetInteger">mxmlSetInteger()</a></h2>
+<h3><a name='mxmlSetInteger'>mxmlSetInteger()</a></h3>
 <p>Set the value of an integer node.
 
 The node is not changed if it is not an integer node.</p>
-<h3>Syntax</h3>
+<h4>Syntax</h4>
 <pre>
 int
 mxmlSetInteger(
-    <a href="#mxml_node_t">mxml_node_t</a> * node,
+    <a href='#mxml_node_t'>mxml_node_t</a> * node,
     int integer);
 </pre>
-<h3>Arguments</h3>
-<p class="table"><table align="center" border="1" width="80%">
-<thead><tr><th>Name</th><th>Description</th></tr></thead>
+<h4>Arguments</h4>
+<p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
+<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td><tt>node</tt></td><td>Node to set</td></tr>
 <tr><td><tt>integer</tt></td><td>Integer value</td></tr>
 </tbody></table></p>
-<h3>Returns</h3>
+<h4>Returns</h4>
 <p>0 on success, -1 on failure</p>
-<h2><a name="mxmlSetOpaque">mxmlSetOpaque()</a></h2>
+<h3><a name='mxmlSetOpaque'>mxmlSetOpaque()</a></h3>
 <p>Set the value of an opaque node.
 
 The node is not changed if it is not an opaque node.</p>
-<h3>Syntax</h3>
+<h4>Syntax</h4>
 <pre>
 int
 mxmlSetOpaque(
-    <a href="#mxml_node_t">mxml_node_t</a> * node,
+    <a href='#mxml_node_t'>mxml_node_t</a> * node,
     const char * opaque);
 </pre>
-<h3>Arguments</h3>
-<p class="table"><table align="center" border="1" width="80%">
-<thead><tr><th>Name</th><th>Description</th></tr></thead>
+<h4>Arguments</h4>
+<p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
+<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td><tt>node</tt></td><td>Node to set</td></tr>
 <tr><td><tt>opaque</tt></td><td>Opaque string</td></tr>
 </tbody></table></p>
-<h3>Returns</h3>
+<h4>Returns</h4>
 <p>0 on success, -1 on failure</p>
-<h2><a name="mxmlSetReal">mxmlSetReal()</a></h2>
+<h3><a name='mxmlSetReal'>mxmlSetReal()</a></h3>
 <p>Set the value of a real number node.
 
 The node is not changed if it is not a real number node.</p>
-<h3>Syntax</h3>
+<h4>Syntax</h4>
 <pre>
 int
 mxmlSetReal(
-    <a href="#mxml_node_t">mxml_node_t</a> * node,
+    <a href='#mxml_node_t'>mxml_node_t</a> * node,
     double real);
 </pre>
-<h3>Arguments</h3>
-<p class="table"><table align="center" border="1" width="80%">
-<thead><tr><th>Name</th><th>Description</th></tr></thead>
+<h4>Arguments</h4>
+<p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
+<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td><tt>node</tt></td><td>Node to set</td></tr>
 <tr><td><tt>real</tt></td><td>Real number value</td></tr>
 </tbody></table></p>
-<h3>Returns</h3>
+<h4>Returns</h4>
 <p>0 on success, -1 on failure</p>
-<h2><a name="mxmlSetText">mxmlSetText()</a></h2>
+<h3><a name='mxmlSetText'>mxmlSetText()</a></h3>
 <p>Set the value of a text node.
 
 The node is not changed if it is not a text node.</p>
-<h3>Syntax</h3>
+<h4>Syntax</h4>
 <pre>
 int
 mxmlSetText(
-    <a href="#mxml_node_t">mxml_node_t</a> * node,
+    <a href='#mxml_node_t'>mxml_node_t</a> * node,
     int whitespace,
     const char * string);
 </pre>
-<h3>Arguments</h3>
-<p class="table"><table align="center" border="1" width="80%">
-<thead><tr><th>Name</th><th>Description</th></tr></thead>
+<h4>Arguments</h4>
+<p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
+<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td><tt>node</tt></td><td>Node to set</td></tr>
 <tr><td><tt>whitespace</tt></td><td>1 = leading whitespace, 0 = no whitespace</td></tr>
 <tr><td><tt>string</tt></td><td>String</td></tr>
 </tbody></table></p>
-<h3>Returns</h3>
+<h4>Returns</h4>
 <p>0 on success, -1 on failure</p>
-<h2><a name="mxmlSetTextf">mxmlSetTextf()</a></h2>
+<h3><a name='mxmlSetTextf'>mxmlSetTextf()</a></h3>
 <p>Set the value of a text node to a formatted string.
 
 The node is not changed if it is not a text node.</p>
-<h3>Syntax</h3>
+<h4>Syntax</h4>
 <pre>
 int
 mxmlSetTextf(
-    <a href="#mxml_node_t">mxml_node_t</a> * node,
+    <a href='#mxml_node_t'>mxml_node_t</a> * node,
     int whitespace,
     const char * format,
     ...);
 </pre>
-<h3>Arguments</h3>
-<p class="table"><table align="center" border="1" width="80%">
-<thead><tr><th>Name</th><th>Description</th></tr></thead>
+<h4>Arguments</h4>
+<p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
+<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td><tt>node</tt></td><td>Node to set</td></tr>
 <tr><td><tt>whitespace</tt></td><td>1 = leading whitespace, 0 = no whitespace</td></tr>
 <tr><td><tt>format</tt></td><td>Printf-style format string</td></tr>
 <tr><td><tt>...</tt></td><td>Additional arguments as needed</td></tr>
 </tbody></table></p>
-<h3>Returns</h3>
+<h4>Returns</h4>
 <p>0 on success, -1 on failure</p>
-<h2><a name="mxmlWalkNext">mxmlWalkNext()</a></h2>
+<h3><a name='mxmlWalkNext'>mxmlWalkNext()</a></h3>
 <p>Walk to the next logical node in the tree.
 
 The descend argument controls whether the first child is considered
 to be the next node. The top node argument constrains the walk to
 the node's children.</p>
-<h3>Syntax</h3>
+<h4>Syntax</h4>
 <pre>
-<a href="#mxml_node_t">mxml_node_t</a> *
+<a href='#mxml_node_t'>mxml_node_t</a> *
 mxmlWalkNext(
-    <a href="#mxml_node_t">mxml_node_t</a> * node,
-    <a href="#mxml_node_t">mxml_node_t</a> * top,
+    <a href='#mxml_node_t'>mxml_node_t</a> * node,
+    <a href='#mxml_node_t'>mxml_node_t</a> * top,
     int descend);
 </pre>
-<h3>Arguments</h3>
-<p class="table"><table align="center" border="1" width="80%">
-<thead><tr><th>Name</th><th>Description</th></tr></thead>
+<h4>Arguments</h4>
+<p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
+<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td><tt>node</tt></td><td>Current node</td></tr>
 <tr><td><tt>top</tt></td><td>Top node</td></tr>
 <tr><td><tt>descend</tt></td><td>Descend into tree - MXML_DESCEND, MXML_NO_DESCEND, or MXML_DESCEND_FIRST</td></tr>
 </tbody></table></p>
-<h3>Returns</h3>
+<h4>Returns</h4>
 <p>Next node or NULL</p>
-<h2><a name="mxmlWalkPrev">mxmlWalkPrev()</a></h2>
+<h3><a name='mxmlWalkPrev'>mxmlWalkPrev()</a></h3>
 <p>Walk to the previous logical node in the tree.
 
 The descend argument controls whether the previous node's last child
 is considered to be the previous node. The top node argument constrains
 the walk to the node's children.</p>
-<h3>Syntax</h3>
+<h4>Syntax</h4>
 <pre>
-<a href="#mxml_node_t">mxml_node_t</a> *
+<a href='#mxml_node_t'>mxml_node_t</a> *
 mxmlWalkPrev(
-    <a href="#mxml_node_t">mxml_node_t</a> * node,
-    <a href="#mxml_node_t">mxml_node_t</a> * top,
+    <a href='#mxml_node_t'>mxml_node_t</a> * node,
+    <a href='#mxml_node_t'>mxml_node_t</a> * top,
     int descend);
 </pre>
-<h3>Arguments</h3>
-<p class="table"><table align="center" border="1" width="80%">
-<thead><tr><th>Name</th><th>Description</th></tr></thead>
+<h4>Arguments</h4>
+<p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
+<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td><tt>node</tt></td><td>Current node</td></tr>
 <tr><td><tt>top</tt></td><td>Top node</td></tr>
 <tr><td><tt>descend</tt></td><td>Descend into tree - MXML_DESCEND, MXML_NO_DESCEND, or MXML_DESCEND_FIRST</td></tr>
 </tbody></table></p>
-<h3>Returns</h3>
+<h4>Returns</h4>
 <p>Previous node or NULL</p>
-<hr noshade/>
-<h1><a name="_structures">Structures</a></h1>
+<!-- NEW PAGE -->
+<h2><a name='_structures'>Structures</a></h2>
 <ul>
-	<li><a href="#mxml_attr_s"><tt>mxml_attr_s</tt></a></li>
-	<li><a href="#mxml_node_s"><tt>mxml_node_s</tt></a></li>
-	<li><a href="#mxml_text_s"><tt>mxml_text_s</tt></a></li>
-	<li><a href="#mxml_value_s"><tt>mxml_value_s</tt></a></li>
+	<li><a href='#mxml_attr_s'><tt>mxml_attr_s</tt></a></li>
+	<li><a href='#mxml_node_s'><tt>mxml_node_s</tt></a></li>
+	<li><a href='#mxml_text_s'><tt>mxml_text_s</tt></a></li>
+	<li><a href='#mxml_value_s'><tt>mxml_value_s</tt></a></li>
 </ul>
-<h2><a name="mxml_attr_s">mxml_attr_s</a></h2>
+<h3><a name='mxml_attr_s'>mxml_attr_s</a></h3>
 <p>An XML element attribute value.</p>
-<h3>Definition</h3>
+<h4>Definition</h4>
 <pre>
 struct mxml_attr_s
 {
@@ -740,31 +740,31 @@ struct mxml_attr_s
   char * value;
 };
 </pre>
-<h3>Members</h3>
-<p class="table"><table align="center" border="1" width="80%">
-<thead><tr><th>Name</th><th>Description</th></tr></thead>
+<h4>Members</h4>
+<p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
+<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td><tt>name</tt></td><td>Attribute name</td></tr>
 <tr><td><tt>value</tt></td><td>Attribute value</td></tr>
 </tbody></table></p>
-<h2><a name="mxml_node_s">mxml_node_s</a></h2>
+<h3><a name='mxml_node_s'>mxml_node_s</a></h3>
 <p>An XML node.</p>
-<h3>Definition</h3>
+<h4>Definition</h4>
 <pre>
 struct mxml_node_s
 {
-  struct <a href="#mxml_node_s">mxml_node_s</a> * child;
-  struct <a href="#mxml_node_s">mxml_node_s</a> * last_child;
-  struct <a href="#mxml_node_s">mxml_node_s</a> * next;
-  struct <a href="#mxml_node_s">mxml_node_s</a> * parent;
-  struct <a href="#mxml_node_s">mxml_node_s</a> * prev;
-  <a href="#mxml_type_t">mxml_type_t</a> type;
-  <a href="#mxml_value_t">mxml_value_t</a> value;
+  struct <a href='#mxml_node_s'>mxml_node_s</a> * child;
+  struct <a href='#mxml_node_s'>mxml_node_s</a> * last_child;
+  struct <a href='#mxml_node_s'>mxml_node_s</a> * next;
+  struct <a href='#mxml_node_s'>mxml_node_s</a> * parent;
+  struct <a href='#mxml_node_s'>mxml_node_s</a> * prev;
+  <a href='#mxml_type_t'>mxml_type_t</a> type;
+  <a href='#mxml_value_t'>mxml_value_t</a> value;
 };
 </pre>
-<h3>Members</h3>
-<p class="table"><table align="center" border="1" width="80%">
-<thead><tr><th>Name</th><th>Description</th></tr></thead>
+<h4>Members</h4>
+<p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
+<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td><tt>child</tt></td><td>First child node</td></tr>
 <tr><td><tt>last_child</tt></td><td>Last child node</td></tr>
@@ -774,9 +774,9 @@ struct mxml_node_s
 <tr><td><tt>type</tt></td><td>Node type</td></tr>
 <tr><td><tt>value</tt></td><td>Node value</td></tr>
 </tbody></table></p>
-<h2><a name="mxml_text_s">mxml_text_s</a></h2>
+<h3><a name='mxml_text_s'>mxml_text_s</a></h3>
 <p>An XML text value.</p>
-<h3>Definition</h3>
+<h4>Definition</h4>
 <pre>
 struct mxml_text_s
 {
@@ -784,99 +784,99 @@ struct mxml_text_s
   int whitespace;
 };
 </pre>
-<h3>Members</h3>
-<p class="table"><table align="center" border="1" width="80%">
-<thead><tr><th>Name</th><th>Description</th></tr></thead>
+<h4>Members</h4>
+<p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
+<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td><tt>string</tt></td><td>Fragment string</td></tr>
 <tr><td><tt>whitespace</tt></td><td>Leading whitespace?</td></tr>
 </tbody></table></p>
-<h2><a name="mxml_value_s">mxml_value_s</a></h2>
+<h3><a name='mxml_value_s'>mxml_value_s</a></h3>
 <p>An XML element value.</p>
-<h3>Definition</h3>
+<h4>Definition</h4>
 <pre>
 struct mxml_value_s
 {
-  <a href="#mxml_attr_t">mxml_attr_t</a> * attrs;
+  <a href='#mxml_attr_t'>mxml_attr_t</a> * attrs;
   char * name;
   int num_attrs;
 };
 </pre>
-<h3>Members</h3>
-<p class="table"><table align="center" border="1" width="80%">
-<thead><tr><th>Name</th><th>Description</th></tr></thead>
+<h4>Members</h4>
+<p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
+<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td><tt>attrs</tt></td><td>Attributes</td></tr>
 <tr><td><tt>name</tt></td><td>Name of element</td></tr>
 <tr><td><tt>num_attrs</tt></td><td>Number of attributes</td></tr>
 </tbody></table></p>
-<hr noshade/>
-<h1><a name="_types">Types</a></h1>
+<!-- NEW PAGE -->
+<h2><a name='_types'>Types</a></h2>
 <ul>
-	<li><a href="#mxml_attr_t"><tt>mxml_attr_t</tt></a></li>
-	<li><a href="#mxml_element_t"><tt>mxml_element_t</tt></a></li>
-	<li><a href="#mxml_node_t"><tt>mxml_node_t</tt></a></li>
-	<li><a href="#mxml_text_t"><tt>mxml_text_t</tt></a></li>
-	<li><a href="#mxml_type_t"><tt>mxml_type_t</tt></a></li>
-	<li><a href="#mxml_value_t"><tt>mxml_value_t</tt></a></li>
+	<li><a href='#mxml_attr_t'><tt>mxml_attr_t</tt></a></li>
+	<li><a href='#mxml_element_t'><tt>mxml_element_t</tt></a></li>
+	<li><a href='#mxml_node_t'><tt>mxml_node_t</tt></a></li>
+	<li><a href='#mxml_text_t'><tt>mxml_text_t</tt></a></li>
+	<li><a href='#mxml_type_t'><tt>mxml_type_t</tt></a></li>
+	<li><a href='#mxml_value_t'><tt>mxml_value_t</tt></a></li>
 </ul>
-<h2><a name="mxml_attr_t">mxml_attr_t</a></h2>
+<h3><a name='mxml_attr_t'>mxml_attr_t</a></h3>
 <p>An XML element attribute value.</p>
-<h3>Definition</h3>
+<h4>Definition</h4>
 <pre>
-typedef struct <a href="#mxml_attr_s">mxml_attr_s</a> mxml_attr_t;
+typedef struct <a href='#mxml_attr_s'>mxml_attr_s</a> mxml_attr_t;
 </pre>
-<h2><a name="mxml_element_t">mxml_element_t</a></h2>
+<h3><a name='mxml_element_t'>mxml_element_t</a></h3>
 <p>An XML element value.</p>
-<h3>Definition</h3>
+<h4>Definition</h4>
 <pre>
-typedef struct <a href="#mxml_value_s">mxml_value_s</a> mxml_element_t;
+typedef struct <a href='#mxml_value_s'>mxml_value_s</a> mxml_element_t;
 </pre>
-<h2><a name="mxml_node_t">mxml_node_t</a></h2>
+<h3><a name='mxml_node_t'>mxml_node_t</a></h3>
 <p>An XML node.</p>
-<h3>Definition</h3>
+<h4>Definition</h4>
 <pre>
-typedef struct <a href="#mxml_node_s">mxml_node_s</a> mxml_node_t;
+typedef struct <a href='#mxml_node_s'>mxml_node_s</a> mxml_node_t;
 </pre>
-<h2><a name="mxml_text_t">mxml_text_t</a></h2>
+<h3><a name='mxml_text_t'>mxml_text_t</a></h3>
 <p>An XML text value.</p>
-<h3>Definition</h3>
+<h4>Definition</h4>
 <pre>
-typedef struct <a href="#mxml_text_s">mxml_text_s</a> mxml_text_t;
+typedef struct <a href='#mxml_text_s'>mxml_text_s</a> mxml_text_t;
 </pre>
-<h2><a name="mxml_type_t">mxml_type_t</a></h2>
+<h3><a name='mxml_type_t'>mxml_type_t</a></h3>
 <p>The XML node type.</p>
-<h3>Definition</h3>
+<h4>Definition</h4>
 <pre>
-typedef enum <a href="#mxml_type_e">mxml_type_e</a> mxml_type_t;
+typedef enum <a href='#mxml_type_e'>mxml_type_e</a> mxml_type_t;
 </pre>
-<h2><a name="mxml_value_t">mxml_value_t</a></h2>
+<h3><a name='mxml_value_t'>mxml_value_t</a></h3>
 <p>An XML node value.</p>
-<h3>Definition</h3>
+<h4>Definition</h4>
 <pre>
-typedef union <a href="#mxml_value_u">mxml_value_u</a> mxml_value_t;
+typedef union <a href='#mxml_value_u'>mxml_value_u</a> mxml_value_t;
 </pre>
-<hr noshade/>
-<h1><a name="_unions">Unions</a></h1>
+<!-- NEW PAGE -->
+<h2><a name='_unions'>Unions</a></h2>
 <ul>
-	<li><a href="#mxml_value_u"><tt>mxml_value_u</tt></a></li>
+	<li><a href='#mxml_value_u'><tt>mxml_value_u</tt></a></li>
 </ul>
-<h2><a name="mxml_value_u">mxml_value_u</a></h2>
+<h3><a name='mxml_value_u'>mxml_value_u</a></h3>
 <p>An XML node value.</p>
-<h3>Definition</h3>
+<h4>Definition</h4>
 <pre>
 union mxml_value_u
 {
-  <a href="#mxml_element_t">mxml_element_t</a> element;
+  <a href='#mxml_element_t'>mxml_element_t</a> element;
   int integer;
   char * opaque;
   double real;
-  <a href="#mxml_text_t">mxml_text_t</a> text;
+  <a href='#mxml_text_t'>mxml_text_t</a> text;
 };
 </pre>
-<h3>Members</h3>
-<p class="table"><table align="center" border="1" width="80%">
-<thead><tr><th>Name</th><th>Description</th></tr></thead>
+<h4>Members</h4>
+<p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
+<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td><tt>element</tt></td><td>Element</td></tr>
 <tr><td><tt>integer</tt></td><td>Integer number</td></tr>

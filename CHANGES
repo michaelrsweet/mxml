@@ -1,4 +1,4 @@
-README - 06/15/2003
+README - 06/18/2003
 -------------------
 
 CHANGES IN Mini-XML 1.0.1
@@ -7,6 +7,8 @@ CHANGES IN Mini-XML 1.0.1
 	  allocated string buffers for element names, attribute
 	  names, and attribute values.  Previously they were
 	  capped at 16383, 255, and 255 bytes, respectively.
+	- Added a new mxmlLoadString() function for loading an
+	  XML node tree from a string.
 
 
 CHANGES IN Mini-XML 1.0

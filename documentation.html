@@ -30,8 +30,10 @@
 <tbody>
 <tr><td><tt>MXML_ELEMENT</tt></td><td>XML element with attributes</td></tr>
 <tr><td><tt>MXML_INTEGER</tt></td><td>Integer value</td></tr>
+<tr><td><tt>MXML_INTEGER_ARRAY</tt></td><td>Integer array value</td></tr>
 <tr><td><tt>MXML_OPAQUE</tt></td><td>Opaque string</td></tr>
 <tr><td><tt>MXML_REAL</tt></td><td>Real value</td></tr>
+<tr><td><tt>MXML_REAL_ARRAY</tt></td><td>Real array value</td></tr>
 <tr><td><tt>MXML_TEXT</tt></td><td>Text fragment</td></tr>
 </tbody></table></p>
 <h1><a name="_functions">Functions</a></h1>
@@ -42,6 +44,7 @@
 	<li><a href="#mxmlElementSetAttr"><tt>mxmlElementSetAttr()</tt></a></li>
 	<li><a href="#mxmlFindElement"><tt>mxmlFindElement()</tt></a></li>
 	<li><a href="#mxmlLoadFile"><tt>mxmlLoadFile()</tt></a></li>
+	<li><a href="#mxmlLoadString"><tt>mxmlLoadString()</tt></a></li>
 	<li><a href="#mxmlNewElement"><tt>mxmlNewElement()</tt></a></li>
 	<li><a href="#mxmlNewInteger"><tt>mxmlNewInteger()</tt></a></li>
 	<li><a href="#mxmlNewOpaque"><tt>mxmlNewOpaque()</tt></a></li>
@@ -49,6 +52,7 @@
 	<li><a href="#mxmlNewText"><tt>mxmlNewText()</tt></a></li>
 	<li><a href="#mxmlRemove"><tt>mxmlRemove()</tt></a></li>
 	<li><a href="#mxmlSaveFile"><tt>mxmlSaveFile()</tt></a></li>
+	<li><a href="#mxmlSaveString"><tt>mxmlSaveString()</tt></a></li>
 	<li><a href="#mxmlWalkNext"><tt>mxmlWalkNext()</tt></a></li>
 	<li><a href="#mxmlWalkPrev"><tt>mxmlWalkPrev()</tt></a></li>
 </ul>
@@ -214,6 +218,34 @@ mxmlLoadFile(
 </tbody></table></p>
 <h3>Returns</h3>
 <p>First node or NULL if the file could not be read.</p>
+<hr noshade/>
+<h2><a name="mxmlLoadString">mxmlLoadString()</a></h2>
+<p>Load a string into an XML node tree.
+
+The nodes in the specified string are added to the specified top node.
+If no top node is provided, the XML string MUST be well-formed with a
+single parent node like &lt;?xml&gt; for the entire string. The callback
+function returns the value type that should be used for child nodes.
+If MXML_NO_CALLBACK is specified then all child nodes will be either
+MXML_ELEMENT or MXML_TEXT nodes.</p>
+<h3>Syntax</h3>
+<pre>
+<a href="#mxml_node_t">mxml_node_t</a> *
+mxmlLoadString(
+    <a href="#mxml_node_t">mxml_node_t</a> * top,
+    const char * s,
+    <a href="#mxml_type_t">mxml_type_t</a> (*cb)(mxml_node_t *));
+</pre>
+<h3>Arguments</h3>
+<p class="table"><table align="center" border="1" width="80%">
+<thead><tr><th>Name</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><tt>top</tt></td><td>Top node</td></tr>
+<tr><td><tt>s</tt></td><td>String to load</td></tr>
+<tr><td><tt>(*cb)(mxml_node_t *)</tt></td><td>Callback function or MXML_NO_CALLBACK</td></tr>
+</tbody></table></p>
+<h3>Returns</h3>
+<p>First node or NULL if the string has errors.</p>
 <hr noshade/>
 <h2><a name="mxmlNewElement">mxmlNewElement()</a></h2>
 <p>Create a new element node.
@@ -382,6 +414,33 @@ mxmlSaveFile(
 <h3>Returns</h3>
 <p>0 on success, -1 on error.</p>
 <hr noshade/>
+<h2><a name="mxmlSaveString">mxmlSaveString()</a></h2>
+<p>Save an XML node tree to a string.
+
+This function returns the total number of bytes that would be
+required for the string but only copies (bufsize - 1) characters
+into the specified buffer.</p>
+<h3>Syntax</h3>
+<pre>
+int
+mxmlSaveString(
+    <a href="#mxml_node_t">mxml_node_t</a> * node,
+    char * buffer,
+    int bufsize,
+    int (*cb)(mxml_node_t *int));
+</pre>
+<h3>Arguments</h3>
+<p class="table"><table align="center" border="1" width="80%">
+<thead><tr><th>Name</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><tt>node</tt></td><td>Node to write</td></tr>
+<tr><td><tt>buffer</tt></td><td>String buffer</td></tr>
+<tr><td><tt>bufsize</tt></td><td>Size of string buffer</td></tr>
+<tr><td><tt>(*cb)(mxml_node_t *int)</tt></td><td>Whitespace callback or MXML_NO_CALLBACK</td></tr>
+</tbody></table></p>
+<h3>Returns</h3>
+<p>Size of string</p>
+<hr noshade/>
 <h2><a name="mxmlWalkNext">mxmlWalkNext()</a></h2>
 <p>Walk to the next logical node in the tree.
 
@@ -434,7 +493,9 @@ mxmlWalkPrev(
 <h1><a name="_structures">Structures</a></h1>
 <ul>
 	<li><a href="#mxml_attr_s"><tt>mxml_attr_s</tt></a></li>
+	<li><a href="#mxml_intarray_s"><tt>mxml_intarray_s</tt></a></li>
 	<li><a href="#mxml_node_s"><tt>mxml_node_s</tt></a></li>
+	<li><a href="#mxml_realarray_s"><tt>mxml_realarray_s</tt></a></li>
 	<li><a href="#mxml_text_s"><tt>mxml_text_s</tt></a></li>
 	<li><a href="#mxml_value_s"><tt>mxml_value_s</tt></a></li>
 </ul>
@@ -455,6 +516,24 @@ struct mxml_attr_s
 <tbody>
 <tr><td><tt>name</tt></td><td>Attribute name</td></tr>
 <tr><td><tt>value</tt></td><td>Attribute value</td></tr>
+</tbody></table></p>
+<hr noshade/>
+<h2><a name="mxml_intarray_s">mxml_intarray_s</a></h2>
+<p>An XML integer array value.</p>
+<h3>Definition</h3>
+<pre>
+struct mxml_intarray_s
+{
+  int num_values;
+  int * values;
+};
+</pre>
+<h3>Members</h3>
+<p class="table"><table align="center" border="1" width="80%">
+<thead><tr><th>Name</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><tt>num_values</tt></td><td>Number of values</td></tr>
+<tr><td><tt>values</tt></td><td>The array of values</td></tr>
 </tbody></table></p>
 <hr noshade/>
 <h2><a name="mxml_node_s">mxml_node_s</a></h2>
@@ -483,6 +562,24 @@ struct mxml_node_s
 <tr><td><tt>prev</tt></td><td>Previous node under same parent</td></tr>
 <tr><td><tt>type</tt></td><td>Node type</td></tr>
 <tr><td><tt>value</tt></td><td>Node value</td></tr>
+</tbody></table></p>
+<hr noshade/>
+<h2><a name="mxml_realarray_s">mxml_realarray_s</a></h2>
+<p>An XML real array value.</p>
+<h3>Definition</h3>
+<pre>
+struct mxml_realarray_s
+{
+  int num_values;
+  double * values;
+};
+</pre>
+<h3>Members</h3>
+<p class="table"><table align="center" border="1" width="80%">
+<thead><tr><th>Name</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><tt>num_values</tt></td><td>Number of values</td></tr>
+<tr><td><tt>values</tt></td><td>The array of values</td></tr>
 </tbody></table></p>
 <hr noshade/>
 <h2><a name="mxml_text_s">mxml_text_s</a></h2>
@@ -526,7 +623,9 @@ struct mxml_value_s
 <ul>
 	<li><a href="#mxml_attr_t"><tt>mxml_attr_t</tt></a></li>
 	<li><a href="#mxml_element_t"><tt>mxml_element_t</tt></a></li>
+	<li><a href="#mxml_intarray_t"><tt>mxml_intarray_t</tt></a></li>
 	<li><a href="#mxml_node_t"><tt>mxml_node_t</tt></a></li>
+	<li><a href="#mxml_realarray_t"><tt>mxml_realarray_t</tt></a></li>
 	<li><a href="#mxml_text_t"><tt>mxml_text_t</tt></a></li>
 	<li><a href="#mxml_type_t"><tt>mxml_type_t</tt></a></li>
 	<li><a href="#mxml_value_t"><tt>mxml_value_t</tt></a></li>
@@ -546,11 +645,25 @@ typedef struct <a href="#mxml_attr_s">mxml_attr_s</a> mxml_attr_t;
 typedef struct <a href="#mxml_value_s">mxml_value_s</a> mxml_element_t;
 </pre>
 <hr noshade/>
+<h2><a name="mxml_intarray_t">mxml_intarray_t</a></h2>
+<p>An XML integer array value.</p>
+<h3>Definition</h3>
+<pre>
+typedef struct <a href="#mxml_intarray_s">mxml_intarray_s</a> mxml_intarray_t;
+</pre>
+<hr noshade/>
 <h2><a name="mxml_node_t">mxml_node_t</a></h2>
 <p>An XML node.</p>
 <h3>Definition</h3>
 <pre>
 typedef struct <a href="#mxml_node_s">mxml_node_s</a> mxml_node_t;
+</pre>
+<hr noshade/>
+<h2><a name="mxml_realarray_t">mxml_realarray_t</a></h2>
+<p>An XML real array value.</p>
+<h3>Definition</h3>
+<pre>
+typedef struct <a href="#mxml_realarray_s">mxml_realarray_s</a> mxml_realarray_t;
 </pre>
 <hr noshade/>
 <h2><a name="mxml_text_t">mxml_text_t</a></h2>
@@ -585,9 +698,11 @@ typedef union <a href="#mxml_value_u">mxml_value_u</a> mxml_value_t;
 struct mxml_value_u
 {
   <a href="#mxml_element_t">mxml_element_t</a> element;
+  <a href="#mxml_intarray_t">mxml_intarray_t</a> intarray;
   int integer;
   char * opaque;
   double real;
+  <a href="#mxml_realarray_t">mxml_realarray_t</a> realarray;
   <a href="#mxml_text_t">mxml_text_t</a> text;
 };
 </pre>
@@ -596,9 +711,11 @@ struct mxml_value_u
 <thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td><tt>element</tt></td><td>Element</td></tr>
+<tr><td><tt>intarray</tt></td><td>Integer array</td></tr>
 <tr><td><tt>integer</tt></td><td>Integer number</td></tr>
 <tr><td><tt>opaque</tt></td><td>Opaque string</td></tr>
 <tr><td><tt>real</tt></td><td>Real number</td></tr>
+<tr><td><tt>realarray</tt></td><td>Real array</td></tr>
 <tr><td><tt>text</tt></td><td>Text fragment</td></tr>
 </tbody></table></p>
 </body>

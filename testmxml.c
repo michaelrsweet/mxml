@@ -1,5 +1,5 @@
 /*
- * "$Id: testmxml.c,v 1.8 2003/06/14 22:14:17 mike Exp $"
+ * "$Id: testmxml.c,v 1.9 2003/06/19 03:20:41 mike Exp $"
  *
  * Test program for mini-XML, a small XML-like file parsing library.
  *
@@ -232,19 +232,23 @@ main(int  argc,				/* I - Number of command-line args */
   * Open the file...
   */
 
-  if ((fp = fopen(argv[1], "r")) == NULL)
+  if (argv[1][0] == '<')
+    tree = mxmlLoadString(NULL, argv[1], type_cb);
+  else if ((fp = fopen(argv[1], "r")) == NULL)
   {
     perror(argv[1]);
     return (1);
   }
+  else
+  {
+   /*
+    * Read the file...
+    */
 
- /*
-  * Read the file...
-  */
+    tree = mxmlLoadFile(NULL, fp, type_cb);
 
-  tree = mxmlLoadFile(NULL, fp, type_cb);
-
-  fclose(fp);
+    fclose(fp);
+  }
 
   if (!tree)
   {
@@ -379,5 +383,5 @@ whitespace_cb(mxml_node_t *node,	/* I - Element node */
 
 
 /*
- * End of "$Id: testmxml.c,v 1.8 2003/06/14 22:14:17 mike Exp $".
+ * End of "$Id: testmxml.c,v 1.9 2003/06/19 03:20:41 mike Exp $".
  */

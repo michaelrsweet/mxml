@@ -1,5 +1,5 @@
 /*
- * "$Id: mxml-file.c,v 1.11 2003/06/15 21:31:45 mike Exp $"
+ * "$Id: mxml-file.c,v 1.12 2003/06/19 03:20:41 mike Exp $"
  *
  * File loading code for mini-XML, a small XML-like file parsing library.
  *
@@ -19,7 +19,12 @@
  *
  *   mxmlLoadFile()       - Load a file into an XML node tree.
  *   mxmlSaveFile()       - Save an XML tree to a file.
+ *   mxmlSaveString()     - Save an XML node tree to a string.
+ *   mxml_add_char()      - Add a character to a buffer, expanding as needed.
+ *   mxml_file_getc()     - Get a character from a file.
+ *   mxml_load_data()     - Load data into an XML node tree.
  *   mxml_parse_element() - Parse an element for any attributes...
+ *   mxml_string_getc()   - Get a character from a string.
  *   mxml_write_node()    - Save an XML node to a file.
  *   mxml_write_string()  - Write a string, escaping & and < as needed.
  *   mxml_write_ws()      - Do whitespace callback...
@@ -36,13 +41,42 @@
  * Local functions...
  */
 
-static int	mxml_add_char(int ch, char **ptr, char **buffer, int *bufsize);
-static int	mxml_parse_element(mxml_node_t *node, FILE *fp);
-static int	mxml_write_node(mxml_node_t *node, FILE *fp,
-		                int (*cb)(mxml_node_t *, int), int col);
-static int	mxml_write_string(const char *s, FILE *fp);
-static int	mxml_write_ws(mxml_node_t *node, FILE *fp, 
-                              int (*cb)(mxml_node_t *, int), int ws, int col);
+static int		mxml_add_char(int ch, char **ptr, char **buffer,
+			              int *bufsize);
+static int		mxml_file_getc(void *p);
+static mxml_node_t	*mxml_load_data(mxml_node_t *top, void *p,
+			                mxml_type_t (*cb)(mxml_node_t *),
+			                int (*getc_cb)(void *));
+static int		mxml_parse_element(mxml_node_t *node, void *p,
+			                   int (*getc_cb)(void *));
+static int		mxml_string_getc(void *p);
+static int		mxml_write_node(mxml_node_t *node, FILE *fp,
+			                int (*cb)(mxml_node_t *, int), int col);
+static int		mxml_write_string(const char *s, FILE *fp);
+static int		mxml_write_ws(mxml_node_t *node, FILE *fp, 
+			              int (*cb)(mxml_node_t *, int), int ws,
+				      int col);
+
+
+/*
+ * 'mxmlLoadString()' - Load a string into an XML node tree.
+ *
+ * The nodes in the specified string are added to the specified top node.
+ * If no top node is provided, the XML string MUST be well-formed with a
+ * single parent node like <?xml> for the entire string. The callback
+ * function returns the value type that should be used for child nodes.
+ * If MXML_NO_CALLBACK is specified then all child nodes will be either
+ * MXML_ELEMENT or MXML_TEXT nodes.
+ */
+
+mxml_node_t *				/* O - First node or NULL if the string has errors. */
+mxmlLoadString(mxml_node_t *top,	/* I - Top node */
+               const char  *s,		/* I - String to load */
+               mxml_type_t (*cb)(mxml_node_t *))
+					/* I - Callback function or MXML_NO_CALLBACK */
+{
+  return (mxml_load_data(top, &s, cb, mxml_string_getc));
+}
 
 
 /*
@@ -61,6 +95,133 @@ mxmlLoadFile(mxml_node_t *top,		/* I - Top node */
              FILE        *fp,		/* I - File to read from */
              mxml_type_t (*cb)(mxml_node_t *))
 					/* I - Callback function or MXML_NO_CALLBACK */
+{
+  return (mxml_load_data(top, fp, cb, mxml_file_getc));
+}
+
+
+/*
+ * 'mxmlSaveFile()' - Save an XML tree to a file.
+ *
+ * The callback argument specifies a function that returns a whitespace
+ * character or nul (0) before and after each element. If MXML_NO_CALLBACK
+ * is specified, whitespace will only be added before MXML_TEXT nodes
+ * with leading whitespace and before attribute names inside opening
+ * element tags.
+ */
+
+int					/* O - 0 on success, -1 on error. */
+mxmlSaveFile(mxml_node_t *node,		/* I - Node to write */
+             FILE        *fp,		/* I - File to write to */
+	     int         (*cb)(mxml_node_t *, int))
+					/* I - Whitespace callback or MXML_NO_CALLBACK */
+{
+  int	col;				/* Final column */
+
+
+ /*
+  * Write the node...
+  */
+
+  if ((col = mxml_write_node(node, fp, cb, 0)) < 0)
+    return (-1);
+
+  if (col > 0)
+    if (putc('\n', fp) < 0)
+      return (-1);
+
+ /*
+  * Return 0 (success)...
+  */
+
+  return (0);
+}
+
+
+/*
+ * 'mxmlSaveString()' - Save an XML node tree to a string.
+ *
+ * This function returns the total number of bytes that would be
+ * required for the string but only copies (bufsize - 1) characters
+ * into the specified buffer.
+ */
+
+int					/* O - Size of string */
+mxmlSaveString(mxml_node_t *node,	/* I - Node to write */
+               char        *buffer,	/* I - String buffer */
+               int         bufsize,	/* I - Size of string buffer */
+               int         (*cb)(mxml_node_t *, int))
+					/* I - Whitespace callback or MXML_NO_CALLBACK */
+{
+  return (0);
+}
+
+
+/*
+ * 'mxml_add_char()' - Add a character to a buffer, expanding as needed.
+ */
+
+static int				/* O  - 0 on success, -1 on error */
+mxml_add_char(int  ch,			/* I  - Character to add */
+              char **bufptr,		/* IO - Current position in buffer */
+	      char **buffer,		/* IO - Current buffer */
+	      int  *bufsize)		/* IO - Current buffer size */
+{
+  char	*newbuffer;			/* New buffer value */
+
+
+  if (*bufptr >= (*buffer + *bufsize - 1))
+  {
+   /*
+    * Increase the size of the buffer...
+    */
+
+    if (*bufsize < 1024)
+      (*bufsize) *= 2;
+    else
+      (*bufsize) += 1024;
+
+    if ((newbuffer = realloc(*buffer, *bufsize)) == NULL)
+    {
+      free(*buffer);
+
+      fprintf(stderr, "Unable to expand string buffer to %d bytes!\n",
+	      *bufsize);
+
+      return (-1);
+    }
+
+    *bufptr = newbuffer + (*bufptr - *buffer);
+  }
+
+  *(*bufptr)++ = ch;
+
+  return (0);
+}
+
+
+/*
+ * 'mxml_file_getc()' - Get a character from a file.
+ */
+
+static int				/* O - Character or EOF */
+mxml_file_getc(void *p)			/* I - Pointer to file */
+{
+  return (getc((FILE *)p));
+}
+
+
+/*
+ * 'mxml_load_data()' - Load data into an XML node tree.
+ */
+
+static mxml_node_t *			/* O - First node or NULL if the file could not be read. */
+mxml_load_data(mxml_node_t *top,	/* I - Top node */
+               void        *p,		/* I - Pointer to data */
+               mxml_type_t (*cb)(mxml_node_t *),
+					/* I - Callback function or MXML_NO_CALLBACK */
+               int         (*getc_cb)(void *))
+					/* I - Read function */
 {
   mxml_node_t	*node,			/* Current node */
 		*parent;		/* Current parent node */
@@ -92,7 +253,7 @@ mxmlLoadFile(mxml_node_t *top,		/* I - Top node */
   else
     type = MXML_TEXT;
 
-  while ((ch = getc(fp)) != EOF)
+  while ((ch = (*getc_cb)(p)) != EOF)
   {
     if ((ch == '<' || (isspace(ch) && type != MXML_OPAQUE)) && bufptr > buffer)
     {
@@ -155,27 +316,14 @@ mxmlLoadFile(mxml_node_t *top,		/* I - Top node */
       whitespace = 1;
 
    /*
-    * Add lone whitespace node if we are starting a new element and have
-    * existing whitespace...
+    * Add lone whitespace node if we have an element and existing
+    * whitespace...
     */
 
     if (ch == '<' && whitespace && type == MXML_TEXT)
     {
-     /*
-      * Peek at the next character and only do this if we are starting
-      * an open tag...
-      */
-
-      ch = getc(fp);
-      ungetc(ch, fp);
-
-      if (ch != '/')
-      {
-	mxmlNewText(parent, whitespace, "");
-	whitespace = 0;
-      }
-
-      ch = '<';
+      mxmlNewText(parent, whitespace, "");
+      whitespace = 0;
     }
 
     if (ch == '<')
@@ -186,7 +334,7 @@ mxmlLoadFile(mxml_node_t *top,		/* I - Top node */
 
       bufptr = buffer;
 
-      while ((ch = getc(fp)) != EOF)
+      while ((ch = (*getc_cb)(p)) != EOF)
         if (isspace(ch) || ch == '>' || (ch == '/' && bufptr > buffer))
 	  break;
 	else if (mxml_add_char(ch, &bufptr, &buffer, &bufsize))
@@ -205,7 +353,7 @@ mxmlLoadFile(mxml_node_t *top,		/* I - Top node */
         * Gather rest of comment...
 	*/
 
-	while ((ch = getc(fp)) != EOF)
+	while ((ch = (*getc_cb)(p)) != EOF)
 	{
 	  if (ch == '>' && bufptr > (buffer + 4) &&
 	      !strncmp(bufptr - 2, "--", 2))
@@ -257,7 +405,7 @@ mxmlLoadFile(mxml_node_t *top,		/* I - Top node */
 	    return (NULL);
 	  }
 	}
-        while ((ch = getc(fp)) != EOF);
+        while ((ch = (*getc_cb)(p)) != EOF);
 
        /*
         * Error out if we didn't get the whole declaration...
@@ -315,7 +463,7 @@ mxmlLoadFile(mxml_node_t *top,		/* I - Top node */
 	*/
 
         while (ch != '>' && ch != EOF)
-	  ch = getc(fp);
+	  ch = (*getc_cb)(p);
 
        /*
 	* Ascend into the parent and set the value type as needed...
@@ -346,10 +494,10 @@ mxmlLoadFile(mxml_node_t *top,		/* I - Top node */
 	}
 
         if (isspace(ch))
-          ch = mxml_parse_element(node, fp);
+          ch = mxml_parse_element(node, p, getc_cb);
         else if (ch == '/')
 	{
-	  if ((ch = getc(fp)) != '>')
+	  if ((ch = (*getc_cb)(p)) != '>')
 	  {
 	    fprintf(stderr, "Expected > but got '%c' instead for element <%s/>!\n",
 	            ch, buffer);
@@ -391,7 +539,7 @@ mxmlLoadFile(mxml_node_t *top,		/* I - Top node */
       entity[0] = ch;
       entptr    = entity + 1;
 
-      while ((ch = getc(fp)) != EOF)
+      while ((ch = (*getc_cb)(p)) != EOF)
         if (!isalnum(ch) && ch != '#')
 	  break;
 	else if (entptr < (entity + sizeof(entity) - 1))
@@ -545,93 +693,14 @@ mxmlLoadFile(mxml_node_t *top,		/* I - Top node */
 
 
 /*
- * 'mxmlSaveFile()' - Save an XML tree to a file.
- *
- * The callback argument specifies a function that returns a whitespace
- * character or nul (0) before and after each element. If MXML_NO_CALLBACK
- * is specified, whitespace will only be added before MXML_TEXT nodes
- * with leading whitespace and before attribute names inside opening
- * element tags.
- */
-
-int					/* O - 0 on success, -1 on error. */
-mxmlSaveFile(mxml_node_t *node,		/* I - Node to write */
-             FILE        *fp,		/* I - File to write to */
-	     int         (*cb)(mxml_node_t *, int))
-					/* I - Whitespace callback or MXML_NO_CALLBACK */
-{
-  int	col;				/* Final column */
-
-
- /*
-  * Write the node...
-  */
-
-  if ((col = mxml_write_node(node, fp, cb, 0)) < 0)
-    return (-1);
-
-  if (col > 0)
-    if (putc('\n', fp) < 0)
-      return (-1);
-
- /*
-  * Return 0 (success)...
-  */
-
-  return (0);
-}
-
-
-/*
- * 'mxml_add_char()' - Add a character to a buffer, expanding as needed.
- */
-
-static int				/* O  - 0 on success, -1 on error */
-mxml_add_char(int  ch,			/* I  - Character to add */
-              char **bufptr,		/* IO - Current position in buffer */
-	      char **buffer,		/* IO - Current buffer */
-	      int  *bufsize)		/* IO - Current buffer size */
-{
-  char	*newbuffer;			/* New buffer value */
-
-
-  if (*bufptr >= (*buffer + *bufsize - 1))
-  {
-   /*
-    * Increase the size of the buffer...
-    */
-
-    if (*bufsize < 1024)
-      (*bufsize) *= 2;
-    else
-      (*bufsize) += 1024;
-
-    if ((newbuffer = realloc(*buffer, *bufsize)) == NULL)
-    {
-      free(*buffer);
-
-      fprintf(stderr, "Unable to expand string buffer to %d bytes!\n",
-	      *bufsize);
-
-      return (-1);
-    }
-
-    *bufptr = newbuffer + (*bufptr - *buffer);
-  }
-
-  *(*bufptr)++ = ch;
-
-  return (0);
-}
-
-
-/*
  * 'mxml_parse_element()' - Parse an element for any attributes...
  */
 
 static int				/* O - Terminating character */
 mxml_parse_element(mxml_node_t *node,	/* I - Element node */
-                   FILE        *fp)	/* I - File to read from */
+                   void        *p,	/* I - Data to read from */
+                   int         (*getc_cb)(void *))
+					/* I - Data callback */
 {
   int	ch,				/* Current character in file */
 	quote;				/* Quoting character */
@@ -667,7 +736,7 @@ mxml_parse_element(mxml_node_t *node,	/* I - Element node */
   * Loop until we hit a >, /, ?, or EOF...
   */
 
-  while ((ch = getc(fp)) != EOF)
+  while ((ch = (*getc_cb)(p)) != EOF)
   {
    /*
     * Skip leading whitespace...
@@ -686,7 +755,7 @@ mxml_parse_element(mxml_node_t *node,	/* I - Element node */
       * Grab the > character and print an error if it isn't there...
       */
 
-      quote = getc(fp);
+      quote = (*getc_cb)(p);
 
       if (quote != '>')
       {
@@ -707,7 +776,7 @@ mxml_parse_element(mxml_node_t *node,	/* I - Element node */
     name[0] = ch;
     ptr     = name + 1;
 
-    while ((ch = getc(fp)) != EOF)
+    while ((ch = (*getc_cb)(p)) != EOF)
       if (isspace(ch) || ch == '=' || ch == '/' || ch == '>' || ch == '?')
         break;
       else if (mxml_add_char(ch, &ptr, &name, &namesize))
@@ -725,7 +794,7 @@ mxml_parse_element(mxml_node_t *node,	/* I - Element node */
       * Read the attribute value...
       */
 
-      if ((ch = getc(fp)) == EOF)
+      if ((ch = (*getc_cb)(p)) == EOF)
       {
         fprintf(stderr, "Missing value for attribute '%s' in element %s!\n",
 	        name, node->value.element.name);
@@ -741,7 +810,7 @@ mxml_parse_element(mxml_node_t *node,	/* I - Element node */
         quote = ch;
 	ptr   = value;
 
-        while ((ch = getc(fp)) != EOF)
+        while ((ch = (*getc_cb)(p)) != EOF)
 	  if (ch == quote)
 	    break;
 	  else if (mxml_add_char(ch, &ptr, &value, &valsize))
@@ -762,7 +831,7 @@ mxml_parse_element(mxml_node_t *node,	/* I - Element node */
 	value[0] = ch;
 	ptr      = value + 1;
 
-	while ((ch = getc(fp)) != EOF)
+	while ((ch = (*getc_cb)(p)) != EOF)
 	  if (isspace(ch) || ch == '=' || ch == '/' || ch == '>')
             break;
 	  else if (mxml_add_char(ch, &ptr, &value, &valsize))
@@ -782,8 +851,25 @@ mxml_parse_element(mxml_node_t *node,	/* I - Element node */
     * Save last character in case we need it...
     */
 
-    if (ch == '/' || ch == '>' || ch == '?')
-      ungetc(ch, fp);
+    if (ch == '/' || ch == '?')
+    {
+     /*
+      * Grab the > character and print an error if it isn't there...
+      */
+
+      quote = (*getc_cb)(p);
+
+      if (quote != '>')
+      {
+        fprintf(stderr, "Expected '>' after '%c' for element %s, but got '%c'!\n",
+	        ch, node->value.element.name, quote);
+        ch = EOF;
+      }
+
+      break;
+    }
+    else if (ch == '>')
+      break;
 
    /*
     * Set the attribute...
@@ -800,6 +886,29 @@ mxml_parse_element(mxml_node_t *node,	/* I - Element node */
   free(value);
 
   return (ch);
+}
+
+
+/*
+ * 'mxml_string_getc()' - Get a character from a string.
+ */
+
+static int				/* O - Character or EOF */
+mxml_string_getc(void *p)		/* I - Pointer to file */
+{
+  int		ch;			/* Character */
+  const char	**s;			/* Pointer to string pointer */
+
+
+  s = (const char **)p;
+
+  if ((ch = *s[0]) != 0)
+  {
+    (*s)++;
+    return (ch);
+  }
+  else
+    return (EOF);
 }
 
 
@@ -1109,5 +1218,5 @@ mxml_write_ws(mxml_node_t *node,	/* I - Current node */
 
 
 /*
- * End of "$Id: mxml-file.c,v 1.11 2003/06/15 21:31:45 mike Exp $".
+ * End of "$Id: mxml-file.c,v 1.12 2003/06/19 03:20:41 mike Exp $".
  */

@@ -30,10 +30,8 @@
 <tbody>
 <tr><td><tt>MXML_ELEMENT</tt></td><td>XML element with attributes</td></tr>
 <tr><td><tt>MXML_INTEGER</tt></td><td>Integer value</td></tr>
-<tr><td><tt>MXML_INTEGER_ARRAY</tt></td><td>Integer array value</td></tr>
 <tr><td><tt>MXML_OPAQUE</tt></td><td>Opaque string</td></tr>
 <tr><td><tt>MXML_REAL</tt></td><td>Real value</td></tr>
-<tr><td><tt>MXML_REAL_ARRAY</tt></td><td>Real array value</td></tr>
 <tr><td><tt>MXML_TEXT</tt></td><td>Text fragment</td></tr>
 </tbody></table></p>
 <h1><a name="_functions">Functions</a></h1>
@@ -493,9 +491,7 @@ mxmlWalkPrev(
 <h1><a name="_structures">Structures</a></h1>
 <ul>
 	<li><a href="#mxml_attr_s"><tt>mxml_attr_s</tt></a></li>
-	<li><a href="#mxml_intarray_s"><tt>mxml_intarray_s</tt></a></li>
 	<li><a href="#mxml_node_s"><tt>mxml_node_s</tt></a></li>
-	<li><a href="#mxml_realarray_s"><tt>mxml_realarray_s</tt></a></li>
 	<li><a href="#mxml_text_s"><tt>mxml_text_s</tt></a></li>
 	<li><a href="#mxml_value_s"><tt>mxml_value_s</tt></a></li>
 </ul>
@@ -516,24 +512,6 @@ struct mxml_attr_s
 <tbody>
 <tr><td><tt>name</tt></td><td>Attribute name</td></tr>
 <tr><td><tt>value</tt></td><td>Attribute value</td></tr>
-</tbody></table></p>
-<hr noshade/>
-<h2><a name="mxml_intarray_s">mxml_intarray_s</a></h2>
-<p>An XML integer array value.</p>
-<h3>Definition</h3>
-<pre>
-struct mxml_intarray_s
-{
-  int num_values;
-  int * values;
-};
-</pre>
-<h3>Members</h3>
-<p class="table"><table align="center" border="1" width="80%">
-<thead><tr><th>Name</th><th>Description</th></tr></thead>
-<tbody>
-<tr><td><tt>num_values</tt></td><td>Number of values</td></tr>
-<tr><td><tt>values</tt></td><td>The array of values</td></tr>
 </tbody></table></p>
 <hr noshade/>
 <h2><a name="mxml_node_s">mxml_node_s</a></h2>
@@ -562,24 +540,6 @@ struct mxml_node_s
 <tr><td><tt>prev</tt></td><td>Previous node under same parent</td></tr>
 <tr><td><tt>type</tt></td><td>Node type</td></tr>
 <tr><td><tt>value</tt></td><td>Node value</td></tr>
-</tbody></table></p>
-<hr noshade/>
-<h2><a name="mxml_realarray_s">mxml_realarray_s</a></h2>
-<p>An XML real array value.</p>
-<h3>Definition</h3>
-<pre>
-struct mxml_realarray_s
-{
-  int num_values;
-  double * values;
-};
-</pre>
-<h3>Members</h3>
-<p class="table"><table align="center" border="1" width="80%">
-<thead><tr><th>Name</th><th>Description</th></tr></thead>
-<tbody>
-<tr><td><tt>num_values</tt></td><td>Number of values</td></tr>
-<tr><td><tt>values</tt></td><td>The array of values</td></tr>
 </tbody></table></p>
 <hr noshade/>
 <h2><a name="mxml_text_s">mxml_text_s</a></h2>
@@ -623,9 +583,7 @@ struct mxml_value_s
 <ul>
 	<li><a href="#mxml_attr_t"><tt>mxml_attr_t</tt></a></li>
 	<li><a href="#mxml_element_t"><tt>mxml_element_t</tt></a></li>
-	<li><a href="#mxml_intarray_t"><tt>mxml_intarray_t</tt></a></li>
 	<li><a href="#mxml_node_t"><tt>mxml_node_t</tt></a></li>
-	<li><a href="#mxml_realarray_t"><tt>mxml_realarray_t</tt></a></li>
 	<li><a href="#mxml_text_t"><tt>mxml_text_t</tt></a></li>
 	<li><a href="#mxml_type_t"><tt>mxml_type_t</tt></a></li>
 	<li><a href="#mxml_value_t"><tt>mxml_value_t</tt></a></li>
@@ -645,25 +603,11 @@ typedef struct <a href="#mxml_attr_s">mxml_attr_s</a> mxml_attr_t;
 typedef struct <a href="#mxml_value_s">mxml_value_s</a> mxml_element_t;
 </pre>
 <hr noshade/>
-<h2><a name="mxml_intarray_t">mxml_intarray_t</a></h2>
-<p>An XML integer array value.</p>
-<h3>Definition</h3>
-<pre>
-typedef struct <a href="#mxml_intarray_s">mxml_intarray_s</a> mxml_intarray_t;
-</pre>
-<hr noshade/>
 <h2><a name="mxml_node_t">mxml_node_t</a></h2>
 <p>An XML node.</p>
 <h3>Definition</h3>
 <pre>
 typedef struct <a href="#mxml_node_s">mxml_node_s</a> mxml_node_t;
-</pre>
-<hr noshade/>
-<h2><a name="mxml_realarray_t">mxml_realarray_t</a></h2>
-<p>An XML real array value.</p>
-<h3>Definition</h3>
-<pre>
-typedef struct <a href="#mxml_realarray_s">mxml_realarray_s</a> mxml_realarray_t;
 </pre>
 <hr noshade/>
 <h2><a name="mxml_text_t">mxml_text_t</a></h2>
@@ -698,11 +642,9 @@ typedef union <a href="#mxml_value_u">mxml_value_u</a> mxml_value_t;
 struct mxml_value_u
 {
   <a href="#mxml_element_t">mxml_element_t</a> element;
-  <a href="#mxml_intarray_t">mxml_intarray_t</a> intarray;
   int integer;
   char * opaque;
   double real;
-  <a href="#mxml_realarray_t">mxml_realarray_t</a> realarray;
   <a href="#mxml_text_t">mxml_text_t</a> text;
 };
 </pre>
@@ -711,11 +653,9 @@ struct mxml_value_u
 <thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td><tt>element</tt></td><td>Element</td></tr>
-<tr><td><tt>intarray</tt></td><td>Integer array</td></tr>
 <tr><td><tt>integer</tt></td><td>Integer number</td></tr>
 <tr><td><tt>opaque</tt></td><td>Opaque string</td></tr>
 <tr><td><tt>real</tt></td><td>Real number</td></tr>
-<tr><td><tt>realarray</tt></td><td>Real array</td></tr>
 <tr><td><tt>text</tt></td><td>Text fragment</td></tr>
 </tbody></table></p>
 </body>

@@ -1,5 +1,5 @@
 /*
- * "$Id: mxml.h,v 1.10 2003/06/19 03:20:41 mike Exp $"
+ * "$Id: mxml.h,v 1.11 2003/06/19 03:39:23 mike Exp $"
  *
  * Header file for mini-XML, a small XML-like file parsing library.
  *
@@ -68,9 +68,7 @@ typedef enum mxml_type_e		/**** The XML node type. ****/
   MXML_INTEGER,				/* Integer value */
   MXML_OPAQUE,				/* Opaque string */
   MXML_REAL,				/* Real value */
-  MXML_TEXT,				/* Text fragment */
-  MXML_INTEGER_ARRAY,			/* Integer array value */
-  MXML_REAL_ARRAY			/* Real array value */
+  MXML_TEXT				/* Text fragment */
 } mxml_type_t;
 
 typedef struct mxml_attr_s		/**** An XML element attribute value. ****/
@@ -92,18 +90,6 @@ typedef struct mxml_text_s		/**** An XML text value. ****/
   char			*string;	/* Fragment string */
 } mxml_text_t;
 
-typedef struct mxml_intarray_s		/**** An XML integer array value. ****/
-{
-  int			num_values;	/* Number of values */
-  int			*values;	/* The array of values */
-} mxml_intarray_t;
-
-typedef struct mxml_realarray_s		/**** An XML real array value. ****/
-{
-  int			num_values;	/* Number of values */
-  double		*values;	/* The array of values */
-} mxml_realarray_t;
-
 typedef union mxml_value_u		/**** An XML node value. ****/
 {
   mxml_element_t	element;	/* Element */
@@ -111,8 +97,6 @@ typedef union mxml_value_u		/**** An XML node value. ****/
   char			*opaque;	/* Opaque string */
   double		real;		/* Real number */
   mxml_text_t		text;		/* Text fragment */
-  mxml_intarray_t	intarray;	/* Integer array */
-  mxml_realarray_t	realarray;	/* Real array */
 } mxml_value_t;
 
 typedef struct mxml_node_s mxml_node_t;	/**** An XML node. ****/
@@ -183,5 +167,5 @@ extern mxml_node_t	*mxmlWalkPrev(mxml_node_t *node, mxml_node_t *top,
 
 
 /*
- * End of "$Id: mxml.h,v 1.10 2003/06/19 03:20:41 mike Exp $".
+ * End of "$Id: mxml.h,v 1.11 2003/06/19 03:39:23 mike Exp $".
  */

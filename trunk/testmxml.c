@@ -1,5 +1,5 @@
 /*
- * "$Id: testmxml.c,v 1.14 2004/04/06 01:47:20 mike Exp $"
+ * "$Id: testmxml.c,v 1.15 2004/05/01 15:20:05 mike Exp $"
  *
  * Test program for mini-XML, a small XML-like file parsing library.
  *
@@ -36,7 +36,7 @@
  */
 
 mxml_type_t	type_cb(mxml_node_t *node);
-int		whitespace_cb(mxml_node_t *node, int where);
+const char	*whitespace_cb(mxml_node_t *node, int where);
 
 
 /*
@@ -377,7 +377,7 @@ type_cb(mxml_node_t *node)		/* I - Element node */
  *                     newlines and tabs...
  */
 
-int					/* O - Whitespace char or 0 */
+const char *				/* O - Whitespace string or NULL */
 whitespace_cb(mxml_node_t *node,	/* I - Element node */
               int         where)	/* I - Open or close tag? */
 {
@@ -400,7 +400,7 @@ whitespace_cb(mxml_node_t *node,	/* I - Element node */
     */
 
     if (where == MXML_WS_BEFORE_OPEN || where == MXML_WS_AFTER_CLOSE)
-      return ('\n');
+      return ("\n");
   }
   else if (!strcmp(name, "dl") || !strcmp(name, "ol") || !strcmp(name, "ul"))
   {
@@ -408,7 +408,7 @@ whitespace_cb(mxml_node_t *node,	/* I - Element node */
     * Put a newline before and after list elements...
     */
 
-    return ('\n');
+    return ("\n");
   }
   else if (!strcmp(name, "dd") || !strcmp(name, "dt") || !strcmp(name, "li"))
   {
@@ -417,19 +417,19 @@ whitespace_cb(mxml_node_t *node,	/* I - Element node */
     */
 
     if (where == MXML_WS_BEFORE_OPEN)
-      return ('\t');
+      return ("\t");
     else if (where == MXML_WS_AFTER_CLOSE)
-      return ('\n');
+      return ("\n");
   }
 
  /*
-  * Return 0 for no added whitespace...
+  * Return NULL for no added whitespace...
   */
 
-  return (0);
+  return (NULL);
 }
 
 
 /*
- * End of "$Id: testmxml.c,v 1.14 2004/04/06 01:47:20 mike Exp $".
+ * End of "$Id: testmxml.c,v 1.15 2004/05/01 15:20:05 mike Exp $".
  */

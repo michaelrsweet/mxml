@@ -1,5 +1,5 @@
 /*
- * "$Id: mxmldoc.c,v 1.30 2004/05/01 04:30:42 mike Exp $"
+ * "$Id: mxmldoc.c,v 1.31 2004/05/01 05:39:48 mike Exp $"
  *
  * Documentation generator using mini-XML, a small XML-like file parsing
  * library.
@@ -68,7 +68,7 @@
  *
  *   <function name="">
  *     <description>descriptive text</description>
- *     <argument name="" direction="I|O|IO">
+ *     <argument name="" direction="I|O|IO" default="">
  *       <description>descriptive text</description>
  *       <type>type string</type>
  *     </argument>
@@ -89,6 +89,11 @@
  *     <variable name="">...</variable>
  *     <function name="">...</function>
  *   </struct>
+ *
+ *   <union name="">
+ *     <description>descriptive text</description>
+ *     <variable name="">...</variable>
+ *   </union>
  *
  *   <class name="" parent="">
  *     <description>descriptive text</description>
@@ -273,10 +278,51 @@ add_variable(mxml_node_t *parent,	/* I - Parent node */
 		*bufptr;		/* Pointer into buffer */
 
 
+ /*
+  * Range check input...
+  */
+
   if (!type || !type->child)
     return (NULL);
 
+ /*
+  * Create the variable/argument node...
+  */
+
   variable = mxmlNewElement(parent, name);
+
+ /*
+  * Check for a default value...
+  */
+
+  for (node = type->child; node; node = node->next)
+    if (!strcmp(node->value.text.string, "="))
+      break;
+
+  if (node)
+  {
+   /*
+    * Default value found, copy it and add as a "default" attribute...
+    */
+
+    for (bufptr = buffer; node; bufptr += strlen(bufptr))
+    {
+      if (node->value.text.whitespace)
+	*bufptr++ = ' ';
+
+      strcpy(bufptr, node->value.text.string);
+
+      next = node->next;
+      mxmlDelete(node);
+      node = next;
+    }
+
+    mxmlElementSetAttr(variable, "default", buffer);
+  }
+
+ /*
+  * Extract the argument/variable name...
+  */
 
   if (type->last_child->value.text.string[0] == ')')
   {
@@ -310,9 +356,21 @@ add_variable(mxml_node_t *parent,	/* I - Parent node */
     mxmlDelete(type->last_child);
   }
 
+ /*
+  * Set the name...
+  */
+
   mxmlElementSetAttr(variable, "name", buffer);
 
+ /*
+  * Add the remaining type information to the variable node...
+  */
+
   mxmlAdd(variable, MXML_ADD_AFTER, MXML_ADD_TO_PARENT, type);
+
+ /*
+  * Add new new variable node...
+  */
 
   return (variable);
 }
@@ -450,10 +508,14 @@ scan_file(const char  *filename,	/* I - Filename */
 
             case '\'' :			/* Character constant */
 	        state = STATE_CHARACTER;
+		bufptr = buffer;
+		*bufptr++ = ch;
 		break;
 
             case '\"' :			/* String constant */
 	        state = STATE_STRING;
+		bufptr = buffer;
+		*bufptr++ = ch;
 		break;
 
             case '{' :
@@ -1061,17 +1123,35 @@ scan_file(const char  *filename,	/* I - Filename */
           break;
 
       case STATE_STRING :		/* Inside a string constant */
+	  *bufptr++ = ch;
+
           if (ch == '\\')
-	    getc(fp);
+	    *bufptr++ = getc(fp);
 	  else if (ch == '\"')
+	  {
+	    *bufptr = '\0';
+
+	    if (type)
+	      mxmlNewText(type, type->child != NULL, buffer);
+
 	    state = STATE_NONE;
+	  }
           break;
 
       case STATE_CHARACTER :		/* Inside a character constant */
+	  *bufptr++ = ch;
+
           if (ch == '\\')
-	    getc(fp);
+	    *bufptr++ = getc(fp);
 	  else if (ch == '\'')
+	  {
+	    *bufptr = '\0';
+
+	    if (type)
+	      mxmlNewText(type, type->child != NULL, buffer);
+
 	    state = STATE_NONE;
+	  }
           break;
 
       case STATE_IDENTIFIER :		/* Inside a keyword or identifier */
@@ -1530,7 +1610,8 @@ write_documentation(mxml_node_t *doc)	/* I - XML documentation */
 		*description,		/* Description of function/var */
 		*type;			/* Type for argument */
   const char	*name,			/* Name of function/type */
-		*cname;			/* Class name */
+		*cname,			/* Class name */
+		*defval;		/* Default value */
   char		prefix;			/* Prefix character */
 
 
@@ -1667,8 +1748,14 @@ write_documentation(mxml_node_t *doc)	/* I - XML documentation */
 	                	 MXML_DESCEND_FIRST);
 
 	  printf("%c", prefix);
-	  write_element(doc, type);
-	  printf("%s%s", type->child ? " " : "", mxmlElementGetAttr(arg, "name"));
+	  if (type->child)
+	  {
+	    write_element(doc, type);
+	    putchar(' ');
+	  }
+	  fputs(mxmlElementGetAttr(arg, "name"), stdout);
+          if ((defval = mxmlElementGetAttr(arg, "default")) != NULL)
+	    fputs(defval, stdout);
 	}
 
 	if (prefix == '(')
@@ -1868,8 +1955,14 @@ write_documentation(mxml_node_t *doc)	/* I - XML documentation */
 	                       MXML_DESCEND_FIRST);
 
 	printf("%c\n    ", prefix);
-	write_element(doc, type);
-	printf("%s%s", type->child ? " " : "", mxmlElementGetAttr(arg, "name"));
+	if (type->child)
+	{
+	  write_element(doc, type);
+	  putchar(' ');
+	}
+	fputs(mxmlElementGetAttr(arg, "name"), stdout);
+        if ((defval = mxmlElementGetAttr(arg, "default")) != NULL)
+	  fputs(defval, stdout);
       }
 
       if (prefix == '(')
@@ -2015,8 +2108,14 @@ write_documentation(mxml_node_t *doc)	/* I - XML documentation */
 	                	 MXML_DESCEND_FIRST);
 
 	  printf("%c", prefix);
-	  write_element(doc, type);
-	  printf("%s%s", type->child ? " " : "", mxmlElementGetAttr(arg, "name"));
+	  if (type->child)
+	  {
+	    write_element(doc, type);
+	    putchar(' ');
+	  }
+	  fputs(mxmlElementGetAttr(arg, "name"), stdout);
+          if ((defval = mxmlElementGetAttr(arg, "default")) != NULL)
+	    fputs(defval, stdout);
 	}
 
 	if (prefix == '(')
@@ -2268,9 +2367,10 @@ write_documentation(mxml_node_t *doc)	/* I - XML documentation */
 
       write_element(doc, mxmlFindElement(arg, arg, "type", NULL,
                                          NULL, MXML_DESCEND_FIRST));
-      printf(" %s;\n", mxmlElementGetAttr(arg, "name"));
-
-      puts("</pre>");
+      printf(" %s", mxmlElementGetAttr(arg, "name"));
+      if ((defval = mxmlElementGetAttr(arg, "default")) != NULL)
+	fputs(defval, stdout);
+      puts(";\n</pre>");
     }
   }
 
@@ -2412,5 +2512,5 @@ ws_cb(mxml_node_t *node,		/* I - Element node */
 
 
 /*
- * End of "$Id: mxmldoc.c,v 1.30 2004/05/01 04:30:42 mike Exp $".
+ * End of "$Id: mxmldoc.c,v 1.31 2004/05/01 05:39:48 mike Exp $".
  */

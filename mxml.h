@@ -1,5 +1,5 @@
 /*
- * "$Id: mxml.h,v 1.19 2004/05/02 16:04:40 mike Exp $"
+ * "$Id: mxml.h,v 1.20 2004/05/16 05:25:38 mike Exp $"
  *
  * Header file for Mini-XML, a small XML-like file parsing library.
  *
@@ -118,6 +118,15 @@ typedef struct mxml_node_s		/**** An XML node. ****/
   mxml_value_t		value;		/* Node value */
 } mxml_node_t;
 
+typedef struct mxml_index_s		/**** An XML node index. ****/
+{
+  char			*attr;		/* Attribute used for indexing or NULL */
+  int			num_nodes;	/* Number of nodes in index */
+  int			alloc_nodes;	/* Allocated nodes in index */
+  int			cur_node;	/* Current node */
+  mxml_node_t		**nodes;	/* Node array */
+} mxml_index_t;
+
 
 /*
  * C++ support...
@@ -137,11 +146,21 @@ extern void		mxmlDelete(mxml_node_t *node);
 extern const char	*mxmlElementGetAttr(mxml_node_t *node, const char *name);
 extern void		mxmlElementSetAttr(mxml_node_t *node, const char *name,
 			                   const char *value);
+extern void		mxmlEntityAddCallback(int (*cb)(const char *name));
 extern const char	*mxmlEntityGetName(int val);
 extern int		mxmlEntityGetValue(const char *name);
+extern void		mxmlEntityRemoveCallback(int (*cb)(const char *name));
 extern mxml_node_t	*mxmlFindElement(mxml_node_t *node, mxml_node_t *top,
 			                 const char *name, const char *attr,
 					 const char *value, int descend);
+extern void		mxmlIndexDelete(mxml_index_t *ind);
+extern mxml_node_t	*mxmlIndexEnum(mxml_index_t *ind);
+extern mxml_node_t	*mxmlIndexFind(mxml_index_t *ind,
+			               const char *element,
+			               const char *value);
+extern mxml_index_t	*mxmlIndexNew(mxml_node_t *node, const char *element,
+			              const char *attr);
+extern mxml_node_t	*mxmlIndexReset(mxml_index_t *ind);
 extern mxml_node_t	*mxmlLoadFile(mxml_node_t *top, FILE *fp,
 			              mxml_type_t (*cb)(mxml_node_t *));
 extern mxml_node_t	*mxmlLoadString(mxml_node_t *top, const char *s,
@@ -206,5 +225,5 @@ extern mxml_type_t	mxml_real_cb(mxml_node_t *node);
 
 
 /*
- * End of "$Id: mxml.h,v 1.19 2004/05/02 16:04:40 mike Exp $".
+ * End of "$Id: mxml.h,v 1.20 2004/05/16 05:25:38 mike Exp $".
  */

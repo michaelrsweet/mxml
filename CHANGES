@@ -1,9 +1,15 @@
-README - 05/02/2004
+README - 05/16/2004
 -------------------
 
 CHANGES IN Mini-XML 2.0
 
 	- New programmers manual.
+	- Added index functions to build a searchable index of
+	  XML nodes.
+	- Added character entity callback interface to support
+	  additional character entities beyond those defined in
+	  the XHTML specification.
+	- Added support for XHTML character entities.
 	- The mxmldoc utility now produces XML output which
 	  conforms to an updated XML schema, described in the file
 	  "doc/mxmldoc.xsd".

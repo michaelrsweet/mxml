@@ -1,0 +1,94 @@
+README - 07/25/2003
+-------------------
+
+CHANGES IN Mini-XML 1.1.2
+
+	- The mxml(3) man page wasn't updated for the string
+	  functions.
+	- mxmlSaveString() returned the wrong number of
+	  characters.
+	- mxml_add_char() updated the buffer pointer in the
+	  wrong place.
+
+
+
+CHANGES IN Mini-XML 1.1.1
+
+	- The private mxml_add_ch() function did not update the
+	  start-of-buffer pointer which could cause a crash when
+	  using mxmlSaveString().
+	- The private mxml_write_ws() function called putc()
+	  instead of using the proper callback which could cause
+	  a crash when using mxmlSaveString().
+	- Added a mxmlSaveAllocString() convenience function for
+	  saving an XML node tree to an allocated string.
+
+
+CHANGES IN Mini-XML 1.1
+
+	- The mxmlLoadFile() function now uses dynamically
+	  allocated string buffers for element names, attribute
+	  names, and attribute values.  Previously they were
+	  capped at 16383, 255, and 255 bytes, respectively.
+	- Added a new mxmlLoadString() function for loading an
+	  XML node tree from a string.
+	- Added a new mxmlSaveString() function for saving an
+	  XML node tree to a string.
+	- Add emulation of strdup() if the local platform does
+	  not provide the function.
+
+
+CHANGES IN Mini-XML 1.0
+
+	- The mxmldoc program now handles function arguments,
+	  structures, unions, enumerations, classes, and
+	  typedefs properly.
+	- Documentation provided via mxmldoc and more in-line
+	  comments in the code.
+	- Added man pages and packaging files.
+
+
+CHANGES IN Mini-XML 0.93
+
+	- New mxmldoc example program that is also used to
+	  create and update code documentation using XML and
+	  produce HTML reference pages.
+	- Added mxmlAdd() and mxmlRemove() functions to add and
+	  remove nodes from a tree.  This provides more
+	  flexibility over where the nodes are inserted and
+	  allows nodes to be moved within the tree as needed.
+	- mxmlLoadFile() now correctly handles comments.
+	- mxmlLoadFile() now supports the required "gt", "quot",
+	  and "nbsp" character entities.
+	- mxmlSaveFile() now uses newlines as whitespace
+	  when valid to do so.
+	- mxmlFindElement() now also takes attribute name and
+	  attribute value string arguments to limit the search
+	  to specific elements with attributes and/or values.
+	  NULL pointers can be used as "wildcards".
+	- Added uninstall target to makefile, and auto-reconfig
+	  if Makefile.in or configure.in are changed.
+	- mxmlFindElement(), mxmlWalkNext(), and mxmlWalkPrev()
+	  now all provide "descend" arguments to control whether
+	  they descend into child nodes in the tree.
+	- Fixed some whitespace issues in mxmlLoadFile().
+	- Fixed Unicode output and whitespace issues in
+	  mxmlSaveFile().
+	- mxmlSaveFile() now supports a whitespace callback to
+	  provide more human-readable XML output under program
+	  control.
+
+
+CHANGES IN Mini-XML 0.92
+
+	- mxmlSaveFile() didn't return a value on success.
+
+
+CHANGES IN Mini-XML 0.91
+
+	- mxmlWalkNext() would go into an infinite loop.
+
+
+CHANGES IN Mini-XML 0.9
+
+	- Initial public release.

@@ -1,15 +1,16 @@
 <?
 //
-// "$Id: common.php,v 1.2 2004/05/17 20:28:52 mike Exp $"
+// "$Id: common.php,v 1.3 2004/05/18 12:02:02 mike Exp $"
 //
 // Common utility functions for PHP pages...
 //
 // Contents:
 //
-//   quote_text()     - Quote a string...
-//   sanitize_email() - Convert an email address to something a SPAMbot
-//                      can't read...
-//   sanitize_text()  - Sanitize text.
+//   quote_text()          - Quote a string...
+//   sanitize_email()      - Convert an email address to something a SPAMbot
+//                           can't read...
+//   sanitize_text()       - Sanitize text.
+//   select_is_published() - Do a <select> for the "is published" field...
 //
 
 
@@ -290,6 +291,28 @@ sanitize_text($text)			// I - Original text
 
 
 //
-// End of "$Id: common.php,v 1.2 2004/05/17 20:28:52 mike Exp $".
+// 'select_is_published()' - Do a <select> for the "is published" field...
+//
+
+function
+select_is_published($is_published = 1)	// I - Default state
+{
+  print("<select name='IS_PUBLISHED'>");
+  if ($is_published)
+  {
+    print("<option value='0'>No</option>");
+    print("<option value='1' selected>Yes</option>");
+  }
+  else
+  {
+    print("<option value='0' selected>No</option>");
+    print("<option value='1'>Yes</option>");
+  }
+  print("</select>");
+}
+
+
+//
+// End of "$Id: common.php,v 1.3 2004/05/18 12:02:02 mike Exp $".
 //
 ?>

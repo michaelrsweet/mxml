@@ -1,0 +1,47 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML>
+<HEAD>
+<TITLE>Mini-XML Programmers Manual, Version 2.0</TITLE>
+<META NAME="author" CONTENT="Michael Sweet">
+<META NAME="copyright" CONTENT="Copyright 2003-2004">
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; CHARSET=iso-iso-8859-1">
+<LINK REL="Start" HREF="index.html">
+<LINK REL="Contents" HREF="toc.html">
+<LINK REL="Prev" HREF="ChangesinMiniXML111.html">
+<LINK REL="Next" HREF="ChangesinMiniXML10.html">
+<STYLE TYPE="text/css"><!--
+BODY { font-family: serif }
+H1 { font-family: sans-serif }
+H2 { font-family: sans-serif }
+H3 { font-family: sans-serif }
+H4 { font-family: sans-serif }
+H5 { font-family: sans-serif }
+H6 { font-family: sans-serif }
+SUB { font-size: smaller }
+SUP { font-size: smaller }
+PRE { font-family: monospace }
+--></STYLE>
+</HEAD>
+<BODY>
+<A HREF="toc.html">Contents</A>
+<A HREF="ChangesinMiniXML111.html">Previous</A>
+<A HREF="ChangesinMiniXML10.html">Next</A>
+<HR NOSHADE>
+<H2><A NAME="7_6">Changes in Mini-XML 1.1</A></H2>
+<UL>
+<LI>The mxmlLoadFile() function now uses dynamically allocated string
+ buffers for element names, attribute names, and attribute values.
+ Previously they were capped at 16383, 255, and 255 bytes, respectively.</LI>
+<LI>Added a new mxmlLoadString() function for loading an XML node tree
+ from a string.</LI>
+<LI>Added a new mxmlSaveString() function for saving an XML node tree to
+ a string.</LI>
+<LI>Add emulation of strdup() if the local platform does not provide the
+ function.</LI>
+</UL>
+<HR NOSHADE>
+<A HREF="toc.html">Contents</A>
+<A HREF="ChangesinMiniXML111.html">Previous</A>
+<A HREF="ChangesinMiniXML10.html">Next</A>
+</BODY>
+</HTML>

@@ -1,0 +1,71 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML>
+<HEAD>
+<TITLE>Mini-XML Programmers Manual, Version 2.0</TITLE>
+<META NAME="author" CONTENT="Michael Sweet">
+<META NAME="copyright" CONTENT="Copyright 2003-2004">
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; CHARSET=iso-iso-8859-1">
+<LINK REL="Start" HREF="index.html">
+<LINK REL="Contents" HREF="toc.html">
+<LINK REL="Prev" HREF="Functions.html">
+<LINK REL="Next" HREF="mxmlDelete.html">
+<STYLE TYPE="text/css"><!--
+BODY { font-family: serif }
+H1 { font-family: sans-serif }
+H2 { font-family: sans-serif }
+H3 { font-family: sans-serif }
+H4 { font-family: sans-serif }
+H5 { font-family: sans-serif }
+H6 { font-family: sans-serif }
+SUB { font-size: smaller }
+SUP { font-size: smaller }
+PRE { font-family: monospace }
+--></STYLE>
+</HEAD>
+<BODY>
+<A HREF="toc.html">Contents</A>
+<A HREF="Functions.html">Previous</A>
+<A HREF="mxmlDelete.html">Next</A>
+<HR NOSHADE>
+<H3><A name="mxmlAdd">mxmlAdd()</A></H3>
+<HR noshade/>
+<H4>Description</H4>
+<P>Add a node to a tree. Adds the specified node to the parent. If the
+ child argument is not NULL, puts the new node before or after the
+ specified child depending on the value of the where argument. If the
+ child argument is NULL, puts the new node at the beginning of the child
+ list (MXML_ADD_BEFORE) or at the end of the child list
+ (MXML_ADD_AFTER). The constant MXML_ADD_TO_PARENT can be used to
+ specify a NULL child pointer.</P>
+<H4>Syntax</H4>
+<PRE>
+void
+mxmlAdd(
+    <A href="mxmlnodet.html#mxml_node_t">mxml_node_t</A> * parent,
+    int where,
+    <A href="mxmlnodet.html#mxml_node_t">mxml_node_t</A> * child,
+    <A href="mxmlnodet.html#mxml_node_t">mxml_node_t</A> * node);
+</PRE>
+<H4>Arguments</H4>
+<P class="table"></P>
+<TABLE align="center" border="1" cellpadding="5" cellspacing="0" width="80%">
+<THEAD></THEAD>
+<TR bgcolor="#cccccc"><TH>Name</TH><TH>Description</TH></TR>
+<TBODY></TBODY>
+<TR><TD><TT>parent</TT></TD><TD>Parent node</TD></TR>
+<TR><TD><TT>where</TT></TD><TD>Where to add, MXML_ADD_BEFORE or
+ MXML_ADD_AFTER</TD></TR>
+<TR><TD><TT>child</TT></TD><TD>Child node for where or
+ MXML_ADD_TO_PARENT</TD></TR>
+<TR><TD><TT>node</TT></TD><TD>Node to add</TD></TR>
+</TABLE>
+<H4>Returns</H4>
+<P>Nothing.</P>
+
+<!-- NEW PAGE -->
+<HR NOSHADE>
+<A HREF="toc.html">Contents</A>
+<A HREF="Functions.html">Previous</A>
+<A HREF="mxmlDelete.html">Next</A>
+</BODY>
+</HTML>

@@ -1,5 +1,5 @@
 #
-# "$Id: mxml.spec,v 1.6 2003/07/23 14:47:17 mike Exp $"
+# "$Id: mxml.spec,v 1.7 2003/07/27 23:14:22 mike Exp $"
 #
 # RPM "spec" file for mini-XML, a small XML-like file parsing library.
 #
@@ -18,7 +18,7 @@
 
 Summary: Miniature XML development library
 Name: mxml
-Version: 1.1.2
+Version: 1.1.3
 Release: 1
 Copyright: GPL
 Group: Development/Libraries
@@ -95,5 +95,5 @@ rm -rf $RPM_BUILD_ROOT
 /usr/share/man/man3/*
 
 #
-# End of "$Id: mxml.spec,v 1.6 2003/07/23 14:47:17 mike Exp $".
+# End of "$Id: mxml.spec,v 1.7 2003/07/27 23:14:22 mike Exp $".
 #

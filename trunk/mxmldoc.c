@@ -1,5 +1,5 @@
 /*
- * "$Id: mxmldoc.c,v 1.33 2004/05/01 15:20:05 mike Exp $"
+ * "$Id: mxmldoc.c,v 1.34 2004/05/01 22:45:34 mike Exp $"
  *
  * Documentation generator using mini-XML, a small XML-like file parsing
  * library.
@@ -1717,6 +1717,7 @@ update_comment(mxml_node_t *parent,	/* I - Parent node */
 static void
 write_documentation(mxml_node_t *doc)	/* I - XML documentation */
 {
+  int		i;			/* Looping var */
   mxml_node_t	*function,		/* Current function */
 		*scut,			/* Struct/class/union/typedef */
 		*arg,			/* Current argument */
@@ -1725,9 +1726,15 @@ write_documentation(mxml_node_t *doc)	/* I - XML documentation */
   const char	*name,			/* Name of function/type */
 		*cname,			/* Class name */
 		*defval,		/* Default value */
-		*parent,		/* Parent class */
-		*scope;			/* Variable/method scope */
+		*parent;		/* Parent class */
+  int		inscope;		/* Variable/method scope */
   char		prefix;			/* Prefix character */
+  static const char * const scopes[] =	/* Scope strings */
+		{
+		  "private",
+		  "protected",
+		  "public"
+		};
 
 
  /*
@@ -1820,83 +1827,87 @@ write_documentation(mxml_node_t *doc)	/* I - XML documentation */
       if ((parent = mxmlElementGetAttr(scut, "parent")) != NULL)
         printf(" %s", parent);
       puts("\n{");
-      scope = "";
 
-      for (arg = mxmlFindElement(scut, scut, "variable", NULL, NULL,
-                        	 MXML_DESCEND_FIRST);
-	   arg;
-	   arg = mxmlFindElement(arg, scut, "variable", NULL, NULL,
-                        	 MXML_NO_DESCEND))
+      for (i = 0; i < 3; i ++)
       {
-        if (strcmp(scope, mxmlElementGetAttr(arg, "scope")))
+        inscope = 0;
+
+	for (arg = mxmlFindElement(scut, scut, "variable", "scope", scopes[i],
+                        	   MXML_DESCEND_FIRST);
+	     arg;
+	     arg = mxmlFindElement(arg, scut, "variable", "scope", scopes[i],
+                        	   MXML_NO_DESCEND))
 	{
-	  scope = mxmlElementGetAttr(arg, "scope");
-	  printf("  %s:\n", scope);
-	}
+          if (!inscope)
+	  {
+	    inscope = 1;
+	    printf("  %s:\n", scopes[i]);
+	  }
 
-	printf("    ");
-	write_element(doc, mxmlFindElement(arg, arg, "type", NULL,
-                                           NULL, MXML_DESCEND_FIRST));
-	printf(" %s;\n", mxmlElementGetAttr(arg, "name"));
-      }
-
-      for (function = mxmlFindElement(scut, scut, "function", NULL, NULL,
-                                      MXML_DESCEND_FIRST);
-	   function;
-	   function = mxmlFindElement(function, scut, "function", NULL, NULL,
-                                      MXML_NO_DESCEND))
-      {
-        if (strcmp(scope, mxmlElementGetAttr(function, "scope")))
-	{
-	  scope = mxmlElementGetAttr(function, "scope");
-	  printf("  %s:\n", scope);
-	}
-
-        name = mxmlElementGetAttr(function, "name");
-
-        printf("    ");
-
-	arg = mxmlFindElement(function, function, "returnvalue", NULL,
-                              NULL, MXML_DESCEND_FIRST);
-
-	if (arg)
-	{
+	  printf("    ");
 	  write_element(doc, mxmlFindElement(arg, arg, "type", NULL,
                                              NULL, MXML_DESCEND_FIRST));
-	  putchar(' ');
+	  printf(" %s;\n", mxmlElementGetAttr(arg, "name"));
 	}
-	else if (strcmp(cname, name) && strcmp(cname, name + 1))
-	  fputs("void ", stdout);
 
-	printf("<a href='#%s.%s'>%s</a>", cname, name, name);
-
-	for (arg = mxmlFindElement(function, function, "argument", NULL, NULL,
-                        	   MXML_DESCEND_FIRST), prefix = '(';
-	     arg;
-	     arg = mxmlFindElement(arg, function, "argument", NULL, NULL,
-                        	   MXML_NO_DESCEND), prefix = ',')
+	for (function = mxmlFindElement(scut, scut, "function", "scope", scopes[i],
+                                	MXML_DESCEND_FIRST);
+	     function;
+	     function = mxmlFindElement(function, scut, "function", "scope", scopes[i],
+                                	MXML_NO_DESCEND))
 	{
-	  type = mxmlFindElement(arg, arg, "type", NULL, NULL,
-	                	 MXML_DESCEND_FIRST);
-
-	  putchar(prefix);
-	  if (prefix == ',')
-	    putchar(' ');
-
-	  if (type->child)
+          if (!inscope)
 	  {
-	    write_element(doc, type);
+	    inscope = 1;
+	    printf("  %s:\n", scopes[i]);
+	  }
+
+          name = mxmlElementGetAttr(function, "name");
+
+          printf("    ");
+
+	  arg = mxmlFindElement(function, function, "returnvalue", NULL,
+                        	NULL, MXML_DESCEND_FIRST);
+
+	  if (arg)
+	  {
+	    write_element(doc, mxmlFindElement(arg, arg, "type", NULL,
+                                               NULL, MXML_DESCEND_FIRST));
 	    putchar(' ');
 	  }
-	  fputs(mxmlElementGetAttr(arg, "name"), stdout);
-          if ((defval = mxmlElementGetAttr(arg, "default")) != NULL)
-	    printf(" %s", defval);
-	}
+	  else if (strcmp(cname, name) && strcmp(cname, name + 1))
+	    fputs("void ", stdout);
 
-	if (prefix == '(')
-	  puts("(void);");
-	else
-	  puts(");");
+	  printf("<a href='#%s.%s'>%s</a>", cname, name, name);
+
+	  for (arg = mxmlFindElement(function, function, "argument", NULL, NULL,
+                        	     MXML_DESCEND_FIRST), prefix = '(';
+	       arg;
+	       arg = mxmlFindElement(arg, function, "argument", NULL, NULL,
+                        	     MXML_NO_DESCEND), prefix = ',')
+	  {
+	    type = mxmlFindElement(arg, arg, "type", NULL, NULL,
+	                	   MXML_DESCEND_FIRST);
+
+	    putchar(prefix);
+	    if (prefix == ',')
+	      putchar(' ');
+
+	    if (type->child)
+	    {
+	      write_element(doc, type);
+	      putchar(' ');
+	    }
+	    fputs(mxmlElementGetAttr(arg, "name"), stdout);
+            if ((defval = mxmlElementGetAttr(arg, "default")) != NULL)
+	      printf(" %s", defval);
+	  }
+
+	  if (prefix == '(')
+	    puts("(void);");
+	  else
+	    puts(");");
+	}
       }
 
       puts("};\n</pre>");
@@ -2697,5 +2708,5 @@ ws_cb(mxml_node_t *node,		/* I - Element node */
 
 
 /*
- * End of "$Id: mxmldoc.c,v 1.33 2004/05/01 15:20:05 mike Exp $".
+ * End of "$Id: mxmldoc.c,v 1.34 2004/05/01 22:45:34 mike Exp $".
  */

@@ -1,5 +1,5 @@
 /*
- * "$Id: mxml.h,v 1.13 2003/09/28 12:44:39 mike Exp $"
+ * "$Id: mxml.h,v 1.14 2003/09/28 21:09:04 mike Exp $"
  *
  * Header file for mini-XML, a small XML-like file parsing library.
  *
@@ -42,8 +42,14 @@
 #  define MXML_TAB		8	/* Tabs every N columns */
 
 #  define MXML_NO_CALLBACK	0	/* Don't use a type callback */
-#  define MXML_OPAQUE_CALLBACK	_mxml_opaque_cb
+#  define MXML_INTEGER_CALLBACK	mxml_integer_cb
+					/* Treat all data as integers */
+#  define MXML_OPAQUE_CALLBACK	mxml_opaque_cb
 					/* Treat all data as opaque */
+#  define MXML_REAL_CALLBACK	mxml_real_cb
+					/* Treat all data as real numbers */
+#  define MXML_TEXT_CALLBACK	0	/* Treat all data as text */
+
 #  define MXML_NO_PARENT	0	/* No parent for the node */
 
 #  define MXML_DESCEND		1	/* Descend when finding/walking */
@@ -101,18 +107,16 @@ typedef union mxml_value_u		/**** An XML node value. ****/
   mxml_text_t		text;		/* Text fragment */
 } mxml_value_t;
 
-typedef struct mxml_node_s mxml_node_t;	/**** An XML node. ****/
-
-struct mxml_node_s			/**** An XML node. ****/
+typedef struct mxml_node_s		/**** An XML node. ****/
 {
   mxml_type_t		type;		/* Node type */
-  mxml_node_t		*next;		/* Next node under same parent */
-  mxml_node_t		*prev;		/* Previous node under same parent */
-  mxml_node_t		*parent;	/* Parent node */
-  mxml_node_t		*child;		/* First child node */
-  mxml_node_t		*last_child;	/* Last child node */
+  struct mxml_node_s	*next;		/* Next node under same parent */
+  struct mxml_node_s	*prev;		/* Previous node under same parent */
+  struct mxml_node_s	*parent;	/* Parent node */
+  struct mxml_node_s	*child;		/* First child node */
+  struct mxml_node_s	*last_child;	/* Last child node */
   mxml_value_t		value;		/* Node value */
-};
+} mxml_node_t;
 
 
 /*
@@ -196,5 +200,5 @@ extern mxml_type_t	_mxml_opaque_cb(mxml_node_t *node);
 
 
 /*
- * End of "$Id: mxml.h,v 1.13 2003/09/28 12:44:39 mike Exp $".
+ * End of "$Id: mxml.h,v 1.14 2003/09/28 21:09:04 mike Exp $".
  */

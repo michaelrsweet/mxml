@@ -1,5 +1,5 @@
 /*
- * "$Id: mxml-file.c,v 1.20 2003/07/27 23:11:40 mike Exp $"
+ * "$Id: mxml-file.c,v 1.21 2003/09/28 21:09:04 mike Exp $"
  *
  * File loading code for mini-XML, a small XML-like file parsing library.
  *
@@ -75,6 +75,10 @@ static int		mxml_write_ws(mxml_node_t *node, void *p,
  * function returns the value type that should be used for child nodes.
  * If MXML_NO_CALLBACK is specified then all child nodes will be either
  * MXML_ELEMENT or MXML_TEXT nodes.
+ *
+ * The constants MXML_INTEGER_CALLBACK, MXML_OPAQUE_CALLBACK,
+ * MXML_REAL_CALLBACK, and MXML_TEXT_CALLBACK are defined for loading
+ * child nodes of the specified type.
  */
 
 mxml_node_t *				/* O - First node or NULL if the file could not be read. */
@@ -96,6 +100,10 @@ mxmlLoadFile(mxml_node_t *top,		/* I - Top node */
  * function returns the value type that should be used for child nodes.
  * If MXML_NO_CALLBACK is specified then all child nodes will be either
  * MXML_ELEMENT or MXML_TEXT nodes.
+ *
+ * The constants MXML_INTEGER_CALLBACK, MXML_OPAQUE_CALLBACK,
+ * MXML_REAL_CALLBACK, and MXML_TEXT_CALLBACK are defined for loading
+ * child nodes of the specified type.
  */
 
 mxml_node_t *				/* O - First node or NULL if the string has errors. */
@@ -1432,5 +1440,5 @@ mxml_write_ws(mxml_node_t *node,	/* I - Current node */
 
 
 /*
- * End of "$Id: mxml-file.c,v 1.20 2003/07/27 23:11:40 mike Exp $".
+ * End of "$Id: mxml-file.c,v 1.21 2003/09/28 21:09:04 mike Exp $".
  */

@@ -1,5 +1,5 @@
 /*
- * "$Id: mxmldoc.c,v 1.16 2003/07/27 23:11:40 mike Exp $"
+ * "$Id: mxmldoc.c,v 1.17 2003/09/28 21:09:04 mike Exp $"
  *
  * Documentation generator using mini-XML, a small XML-like file parsing
  * library.
@@ -673,7 +673,7 @@ scan_file(const char  *filename,	/* I - Filename */
 		break;
 
             default :			/* Other */
-	        if (isalpha(ch) || ch == '_')
+	        if (isalpha(ch) || ch == '_' || ch == '.')
 		{
 		  state     = STATE_IDENTIFIER;
 		  bufptr    = buffer;
@@ -961,8 +961,8 @@ scan_file(const char  *filename,	/* I - Filename */
           break;
 
       case STATE_IDENTIFIER :		/* Inside a keyword or identifier */
-	  if (isalnum(ch) || ch == '_' || ch == '[' || ch == ']' || ch == ':' ||
-	      (parens && ch == ','))
+	  if (isalnum(ch) || ch == '_' || ch == '[' || ch == ']' ||
+	      (ch == ',' && parens > 1) || ch == ':' || ch == '.')
 	  {
 	    if (bufptr < (buffer + sizeof(buffer) - 1))
 	      *bufptr++ = ch;
@@ -1376,7 +1376,8 @@ write_documentation(mxml_node_t *doc)	/* I - XML documentation */
   mxml_node_t	*function,		/* Current function */
 		*scut,			/* Struct/class/union/typedef */
 		*arg,			/* Current argument */
-		*description;		/* Description of function/var */
+		*description,		/* Description of function/var */
+		*type;			/* Type for argument */
   const char	*name;			/* Name of function/type */
   char		prefix;			/* Prefix character */
 
@@ -1427,6 +1428,7 @@ write_documentation(mxml_node_t *doc)	/* I - XML documentation */
 
   if (mxmlFindElement(doc, doc, "class", NULL, NULL, MXML_DESCEND_FIRST))
   {
+    puts("<hr noshade/>");
     puts("<h1><a name=\"_classes\">Classes</a></h1>");
     puts("<ul>");
 
@@ -1449,7 +1451,6 @@ write_documentation(mxml_node_t *doc)	/* I - XML documentation */
                         	MXML_NO_DESCEND))
     {
       name = mxmlElementGetAttr(scut, "name");
-      puts("<hr noshade/>");
       printf("<h2><a name=\"%s\">%s</a></h2>\n", name, name);
 
       description = mxmlFindElement(scut, scut, "description", NULL,
@@ -1509,6 +1510,7 @@ write_documentation(mxml_node_t *doc)	/* I - XML documentation */
 
   if (mxmlFindElement(doc, doc, "enumeration", NULL, NULL, MXML_DESCEND_FIRST))
   {
+    puts("<hr noshade/>");
     puts("<h1><a name=\"_enumerations\">Enumerations</a></h1>");
     puts("<ul>");
 
@@ -1531,7 +1533,6 @@ write_documentation(mxml_node_t *doc)	/* I - XML documentation */
                         	MXML_NO_DESCEND))
     {
       name = mxmlElementGetAttr(scut, "name");
-      puts("<hr noshade/>");
       printf("<h2><a name=\"%s\">%s</a></h2>\n", name, name);
 
       description = mxmlFindElement(scut, scut, "description", NULL,
@@ -1573,6 +1574,7 @@ write_documentation(mxml_node_t *doc)	/* I - XML documentation */
 
   if (mxmlFindElement(doc, doc, "function", NULL, NULL, MXML_DESCEND_FIRST))
   {
+    puts("<hr noshade/>");
     puts("<h1><a name=\"_functions\">Functions</a></h1>");
     puts("<ul>");
 
@@ -1595,7 +1597,6 @@ write_documentation(mxml_node_t *doc)	/* I - XML documentation */
                                     MXML_NO_DESCEND))
     {
       name = mxmlElementGetAttr(function, "name");
-      puts("<hr noshade/>");
       printf("<h2><a name=\"%s\">%s()</a></h2>\n", name, name);
 
       description = mxmlFindElement(function, function, "description", NULL,
@@ -1626,10 +1627,12 @@ write_documentation(mxml_node_t *doc)	/* I - XML documentation */
 	   arg = mxmlFindElement(arg, function, "argument", NULL, NULL,
                         	 MXML_NO_DESCEND), prefix = ',')
       {
+        type = mxmlFindElement(arg, arg, "type", NULL, NULL,
+	                       MXML_DESCEND_FIRST);
+
 	printf("%c\n    ", prefix);
-	write_element(doc, mxmlFindElement(arg, arg, "type", NULL,
-                                           NULL, MXML_DESCEND_FIRST));
-	printf(" %s", mxmlElementGetAttr(arg, "name"));
+	write_element(doc, type);
+	printf("%s%s", type->child ? " " : "", mxmlElementGetAttr(arg, "name"));
       }
 
       if (prefix == '(')
@@ -1687,6 +1690,7 @@ write_documentation(mxml_node_t *doc)	/* I - XML documentation */
 
   if (mxmlFindElement(doc, doc, "struct", NULL, NULL, MXML_DESCEND_FIRST))
   {
+    puts("<hr noshade/>");
     puts("<h1><a name=\"_structures\">Structures</a></h1>");
     puts("<ul>");
 
@@ -1709,7 +1713,6 @@ write_documentation(mxml_node_t *doc)	/* I - XML documentation */
                         	MXML_NO_DESCEND))
     {
       name = mxmlElementGetAttr(scut, "name");
-      puts("<hr noshade/>");
       printf("<h2><a name=\"%s\">%s</a></h2>\n", name, name);
 
       description = mxmlFindElement(scut, scut, "description", NULL,
@@ -1769,6 +1772,7 @@ write_documentation(mxml_node_t *doc)	/* I - XML documentation */
 
   if (mxmlFindElement(doc, doc, "typedef", NULL, NULL, MXML_DESCEND_FIRST))
   {
+    puts("<hr noshade/>");
     puts("<h1><a name=\"_types\">Types</a></h1>");
     puts("<ul>");
 
@@ -1791,7 +1795,6 @@ write_documentation(mxml_node_t *doc)	/* I - XML documentation */
                         	MXML_NO_DESCEND))
     {
       name = mxmlElementGetAttr(scut, "name");
-      puts("<hr noshade/>");
       printf("<h2><a name=\"%s\">%s</a></h2>\n", name, name);
 
       description = mxmlFindElement(scut, scut, "description", NULL,
@@ -1819,6 +1822,7 @@ write_documentation(mxml_node_t *doc)	/* I - XML documentation */
 
   if (mxmlFindElement(doc, doc, "union", NULL, NULL, MXML_DESCEND_FIRST))
   {
+    puts("<hr noshade/>");
     puts("<h1><a name=\"_unions\">Unions</a></h1>");
     puts("<ul>");
 
@@ -1841,7 +1845,6 @@ write_documentation(mxml_node_t *doc)	/* I - XML documentation */
                         	MXML_NO_DESCEND))
     {
       name = mxmlElementGetAttr(scut, "name");
-      puts("<hr noshade/>");
       printf("<h2><a name=\"%s\">%s</a></h2>\n", name, name);
 
       description = mxmlFindElement(scut, scut, "description", NULL,
@@ -1901,6 +1904,7 @@ write_documentation(mxml_node_t *doc)	/* I - XML documentation */
 
   if (mxmlFindElement(doc, doc, "variable", NULL, NULL, MXML_DESCEND_FIRST))
   {
+    puts("<hr noshade/>");
     puts("<h1><a name=\"_variables\">Variables</a></h1>");
     puts("<ul>");
 
@@ -1923,7 +1927,6 @@ write_documentation(mxml_node_t *doc)	/* I - XML documentation */
                                MXML_NO_DESCEND))
     {
       name = mxmlElementGetAttr(arg, "name");
-      puts("<hr noshade/>");
       printf("<h2><a name=\"%s\">%s</a></h2>\n", name, name);
 
       description = mxmlFindElement(arg, arg, "description", NULL,
@@ -1966,9 +1969,12 @@ write_element(mxml_node_t *doc,		/* I - Document tree */
   mxml_node_t	*node;			/* Current node */
 
 
-  for (node = mxmlWalkNext(element, element, MXML_DESCEND);
+  if (!element)
+    return;
+
+  for (node = element->child;
        node;
-       node = mxmlWalkNext(node, element, MXML_DESCEND))
+       node = mxmlWalkNext(node, element, MXML_NO_DESCEND))
     if (node->type == MXML_TEXT)
     {
       if (node->value.text.whitespace)
@@ -2081,5 +2087,5 @@ ws_cb(mxml_node_t *node,		/* I - Element node */
 
 
 /*
- * End of "$Id: mxmldoc.c,v 1.16 2003/07/27 23:11:40 mike Exp $".
+ * End of "$Id: mxmldoc.c,v 1.17 2003/09/28 21:09:04 mike Exp $".
  */

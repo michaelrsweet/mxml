@@ -9,6 +9,8 @@ CHANGES IN Mini-XML 1.1
 	  capped at 16383, 255, and 255 bytes, respectively.
 	- Added a new mxmlLoadString() function for loading an
 	  XML node tree from a string.
+	- Added a new mxmlSaveString() function for saving an
+	  XML node tree to a string.
 	- Add emulation of strdup() if the local platform does
 	  not provide the function.
 

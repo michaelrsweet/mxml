@@ -1,6 +1,6 @@
 <?php
 //
-// "$Id: html.php,v 1.12 2004/05/20 15:45:55 mike Exp $"
+// "$Id: html.php,v 1.13 2004/06/10 02:40:05 mike Exp $"
 //
 // PHP functions for standardized HTML output...
 //
@@ -114,6 +114,7 @@ html_header($title = "",		// I - Additional document title
        ."<a href='${path}documentation.php'>Documentation</a> | "
        ."<a href='${path}software.php'>Download</a> | "
        ."<a href='${path}links.php'>Links</a> | "
+       ."<a href='${path}newsgroups.php'>Newsgroups</a> | "
        ."<a href='${path}poll.php'>Polls</a> | "
        ."<a href='${path}str.php'>Support</a>&nbsp;]</td>"
        ."<td align='right'>[&nbsp;");

@@ -1,7 +1,8 @@
 <?php
 //
-// "$Id: account.php,v 1.1 2004/05/17 20:28:52 mike Exp $"
+// "$Id: account.php,v 1.2 2004/05/18 01:39:00 mike Exp $"
 //
+// Account management page...
 //
 
 //
@@ -9,6 +10,9 @@
 //
 
 include_once "phplib/html.php";
+include_once "phplib/common.php";
+include_once "phplib/str.php";
+
 
 if ($argc == 1 && $argv[0] == "X")
   auth_logout();
@@ -38,9 +42,64 @@ switch ($op)
 
       print("<h1>New/Pending</h1>\n");
 
+      $email = db_escape($_COOKIE["FROM"]);
+
       print("<h2>New/Pending Articles:</h2>\n");
 
+      print("<p>No new/pending articles found.</p>\n");
+
       print("<h2>New/Pending STRs:</h2>\n");
+
+      $result = db_query("SELECT * FROM str WHERE status >= $STR_STATUS_PENDING "
+	                ."AND (manager_email == '' OR manager_email = '$email') "
+	                ."ORDER BY status DESC, priority DESC, scope DESC, "
+			."modify_date");
+      $count  = db_count($result);
+
+      if ($count == 0)
+	print("<p>No new/pending STRs found.</p>\n");
+      else
+      {
+        html_start_table(array("Id", "Priority", "Status", "Scope",
+	                       "Summary", "Version", "Last Updated",
+			       "Assigned To"));
+
+	while ($row = db_next($result))
+	{
+	  $date     = date("M d, Y", $row['modify_date']);
+          $summary  = htmlspecialchars($row['summary'], ENT_QUOTES);
+	  $summabbr = htmlspecialchars(abbreviate($row['summary'], 80), ENT_QUOTES);
+	  $prtext   = $priority_text[$row['priority']];
+          $sttext   = $status_text[$row['status']];
+          $sctext   = $scope_text[$row['scope']];
+
+          html_start_row();
+
+          print("<td nowrap>"
+	       ."<a href='str.php?L$row[id]$options' alt='STR #$row[id]: $summary'>"
+	       ."$row[id]</a></td>"
+	       ."<td align='center'>$prtext</td>"
+	       ."<td align='center'>$sttext</td>"
+	       ."<td align='center'>$sctext</td>"
+	       ."<td align='center'><a href='str.php?L$row[id]$options' "
+	       ."alt='STR #$row[id]: $summary'>$summabbr</a></td>"
+	       ."<td align='center'>$row[str_version]</td>"
+	       ."<td align='center'>$date</td>");
+
+	  if ($row['manager_email'] != "")
+	    $email = sanitize_email($row['manager_email']);
+	  else
+	    $email = "<i>Unassigned</i>";
+
+	  print("<td align='center'>$email</td>");
+
+	  html_end_row();
+	}
+
+        html_end_table();
+      }
+
+      db_free($result);
 
       html_footer();
       break;
@@ -86,6 +145,6 @@ switch ($op)
 
 
 //
-// End of "$Id: account.php,v 1.1 2004/05/17 20:28:52 mike Exp $".
+// End of "$Id: account.php,v 1.2 2004/05/18 01:39:00 mike Exp $".
 //
 ?>

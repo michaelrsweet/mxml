@@ -1,6 +1,6 @@
 <?php
 //
-// "$Id: html.php,v 1.4 2004/05/17 20:28:52 mike Exp $"
+// "$Id: html.php,v 1.5 2004/05/18 01:39:00 mike Exp $"
 //
 // PHP functions for standardized HTML output...
 //
@@ -106,9 +106,9 @@ html_header($title = "")		// I - Additional document title
        ."<tr class='header' height='40'>"
        ."<td valign='top'><img src='images/top-left.gif' width='15' height='15' "
        ."alt=''/></td>"
-       ."<td width='100%'><img src='images/logo.gif' width='39' height='32' "
-       ."alt='Mini-XML' align='middle'/> "
-       ."[&nbsp;<a href='index.php'>Home</a> | "
+       ."<td><img src='images/logo.gif' width='39' height='32' "
+       ."alt='Mini-XML' align='middle'/>&nbsp;&nbsp;&nbsp;</td>"
+       ."<td width='100%'>[&nbsp;<a href='index.php'>Home</a> | "
        ."<a href='documentation.php'>Documentation</a> | "
        ."<a href='software.php'>Download</a> | "
        ."<a href='faq.php'>FAQ</a> | "
@@ -127,7 +127,7 @@ html_header($title = "")		// I - Additional document title
        ."</tr>\n");
 
   print("<tr class='page' height='100%'><td></td>"
-       ."<td colspan='2' valign='top'>"
+       ."<td colspan='3' valign='top'>"
        ."<table width='100%' height='100%' border='0' cellpadding='5' "
        ."cellspacing='0'><tr><td valign='top'>");
 }
@@ -144,7 +144,7 @@ html_footer()
   print("<tr class='header'>"
        ."<td valign='bottom'><img src='images/bottom-left.gif' width='15' "
        ."height='15' alt=''/></td>"
-       ."<td colspan='2'><small> <br />"
+       ."<td colspan='3'><small> <br />"
        ."Copyright 2003-2004 by Michael Sweet. This library is free "
        ."software; you can redistribute it and/or modify it "
        ."under the terms of the GNU Library General Public "

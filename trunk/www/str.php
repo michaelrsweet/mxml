@@ -1,31 +1,27 @@
 <?php
+//
+// "$Id: str.php,v 1.5 2004/05/18 01:39:00 mike Exp $"
+//
+// Software Trouble Report page...
+//
+// Contents:
+//
+//   notify_creator() - Notify creator of a STR of changes...
+//
 
-// Standard stuff...
+//
+// Include necessary headers...
+//
+
 include_once "phplib/html.php";
 include_once "phplib/common.php";
+include_once "phplib/str.php";
 
-// STR constants...
-$STR_PROJECT = "Mini-XML";		// Title of project
-$STR_EMAIL = "mxml@easysw.com";		// Default notification address
-$STR_PAGE_MAX = 10; 			// Max STRs per page
 
-$STR_STATUS_RESOLVED   = 1;
-$STR_STATUS_UNRESOLVED = 2;
-$STR_STATUS_ACTIVE     = 3;
-$STR_STATUS_PENDING    = 4;
-$STR_STATUS_NEW        = 5;
-
-$STR_PRIORITY_RFE      = 1;
-$STR_PRIORITY_LOW      = 2;
-$STR_PRIORITY_MODERATE = 3;
-$STR_PRIORITY_HIGH     = 4;
-$STR_PRIORITY_CRITICAL = 5;
-
-$STR_SCOPE_UNIT        = 1;
-$STR_SCOPE_FUNCTION    = 2;
-$STR_SCOPE_SOFTWARE    = 3;
-
+//
 // String definitions for various things...
+//
+
 $managers = array(
   "mike" => "Michael Sweet <mike@easysw.com>"
 );
@@ -67,53 +63,9 @@ $versions = array(
   "Web Site"
 );
 
-$status_text = array(
-  1 => "Resolved",
-  2 => "Unresolved",
-  3 => "Active",
-  4 => "Pending",
-  5 => "New"
-);
-
-$status_long = array(
-  1 => "1 - Closed w/Resolution",
-  2 => "2 - Closed w/o Resolution",
-  3 => "3 - Active",
-  4 => "4 - Pending",
-  5 => "5 - New"
-);
-
-$priority_text = array(
-  1 => "RFE",
-  2 => "LOW",
-  3 => "MODERATE",
-  4 => "HIGH",
-  5 => "CRITICAL"
-);
-
-$priority_long = array(
-  1 => "1 - Request for Enhancement, e.g. asking for a feature",
-  2 => "2 - Low, e.g. a documentation error or undocumented side-effect",
-  3 => "3 - Moderate, e.g. unable to compile the software",
-  4 => "4 - High, e.g. key functionality not working",
-  5 => "5 - Critical, e.g. nothing working at all"
-);
-
-$scope_text = array(
-  1 => "M",
-  2 => "OS",
-  3 => "ALL"
-);
-
-$scope_long = array(
-  1 => "1 - Specific to a machine",
-  2 => "2 - Specific to an operating system",
-  3 => "3 - Applies to all machines and operating systems"
-);
-
 
 //
-// 'notify_creator()' - Notify creator of an STR of changes...
+// 'notify_creator()' - Notify creator of a STR of changes...
 //
 
 function
@@ -840,17 +792,12 @@ switch ($op)
 	                       "Summary", "Version", "Last Updated",
 			       "Assigned To"));
 
-	if ($LOGIN_USER)
-	  $sumlen = 80;
-	else 
-	  $sumlen = 40;
-
 	db_seek($result, $index);
 	for ($i = 0; $i < $STR_PAGE_MAX && $row = db_next($result); $i ++)
 	{
 	  $date     = date("M d, Y", $row['modify_date']);
           $summary  = htmlspecialchars($row['summary'], ENT_QUOTES);
-	  $summabbr = htmlspecialchars(abbreviate($row['summary'], $sumlen), ENT_QUOTES);
+	  $summabbr = htmlspecialchars(abbreviate($row['summary'], 80), ENT_QUOTES);
 	  $prtext   = $priority_text[$row['priority']];
           $sttext   = $status_text[$row['status']];
           $sctext   = $scope_text[$row['scope']];
@@ -976,7 +923,7 @@ switch ($op)
 	  print("</form>");
 
 	print("<p>"
-	     ."M  = Machine, "
+	     ."MACH = Machine, "
 	     ."OS = Operating System."
 	     ."</p>\n");
       }
@@ -1894,4 +1841,7 @@ switch ($op)
       break;
 }
 
+//
+// End of "$Id: str.php,v 1.5 2004/05/18 01:39:00 mike Exp $".
+//
 ?>

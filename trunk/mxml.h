@@ -1,5 +1,5 @@
 /*
- * "$Id: mxml.h,v 1.9 2003/06/14 23:56:47 mike Exp $"
+ * "$Id: mxml.h,v 1.10 2003/06/19 03:20:41 mike Exp $"
  *
  * Header file for mini-XML, a small XML-like file parsing library.
  *
@@ -68,27 +68,41 @@ typedef enum mxml_type_e		/**** The XML node type. ****/
   MXML_INTEGER,				/* Integer value */
   MXML_OPAQUE,				/* Opaque string */
   MXML_REAL,				/* Real value */
-  MXML_TEXT				/* Text fragment */
+  MXML_TEXT,				/* Text fragment */
+  MXML_INTEGER_ARRAY,			/* Integer array value */
+  MXML_REAL_ARRAY			/* Real array value */
 } mxml_type_t;
 
 typedef struct mxml_attr_s		/**** An XML element attribute value. ****/
 {
-  char	*name;				/* Attribute name */
-  char	*value;				/* Attribute value */
+  char			*name;		/* Attribute name */
+  char			*value;		/* Attribute value */
 } mxml_attr_t;
 
 typedef struct mxml_value_s		/**** An XML element value. ****/
 {
-  char		*name;			/* Name of element */
-  int		num_attrs;		/* Number of attributes */
-  mxml_attr_t	*attrs;			/* Attributes */
+  char			*name;		/* Name of element */
+  int			num_attrs;	/* Number of attributes */
+  mxml_attr_t		*attrs;		/* Attributes */
 } mxml_element_t;
 
 typedef struct mxml_text_s		/**** An XML text value. ****/
 {
-  int		whitespace;		/* Leading whitespace? */
-  char		*string;		/* Fragment string */
+  int			whitespace;	/* Leading whitespace? */
+  char			*string;	/* Fragment string */
 } mxml_text_t;
+
+typedef struct mxml_intarray_s		/**** An XML integer array value. ****/
+{
+  int			num_values;	/* Number of values */
+  int			*values;	/* The array of values */
+} mxml_intarray_t;
+
+typedef struct mxml_realarray_s		/**** An XML real array value. ****/
+{
+  int			num_values;	/* Number of values */
+  double		*values;	/* The array of values */
+} mxml_realarray_t;
 
 typedef union mxml_value_u		/**** An XML node value. ****/
 {
@@ -97,19 +111,21 @@ typedef union mxml_value_u		/**** An XML node value. ****/
   char			*opaque;	/* Opaque string */
   double		real;		/* Real number */
   mxml_text_t		text;		/* Text fragment */
+  mxml_intarray_t	intarray;	/* Integer array */
+  mxml_realarray_t	realarray;	/* Real array */
 } mxml_value_t;
 
 typedef struct mxml_node_s mxml_node_t;	/**** An XML node. ****/
 
 struct mxml_node_s			/**** An XML node. ****/
 {
-  mxml_type_t	type;			/* Node type */
-  mxml_node_t	*next;			/* Next node under same parent */
-  mxml_node_t	*prev;			/* Previous node under same parent */
-  mxml_node_t	*parent;		/* Parent node */
-  mxml_node_t	*child;			/* First child node */
-  mxml_node_t	*last_child;		/* Last child node */
-  mxml_value_t	value;			/* Node value */
+  mxml_type_t		type;		/* Node type */
+  mxml_node_t		*next;		/* Next node under same parent */
+  mxml_node_t		*prev;		/* Previous node under same parent */
+  mxml_node_t		*parent;	/* Parent node */
+  mxml_node_t		*child;		/* First child node */
+  mxml_node_t		*last_child;	/* Last child node */
+  mxml_value_t		value;		/* Node value */
 };
 
 
@@ -136,6 +152,8 @@ extern mxml_node_t	*mxmlFindElement(mxml_node_t *node, mxml_node_t *top,
 					 const char *value, int descend);
 extern mxml_node_t	*mxmlLoadFile(mxml_node_t *top, FILE *fp,
 			              mxml_type_t (*cb)(mxml_node_t *));
+extern mxml_node_t	*mxmlLoadString(mxml_node_t *top, const char *s,
+			                mxml_type_t (*cb)(mxml_node_t *));
 extern mxml_node_t	*mxmlNewElement(mxml_node_t *parent, const char *name);
 extern mxml_node_t	*mxmlNewInteger(mxml_node_t *parent, int integer);
 extern mxml_node_t	*mxmlNewOpaque(mxml_node_t *parent, const char *opaque);
@@ -145,6 +163,9 @@ extern mxml_node_t	*mxmlNewText(mxml_node_t *parent, int whitespace,
 extern void		mxmlRemove(mxml_node_t *node);
 extern int		mxmlSaveFile(mxml_node_t *node, FILE *fp,
 			             int (*cb)(mxml_node_t *, int));
+extern int		mxmlSaveString(mxml_node_t *node, char *buffer,
+			               int bufsize,
+			               int (*cb)(mxml_node_t *, int));
 extern mxml_node_t	*mxmlWalkNext(mxml_node_t *node, mxml_node_t *top,
 			              int descend);
 extern mxml_node_t	*mxmlWalkPrev(mxml_node_t *node, mxml_node_t *top,
@@ -162,5 +183,5 @@ extern mxml_node_t	*mxmlWalkPrev(mxml_node_t *node, mxml_node_t *top,
 
 
 /*
- * End of "$Id: mxml.h,v 1.9 2003/06/14 23:56:47 mike Exp $".
+ * End of "$Id: mxml.h,v 1.10 2003/06/19 03:20:41 mike Exp $".
  */

@@ -70,6 +70,20 @@ name="top" direction="I"><type>mxml_node_t *</type><description>Top node</descri
 <argument name="fp" direction="I"><type>FILE *</type><description>File to read from</description></argument>
 <argument name="(*cb)(mxml_node_t *)" direction="I"><type>mxml_type_t</type><description>Callback function or MXML_NO_CALLBACK</description></argument>
 </function>
+<function name="mxmlLoadString"><returnvalue><description>First node or NULL if the string has errors.</description><type>mxml_node_t
+*</type></returnvalue>
+<description>Load a string into an XML node tree.
+
+The nodes in the specified string are added to the specified top node.
+If no top node is provided, the XML string MUST be well-formed with a
+single parent node like &lt;?xml&gt; for the entire string. The callback
+function returns the value type that should be used for child nodes.
+If MXML_NO_CALLBACK is specified then all child nodes will be either
+MXML_ELEMENT or MXML_TEXT nodes.</description><argument
+name="top" direction="I"><type>mxml_node_t *</type><description>Top node</description></argument>
+<argument name="s" direction="I"><type>const char *</type><description>String to load</description></argument>
+<argument name="(*cb)(mxml_node_t *)" direction="I"><type>mxml_type_t</type><description>Callback function or MXML_NO_CALLBACK</description></argument>
+</function>
 <function name="mxmlNewElement"><returnvalue><description>New node</description><type>mxml_node_t
 *</type></returnvalue>
 <description>Create a new element node.
@@ -142,6 +156,17 @@ name="node" direction="I"><type>mxml_node_t *</type><description>Node to write</
 <argument name="fp" direction="I"><type>FILE *</type><description>File to write to</description></argument>
 <argument name="(*cb)(mxml_node_t *int)" direction="I"><type>int</type><description>Whitespace callback or MXML_NO_CALLBACK</description></argument>
 </function>
+<function name="mxmlSaveString"><returnvalue><description>Size of string</description><type>int</type></returnvalue>
+<description>Save an XML node tree to a string.
+
+This function returns the total number of bytes that would be
+required for the string but only copies (bufsize - 1) characters
+into the specified buffer.</description><argument
+name="node" direction="I"><type>mxml_node_t *</type><description>Node to write</description></argument>
+<argument name="buffer" direction="I"><type>char *</type><description>String buffer</description></argument>
+<argument name="bufsize" direction="I"><type>int</type><description>Size of string buffer</description></argument>
+<argument name="(*cb)(mxml_node_t *int)" direction="I"><type>int</type><description>Whitespace callback or MXML_NO_CALLBACK</description></argument>
+</function>
 <function name="mxmlWalkNext"><returnvalue><description>Next node or NULL</description><type>mxml_node_t
 *</type></returnvalue>
 <description>Walk to the next logical node in the tree.
@@ -172,6 +197,12 @@ name="name"><type>char *</type><description>Attribute name</description></variab
 mxml_attr_s</type></typedef>
 <typedef name="mxml_element_t"><description>An XML element value.</description><type>struct
 mxml_value_s</type></typedef>
+<struct name="mxml_intarray_s"><description>An XML integer array value.</description><variable
+name="num_values"><type>int</type><description>Number of values</description></variable>
+<variable name="values"><type>int *</type><description>The array of values</description></variable>
+</struct>
+<typedef name="mxml_intarray_t"><description>An XML integer array value.</description><type>struct
+mxml_intarray_s</type></typedef>
 <struct name="mxml_node_s"><description>Data types...</description><variable
 name="child"><type>mxml_node_t *</type><description>First child node</description></variable>
 <variable name="last_child"><type>mxml_node_t *</type><description>Last child node</description></variable>
@@ -182,6 +213,12 @@ name="child"><type>mxml_node_t *</type><description>First child node</descriptio
 <variable name="value"><type>mxml_value_t</type><description>Node value</description></variable>
 </struct>
 <typedef name="mxml_node_t"><type>struct mxml_node_s</type><description>An XML node.</description><description>An XML node.</description></typedef>
+<struct name="mxml_realarray_s"><description>An XML real array value.</description><variable
+name="num_values"><type>int</type><description>Number of values</description></variable>
+<variable name="values"><type>double *</type><description>The array of values</description></variable>
+</struct>
+<typedef name="mxml_realarray_t"><description>An XML real array value.</description><type>struct
+mxml_realarray_s</type></typedef>
 <struct name="mxml_text_s"><description>An XML text value.</description><variable
 name="string"><type>char *</type><description>Fragment string</description></variable>
 <variable name="whitespace"><type>int</type><description>Leading whitespace?</description></variable>
@@ -191,8 +228,10 @@ mxml_text_s</type></typedef>
 <enumeration name="mxml_type_e"><description>The XML node type.</description><constant
 name="MXML_ELEMENT"><description>XML element with attributes</description></constant>
 <constant name="MXML_INTEGER"><description>Integer value</description></constant>
+<constant name="MXML_INTEGER_ARRAY"><description>Integer array value</description></constant>
 <constant name="MXML_OPAQUE"><description>Opaque string</description></constant>
 <constant name="MXML_REAL"><description>Real value</description></constant>
+<constant name="MXML_REAL_ARRAY"><description>Real array value</description></constant>
 <constant name="MXML_TEXT"><description>Text fragment</description></constant>
 </enumeration>
 <typedef name="mxml_type_t"><description>The XML node type.</description><type>enum
@@ -206,8 +245,10 @@ name="attrs"><type>mxml_attr_t *</type><description>Attributes</description></va
 mxml_value_u</type></typedef>
 <union name="mxml_value_u"><description>An XML node value.</description><variable
 name="element"><type>mxml_element_t</type><description>Element</description></variable>
+<variable name="intarray"><type>mxml_intarray_t</type><description>Integer array</description></variable>
 <variable name="integer"><type>int</type><description>Integer number</description></variable>
 <variable name="opaque"><type>char *</type><description>Opaque string</description></variable>
 <variable name="real"><type>double</type><description>Real number</description></variable>
+<variable name="realarray"><type>mxml_realarray_t</type><description>Real array</description></variable>
 <variable name="text"><type>mxml_text_t</type><description>Text fragment</description></variable>
 </union>

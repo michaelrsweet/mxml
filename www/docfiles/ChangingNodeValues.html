@@ -28,6 +28,23 @@ PRE { font-family: monospace }
 <A HREF="FormattedText.html">Next</A>
 <HR NOSHADE>
 <H2><A NAME="4_3">Changing Node Values</A></H2>
+<P>All of the examples so far have concentrated on creating and loading
+ new XML data nodes. Many applications, however, need to manipulate or
+ change the nodes during their operation, so Mini-XML provides functions
+ to change node values safely and without leaking memory.</P>
+<P>Existing nodes can be changed using the <A href="mxmlSetElement.html#mxmlSetElement">
+<TT>mxmlSetElement()</TT></A>, <A href="mxmlSetInteger.html#mxmlSetInteger">
+<TT>mxmlSetInteger()</TT></A>, <A href="mxmlSetOpaque.html#mxmlSetOpaque">
+<TT>mxmlSetOpaque()</TT></A>, <A href="mxmlSetReal.html#mxmlSetReal"><TT>
+mxmlSetReal()</TT></A>, and <A href="mxmlSetText.html#mxmlSetText"><TT>
+mxmlSetText()</TT></A> functions. For example, use the following
+ function call to change a text node to contain the text &quot;new&quot; with
+ leading whitespace:</P>
+<PRE>
+    <A href="mxmlnodet.html#mxml_node_t">mxml_node_t</A> *node;
+
+    <A href="mxmlSetText.html#mxmlSetText">mxmlSetText</A>(node, 1, &quot;new&quot;);
+</PRE>
 <HR NOSHADE>
 <A HREF="toc.html">Contents</A>
 <A HREF="SaveCallbacks.html">Previous</A>

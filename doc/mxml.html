@@ -848,11 +848,53 @@ mxmlSetInteger()</TT></A>, <A href="#mxmlSetOpaque"><TT>mxmlSetOpaque()</TT>
 <P>Once the index is created, the <A href="#mxmlIndexEnum"><TT>
 mxmlIndexEnum()</TT></A>, <A href="#mxmlIndexFind"><TT>mxmlIndexFind()</TT>
 </A>, and <A href="#mxmlIndexReset"><TT>mxmlIndexReset()</TT></A>
- functions are used to access the nodes in the index. The <A href="#mxmlIndexEnum">
-<TT>mxmlIndexEnum()</TT></A> function enumerates each of the nodes in
- the index.</P>
-<P>The <A href="#mxmlIndexFind"><TT>mxmlIndexFind()</TT></A> function</P>
-<P>The <A href="#mxmlIndexReset"><TT>mxmlIndexReset()</TT></A> function</P>
+ functions are used to access the nodes in the index. The <A href="#mxmlIndexReset">
+<TT>mxmlIndexReset()</TT></A> function resets the &quot;current&quot; node pointer
+ in the index, allowing you to do new searches and enumerations on the
+ same index. Typically you will call this function prior to your calls
+ to <A href="#mxmlIndexEnum"><TT>mxmlIndexEnum()</TT></A> and <A href="#mxmlIndexFind">
+<TT>mxmlIndexFind()</TT></A>.</P>
+<P>The <A href="#mxmlIndexEnum"><TT>mxmlIndexEnum()</TT></A> function
+ enumerates each of the nodes in the index and can be used in a loop as
+ follows:</P>
+<PRE>
+    <A href="#mxml_node_t">mxml_node_t</A> *node;
+    <A href="#mxml_index_t">mxml_index_t</A> *ind;
+
+    mxmlIndexReset(ind);
+
+    while ((node = mxmlIndexEnum(ind)) != NULL)
+    {
+      // do something with node
+    }
+</PRE>
+<P>The <A href="#mxmlIndexFind"><TT>mxmlIndexFind()</TT></A> function
+ locates the next occurrence of the named element and attribute value in
+ the index. It can be used to find all matching elements in an index, as
+ follows:</P>
+<PRE>
+    <A href="#mxml_node_t">mxml_node_t</A> *node;
+    <A href="#mxml_index_t">mxml_index_t</A> *ind;
+
+    mxmlIndexReset(ind);
+
+    while ((node = mxmlIndexFind(ind, &quot;element&quot;, &quot;attr-value&quot;)) != NULL)
+    {
+      // do something with node
+    }
+</PRE>
+<P>The second and third arguments represent the element name and
+ attribute value, respectively. A <TT>NULL</TT> pointer is used to
+ return all elements or attributes in the index. Passing <TT>NULL</TT>
+ for both the element name and attribute value is equivalent to calling <TT>
+mxmlIndexEnum</TT>.</P>
+<P>When you are done using the index, delete it using the <A href="#mxmlIndexDelete()">
+<TT>mxmlIndexDelete()</TT></A> function:</P>
+<PRE>
+    <A href="#mxml_index_t">mxml_index_t</A> *ind;
+
+    mxmlIndexDelete(ind);
+</PRE>
 <HR NOSHADE>
 <H1 align="right"><A name="MXMLDOC">4 - Using the mxmldoc Utility</A></H1>
 <P>This chapter describes how to use the <TT>mxmldoc(1)</TT> utility
@@ -1590,6 +1632,7 @@ mxmldoc</TT> to generate correct documentation for the code. Single line
 <H2><A NAME="7_1">Changes in Mini-XML 2.0</A></H2>
 <UL>
 <LI>New programmers manual.</LI>
+<LI>Added Visual C++ project files for Microsoft Windows users.</LI>
 <LI>Added optimizations to mxmldoc, mxmlSaveFile(), and mxmlIndexNew()
  (STR #2)</LI>
 <LI>mxmlEntityAddCallback() now returns an integer status (STR #2)</LI>

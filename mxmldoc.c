@@ -1,5 +1,5 @@
 /*
- * "$Id: mxmldoc.c,v 1.6 2003/06/05 03:06:20 mike Exp $"
+ * "$Id: mxmldoc.c,v 1.7 2003/06/05 12:11:53 mike Exp $"
  *
  * Documentation generator using mini-XML, a small XML-like file parsing
  * library.
@@ -39,7 +39,8 @@
  * of the public API code documentation which can then be converted to HTML
  * as desired.  The following is a poor-man's schema:
  *
- * <namespace name="">                        [name is usually "std"...]
+ * <?xml version="1.0"?>
+ * <namespace name="">                        [optional...]
  *   <constant name="">
  *     <description>descriptive text</description>
  *   </constant>
@@ -98,6 +99,7 @@ static int		scan_file(const char *filename, FILE *fp,
 static void		sort_node(mxml_node_t *tree, mxml_node_t *func);
 static void		update_comment(mxml_node_t *parent,
 			               mxml_node_t *comment);
+static void		write_documentation(mxml_node_t *doc);
 static int		ws_cb(mxml_node_t *node, int where);
 
 
@@ -176,34 +178,43 @@ main(int  argc,				/* I - Number of command-line args */
     else
       fclose(fp);
 
- /*
-  * Save the updated XML documentation file...
-  */
-
-  if ((fp = fopen(argv[1], "w")) != NULL)
+  if (argc > 2)
   {
    /*
-    * Write over the existing XML file...
+    * Save the updated XML documentation file...
     */
 
-    if (mxmlSaveFile(doc, fp, ws_cb))
+    if ((fp = fopen(argv[1], "w")) != NULL)
     {
-      fprintf(stderr, "Unable to write the XML documentation file \"%s\": %s!\n",
-              argv[1], strerror(errno));
+     /*
+      * Write over the existing XML file...
+      */
+
+      if (mxmlSaveFile(doc, fp, ws_cb))
+      {
+	fprintf(stderr, "Unable to write the XML documentation file \"%s\": %s!\n",
+        	argv[1], strerror(errno));
+	fclose(fp);
+	mxmlDelete(doc);
+	return (1);
+      }
+
       fclose(fp);
+    }
+    else
+    {
+      fprintf(stderr, "Unable to create the XML documentation file \"%s\": %s!\n",
+              argv[1], strerror(errno));
       mxmlDelete(doc);
       return (1);
     }
+  }
 
-    fclose(fp);
-  }
-  else
-  {
-    fprintf(stderr, "Unable to create the XML documentation file \"%s\": %s!\n",
-            argv[1], strerror(errno));
-    mxmlDelete(doc);
-    return (1);
-  }
+ /*
+  * Write HTML documentation...
+  */
+
+  write_documentation(doc);
 
  /*
   * Delete the tree and return...
@@ -245,7 +256,7 @@ scan_file(const char  *filename,	/* I - Filename */
 		*bufptr;
   mxml_node_t	*comment,		/* <comment> node */
 		*function,		/* <function> node */
-		*structure,		/* <struct> or <class> node */
+		*parent,		/* <struct> or <class> node */
 		*variable,		/* <variable> or <argument> node */
 		*returnvalue,		/* <returnvalue> node */
 		*type,			/* <type> node */
@@ -276,7 +287,7 @@ scan_file(const char  *filename,	/* I - Filename */
   bufptr      = buffer;
 
   comment     = mxmlNewElement(MXML_NO_PARENT, "temp");
-  structure   = NULL;
+  parent      = tree;
   function    = NULL;
   variable    = NULL;
   returnvalue = NULL;
@@ -324,6 +335,9 @@ scan_file(const char  *filename,	/* I - Filename */
 		break;
 
             case '{' :
+	        if (function)
+		  sort_node(parent, function);
+
 	        braces ++;
 		function = NULL;
 		variable = NULL;
@@ -344,6 +358,9 @@ scan_file(const char  *filename,	/* I - Filename */
 		break;
 
 	    case ';' :
+	        if (function)
+		  mxmlDelete(function);
+
 		function = NULL;
 		variable = NULL;
 		break;
@@ -533,21 +550,25 @@ scan_file(const char  *filename,	/* I - Filename */
 	        function = mxmlNewElement(MXML_NO_PARENT, "function");
 		mxmlElementSetAttr(function, "name", buffer);
 
-		sort_node(tree, function);
+                if (!type->last_child ||
+		    strcmp(type->last_child->value.text.string, "void"))
+		{
+                  returnvalue = mxmlNewElement(function, "returnvalue");
+
+		  description = mxmlNewElement(returnvalue, "description");
+		  update_comment(returnvalue, comment->last_child);
+		  mxmlAdd(description, MXML_ADD_AFTER, MXML_ADD_TO_PARENT,
+		          comment->last_child);
+
+		  mxmlAdd(returnvalue, MXML_ADD_AFTER, MXML_ADD_TO_PARENT, type);
+                }
+		else
+		  mxmlDelete(type);
 
 		description = mxmlNewElement(function, "description");
-		update_comment(function, comment->child);
+		update_comment(function, comment->last_child);
 		mxmlAdd(description, MXML_ADD_AFTER, MXML_ADD_TO_PARENT,
-		        comment->child);
-
-                returnvalue = mxmlNewElement(function, "returnvalue");
-
-		description = mxmlNewElement(returnvalue, "description");
-		update_comment(returnvalue, comment->child);
-		mxmlAdd(description, MXML_ADD_AFTER, MXML_ADD_TO_PARENT,
-		        comment->child);
-
-		mxmlAdd(returnvalue, MXML_ADD_AFTER, MXML_ADD_TO_PARENT, type);
+		        comment->last_child);
 
 		type = NULL;
 	      }
@@ -572,11 +593,21 @@ scan_file(const char  *filename,	/* I - Filename */
 	        variable = mxmlNewElement(MXML_NO_PARENT, "variable");
 		mxmlElementSetAttr(variable, "name", buffer);
 
-		sort_node(tree, variable);
+		sort_node(parent, variable);
 
 		mxmlAdd(variable, MXML_ADD_AFTER, MXML_ADD_TO_PARENT, type);
 		type = NULL;
               }
+	      else if (ch == '{' && type->child &&
+	               (!strcmp(type->child->value.text.string, "class") ||
+			!strcmp(type->child->value.text.string, "enum") ||
+			!strcmp(type->child->value.text.string, "struct") ||
+			!strcmp(type->child->value.text.string, "typedef")))
+              {
+		/* Handle structure/class/enum/typedef... */
+		mxmlDelete(type);
+		type = NULL;
+	      }
 	      else
 	        mxmlNewText(type, type->child != NULL, buffer);
 	    }
@@ -657,7 +688,7 @@ sort_node(mxml_node_t *tree,		/* I - Tree to sort into */
  * 'update_comment()' - Update a comment node.
  */
 
-static void				/* Returns nothing */
+static void
 update_comment(mxml_node_t *parent,	/* I - Parent node */
                mxml_node_t *comment)	/* I - Comment node */
 {
@@ -729,6 +760,80 @@ update_comment(mxml_node_t *parent,	/* I - Parent node */
 
 
 /*
+ * 'write_documentation()' - Write HTML documentation.
+ */
+
+static void
+write_documentation(mxml_node_t *doc)	/* I - XML documentation */
+{
+  mxml_node_t	*node,			/* Current node */
+		*function,		/* Current function */
+		*arg,			/* Current argument */
+		*description,		/* Description of function/var */
+		*type;			/* Type of returnvalue/var */
+  const char	*name;			/* Name of function/type */
+
+
+  puts("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" "
+       "\"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">");
+  puts("<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en\" lang=\"en\">");
+  puts("<head>");
+  puts("\t<title>Mini-XML Home Page</title>");
+  puts("\t<style><!--");
+  puts("\th1, h2, h3, p { font-family: sans-serif; text-align: justify; }");
+  puts("\ttt, pre, pre a:link, pre a:visited, tt a:link, tt a:visited { font-weight: bold; color: #7f0000; }");
+  puts("\t--></style>");
+  puts("</head>");
+  puts("<body>");
+
+  puts("<h1>Functions</h1>");
+  puts("<ul>");
+
+  for (function = mxmlFindElement(doc, doc, "function", NULL, NULL,
+                                  MXML_DESCEND_FIRST);
+       function;
+       function = mxmlFindElement(function, doc, "function", NULL, NULL,
+                                  MXML_NO_DESCEND))
+  {
+    name = mxmlElementGetAttr(function, "name");
+    printf("\t<li><a href=\"#%s\"><tt>%s()</tt></a></li>\n", name, name);
+  }
+
+  puts("</ul>");
+
+  for (function = mxmlFindElement(doc, doc, "function", NULL, NULL,
+                                  MXML_DESCEND_FIRST);
+       function;
+       function = mxmlFindElement(function, doc, "function", NULL, NULL,
+                                  MXML_NO_DESCEND))
+  {
+    name = mxmlElementGetAttr(function, "name");
+    printf("<h2><a name=\"%s\">%s()</a></h2>\n", name, name);
+
+    description = mxmlFindElement(function, function, "description", NULL,
+                                  NULL, MXML_DESCEND_FIRST);
+    fputs("<p>", stdout);
+    for (node = mxmlWalkNext(description, description, MXML_DESCEND);
+         node;
+	 node = mxmlWalkNext(node, description, MXML_DESCEND))
+      if (node->type == MXML_TEXT)
+      {
+        if (node->value.text.whitespace)
+	  putchar(' ');
+
+	fputs(node->value.text.string, stdout);
+      }
+
+    puts("</p>");
+  }
+
+  puts("</body>");
+  puts("</html>");
+
+}
+
+
+/*
  * 'ws_cb()' - Whitespace callback for saving.
  */
 
@@ -741,24 +846,18 @@ ws_cb(mxml_node_t *node,		/* I - Element node */
 
   name = node->value.element.name;
 
-  if (!strcmp(name, "namespace") || !strcmp(name, "enumeration") ||
-      !strcmp(name, "typedef") || !strcmp(name, "function") ||
-      !strcmp(name, "variable") || !strcmp(name, "struct") ||
-      !strcmp(name, "class") || !strcmp(name, "constant") ||
-      !strcmp(name, "argument") || !strcmp(name, "returnvalue"))
-  {
-    if (where <= MXML_WS_AFTER_OPEN)
-      return ('\n');
-  }
-  else if (where == MXML_WS_AFTER_CLOSE)
+  if ((!strcmp(name, "namespace") || !strcmp(name, "enumeration") ||
+       !strcmp(name, "typedef") || !strcmp(name, "function") ||
+       !strcmp(name, "variable") || !strcmp(name, "struct") ||
+       !strcmp(name, "class") || !strcmp(name, "constant") ||
+       !strcmp(name, "argument") || !strcmp(name, "returnvalue")) &&
+      where == MXML_WS_AFTER_CLOSE)
     return ('\n');
-  else if (where == MXML_WS_BEFORE_OPEN && strcmp(name, "?xml"))
-    return ('\t');
 
   return (0);
 }
 
 
 /*
- * End of "$Id: mxmldoc.c,v 1.6 2003/06/05 03:06:20 mike Exp $".
+ * End of "$Id: mxmldoc.c,v 1.7 2003/06/05 12:11:53 mike Exp $".
  */

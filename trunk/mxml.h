@@ -1,5 +1,5 @@
 /*
- * "$Id: mxml.h,v 1.21 2004/06/01 20:19:34 mike Exp $"
+ * "$Id: mxml.h,v 1.22 2004/07/11 13:14:07 mike Exp $"
  *
  * Header file for Mini-XML, a small XML-like file parsing library.
  *
@@ -161,6 +161,8 @@ extern mxml_node_t	*mxmlIndexFind(mxml_index_t *ind,
 extern mxml_index_t	*mxmlIndexNew(mxml_node_t *node, const char *element,
 			              const char *attr);
 extern mxml_node_t	*mxmlIndexReset(mxml_index_t *ind);
+extern mxml_node_t	*mxmlLoadFd(mxml_node_t *top, int fd,
+			            mxml_type_t (*cb)(mxml_node_t *));
 extern mxml_node_t	*mxmlLoadFile(mxml_node_t *top, FILE *fp,
 			              mxml_type_t (*cb)(mxml_node_t *));
 extern mxml_node_t	*mxmlLoadString(mxml_node_t *top, const char *s,
@@ -180,6 +182,8 @@ __attribute__ ((__format__ (__printf__, 3, 4)))
 extern void		mxmlRemove(mxml_node_t *node);
 extern char		*mxmlSaveAllocString(mxml_node_t *node,
 			        	     const char *(*cb)(mxml_node_t *, int));
+extern int		mxmlSaveFd(mxml_node_t *node, int fd,
+			           const char *(*cb)(mxml_node_t *, int));
 extern int		mxmlSaveFile(mxml_node_t *node, FILE *fp,
 			             const char *(*cb)(mxml_node_t *, int));
 extern int		mxmlSaveString(mxml_node_t *node, char *buffer,
@@ -225,5 +229,5 @@ extern mxml_type_t	mxml_real_cb(mxml_node_t *node);
 
 
 /*
- * End of "$Id: mxml.h,v 1.21 2004/06/01 20:19:34 mike Exp $".
+ * End of "$Id: mxml.h,v 1.22 2004/07/11 13:14:07 mike Exp $".
  */

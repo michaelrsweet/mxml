@@ -1,5 +1,10 @@
-CHANGES - 06/25/2004
--------------------
+CHANGES - 07/11/2004
+--------------------
+
+CHANGES IN Mini-XML 2.1
+
+	- Added mxmlLoadFd() and mxmlSaveFd() functions.
+
 
 CHANGES IN Mini-XML 2.0
 

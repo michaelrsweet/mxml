@@ -1,5 +1,5 @@
 /*
- * "$Id: testmxml.c,v 1.17 2004/05/16 18:25:20 mike Exp $"
+ * "$Id: testmxml.c,v 1.18 2004/07/11 13:14:07 mike Exp $"
  *
  * Test program for Mini-XML, a small XML-like file parsing library.
  *
@@ -29,6 +29,12 @@
 
 #include "config.h"
 #include "mxml.h"
+#ifdef WIN32
+#  include <io.h>
+#else
+#  include <unistd.h>
+#  include <fcntl.h>
+#endif /* WIN32 */
 
 
 /*
@@ -49,6 +55,7 @@ main(int  argc,				/* I - Number of command-line args */
 {
   int			i;		/* Looping var */
   FILE			*fp;		/* File to read */
+  int			fd;		/* File descriptor */
   mxml_node_t		*tree,		/* XML tree */
 			*node;		/* Node which should be in test.xml */
   mxml_index_t		*ind;		/* XML index */
@@ -456,10 +463,66 @@ main(int  argc,				/* I - Number of command-line args */
     fputs(buffer, stderr);
 
  /*
-  * Delete the tree and return...
+  * Delete the tree...
   */
 
   mxmlDelete(tree);
+
+ /*
+  * Read from/write to file descriptors...
+  */
+
+  if (argv[1][0] != '<')
+  {
+   /*
+    * Open the file again...
+    */
+
+    if ((fd = open(argv[1], O_RDONLY)) < 0)
+    {
+      perror(argv[1]);
+      return (1);
+    }
+
+   /*
+    * Read the file...
+    */
+
+    tree = mxmlLoadFd(NULL, fd, type_cb);
+
+    close(fd);
+
+   /*
+    * Create filename.xmlfd...
+    */
+
+    snprintf(buffer, sizeof(buffer), "%sfd", argv[1]);
+
+    if ((fd = open(buffer, O_WRONLY | O_CREAT | O_TRUNC, 0666)) < 0)
+    {
+      perror(buffer);
+      mxmlDelete(tree);
+      return (1);
+    }
+
+   /*
+    * Write the file...
+    */
+
+    mxmlSaveFd(tree, fd, whitespace_cb);
+
+    close(fd);
+
+   /*
+    * Delete the tree...
+    */
+
+    mxmlDelete(tree);
+  }
+
+ /*
+  * Return...
+  */
 
   return (0);
 }
@@ -502,7 +565,12 @@ const char *				/* O - Whitespace string or NULL */
 whitespace_cb(mxml_node_t *node,	/* I - Element node */
               int         where)	/* I - Open or close tag? */
 {
-  const char *name;			/* Name of element */
+  mxml_node_t	*parent;		/* Parent node */
+  int		level;			/* Indentation level */
+  const char	*name;			/* Name of element */
+  static const char *tabs = "\t\t\t\t\t\t\t\t";
+					/* Tabs for indentation */
+
 
  /*
   * We can conditionally break to a new line before or after any element.
@@ -542,6 +610,37 @@ whitespace_cb(mxml_node_t *node,	/* I - Element node */
     else if (where == MXML_WS_AFTER_CLOSE)
       return ("\n");
   }
+  else if (!strcmp(name, "?xml"))
+  {
+    return (NULL);
+  }
+  else if (!strcmp(name, "option"))
+  {
+    if (where == MXML_WS_AFTER_OPEN || where == MXML_WS_AFTER_CLOSE)
+      return ("\n");
+  }
+  else if (!strcmp(name, "choice"))
+  {
+    if (where == MXML_WS_BEFORE_OPEN || where == MXML_WS_BEFORE_CLOSE)
+      return ("\t");
+    else
+      return ("\n");
+  }
+  else if (where == MXML_WS_BEFORE_OPEN)
+  {
+    for (level = -1, parent = node->parent;
+         parent;
+	 level ++, parent = parent->parent);
+
+    if (level > 8)
+      level = 8;
+
+    return (tabs + 8 - level);
+  }
+  else if (where == MXML_WS_AFTER_CLOSE)
+    return ("\n");
+  else if (!strcmp(name, "code") && where == MXML_WS_AFTER_OPEN && !node->child)
+    return ("\n");
 
  /*
   * Return NULL for no added whitespace...
@@ -552,5 +651,5 @@ whitespace_cb(mxml_node_t *node,	/* I - Element node */
 
 
 /*
- * End of "$Id: testmxml.c,v 1.17 2004/05/16 18:25:20 mike Exp $".
+ * End of "$Id: testmxml.c,v 1.18 2004/07/11 13:14:07 mike Exp $".
  */

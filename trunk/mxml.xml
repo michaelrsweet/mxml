@@ -243,6 +243,36 @@ mxmlIndexFind() for the first time.</description>
       <description>Index to reset</description>
     </argument>
   </function>
+  <function name="mxmlLoadFd">
+    <returnvalue>
+      <type>mxml_node_t *</type>
+      <description>First node or NULL if the file could not be read.</description>
+    </returnvalue>
+    <description>Load a file descriptor into an XML node tree.
+
+The nodes in the specified file are added to the specified top node.
+If no top node is provided, the XML file MUST be well-formed with a
+single parent node like &lt;?xml&gt; for the entire file. The callback
+function returns the value type that should be used for child nodes.
+If MXML_NO_CALLBACK is specified then all child nodes will be either
+MXML_ELEMENT or MXML_TEXT nodes.
+
+The constants MXML_INTEGER_CALLBACK, MXML_OPAQUE_CALLBACK,
+MXML_REAL_CALLBACK, and MXML_TEXT_CALLBACK are defined for loading
+child nodes of the specified type.</description>
+    <argument name="top" direction="I">
+      <type>mxml_node_t *</type>
+      <description>Top node</description>
+    </argument>
+    <argument name="fd" direction="I">
+      <type>int</type>
+      <description>File descriptor to read from</description>
+    </argument>
+    <argument name="(*cb)(mxml_node_t *node)" direction="I">
+      <type>mxml_type_t</type>
+      <description>Callback function or MXML_NO_CALLBACK</description>
+    </argument>
+  </function>
   <function name="mxmlLoadFile">
     <returnvalue>
       <type>mxml_node_t *</type>
@@ -454,10 +484,41 @@ This function returns a pointer to a string containing the textual
 representation of the XML node tree.  The string should be freed
 using the free() function when you are done with it.  NULL is returned
 if the node would produce an empty string or if the string cannot be
-allocated.</description>
+allocated.
+
+The callback argument specifies a function that returns a whitespace
+string or NULL before and after each element. If MXML_NO_CALLBACK
+is specified, whitespace will only be added before MXML_TEXT nodes
+with leading whitespace and before attribute names inside opening
+element tags.</description>
     <argument name="node" direction="I">
       <type>mxml_node_t *</type>
       <description>Node to write</description>
+    </argument>
+    <argument name="(*cb)(mxml_node_t *node, int ws)" direction="I">
+      <type>const char *</type>
+      <description>Whitespace callback or MXML_NO_CALLBACK</description>
+    </argument>
+  </function>
+  <function name="mxmlSaveFd">
+    <returnvalue>
+      <type>int</type>
+      <description>0 on success, -1 on error.</description>
+    </returnvalue>
+    <description>Save an XML tree to a file descriptor.
+
+The callback argument specifies a function that returns a whitespace
+string or NULL before and after each element. If MXML_NO_CALLBACK
+is specified, whitespace will only be added before MXML_TEXT nodes
+with leading whitespace and before attribute names inside opening
+element tags.</description>
+    <argument name="node" direction="I">
+      <type>mxml_node_t *</type>
+      <description>Node to write</description>
+    </argument>
+    <argument name="fd" direction="I">
+      <type>int</type>
+      <description>File descriptor to write to</description>
     </argument>
     <argument name="(*cb)(mxml_node_t *node, int ws)" direction="I">
       <type>const char *</type>
@@ -472,7 +533,7 @@ allocated.</description>
     <description>Save an XML tree to a file.
 
 The callback argument specifies a function that returns a whitespace
-character or nul (0) before and after each element. If MXML_NO_CALLBACK
+string or NULL before and after each element. If MXML_NO_CALLBACK
 is specified, whitespace will only be added before MXML_TEXT nodes
 with leading whitespace and before attribute names inside opening
 element tags.</description>
@@ -498,7 +559,13 @@ element tags.</description>
 
 This function returns the total number of bytes that would be
 required for the string but only copies (bufsize - 1) characters
-into the specified buffer.</description>
+into the specified buffer.
+
+The callback argument specifies a function that returns a whitespace
+string or NULL before and after each element. If MXML_NO_CALLBACK
+is specified, whitespace will only be added before MXML_TEXT nodes
+with leading whitespace and before attribute names inside opening
+element tags.</description>
     <argument name="node" direction="I">
       <type>mxml_node_t *</type>
       <description>Node to write</description>
@@ -700,6 +767,25 @@ the walk to the node's children.</description>
   <typedef name="mxml_element_t">
     <type>struct mxml_value_s</type>
     <description>An XML element value.</description>
+  </typedef>
+  <struct name="mxml_fdbuf_s">
+    <description>File descriptor buffer (@private)</description>
+    <variable name="buffer[8192]">
+      <type>end</type>
+      <description>Character buffer</description>
+    </variable>
+    <variable name="current">
+      <type>unsigned char *</type>
+      <description>Current position in buffer</description>
+    </variable>
+    <variable name="fd">
+      <type>int</type>
+      <description>File descriptor</description>
+    </variable>
+  </struct>
+  <typedef name="mxml_fdbuf_t">
+    <type>struct mxml_fdbuf_s</type>
+    <description>File descriptor buffer (@private)</description>
   </typedef>
   <struct name="mxml_index_s">
     <description>An XML node index.</description>

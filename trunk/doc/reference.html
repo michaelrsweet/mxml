@@ -2,7 +2,7 @@
 <html xmlns='http://www.w3.org/1999/xhtml' xml:lang='en' lang='en'>
 <head>
 	<title>Documentation</title>
-	<meta name='creator' content='Mini-XML v2.0rc1'/>
+	<meta name='creator' content='Mini-XML v2.0'/>
 	<style><!--
 	h1, h2, h3, p { font-family: sans-serif; text-align: justify; }
 	tt, pre a:link, pre a:visited, tt a:link, tt a:visited { font-weight: bold; color: #7f0000; }
@@ -56,6 +56,7 @@
 	<li><a href='#mxmlIndexFind'><tt>mxmlIndexFind()</tt></a></li>
 	<li><a href='#mxmlIndexNew'><tt>mxmlIndexNew()</tt></a></li>
 	<li><a href='#mxmlIndexReset'><tt>mxmlIndexReset()</tt></a></li>
+	<li><a href='#mxmlLoadFd'><tt>mxmlLoadFd()</tt></a></li>
 	<li><a href='#mxmlLoadFile'><tt>mxmlLoadFile()</tt></a></li>
 	<li><a href='#mxmlLoadString'><tt>mxmlLoadString()</tt></a></li>
 	<li><a href='#mxmlNewElement'><tt>mxmlNewElement()</tt></a></li>
@@ -66,6 +67,7 @@
 	<li><a href='#mxmlNewTextf'><tt>mxmlNewTextf()</tt></a></li>
 	<li><a href='#mxmlRemove'><tt>mxmlRemove()</tt></a></li>
 	<li><a href='#mxmlSaveAllocString'><tt>mxmlSaveAllocString()</tt></a></li>
+	<li><a href='#mxmlSaveFd'><tt>mxmlSaveFd()</tt></a></li>
 	<li><a href='#mxmlSaveFile'><tt>mxmlSaveFile()</tt></a></li>
 	<li><a href='#mxmlSaveString'><tt>mxmlSaveString()</tt></a></li>
 	<li><a href='#mxmlSetElement'><tt>mxmlSetElement()</tt></a></li>
@@ -424,6 +426,40 @@ mxmlIndexReset(
 <h4>Returns</h4>
 <p>First node or NULL if there is none</p>
 <!-- NEW PAGE -->
+<h3><a name='mxmlLoadFd'>mxmlLoadFd()</a></h3>
+<hr noshade/>
+<h4>Description</h4>
+<p>Load a file descriptor into an XML node tree.
+
+The nodes in the specified file are added to the specified top node.
+If no top node is provided, the XML file MUST be well-formed with a
+single parent node like &lt;?xml&gt; for the entire file. The callback
+function returns the value type that should be used for child nodes.
+If MXML_NO_CALLBACK is specified then all child nodes will be either
+MXML_ELEMENT or MXML_TEXT nodes.
+
+The constants MXML_INTEGER_CALLBACK, MXML_OPAQUE_CALLBACK,
+MXML_REAL_CALLBACK, and MXML_TEXT_CALLBACK are defined for loading
+child nodes of the specified type.</p>
+<h4>Syntax</h4>
+<pre>
+<a href='#mxml_node_t'>mxml_node_t</a> *
+mxmlLoadFd(
+    <a href='#mxml_node_t'>mxml_node_t</a> * top,
+    int fd,
+    <a href='#mxml_type_t'>mxml_type_t</a> (*cb)(mxml_node_t *node));
+</pre>
+<h4>Arguments</h4>
+<p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
+<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><tt>top</tt></td><td>Top node</td></tr>
+<tr><td><tt>fd</tt></td><td>File descriptor to read from</td></tr>
+<tr><td><tt>(*cb)(mxml_node_t *node)</tt></td><td>Callback function or MXML_NO_CALLBACK</td></tr>
+</tbody></table></p>
+<h4>Returns</h4>
+<p>First node or NULL if the file could not be read.</p>
+<!-- NEW PAGE -->
 <h3><a name='mxmlLoadFile'>mxmlLoadFile()</a></h3>
 <hr noshade/>
 <h4>Description</h4>
@@ -684,7 +720,13 @@ This function returns a pointer to a string containing the textual
 representation of the XML node tree.  The string should be freed
 using the free() function when you are done with it.  NULL is returned
 if the node would produce an empty string or if the string cannot be
-allocated.</p>
+allocated.
+
+The callback argument specifies a function that returns a whitespace
+string or NULL before and after each element. If MXML_NO_CALLBACK
+is specified, whitespace will only be added before MXML_TEXT nodes
+with leading whitespace and before attribute names inside opening
+element tags.</p>
 <h4>Syntax</h4>
 <pre>
 char *
@@ -702,13 +744,42 @@ mxmlSaveAllocString(
 <h4>Returns</h4>
 <p>Allocated string or NULL</p>
 <!-- NEW PAGE -->
+<h3><a name='mxmlSaveFd'>mxmlSaveFd()</a></h3>
+<hr noshade/>
+<h4>Description</h4>
+<p>Save an XML tree to a file descriptor.
+
+The callback argument specifies a function that returns a whitespace
+string or NULL before and after each element. If MXML_NO_CALLBACK
+is specified, whitespace will only be added before MXML_TEXT nodes
+with leading whitespace and before attribute names inside opening
+element tags.</p>
+<h4>Syntax</h4>
+<pre>
+int
+mxmlSaveFd(
+    <a href='#mxml_node_t'>mxml_node_t</a> * node,
+    int fd,
+    const char * (*cb)(mxml_node_t *node, int ws));
+</pre>
+<h4>Arguments</h4>
+<p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
+<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><tt>node</tt></td><td>Node to write</td></tr>
+<tr><td><tt>fd</tt></td><td>File descriptor to write to</td></tr>
+<tr><td><tt>(*cb)(mxml_node_t *node, int ws)</tt></td><td>Whitespace callback or MXML_NO_CALLBACK</td></tr>
+</tbody></table></p>
+<h4>Returns</h4>
+<p>0 on success, -1 on error.</p>
+<!-- NEW PAGE -->
 <h3><a name='mxmlSaveFile'>mxmlSaveFile()</a></h3>
 <hr noshade/>
 <h4>Description</h4>
 <p>Save an XML tree to a file.
 
 The callback argument specifies a function that returns a whitespace
-character or nul (0) before and after each element. If MXML_NO_CALLBACK
+string or NULL before and after each element. If MXML_NO_CALLBACK
 is specified, whitespace will only be added before MXML_TEXT nodes
 with leading whitespace and before attribute names inside opening
 element tags.</p>
@@ -738,7 +809,13 @@ mxmlSaveFile(
 
 This function returns the total number of bytes that would be
 required for the string but only copies (bufsize - 1) characters
-into the specified buffer.</p>
+into the specified buffer.
+
+The callback argument specifies a function that returns a whitespace
+string or NULL before and after each element. If MXML_NO_CALLBACK
+is specified, whitespace will only be added before MXML_TEXT nodes
+with leading whitespace and before attribute names inside opening
+element tags.</p>
 <h4>Syntax</h4>
 <pre>
 int
@@ -980,6 +1057,7 @@ mxmlWalkPrev(
 <h2><a name='_structures'>Structures</a></h2>
 <ul>
 	<li><a href='#mxml_attr_s'><tt>mxml_attr_s</tt></a></li>
+	<li><a href='#mxml_fdbuf_s'><tt>mxml_fdbuf_s</tt></a></li>
 	<li><a href='#mxml_index_s'><tt>mxml_index_s</tt></a></li>
 	<li><a href='#mxml_node_s'><tt>mxml_node_s</tt></a></li>
 	<li><a href='#mxml_text_s'><tt>mxml_text_s</tt></a></li>
@@ -1004,6 +1082,28 @@ struct mxml_attr_s
 <tbody>
 <tr><td><tt>name</tt></td><td>Attribute name</td></tr>
 <tr><td><tt>value</tt></td><td>Attribute value</td></tr>
+</tbody></table></p>
+<!-- NEW PAGE -->
+<h3><a name='mxml_fdbuf_s'>mxml_fdbuf_s</a></h3>
+<hr noshade/>
+<h4>Description</h4>
+<p>File descriptor buffer (@private)</p>
+<h4>Definition</h4>
+<pre>
+struct mxml_fdbuf_s
+{
+  end buffer[8192];
+  unsigned char * current;
+  int fd;
+};
+</pre>
+<h4>Members</h4>
+<p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
+<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><tt>buffer[8192]</tt></td><td>Character buffer</td></tr>
+<tr><td><tt>current</tt></td><td>Current position in buffer</td></tr>
+<tr><td><tt>fd</tt></td><td>File descriptor</td></tr>
 </tbody></table></p>
 <!-- NEW PAGE -->
 <h3><a name='mxml_index_s'>mxml_index_s</a></h3>
@@ -1108,6 +1208,7 @@ struct mxml_value_s
 <ul>
 	<li><a href='#mxml_attr_t'><tt>mxml_attr_t</tt></a></li>
 	<li><a href='#mxml_element_t'><tt>mxml_element_t</tt></a></li>
+	<li><a href='#mxml_fdbuf_t'><tt>mxml_fdbuf_t</tt></a></li>
 	<li><a href='#mxml_index_t'><tt>mxml_index_t</tt></a></li>
 	<li><a href='#mxml_node_t'><tt>mxml_node_t</tt></a></li>
 	<li><a href='#mxml_text_t'><tt>mxml_text_t</tt></a></li>
@@ -1131,6 +1232,15 @@ typedef struct <a href='#mxml_attr_s'>mxml_attr_s</a> mxml_attr_t;
 <h4>Definition</h4>
 <pre>
 typedef struct <a href='#mxml_value_s'>mxml_value_s</a> mxml_element_t;
+</pre>
+<!-- NEW PAGE -->
+<h3><a name='mxml_fdbuf_t'>mxml_fdbuf_t</a></h3>
+<hr noshade/>
+<h4>Description</h4>
+<p>File descriptor buffer (@private)</p>
+<h4>Definition</h4>
+<pre>
+typedef struct <a href='#mxml_fdbuf_s'>mxml_fdbuf_s</a> mxml_fdbuf_t;
 </pre>
 <!-- NEW PAGE -->
 <h3><a name='mxml_index_t'>mxml_index_t</a></h3>

@@ -1,7 +1,7 @@
 /*
- * "$Id: mxml-attr.c,v 1.7 2004/04/06 01:47:20 mike Exp $"
+ * "$Id: mxml-attr.c,v 1.8 2004/05/02 16:04:40 mike Exp $"
  *
- * Attribute support code for mini-XML, a small XML-like file parsing library.
+ * Attribute support code for Mini-XML, a small XML-like file parsing library.
  *
  * Copyright 2003-2004 by Michael Sweet.
  *
@@ -172,5 +172,5 @@ mxmlElementSetAttr(mxml_node_t *node,	/* I - Element node */
 
 
 /*
- * End of "$Id: mxml-attr.c,v 1.7 2004/04/06 01:47:20 mike Exp $".
+ * End of "$Id: mxml-attr.c,v 1.8 2004/05/02 16:04:40 mike Exp $".
  */

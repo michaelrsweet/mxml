@@ -1,7 +1,7 @@
 /*
- * "$Id: mxml.h,v 1.18 2004/05/01 15:20:04 mike Exp $"
+ * "$Id: mxml.h,v 1.19 2004/05/02 16:04:40 mike Exp $"
  *
- * Header file for mini-XML, a small XML-like file parsing library.
+ * Header file for Mini-XML, a small XML-like file parsing library.
  *
  * Copyright 2003-2004 by Michael Sweet.
  *
@@ -206,5 +206,5 @@ extern mxml_type_t	mxml_real_cb(mxml_node_t *node);
 
 
 /*
- * End of "$Id: mxml.h,v 1.18 2004/05/01 15:20:04 mike Exp $".
+ * End of "$Id: mxml.h,v 1.19 2004/05/02 16:04:40 mike Exp $".
  */

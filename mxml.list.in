@@ -1,7 +1,7 @@
 #
-# "$Id: mxml.list.in,v 1.12 2004/04/29 12:29:17 mike Exp $"
+# "$Id: mxml.list.in,v 1.13 2004/05/02 16:04:40 mike Exp $"
 #
-# EPM software list file for mini-XML, a small XML-like file parsing library.
+# EPM software list file for Mini-XML, a small XML-like file parsing library.
 #
 # Copyright 2003-2004 by Michael Sweet.
 #
@@ -32,7 +32,7 @@ $srcdir=@srcdir@
 %vendor Michael Sweet
 %license ${srcdir}/COPYING
 %readme ${srcdir}/README
-%version 2.0
+%version @VERSION@
 
 %description <<EOF
 Mini-XML is a small XML parsing library that you can use to read
@@ -56,9 +56,7 @@ following functionality:
 Mini-XML doesn't do validation or other types of processing on
 the data based upon schema files or other sources of definition
 information, nor does it support character entities other than
-those required by the XML specification.  Also, since Mini-XML
-does not support the UTF-16 encoding, it is technically not a
-conforming XML consumer/client.
+those required by the XML specification.
 EOF
 
 # Manpage extensions...
@@ -76,11 +74,15 @@ f 0444 root sys ${includedir}/mxml.h mxml.h
 # Libraries
 f 0444 root sys ${libdir}/libmxml.a libmxml.a
 
+# pkg-config info
+f 0444 root sys $(libdir)/pkgconfig/mxml.pc mxml.pc
+
 # Documentation
 f 0444 root sys ${docdir}/README $srcdir/README
 f 0444 root sys ${docdir}/COPYING $srcdir/COPYING
 f 0444 root sys ${docdir}/CHANGES $srcdir/CHANGES
-f 0444 root sys ${docdir}/documentation.html $srcdir/documentation.html
+f 0444 root sys ${docdir}/mxml.html $srcdir/doc/mxml.html
+f 0444 root sys ${docdir}/mxml.pdf $srcdir/doc/mxml.pdf
 
 # Man pages
 f 0444 root sys ${mandir}/cat1/mxmldoc.$CAT1EXT $srcdir/mxmldoc.$CAT1EXT
@@ -89,5 +91,5 @@ f 0444 root sys ${mandir}/cat3/mxml.$CAT3EXT $srcdir/mxml.$CAT3EXT
 f 0444 root sys ${mandir}/man3/mxml.$MAN3EXT $srcdir/mxml.man
 
 #
-# End of "$Id: mxml.list.in,v 1.12 2004/04/29 12:29:17 mike Exp $".
+# End of "$Id: mxml.list.in,v 1.13 2004/05/02 16:04:40 mike Exp $".
 #

@@ -24,3 +24,6 @@ TODO - 05/01/2004
 	  -- Make this the core implementation which the C API accesses?
 	  -- Class would allow for subclassing, is that necessary?
 	- Binary XML support???
+	- Character entity support
+	  -- Add support for a callback which returns a Unicode
+	     char from an entity name.

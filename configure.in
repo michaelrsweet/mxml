@@ -1,7 +1,7 @@
 dnl
-dnl "$Id: configure.in,v 1.9 2004/04/06 01:47:20 mike Exp $"
+dnl "$Id: configure.in,v 1.10 2004/05/02 16:04:40 mike Exp $"
 dnl
-dnl Configuration script for mini-XML, a small XML-like file parsing library.
+dnl Configuration script for Mini-XML, a small XML-like file parsing library.
 dnl
 dnl Copyright 2003-2004 by Michael Sweet.
 dnl
@@ -15,6 +15,11 @@ dnl but WITHOUT ANY WARRANTY; without even the implied warranty of
 dnl MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 dnl GNU General Public License for more details.
 dnl
+
+dnl Version number...
+VERSION="2.0rc1"
+AC_SUBST(VERSION)
+AC_DEFINE(MXML_VERSION, "$VERSION")
 
 dnl Specify a source file from the distribution...
 AC_INIT(mxml.h)
@@ -164,8 +169,8 @@ AC_SUBST(MAN1EXT)
 AC_SUBST(MAN3EXT)
 
 dnl Output the makefile, etc...
-AC_OUTPUT(Makefile mxml.list)
+AC_OUTPUT(Makefile mxml.list mxml.pc)
 
 dnl
-dnl End of "$Id: configure.in,v 1.9 2004/04/06 01:47:20 mike Exp $".
+dnl End of "$Id: configure.in,v 1.10 2004/05/02 16:04:40 mike Exp $".
 dnl

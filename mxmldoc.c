@@ -1,7 +1,7 @@
 /*
- * "$Id: mxmldoc.c,v 1.34 2004/05/01 22:45:34 mike Exp $"
+ * "$Id: mxmldoc.c,v 1.35 2004/05/02 16:04:40 mike Exp $"
  *
- * Documentation generator using mini-XML, a small XML-like file parsing
+ * Documentation generator using Mini-XML, a small XML-like file parsing
  * library.
  *
  * Copyright 2003-2004 by Michael Sweet.
@@ -2708,5 +2708,5 @@ ws_cb(mxml_node_t *node,		/* I - Element node */
 
 
 /*
- * End of "$Id: mxmldoc.c,v 1.34 2004/05/01 22:45:34 mike Exp $".
+ * End of "$Id: mxmldoc.c,v 1.35 2004/05/02 16:04:40 mike Exp $".
  */

@@ -1,7 +1,7 @@
 #
-# "$Id: Makefile.in,v 1.18 2004/05/01 23:41:51 mike Exp $"
+# "$Id: Makefile.in,v 1.19 2004/05/02 16:04:40 mike Exp $"
 #
-# Makefile for mini-XML, a small XML-like file parsing library.
+# Makefile for Mini-XML, a small XML-like file parsing library.
 #
 # Copyright 2003-2004 by Michael Sweet.
 #
@@ -114,6 +114,8 @@ install:	$(TARGETS)
 	$(CP) mxml.h $(BUILDROOT)$(includedir)
 	-$(MKDIR) -p $(BUILDROOT)$(libdir)
 	$(CP) libmxml.a $(BUILDROOT)$(libdir)
+	-$(MKDIR) -p $(BUILDROOT)$(libdir)/pkgconfig
+	$(CP) mxml.pc $(BUILDROOT)$(libdir)/pkgconfig
 	-$(MKDIR) -p $(BUILDROOT)$(mandir)/cat1
 	$(CP) doc/mxmldoc.$(CAT1EXT) $(BUILDROOT)$(mandir)/cat1/mxmldoc.$(CAT1EXT)
 	-$(MKDIR) -p $(BUILDROOT)$(mandir)/cat3
@@ -133,10 +135,20 @@ uninstall:
 	$(RM) -r $(BUILDROOT)$(docdir)
 	$(RM) $(BUILDROOT)$(includedir)/mxml.h
 	$(RM) $(BUILDROOT)$(libdir)/libmxml.a
+	$(RM) $(BUILDROOT)$(libdir)/pkgconfig/mxml.pc
 	$(RM) $(BUILDROOT)$(mandir)/cat1/mxmldoc.$(CAT1EXT)
 	$(RM) $(BUILDROOT)$(mandir)/cat3/mxml.$(CAT3EXT)
 	$(RM) $(BUILDROOT)$(mandir)/man1/mxmldoc.$(MAN1EXT)
 	$(RM) $(BUILDROOT)$(mandir)/man3/mxml.$(MAN3EXT)
+
+
+#
+# Make packages using EPM (http://www.easysw.com/epm/)
+#
+
+epm:	all
+	epm --output-dir dist -v -f native mxml
+	epm --output-dir dist -v -f portable mxml
 
 
 #
@@ -244,5 +256,5 @@ $(OBJS):	Makefile config.h
 
 
 #
-# End of "$Id: Makefile.in,v 1.18 2004/05/01 23:41:51 mike Exp $".
+# End of "$Id: Makefile.in,v 1.19 2004/05/02 16:04:40 mike Exp $".
 #

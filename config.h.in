@@ -1,7 +1,7 @@
 /*
- * "$Id: config.h.in,v 1.4 2004/04/06 01:47:20 mike Exp $"
+ * "$Id: config.h.in,v 1.5 2004/05/02 16:04:40 mike Exp $"
  *
- * Configuration file for mini-XML, a small XML-like file parsing library.
+ * Configuration file for Mini-XML, a small XML-like file parsing library.
  *
  * Copyright 2003-2004 by Michael Sweet.
  *
@@ -25,6 +25,13 @@
 #include <string.h>
 #include <stdarg.h>
 #include <ctype.h>
+
+
+/*
+ * Version number...
+ */
+
+#define MXML_VERSION	""
 
 
 /*
@@ -59,5 +66,5 @@ extern int	mxml_vsnprintf(char *, size_t, const char *, va_list);
 #  endif /* !HAVE_VSNPRINTF */
 
 /*
- * End of "$Id: config.h.in,v 1.4 2004/04/06 01:47:20 mike Exp $".
+ * End of "$Id: config.h.in,v 1.5 2004/05/02 16:04:40 mike Exp $".
  */

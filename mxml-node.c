@@ -1,7 +1,7 @@
 /*
- * "$Id: mxml-node.c,v 1.12 2004/04/06 01:47:20 mike Exp $"
+ * "$Id: mxml-node.c,v 1.13 2004/05/02 16:04:40 mike Exp $"
  *
- * Node support code for mini-XML, a small XML-like file parsing library.
+ * Node support code for Mini-XML, a small XML-like file parsing library.
  *
  * Copyright 2003-2004 by Michael Sweet.
  *
@@ -632,5 +632,5 @@ mxml_new(mxml_node_t *parent,		/* I - Parent node */
 
 
 /*
- * End of "$Id: mxml-node.c,v 1.12 2004/04/06 01:47:20 mike Exp $".
+ * End of "$Id: mxml-node.c,v 1.13 2004/05/02 16:04:40 mike Exp $".
  */

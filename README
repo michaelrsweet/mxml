@@ -1,10 +1,10 @@
-README - 12/21/2003
+README - 05/01/2004
 -------------------
 
 
 INTRODUCTION
 
-    This README file describes the Mini-XML library version 1.3.
+    This README file describes the Mini-XML library version 2.0.
 
     Mini-XML is a small XML parsing library that you can use to
     read XML and XML-like data files in your application without
@@ -73,12 +73,10 @@ INSTALLING Mini-XML
 
 DOCUMENTATION
 
-    The documentation is currently a work in progress. Aside
-    from the information that follows, the "documentation.html"
-    page provides a handy reference and is automatically
-    generated using Mini-XML.  You can also look at the
-    "testmxml.c" and "mxmldoc.c" source files for examples of
-    using Mini-XML.
+    The documentation is available in the "doc" subdirectory in
+    the files "mxml.html" (HTML) and "mxml.pdf" (PDF). You can
+    also look at the "testmxml.c" and "mxmldoc.c" source files
+    for examples of using Mini-XML.
 
     Mini-XML provides a single header file which you include:
 

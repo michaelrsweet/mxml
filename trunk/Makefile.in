@@ -101,6 +101,7 @@ all:		Makefile configure config.h $(TARGETS)
 
 clean:
 	$(RM) $(OBJS) $(TARGETS)
+	$(RM) mxmldoc-static libmxml.a
 	$(RM) *.bck *.bak
 	$(RM) config.cache config.log config.status
 	$(RM) -r autom4te*.cache
@@ -330,8 +331,9 @@ mxml.xml:	mxmldoc-static mxml.h $(PUBLIBOBJS:.o=.c)
 
 valgrind:	mxmldoc-static
 	$(RM) valgrind.xml
-	valgrind --leak-check=yes ./mxmldoc-static valgrind.xml mxml.h \
-		$(PUBLIBOBJS:.o=.c) >valgrind.html 2>valgrind.out
+	valgrind --tool=memcheck --leak-check=yes ./mxmldoc-static \
+		valgrind.xml mxml.h $(PUBLIBOBJS:.o=.c) \
+		>valgrind.html 2>valgrind.out
 
 
 #

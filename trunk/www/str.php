@@ -48,9 +48,9 @@ $subsystems = array(
 );
 
 $versions = array(
-  "CVS",
-  "+2.2",
-  "+2.1.1",
+  "Trunk",
+  "+2.2.1",
+  "2.2",
   "2.1",
   "2.0",
   "2.0rc1",
@@ -280,11 +280,11 @@ if ($argc)
           $scope = (int)$option;
 	  break;
       case 'Q' : // Set search text
-          $search = $option;
+          $search = urldecode($option);
 	  $i ++;
 	  while ($i < $argc)
 	  {
-	    $search .= " $argv[$i]";
+	    $search .= urldecode(" $argv[$i]");
 	    $i ++;
 	  }
 	  break;
@@ -695,59 +695,56 @@ switch ($op)
 
         if ($search)
 	{
-	  $search_string = str_replace("'", " ", $search);
-	  $search_string = str_replace("\"", " ", $search_string);
-	  $search_string = str_replace("\\", " ", $search_string);
-	  $search_string = str_replace("%20", " ", $search_string);
-	  $search_string = str_replace("%27", " ", $search_string);
-	  $search_string = str_replace("  ", " ", $search_string);
-	  $search_words  = explode(' ', $search_string);
+	  // Convert the search string to an array of words...
+	  $words = html_search_words($search);
 
-	  // Loop through the array of words, adding them to the 
+	  // Loop through the array of words, adding them to the query...
 	  $query  .= "${prefix}(";
 	  $prefix = "";
 	  $next   = " OR";
 	  $logic  = "";
 
-	  reset($search_words);
-	  while ($keyword = current($search_words))
+	  reset($words);
+	  foreach ($words as $word)
 	  {
-	    next($search_words);
-	    $keyword = db_escape(ltrim(rtrim($keyword)));
-
-	    if (strcasecmp($keyword, 'or') == 0)
-	    {
-	      $next = ' OR';
-	      if ($prefix != '')
+            if ($word == "or")
+            {
+              $next = ' OR';
+              if ($prefix != '')
         	$prefix = ' OR';
-	    }
-	    else if (strcasecmp($keyword, 'and') == 0)
-	    {
-	      $next = ' AND';
-	      if ($prefix != '')
+            }
+            else if ($word == "and")
+            {
+              $next = ' AND';
+              if ($prefix != '')
         	$prefix = ' AND';
-	    }
-	    else if (strcasecmp($keyword, 'not') == 0)
-	    {
-	      $logic = ' NOT';
-	    }
-	    else
-	    {
-              if ($keyword == (int)$keyword)
-	        $idsearch = " OR id = " . (int)$keyword;
-              else
-	        $idsearch = "";
+            }
+            else if ($word == "not")
+              $logic = ' NOT';
+            else
+            {
+              $query .= "$prefix$logic (";
+              $subpre = "";
 
-	      $query  .= "$prefix$logic (summary LIKE \"%$keyword%\"$idsearch"
-	                ." OR subsystem LIKE \"%$keyword%\""
-	                ." OR str_version LIKE \"%$keyword%\""
-	                ." OR fix_version LIKE \"%$keyword%\""
-	                ." OR manager_email LIKE \"%$keyword%\""
-	                ." OR create_user LIKE \"%$keyword%\")";
-	      $prefix = $next;
-	      $logic  = '';
-	    }
-          }
+              if (ereg("[0-9]+", $word))
+              {
+        	$query .= "${subpre}id = $word";
+        	$subpre = " OR ";
+              }
+
+              $query .= "${subpre}summary LIKE \"%$word%\"";
+              $subpre = " OR ";
+              $query .= "${subpre}subsystem LIKE \"%$word%\"";
+              $query .= "${subpre}str_version LIKE \"%$word%\"";
+              $query .= "${subpre}fix_version LIKE \"%$word%\"";
+              $query .= "${subpre}manager_email LIKE \"%$word%\"";
+              $query .= "${subpre}create_user LIKE \"%$word%\"";
+
+              $query .= ")";
+              $prefix = $next;
+              $logic  = '';
+            }
+	  }
 
 	  $query  .= ")";
 	}

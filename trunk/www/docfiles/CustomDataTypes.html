@@ -1,9 +1,9 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
 <HTML>
 <HEAD>
-<TITLE>Mini-XML Programmers Manual, Version 2.1</TITLE>
+<TITLE>Mini-XML Programmers Manual, Version 2.2</TITLE>
 <META NAME="author" CONTENT="Michael Sweet">
-<META NAME="copyright" CONTENT="Copyright 2003-2004">
+<META NAME="copyright" CONTENT="Copyright 2003-2005">
 <META HTTP-EQUIV="Content-Type" CONTENT="text/html; CHARSET=iso-iso-8859-1">
 <LINK REL="Start" HREF="index.html">
 <LINK REL="Contents" HREF="toc.html">
@@ -134,6 +134,8 @@ PRE { font-family: monospace }
  contain a <TT>void</TT> pointer to the allocated custom data for the
  node and a pointer to a destructor function which will free the custom
  data when the node is deleted.</P>
+
+<!-- NEED 3in -->
 <P>The save callback receives the node pointer and returns an allocated
  string containing the custom data value. The following save callback
  could be used for our ISO date/time type:</P>

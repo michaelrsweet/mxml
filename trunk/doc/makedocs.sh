@@ -1,10 +1,10 @@
 #!/bin/sh
 #
-# "$Id: makedocs.sh,v 1.2 2004/05/21 02:06:04 mike Exp $"
+# "$Id$"
 #
 # Script to make documentation...
 #
-# Copyright 2003-2004 by Michael Sweet.
+# Copyright 2003-2005 by Michael Sweet.
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Library General Public
@@ -17,11 +17,11 @@
 # GNU General Public License for more details.
 #
 
-htmldoc --verbose --batch mxml.book -f mxml.pdf
+htmldoc --verbose --batch mxml.book --no-embedfonts -f mxml.pdf
 
 htmldoc --verbose --batch mxml.book -f mxml.html
 
-htmldoc --verbose --batch mxml.book -f mxml.ps
+htmldoc --verbose --batch mxml.book --no-embedfonts -f mxml.ps
 rm -f mxml.ps.gz
 gzip -v9 mxml.ps
 
@@ -30,5 +30,5 @@ mkdir mxml.d
 htmldoc --verbose --batch mxml.book -t htmlsep -d mxml.d
 
 #
-# End of "$Id: makedocs.sh,v 1.2 2004/05/21 02:06:04 mike Exp $".
+# End of "$Id$".
 #

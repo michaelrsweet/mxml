@@ -8,18 +8,20 @@
 //
 // Contents:
 //
-//   html_header()      - Show the standard page header and navbar...
-//   html_footer()      - Show the standard footer for a page.
-//   html_start_links() - Start of series of hyperlinks.
-//   html_end_links()   - End of series of hyperlinks.
-//   html_link()        - Show a single hyperlink.
-//   html_links()       - Show an array of links.
-//   html_start_box()   - Start a rounded, shaded box.
-//   html_end_box()     - End a rounded, shaded box.
-//   html_start_table() - Start a rounded, shaded table.
-//   html_end_table()   - End a rounded, shaded table.
-//   html_start_row()   - Start a table row.
-//   html_end_row()     - End a table row.
+//   html_header()              - Show the standard page header and navbar...
+//   html_footer()              - Show the standard footer for a page.
+//   html_start_links()         - Start of series of hyperlinks.
+//   html_end_links()           - End of series of hyperlinks.
+//   html_link()                - Show a single hyperlink.
+//   html_links()               - Show an array of links.
+//   html_start_box()           - Start a rounded, shaded box.
+//   html_end_box()             - End a rounded, shaded box.
+//   html_start_table()         - Start a rounded, shaded table.
+//   html_end_table()           - End a rounded, shaded table.
+//   html_start_row()           - Start a table row.
+//   html_end_row()             - End a table row.
+//   html_search_words()        - Generate an array of search words.
+//   html_select_is_published() - Do a <select> for the "is published" field...
 //
 
 
@@ -360,6 +362,86 @@ html_end_row()
   $html_row = 1 - $html_row;
 
   print("</td><td>&nbsp;</td></tr>\n");
+}
+
+
+//
+// 'html_search_words()' - Generate an array of search words.
+//
+
+function				// O - Array of words
+html_search_words($search = "")		// I - Search string
+{
+  $words = array();
+  $temp  = "";
+  $len   = strlen($search);
+
+  for ($i = 0; $i < $len; $i ++)
+  {
+    switch ($search[$i])
+    {
+      case "\"" :
+          if ($temp != "")
+	  {
+	    $words[sizeof($words)] = db_escape(strtolower($temp));
+	    $temp = "";
+	  }
+
+	  $i ++;
+
+	  while ($i < $len && $search[$i] != "\"")
+	  {
+	    $temp .= $search[$i];
+	    $i ++;
+	  }
+
+	  $words[sizeof($words)] = db_escape(strtolower($temp));
+	  $temp = "";
+          break;
+
+      case " " :
+      case "\t" :
+      case "\n" :
+          if ($temp != "")
+	  {
+	    $words[sizeof($words)] = db_escape(strtolower($temp));
+	    $temp = "";
+	  }
+	  break;
+
+      default :
+          $temp .= $search[$i];
+	  break;
+    }
+  }
+
+  if ($temp != "")
+    $words[sizeof($words)] = db_escape(strtolower($temp));
+
+  return ($words);
+}
+
+
+//
+// 'html_select_is_published()' - Do a <select> for the "is published" field...
+//
+
+function
+html_select_is_published($is_published = 1)
+					// I - Default state
+{
+  print("<select name='is_published'>");
+  if ($is_published)
+  {
+    print("<option value='0'>No</option>");
+    print("<option value='1' selected>Yes</option>");
+  }
+  else
+  {
+    print("<option value='0' selected>No</option>");
+    print("<option value='1'>Yes</option>");
+  }
+  print("</select>");
 }
 
 

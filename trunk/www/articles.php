@@ -1,6 +1,6 @@
 <?php
 //
-// "$Id: articles.php,v 1.11 2004/05/20 21:37:57 mike Exp $"
+// "$Id$"
 //
 // Web form for the article table...
 //
@@ -140,11 +140,11 @@ if ($argc)
     switch ($argv[$i][0])
     {
       case 'Q' : // Set search text
-          $search = $option;
+          $search = urldecode($option);
 	  $i ++;
 	  while ($i < $argc)
 	  {
-	    $search .= " $argv[$i]";
+	    $search .= urldecode(" $argv[$i]");
 	    $i ++;
 	  }
 	  break;
@@ -859,6 +859,6 @@ switch ($op)
 
 
 //
-// End of "$Id: articles.php,v 1.11 2004/05/20 21:37:57 mike Exp $".
+// End of "$Id$".
 //
 ?>

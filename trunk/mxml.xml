@@ -826,9 +826,6 @@ the walk to the node's children.</description>
     <type>struct mxml_attr_s</type>
     <description>An XML element attribute value.</description>
   </typedef>
-  <variable default="= NULL" name="mxml_custom_load_cb">
-    <type>static mxml_custom_load_cb_t</type>
-  </variable>
   <struct name="mxml_custom_s">
     <description>An XML custom value.</description>
     <variable name="data">
@@ -836,10 +833,6 @@ the walk to the node's children.</description>
       <description>Pointer to (allocated) custom data</description>
     </variable>
   </struct>
-  <variable default="= NULL" name="mxml_custom_save_cb">
-    <type>static mxml_custom_save_cb_t</type>
-    <description>Local functions...</description>
-  </variable>
   <typedef name="mxml_custom_t">
     <type>struct mxml_custom_s</type>
     <description>An XML custom value.</description>
@@ -847,25 +840,6 @@ the walk to the node's children.</description>
   <typedef name="mxml_element_t">
     <type>struct mxml_value_s</type>
     <description>An XML element value.</description>
-  </typedef>
-  <struct name="mxml_fdbuf_s">
-    <description>File descriptor buffer (@private)</description>
-    <variable name="buffer[8192]">
-      <type>end</type>
-      <description>Character buffer</description>
-    </variable>
-    <variable name="current">
-      <type>unsigned char *</type>
-      <description>Current position in buffer</description>
-    </variable>
-    <variable name="fd">
-      <type>int</type>
-      <description>File descriptor</description>
-    </variable>
-  </struct>
-  <typedef name="mxml_fdbuf_t">
-    <type>struct mxml_fdbuf_s</type>
-    <description>File descriptor buffer (@private)</description>
   </typedef>
   <struct name="mxml_index_s">
     <description>An XML node index.</description>
@@ -1015,7 +989,4 @@ the walk to the node's children.</description>
       <description>Text fragment</description>
     </variable>
   </union>
-  <variable default="= 1" name="num_callbacks">
-    <type>static int</type>
-  </variable>
 </mxmldoc>

@@ -1,6 +1,6 @@
 <?php
 //
-// "$Id: str.php,v 1.8 2004/05/19 02:57:18 mike Exp $"
+// "$Id: str.php,v 1.9 2004/05/19 14:02:38 mike Exp $"
 //
 // Software Trouble Report page...
 //
@@ -21,10 +21,6 @@ include_once "phplib/str.php";
 //
 // String definitions for various things...
 //
-
-$managers = array(
-  "mike" => "Michael Sweet <mike@easysw.com>"
-);
 
 $messages = array(
   "Fixed in CVS" =>
@@ -53,7 +49,9 @@ $subsystems = array(
 );
 
 $versions = array(
-  "2.0cvs",
+  "CVS",
+  "+2.0rc2",
+  "2.0rc1",
   "1.3",
   "1.2",
   "1.1.2",
@@ -62,6 +60,20 @@ $versions = array(
   "1.0",
   "Web Site"
 );
+
+
+//
+// Get the list of valid developers from the users table...
+//
+
+$managers = array();
+
+$result = db_query("SELECT * FROM users WHERE is_published = 1 AND "
+                  ."level >= " . AUTH_DEVEL);
+while ($row = db_next($result))
+  $managers[$row["name"]] = $row["email"];
+
+db_free($result);
 
 
 //
@@ -219,7 +231,7 @@ if ($argc)
     exit();
   }
 
-  if (($op == 'M' || $op == 'B') && !$LOGIN_USER)
+  if (($op == 'M' || $op == 'B') && $LOGIN_LEVEL < AUTH_DEVEL)
   {
     html_header("STR Error");
     print("<p>The '$op' command is not available to you!</p>\n");
@@ -404,7 +416,7 @@ switch ($op)
 	  html_link("Post File", "$PHP_SELF?F$id$options");
 	}
 
-	if ($LOGIN_USER)
+	if ($LOGIN_LEVEL >= AUTH_DEVEL)
 	  html_link("Modify STR", "$PHP_SELF?M$id$options");
 
         html_end_links();
@@ -545,7 +557,7 @@ switch ($op)
         html_header("Support");
 
         html_start_links(1);
-	html_link("Post New Software Trouble Report", "$PHP_SELF?N$options'");
+	html_link("Submit Support Request", "$PHP_SELF?N$options'");
 	html_end_links();
 
         print("<h1>Support</h1>\n");
@@ -605,7 +617,7 @@ switch ($op)
           print("<option value='1'");
 	  if ($femail)
             print(" selected");
-          if ($LOGIN_USER)
+          if ($LOGIN_LEVEL >= AUTH_DEVEL)
 	    print(">Mine + Unassigned</option>");
 	  else
 	    print(">Only Mine</option>");
@@ -646,7 +658,7 @@ switch ($op)
 	  $prefix = " AND ";
 	}
 
-        if (!$LOGIN_USER)
+        if ($LOGIN_LEVEL < AUTH_DEVEL)
 	{
 	  $query .= "${prefix}is_published = 1";
 	  $prefix = " AND ";
@@ -659,7 +671,7 @@ switch ($op)
 	  else
 	    $email = "";
 
-	  if ($LOGIN_USER)
+	  if ($LOGIN_LEVEL >= AUTH_DEVEL)
 	  {
 	    $query .= "${prefix}(manager_email = '' OR manager_email = '$email')";
 	    $prefix = " AND ";
@@ -764,7 +776,7 @@ switch ($op)
 
         print("<p>$count STR(s) found, showing $start to $end:</p>\n");
 
-        if ($LOGIN_USER)
+        if ($LOGIN_LEVEL >= AUTH_DEVEL)
 	  print("<form method='POST' action='$PHP_SELF?B$options'>\n");
 
         if ($count > $PAGE_MAX)
@@ -814,7 +826,7 @@ switch ($op)
 	                ."border='0' align='middle' alt='Private'/>";
 
           print("<td nowrap>");
-          if ($LOGIN_USER)
+          if ($LOGIN_LEVEL >= AUTH_DEVEL)
 	    print("<input type='checkbox' name='ID_$row[id]'>");
 	  print("$link$row[id]</a></td>"
 	       ."<td align='center'>$link$prtext</a></td>"
@@ -860,7 +872,7 @@ switch ($op)
 
         db_free($result);
 
-        if ($LOGIN_USER)
+        if ($LOGIN_LEVEL >= AUTH_DEVEL)
 	{
 	  html_start_row("header");
 	  print("<th colspan='8'>&nbsp;<br />");
@@ -929,12 +941,13 @@ switch ($op)
 	  print("</table></p>\n");
         }
 
-	if ($LOGIN_USER)
+	if ($LOGIN_LEVEL >= AUTH_DEVEL)
 	  print("</form>");
 
 	print("<p>"
 	     ."MACH = Machine, "
-	     ."OS = Operating System."
+	     ."OS = Operating System, "
+	     ."STR = Software Trouble Report"
 	     ."</p>\n");
       }
 
@@ -1640,13 +1653,13 @@ switch ($op)
       }
       else
       {
-        html_header("Post New Software Trouble Report");
+        html_header("Submit Support Request");
 
         html_start_links(1);
 	html_link("Return to Support", "$PHP_SELF?L$options");
 	html_end_links();
 
-        print("<h1>Post New Software Trouble Report</h1>\n");
+        print("<h1>Submit Support Request</h1>\n");
 
         if ($REQUEST_METHOD == "POST")
 	{
@@ -1773,7 +1786,7 @@ switch ($op)
         print("<input name='STRFILE' type='FILE'></td></tr>\n");
 
         print("<tr><th align='center' colspan='2'>"
-	     ."<input type='submit' value='Submit Trouble Report'></th></tr>\n");
+	     ."<input type='submit' value='Submit Support Request'></th></tr>\n");
         print("</table></p></form>\n");
         html_footer();
       }
@@ -1852,6 +1865,6 @@ switch ($op)
 }
 
 //
-// End of "$Id: str.php,v 1.8 2004/05/19 02:57:18 mike Exp $".
+// End of "$Id: str.php,v 1.9 2004/05/19 14:02:38 mike Exp $".
 //
 ?>

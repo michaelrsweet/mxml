@@ -1,6 +1,6 @@
 <?php
 //
-// "$Id: articles.php,v 1.7 2004/05/19 03:26:36 mike Exp $"
+// "$Id: articles.php,v 1.8 2004/05/19 14:02:38 mike Exp $"
 //
 // Web form for the article table...
 //
@@ -56,10 +56,10 @@ if ($argc)
     exit();
   }
 
-  if (($op == 'D' || $op == 'M' && $op != 'B') && $LOGIN_USER == "")
+  if (($op == 'D' || $op == 'M' && $op != 'B') && $LOGIN_LEVEL < AUTH_DEVEL)
   {
     html_header("Article Error");
-    print("<p>Command '$op' requires a login!\n");
+    print("<p>You don't have permission to use command '$op'!\n");
     html_footer();
     exit();
   }
@@ -221,7 +221,7 @@ switch ($op)
 	html_start_links(1);
 	html_link("Return to Articles", "$PHP_SELF?L$options");
 	html_link("Show Comments", "#_USER_COMMENTS");
-	if ($LOGIN_USER)
+	if ($LOGIN_LEVEL >= AUTH_DEVEL)
 	{
 	  html_link("Modify Article</A>", "$PHP_SELF?M$id$options");
 	  html_link("Delete Article #$id</A>", "$PHP_SELF?D$id$options");
@@ -261,7 +261,7 @@ switch ($op)
         html_header("Articles");
 
 	html_start_links(1);
-	html_link("Post New Article", "$PHP_SELF?N$options");
+	html_link("Submit Article", "$PHP_SELF?N$options");
 	html_end_links();
 
         print("<h1>Articles</h1>\n");
@@ -276,7 +276,7 @@ switch ($op)
         $query = "";
 	$prefix = "WHERE ";
 
-        if (!$LOGIN_USER)
+        if ($LOGIN_LEVEL < AUTH_DEVEL)
 	{
 	  $query .= "${prefix}is_published = 1";
 	  $prefix = " AND ";
@@ -367,7 +367,7 @@ switch ($op)
 
         print("<p>$count article(s) found, showing $start to $end:</p>\n");
 
-        if ($LOGIN_USER)
+        if ($LOGIN_LEVEL >= AUTH_DEVEL)
 	  print("<form method='POST' action='$PHP_SELF?B$options'>\n");
 
         if ($count > $PAGE_MAX)
@@ -401,7 +401,7 @@ switch ($op)
 	  $link = "<a href='$PHP_SELF?L$id$options' alt='Article #$id'>";
 
           print("<td nowrap>");
-          if ($LOGIN_USER)
+          if ($LOGIN_LEVEL >= AUTH_DEVEL)
 	    print("<input type='checkbox' name='ID_$row[id]'>");
           print("$link$id</a></td>");
 
@@ -415,8 +415,8 @@ switch ($op)
           $temp = date("M d, Y", $row['modify_date']);
           print("<td align='center'>$link$temp</a></td>");
 
-          $count = count_comments("articles.php_L$id");
-          print("<td align='center'>$link$count</a></td>");
+          $ccount = count_comments("articles.php_L$id");
+          print("<td align='center'>$link$ccount</a></td>");
 
           html_end_row();
 
@@ -426,7 +426,7 @@ switch ($op)
           html_end_row();
 	}
 
-        if ($LOGIN_USER)
+        if ($LOGIN_LEVEL > 0)
 	{
 	  html_start_row("header");
 
@@ -486,8 +486,8 @@ switch ($op)
 	else
 	  $contents = "";
 
-        if (($is_published == 0 || $LOGIN_USER) && $title != "" &&
-	    $abstract != "" && $contents != "")
+        if (($is_published == 0 || $LOGIN_LEVEL >= AUTH_DEVEL) &&
+	    $title != "" && $abstract != "" && $contents != "")
           $havedata = 1;
 	else
           $havedata = 0;
@@ -577,7 +577,9 @@ switch ($op)
   case 'N' : // Post new Article
       if ($REQUEST_METHOD == "POST")
       {
-        if (array_key_exists("IS_PUBLISHED", $_POST))
+        if ($LOGIN_LEVEL < AUTH_DEVEL)
+	  $is_published = 0;
+	else if (array_key_exists("IS_PUBLISHED", $_POST))
 	  $is_published = (int)$_POST["IS_PUBLISHED"];
 	else
 	  $is_published = 0;
@@ -602,8 +604,8 @@ switch ($op)
 	else
 	  $create_user = "";
 
-        if (($is_published == 0 || $LOGIN_USER) && $title != "" &&
-	    $abstract != "" && $contents != "")
+        if (($is_published == 0 || $LOGIN_LEVEL >= AUTH_DEVEL) &&
+	    $title != "" && $abstract != "" && $contents != "")
           $havedata = 1;
 	else
           $havedata = 0;
@@ -641,25 +643,40 @@ switch ($op)
 	break;
       }
 
-      html_header("Post New Article");
+      html_header("Submit Article");
 
       html_start_links(1);
       html_link("Return to Articles", "$PHP_SELF?L$options");
       html_end_links();
 
-      print("<h1>Post New Article</h1>\n");
+      print("<h1>Submit Article</h1>\n");
 
-      print("<p>Please use this form to post announcements, how-to's, "
-           ."examples, and case studies showing how you use $PROJECT. "
-	   ."We will proofread your article, and if we determine it is "
-	   ."appropriate for the site, we will make the article public "
-	   ."on the site. <i>Thank you</i> for supporting $PROJECT!</p>\n"
-	   ."<hr noshade/>\n");
+      if ($REQUEST_METHOD == "POST")
+      {
+	print("<p><b>Error:</b> Please fill in the fields marked in "
+	     ."<b><font color='red'>bold red</font></b> below and resubmit "
+	     ."your article.</p><hr noshade/>\n");
+
+	$hstart = "<font color='red'>";
+	$hend   = "</font>";
+      }
+      else
+      {
+	print("<p>Please use this form to post announcements, how-to's, "
+             ."examples, and case studies showing how you use $PROJECT. "
+	     ."We will proofread your article, and if we determine it is "
+	     ."appropriate for the site, we will make the article public "
+	     ."on the site. <i>Thank you</i> for supporting $PROJECT!</p>\n"
+	     ."<hr noshade/>\n");
+
+	$hstart = "";
+	$hend   = "";
+      }
 
       print("<form method='post' action='$PHP_SELF?N$options'>"
 	   ."<p><table width='100%' cellpadding='5' cellspacing='0' border='0'>\n");
 
-      if ($LOGIN_USER != "")
+      if ($LOGIN_LEVEL >= AUTH_DEVEL)
       {
         print("<tr><th align='right'>Published:</th><td>");
         select_is_published($is_published);
@@ -670,26 +687,38 @@ switch ($op)
 
       $title = htmlspecialchars($title, ENT_QUOTES);
 
-      print("<tr><th align='right'>Title:</th>"
-	   ."<td><input type='text' name='TITLE' "
+      if ($title == "")
+	print("<tr><th align='right'>${hstart}Title:${hend}</th>");
+      else
+	print("<tr><th align='right'>Title:</th>");
+      print("<td><input type='text' name='TITLE' "
 	   ."size='40' value='$title'></td></tr>\n");
 
       $abstract = htmlspecialchars($abstract, ENT_QUOTES);
 
-      print("<tr><th align='right'>Abstract:</th>"
-	   ."<td><input type='text' name='ABSTRACT' "
+      if ($abstract == "")
+	print("<tr><th align='right'>${hstart}Abstract:${hend}</th>");
+      else
+	print("<tr><th align='right'>Abstract:</th>");
+      print("<td><input type='text' name='ABSTRACT' "
 	   ."size='40' value='$abstract'></td></tr>\n");
 
-      $author = htmlspecialchars($author, ENT_QUOTES);
+      $create_user = htmlspecialchars($create_user, ENT_QUOTES);
 
-      print("<tr><th align='right'>Author:</th>"
-	   ."<td><input type='text' name='CREATE_USER' "
-	   ."size='40' value='$author'></td></tr>\n");
+      if ($create_user == "")
+	print("<tr><th align='right'>${hstart}Author:${hend}</th>");
+      else
+	print("<tr><th align='right'>Author:</th>");
+      print("<td><input type='text' name='CREATE_USER' "
+	   ."size='40' value='$create_user'></td></tr>\n");
 
       $contents = htmlspecialchars($contents, ENT_QUOTES);
 
-      print("<tr><th align='right' valign='top'>Contents:</th>"
-	   ."<td><textarea name='CONTENTS' "
+      if ($contents == "")
+	print("<tr><th align='right' valign='top'>${hstart}Contents:${hend}</th>");
+      else
+	print("<tr><th align='right' valign='top'>Contents:</th>");
+      print("<td><textarea name='CONTENTS' "
 	   ."cols='80' rows='10' wrap='virtual'>"
 	   ."$contents</textarea>\n"
 	   ."<p>The contents of the article may contain the following "
@@ -700,7 +729,7 @@ switch ($op)
 	   ."<tt>TT</tt>, <tt>U</tt>, <tt>UL</tt></p></td></tr>\n");
 
       print("<tr><th colspan='2'>"
-	   ."<input type='submit' value='Create Article'></th></tr>\n");
+	   ."<input type='submit' value='Submit Article'></th></tr>\n");
       print("</table></p></form>\n");
 
       html_footer();
@@ -709,6 +738,6 @@ switch ($op)
 
 
 //
-// End of "$Id: articles.php,v 1.7 2004/05/19 03:26:36 mike Exp $".
+// End of "$Id: articles.php,v 1.8 2004/05/19 14:02:38 mike Exp $".
 //
 ?>

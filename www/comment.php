@@ -1,6 +1,6 @@
 <?php
 //
-// "$Id: comment.php,v 1.4 2004/05/19 03:26:36 mike Exp $"
+// "$Id: comment.php,v 1.5 2004/05/19 14:02:38 mike Exp $"
 //
 // Comment and moderation interface for PHP pages...
 //
@@ -18,7 +18,6 @@ include_once "phplib/common.php";
 //
 
 $op       = "";
-$link     = "";
 $path     = "";
 $refer_id = 0;
 $id       = 0;
@@ -58,7 +57,7 @@ for ($i = 0; $i < $argc; $i ++)
 }
 
 if ($op == "" || ($path == "" && $op != "l" && $op != "L") ||
-    (($op == 'd' || $op == 'D' || $op == 'l') && !$LOGIN_USER))
+    (($op == 'd' || $op == 'D' || $op == 'l') && $LOGIN_LEVEL < AUTH_DEVEL))
 {
   header("Location: index.php");
 }
@@ -107,7 +106,11 @@ else
 	  else
 	    $contents = "";
 
-          if ($create_user != "" && $contents != "" && $file != "")
+          if (strpos($contents, "http:") === false &&
+	      strpos($contents, "https:") === false &&
+	      strpos($contents, "ftp:") === false &&
+	      strpos($contents, "mailto:") === false &&
+              $contents != "" && $create_user != "" && $file != "")
 	    $havedata = 1;
 
           if ($create_user != "" && $id == 0 && !$LOGIN_USER)
@@ -228,7 +231,7 @@ else
 	         ."<td><textarea name='MESSAGE' cols='70' rows='8' "
 		 ."wrap='virtual'>$contents</textarea></td></tr>\n");
 
-          if ($LOGIN_USER)
+          if ($LOGIN_LEVEL >= AUTH_DEVEL)
 	  {
 	    print("<tr><th align='right'>File Path:</th>"
 		 ."<td><input type='text' name='FILE' value='$path' "
@@ -265,7 +268,7 @@ else
         html_header("Comments");
 	print("<h1>Comments</h1>\n");
 
-        if (!$LOGIN_USER)
+        if ($LOGIN_LEVEL < AUTH_DEVEL)
 	{
 	  $result = db_query("SELECT * FROM comment WHERE status = 1 AND "
 	                    ."url LIKE '${listpath}%' ORDER BY id");
@@ -276,19 +279,19 @@ else
 	  {
 	    $result = db_query("SELECT * FROM comment WHERE "
 	                      ."url LIKE '${listpath}%' ORDER BY id");
-	    print("<p>[ <a href='$PHP_SELF?l'>Show Hidden Comments</a> ]</p>\n");
+	    print("<p>[&nbsp;<a href='$PHP_SELF?l'>Show Hidden Comments</a>&nbsp;]</p>\n");
 	  }
           else
 	  {
 	    $result = db_query("SELECT * FROM comment WHERE status = 0 AND "
                               ."url LIKE '${listpath}%' ORDER BY id");
-	    print("<p>[ <a href='$PHP_SELF?L'>Show All Comments</a> ]</p>\n");
+	    print("<p>[&nbsp;<a href='$PHP_SELF?L'>Show All Comments</a>&nbsp;]</p>\n");
 	  }
         }
 
 	if (db_count($result) == 0)
 	{
-	  if ($LOGIN_USER && $op == 'l')
+	  if ($LOGIN_LEVEL >= AUTH_DEVEL && $op == 'l')
             print("<p>No hidden comments.</p>\n");
 	  else
             print("<p>No visible comments.</p>\n");
@@ -304,10 +307,10 @@ else
 	    $contents     = sanitize_text($row['contents']);
             $location     = str_replace("_", "?", $row['url']);
 
-	    print("<li><a href='${link}$location'>$row[url]</a> "
+	    print("<li><a href='$location'>$row[url]</a> "
 	         ." by $create_user on $create_date "
-	         ."[ <a href='$PHP_SELF?e$row[id]+p$row[url]'>Edit</a> "
-	         ."| <a href='$PHP_SELF?d$row[id]+p$row[url]'>Delete</a> "
+	         ."[&nbsp;<a href='$PHP_SELF?e$row[id]+p$row[url]'>Edit</a> "
+	         ."| <a href='$PHP_SELF?d$row[id]+p$row[url]'>Delete</a>&nbsp;"
 		 ."]<br /><tt>$contents</tt></li>\n");
 	  }
 
@@ -357,6 +360,6 @@ else
 }
 
 //
-// End of "$Id: comment.php,v 1.4 2004/05/19 03:26:36 mike Exp $".
+// End of "$Id: comment.php,v 1.5 2004/05/19 14:02:38 mike Exp $".
 //
 ?>

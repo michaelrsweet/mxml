@@ -1,6 +1,6 @@
 <?php
 //
-// "$Id: index.php,v 1.2 2004/05/19 01:39:04 mike Exp $"
+// "$Id: index.php,v 1.3 2004/05/19 14:02:38 mike Exp $"
 //
 // Mini-XML home page...
 //
@@ -19,8 +19,10 @@ print("<p><table width='100%' height='100%' border='0' cellpadding='0' "
 html_start_table(array("Quick Info"), "100%", "100%");
 html_start_row();
 print("<td>"
-     ."<p align='center'>Current Release: <a href='software.php'>v1.3, "
-     ."December 21, 2003</a></p>\n"
+     ."<p align='center'>Stable Release: <a href='software.php?1.3'>v1.3, "
+     ."December 21, 2003</a><br />"
+     ."Developer Release: <a href='software.php?2.0rc1'>v2.0rc1, "
+     ."May 20, 2004</a></p>\n"
      ."<small><p>Mini-XML is a small XML parsing library that you can use to "
      ."read XML and XML-like data files in your application without "
      ."requiring large non-standard libraries. Mini-XML only requires "
@@ -46,7 +48,9 @@ html_end_row();
 html_end_table();
 
 print("</td><td>&nbsp;&nbsp;&nbsp;&nbsp;</td>"
-     ."<td valign='top' width='60%'>");
+     ."<td valign='top' width='60%'>"
+     ."<h2>Recent Articles [&nbsp;<a href='articles.php'>View&nbsp;All</a>"
+     ."&nbsp;]</h2>\n");
 
 $result = db_query("SELECT * FROM article WHERE is_published = 1 "
 	          ."ORDER BY modify_date DESC LIMIT 4");
@@ -69,7 +73,7 @@ else
     else
       $count .= " comments";
 
-    print("<h2><a href='articles.php?L$id'>$title</a></h2>\n"
+    print("<h3><a href='articles.php?L$id'>$title</a></h3>\n"
          ."<p><i>$date, $count</i><br />$abstract [&nbsp;"
 	 ."<a href='articles.php?L$id'>Read</a>&nbsp;]</p>\n");
   }
@@ -77,18 +81,12 @@ else
 
 db_free($result);
 
-html_start_links();
-html_link("View Articles", "articles.php");
-html_link("Submit Bug Report", "str.php");
-html_link("Download Software", "software.php");
-html_end_links();
-
 print("</td></tr>\n"
      ."</table></p>\n");
 
 html_footer();
 
 //
-// End of "$Id: index.php,v 1.2 2004/05/19 01:39:04 mike Exp $".
+// End of "$Id: index.php,v 1.3 2004/05/19 14:02:38 mike Exp $".
 //
 ?>

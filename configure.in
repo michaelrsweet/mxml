@@ -1,5 +1,5 @@
 dnl
-dnl "$Id: configure.in,v 1.4 2003/06/15 01:22:36 mike Exp $"
+dnl "$Id: configure.in,v 1.5 2003/06/15 01:37:32 mike Exp $"
 dnl
 dnl Configuration script for mini-XML, a small XML-like file parsing library.
 dnl
@@ -93,7 +93,7 @@ fi
 
 dnl Fix "mandir" variable if it hasn't been specified...
 if test "$mandir" = "\${prefix}/man" -a "$prefix" = "/usr"; then
-	case "$uname" in
+	case "`uname`" in
         	*BSD* | Darwin* | Linux*)
         		# BSD, Darwin (MacOS X), and Linux
         		mandir="/usr/share/man"
@@ -110,7 +110,7 @@ if test "$mandir" = "\${prefix}/man" -a "$prefix" = "/usr"; then
 fi
 
 dnl More manpage stuff...
-case "$uname" in
+case "`uname`" in
         *BSD* | Darwin*)
         	# *BSD
         	CAT1EXT="0"
@@ -136,5 +136,5 @@ dnl Output the makefile, etc...
 AC_OUTPUT(Makefile mxml.list)
 
 dnl
-dnl End of "$Id: configure.in,v 1.4 2003/06/15 01:22:36 mike Exp $".
+dnl End of "$Id: configure.in,v 1.5 2003/06/15 01:37:32 mike Exp $".
 dnl

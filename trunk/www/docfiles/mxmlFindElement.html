@@ -1,0 +1,76 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML>
+<HEAD>
+<TITLE>Mini-XML Programmers Manual, Version 2.0</TITLE>
+<META NAME="author" CONTENT="Michael Sweet">
+<META NAME="copyright" CONTENT="Copyright 2003-2004">
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; CHARSET=iso-iso-8859-1">
+<LINK REL="Start" HREF="index.html">
+<LINK REL="Contents" HREF="toc.html">
+<LINK REL="Prev" HREF="mxmlEntityRemoveCallback.html">
+<LINK REL="Next" HREF="mxmlIndexDelete.html">
+<STYLE TYPE="text/css"><!--
+BODY { font-family: serif }
+H1 { font-family: sans-serif }
+H2 { font-family: sans-serif }
+H3 { font-family: sans-serif }
+H4 { font-family: sans-serif }
+H5 { font-family: sans-serif }
+H6 { font-family: sans-serif }
+SUB { font-size: smaller }
+SUP { font-size: smaller }
+PRE { font-family: monospace }
+--></STYLE>
+</HEAD>
+<BODY>
+<A HREF="toc.html">Contents</A>
+<A HREF="mxmlEntityRemoveCallback.html">Previous</A>
+<A HREF="mxmlIndexDelete.html">Next</A>
+<HR NOSHADE>
+<H3><A name="mxmlFindElement">mxmlFindElement()</A></H3>
+<HR noshade/>
+<H4>Description</H4>
+<P>Find the named element. The search is constrained by the name,
+ attribute name, and value; any NULL names or values are treated as
+ wildcards, so different kinds of searches can be implemented by looking
+ for all elements of a given name or all elements with a specific
+ attribute. The descend argument determines whether the search descends
+ into child nodes; normally you will use MXML_DESCEND_FIRST for the
+ initial search and MXML_NO_DESCEND to find additional direct
+ descendents of the node. The top node argument constrains the search to
+ a particular node's children.</P>
+<H4>Syntax</H4>
+<PRE>
+<A href="mxmlnodet.html#mxml_node_t">mxml_node_t</A> *
+mxmlFindElement(
+    <A href="mxmlnodet.html#mxml_node_t">mxml_node_t</A> * node,
+    <A href="mxmlnodet.html#mxml_node_t">mxml_node_t</A> * top,
+    const char * name,
+    const char * attr,
+    const char * value,
+    int descend);
+</PRE>
+<H4>Arguments</H4>
+<P class="table"></P>
+<TABLE align="center" border="1" cellpadding="5" cellspacing="0" width="80%">
+<THEAD></THEAD>
+<TR bgcolor="#cccccc"><TH>Name</TH><TH>Description</TH></TR>
+<TBODY></TBODY>
+<TR><TD><TT>node</TT></TD><TD>Current node</TD></TR>
+<TR><TD><TT>top</TT></TD><TD>Top node</TD></TR>
+<TR><TD><TT>name</TT></TD><TD>Element name or NULL for any</TD></TR>
+<TR><TD><TT>attr</TT></TD><TD>Attribute name, or NULL for none</TD></TR>
+<TR><TD><TT>value</TT></TD><TD>Attribute value, or NULL for any</TD></TR>
+<TR><TD><TT>descend</TT></TD><TD>Descend into tree - MXML_DESCEND,
+ MXML_NO_DESCEND, or MXML_DESCEND_FIRST</TD></TR>
+</TABLE>
+<H4>Returns</H4>
+<P>Element node or NULL</P>
+
+<!-- NEW PAGE -->
+<HR NOSHADE>
+<A HREF="toc.html">Contents</A>
+<A HREF="mxmlEntityRemoveCallback.html">Previous</A>
+<A HREF="mxmlIndexDelete.html">Next</A>
+</BODY>
+</HTML>

@@ -1,0 +1,65 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML>
+<HEAD>
+<TITLE>Mini-XML Programmers Manual, Version 2.0</TITLE>
+<META NAME="author" CONTENT="Michael Sweet">
+<META NAME="copyright" CONTENT="Copyright 2003-2004">
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; CHARSET=iso-iso-8859-1">
+<LINK REL="Start" HREF="index.html">
+<LINK REL="Contents" HREF="toc.html">
+<LINK REL="Prev" HREF="InstallingMiniXML.html">
+<LINK REL="Next" HREF="2GettingStartedwithMiniXML.html">
+<STYLE TYPE="text/css"><!--
+BODY { font-family: serif }
+H1 { font-family: sans-serif }
+H2 { font-family: sans-serif }
+H3 { font-family: sans-serif }
+H4 { font-family: sans-serif }
+H5 { font-family: sans-serif }
+H6 { font-family: sans-serif }
+SUB { font-size: smaller }
+SUP { font-size: smaller }
+PRE { font-family: monospace }
+--></STYLE>
+</HEAD>
+<BODY>
+<A HREF="toc.html">Contents</A>
+<A HREF="InstallingMiniXML.html">Previous</A>
+<A HREF="2GettingStartedwithMiniXML.html">Next</A>
+<HR NOSHADE>
+<H2><A NAME="2_3">Creating Mini-XML Packages</A></H2>
+<P>Mini-XML includes two files that can be used to create binary
+ packages. The first file is<VAR> mxml.spec</VAR> which is used by the <TT>
+rpmbuild(8)</TT> software to create Red Hat Package Manager (&quot;RPM&quot;)
+ packages which are commonly used on Linux. Since <TT>rpmbuild</TT>
+ wants to compile the software on its own, you can provide it with the
+ Mini-XML tar file to build the package:</P>
+<PRE>
+    <KBD>rpmbuild -ta mxml-<I>version</I>.tar.gz ENTER</KBD>
+</PRE>
+<P>The second file is<VAR> mxml.list</VAR> which is used by the <TT>
+epm(1)</TT> program to create software packages in a variety of formats.
+ The <TT>epm</TT> program is available from the following URL:</P>
+<PRE>
+    <A href="http://www.easysw.com/epm/">http://www.easysw.com/epm/</A>
+</PRE>
+<P>Use the <TT>make</TT> command with the <KBD>epm</KBD> target to
+ create portable and native packages for your system:</P>
+<PRE>
+    <KBD>make epm ENTER</KBD>
+</PRE>
+<P>The packages are stored in a subdirectory named<VAR> dist</VAR> for
+ your convenience. The portable packages utilize scripts and tar files
+ to install the software on the target system; this is especially useful
+ when installing on systems with different Linux distributions. Use the<VAR>
+ mxml.install</VAR> script to install the software and<VAR> mxml.remove</VAR>
+ script to remove the software.</P>
+<P>The native packages will be in the local OS's native format: RPM for
+ Red Hat Linux, DPKG for Debian Linux, PKG for Solaris, and so forth.
+ Use the corresponding commands to install the native packages.</P>
+<HR NOSHADE>
+<A HREF="toc.html">Contents</A>
+<A HREF="InstallingMiniXML.html">Previous</A>
+<A HREF="2GettingStartedwithMiniXML.html">Next</A>
+</BODY>
+</HTML>

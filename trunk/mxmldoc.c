@@ -1,6 +1,6 @@
 #define DEBUG 2
 /*
- * "$Id: mxmldoc.c,v 1.28 2004/04/30 01:40:55 mike Exp $"
+ * "$Id: mxmldoc.c,v 1.29 2004/04/30 03:40:05 mike Exp $"
  *
  * Documentation generator using mini-XML, a small XML-like file parsing
  * library.
@@ -930,6 +930,7 @@ scan_file(const char  *filename,	/* I - Filename */
 #endif /* DEBUG */
 		    update_comment(variable,
 			           mxmlNewText(description, 0, buffer));
+                    variable = NULL;
 		  }
 		  else if (constant)
 		  {
@@ -939,6 +940,7 @@ scan_file(const char  *filename,	/* I - Filename */
 #endif /* DEBUG */
 		    update_comment(constant,
 			           mxmlNewText(description, 0, buffer));
+		    constant = NULL;
 		  }
 		  else if (typedefnode)
 		  {
@@ -1009,6 +1011,7 @@ scan_file(const char  *filename,	/* I - Filename */
 #endif /* DEBUG */
 	      update_comment(variable,
 			     mxmlNewText(description, 0, buffer));
+              variable = NULL;
 	    }
 	    else if (constant)
 	    {
@@ -1018,6 +1021,7 @@ scan_file(const char  *filename,	/* I - Filename */
 #endif /* DEBUG */
 	      update_comment(constant,
 			     mxmlNewText(description, 0, buffer));
+              constant = NULL;
 	    }
 	    else if (typedefnode)
 	    {
@@ -1317,6 +1321,7 @@ scan_file(const char  *filename,	/* I - Filename */
     {
       fprintf(stderr, "    changed states from %s to %s on receipt of character '%c'...\n",
               states[oldstate], states[state], oldch);
+      fprintf(stderr, "    variable = %p\n", variable);
       if (type)
       {
         fputs("    type =", stderr);
@@ -2404,5 +2409,5 @@ ws_cb(mxml_node_t *node,		/* I - Element node */
 
 
 /*
- * End of "$Id: mxmldoc.c,v 1.28 2004/04/30 01:40:55 mike Exp $".
+ * End of "$Id: mxmldoc.c,v 1.29 2004/04/30 03:40:05 mike Exp $".
  */

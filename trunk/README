@@ -57,7 +57,7 @@ BUILDING Mini-XML
 
     If you are using Mini-XML under Microsoft Windows with
     Visual C++, use the included project files in the "vcnet"
-    subdirectory to build the library.
+    subdirectory to build the library instead.
 
 
 INSTALLING Mini-XML

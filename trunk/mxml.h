@@ -1,5 +1,5 @@
 /*
- * "$Id: mxml.h,v 1.7 2003/06/04 21:19:00 mike Exp $"
+ * "$Id: mxml.h,v 1.8 2003/06/07 21:27:05 mike Exp $"
  *
  * Header file for mini-XML, a small XML-like file parsing library.
  *
@@ -62,7 +62,7 @@
  * Data types...
  */
 
-typedef enum				/**** Node Type ****/
+typedef enum mxml_type_e		/**** Node Type ****/
 {
   MXML_ELEMENT,				/* XML element with attributes */
   MXML_INTEGER,				/* Integer value */
@@ -71,41 +71,45 @@ typedef enum				/**** Node Type ****/
   MXML_TEXT				/* Text fragment */
 } mxml_type_t;
 
-typedef struct				/**** Attribute Value ****/
+typedef struct mxml_attr_s		/**** Attribute Value ****/
 {
-  char	*name,				/* Attribute name */
-	*value;				/* Attribute value */
+  char	*name;				/* Attribute name */
+  char	*value;				/* Attribute value */
 } mxml_attr_t;
 
-typedef struct				/**** Element Value ****/
+typedef struct mxml_value_s		/**** Element Value ****/
 {
   char		*name;			/* Name of element */
   int		num_attrs;		/* Number of attributes */
   mxml_attr_t	*attrs;			/* Attributes */
 } mxml_element_t;
 
-typedef struct mxml_node_str mxml_node_t;
+typedef struct mxml_text_s		/**** Text Value ****/
+{
+  int		whitespace;		/* Leading whitespace? */
+  char		*string;		/* Fragment string */
+} mxml_text_t;
 
-struct mxml_node_str			/**** Node ****/
+typedef union mxml_value_u		/**** Node Value ****/
+{
+  mxml_element_t	element;	/* Element */
+  int			integer;	/* Integer number */
+  char			*opaque;	/* Opaque string */
+  double		real;		/* Real number */
+  mxml_text_t		text;		/* Text fragment */
+} mxml_value_t;
+
+typedef struct mxml_node_s mxml_node_t;
+
+struct mxml_node_s			/**** Node ****/
 {
   mxml_type_t	type;			/* Node type */
-  mxml_node_t	*next,			/* Next node under same parent */
-		*prev,			/* Previous node under same parent */
-		*parent,		/* Parent node */
-		*child,			/* First child node */
-		*last_child;		/* Last child node */
-  union
-  {
-    mxml_element_t	element;	/* Element */
-    int			integer;	/* Integer number */
-    char		*opaque;	/* Opaque string */
-    double		real;		/* Real number */
-    struct
-    {
-      int		whitespace;	/* Leading whitespace? */
-      char		*string;	/* Fragment string */
-    }			text;		/* Text fragment */
-  }		value;			/* Node value */
+  mxml_node_t	*next;			/* Next node under same parent */
+  mxml_node_t	*prev;			/* Previous node under same parent */
+  mxml_node_t	*parent;		/* Parent node */
+  mxml_node_t	*child;			/* First child node */
+  mxml_node_t	*last_child;		/* Last child node */
+  mxml_value_t	value;			/* Node value */
 };
 
 
@@ -158,5 +162,5 @@ extern mxml_node_t	*mxmlWalkPrev(mxml_node_t *node, mxml_node_t *top,
 
 
 /*
- * End of "$Id: mxml.h,v 1.7 2003/06/04 21:19:00 mike Exp $".
+ * End of "$Id: mxml.h,v 1.8 2003/06/07 21:27:05 mike Exp $".
  */

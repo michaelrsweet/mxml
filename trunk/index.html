@@ -3,10 +3,10 @@
 <head>
 	<title>Mini-XML Home Page</title>
 	<style><!--
-	h1, h2, h3, p { font-family: sans-serif; text-align: justify; }
+	body, h1, h2, h3, p { font-family: sans-serif; text-align: justify; }
 	h1.title, p.title { font-family: sans-serif; text-align: center; }
 	tt, pre a:link, pre a:visited, tt a:link, tt a:visited { font-weight: bold; color: #7f0000; }
-	pre { font-weight: bold; color: #7f0000; margin-left: 2em; }
+	pre { font-weight: bold; color: #7f0000; margin-left: 2em; text-align: left }
 	--></style>
 </head>
 <body>
@@ -16,10 +16,11 @@ href="../index.html">Back to Home Page</a>&nbsp;]</p>
 
 <h1 class="title" align="center">Mini-XML Home Page</h1>
 
-<p class="title" align="center">Current Release: v0.93 [&nbsp;<a
-href="mxml-0.93.tar.gz">Download Source (.tar.gz 51k)</a> |
-<a href="CHANGES">View Change Log</a> |
-<a href="http://freshmeat.net/projects/mxml">Rate/Make Comments</A>&nbsp;]</p>
+<p class="title" align="center">Current Release: v0.94<br/>
+[&nbsp;<a href="mxml-0.94.tar.gz">Download Source (.tar.gz
+51k)</a> | <a href="CHANGES">Change Log</a> | <a
+href="documentation.html">Documentation</a> | <a
+href="http://freshmeat.net/projects/mxml">Rate/Make&nbsp;Comments</A>&nbsp;]</p>
 
 <h2>Introduction</h2>
 
@@ -105,11 +106,14 @@ using Mini-XML.</p>
 <a href="mxml.h">#include &lt;mxml.h></a>
 </pre>
 
-<p>Nodes are defined by the <tt>mxml_node_t</tt> structure; the
-<tt>type</tt> member defines the node type (element, integer,
-opaque, real, or text) which determines which value you want to
-look at in the <tt>value</tt> union.  New nodes can be created
-using the <a
+<p>Nodes are defined by the <a
+href="documentation.html#mxml_node_s"><tt>mxml_node_t</tt></a>
+structure; the <a
+href="documentation.html#mxml_type_e"><tt>type</tt></a> member
+defines the node type (element, integer, opaque, real, or text)
+which determines which value you want to look at in the <a
+href="documentation.html#mxml_value_u"><tt>value</tt></a>
+union.  New nodes can be created using the <a
 href="documentation.html#mxmlNewElement"><tt>mxmlNewElement()</tt></a>,
 <a
 href="documentation.html#mxmlNewInteger"><tt>mxmlNewInteger()</tt></a>,

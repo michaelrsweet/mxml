@@ -9,7 +9,36 @@
 	--></style>
 </head>
 <body>
-<h1>Functions</h1>
+<h1>Contents</h1>
+<ul>
+	<li><a href="#_classes">Classes</a></li>
+	<li><a href="#_enumerations">Enumeration</a></li>
+	<li><a href="#_functions">Functions</a></li>
+	<li><a href="#_structures">Structures</a></li>
+	<li><a href="#_types">Types</a></li>
+	<li><a href="#_unions">Unions</a></li>
+</ul>
+<h1><a name="_classes">Classes</a></h1>
+<ul>
+</ul>
+<h1><a name="_enumerations">Enumerations</a></h1>
+<ul>
+	<li><a href="#mxml_type_e"><tt>mxml_type_e</tt></a></li>
+</ul>
+<hr noshade/>
+<h2><a name="mxml_type_e">mxml_type_e</a></h2>
+<p>Node Type</p>
+<h3>Values</h3>
+<p class="table"><table align="center" border="1" width="80%">
+<thead><tr><th>Name</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><tt>MXML_ELEMENT</tt></td><td>XML element with attributes</td></tr>
+<tr><td><tt>MXML_INTEGER</tt></td><td>Integer value</td></tr>
+<tr><td><tt>MXML_OPAQUE</tt></td><td>Opaque string</td></tr>
+<tr><td><tt>MXML_REAL</tt></td><td>Real value</td></tr>
+<tr><td><tt>MXML_TEXT</tt></td><td>Text fragment</td></tr>
+</tbody></table></p>
+<h1><a name="_functions">Functions</a></h1>
 <ul>
 	<li><a href="#mxmlAdd"><tt>mxmlAdd()</tt></a></li>
 	<li><a href="#mxmlDelete"><tt>mxmlDelete()</tt></a></li>
@@ -29,7 +58,7 @@
 </ul>
 <hr noshade/>
 <h2><a name="mxmlAdd">mxmlAdd()</a></h2>
-<p>Add a node to a tree.</p>
+<p>Local functions...</p>
 <h3>Syntax</h3>
 <pre>
 void
@@ -136,7 +165,7 @@ mxmlFindElement(
 <p>Element node or NULL</p>
 <hr noshade/>
 <h2><a name="mxmlLoadFile">mxmlLoadFile()</a></h2>
-<p>Load a file into an XML node tree.</p>
+<p>mxml_node_t *Top nodeFILE *File to read frommxml_type_tCallback functionNew nodemxml_node_t *Create a new element node.mxml_node_t *Parent nodeconst char *Name of elementNew nodemxml_node_t *Create a new integer node.mxml_node_t *Parent nodeintInteger valueNew nodemxml_node_t *Create a new opaque string.mxml_node_t *Parent nodeconst char *Opaque stringNew nodemxml_node_t *Create a new real number node.mxml_node_t *Parent nodedoubleReal number valueNew nodemxml_node_t *Create a new text fragment node.mxml_node_t *Parent nodeintLeading whitespace?const char *StringRemove a node from its parent.mxml_node_t *Node to remove0 on success, -1 on errorintSave an XML tree to a file.mxml_node_t *Node to writeFILE *File to write tointWhitespace callbackNext node or NULLmxml_node_t *Walk to the next logical node in the tree.mxml_node_t *Current nodemxml_node_t *Top nodeintDescend into tree?Previous node or NULLmxml_node_t *Walk to the previous logical node in the tree.mxml_node_t *Current nodemxml_node_t *Top nodeintDescend into tree?Data types...char *Attribute namechar *Attribute valuestruct mxml_attr_sstruct mxml_value_smxml_node_t *First child nodemxml_node_t *Last child nodemxml_node_t *Next node under same parentmxml_node_t *Parent nodemxml_node_t *Previous node under same parentmxml_type_tNode typemxml_value_tNode valuechar *Fragment stringintLeading whitespace?struct mxml_text_sNode TypeXML element with attributesInteger valueOpaque stringReal valueText fragmentAttribute ValueElement ValueText ValueNode ValueNodeC++ support...Prototypes...C++ support...End of &quot;$Id: documentation.html,v 1.3 2003/06/07 21:27:05 mike Exp $&quot;.enum mxml_type_emxml_attr_t *Attributeschar *Name of elementintNumber of attributesunion mxml_value_umxml_element_tElementintInteger numberchar *Opaque stringdoubleReal numbermxml_text_tText fragmentmxml_node_t *Current nodemxml_node_t *Parent nodeNode typeconst char *String to writeFile to write toint(*cb)(mxml_node_t *int) intWhere valueCurrent column</p>
 <h3>Syntax</h3>
 <pre>
 mxml_node_t *
@@ -154,7 +183,7 @@ mxmlLoadFile(
 <tr><td><tt>(*cb)(mxml_node_t *)</tt></td><td>Callback function</td></tr>
 </tbody></table></p>
 <h3>Returns</h3>
-<p>First node</p>
+<p>Local functions...</p>
 <hr noshade/>
 <h2><a name="mxmlNewElement">mxmlNewElement()</a></h2>
 <p>Create a new element node.</p>
@@ -332,5 +361,162 @@ mxmlWalkPrev(
 </tbody></table></p>
 <h3>Returns</h3>
 <p>Previous node or NULL</p>
+<h1><a name="_structures">Structures</a></h1>
+<ul>
+	<li><a href="#mxml_attr_s"><tt>mxml_attr_s</tt></a></li>
+	<li><a href="#mxml_node_s"><tt>mxml_node_s</tt></a></li>
+	<li><a href="#mxml_text_s"><tt>mxml_text_s</tt></a></li>
+	<li><a href="#mxml_value_s"><tt>mxml_value_s</tt></a></li>
+</ul>
+<hr noshade/>
+<h2><a name="mxml_attr_s">mxml_attr_s</a></h2>
+<p>Data types...</p>
+<h3>Definition</h3>
+<pre>
+struct mxml_attr_s
+{
+  char * name;
+  char * value;
+};
+</pre>
+<h3>Members</h3>
+<p class="table"><table align="center" border="1" width="80%">
+<thead><tr><th>Name</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><tt>name</tt></td><td>Attribute name</td></tr>
+<tr><td><tt>value</tt></td><td>Attribute value</td></tr>
+</tbody></table></p>
+<hr noshade/>
+<h2><a name="mxml_node_s">mxml_node_s</a></h2>
+<p>mxml_node_t *First child nodemxml_node_t *Last child nodemxml_node_t *Next node under same parentmxml_node_t *Parent nodemxml_node_t *Previous node under same parentmxml_type_tNode typemxml_value_tNode valuechar *Fragment stringintLeading whitespace?struct mxml_text_sNode TypeXML element with attributesInteger valueOpaque stringReal valueText fragmentAttribute ValueElement ValueText ValueNode ValueNodeC++ support...Prototypes...C++ support...End of &quot;$Id: documentation.html,v 1.3 2003/06/07 21:27:05 mike Exp $&quot;.enum mxml_type_emxml_attr_t *Attributeschar *Name of elementintNumber of attributesunion mxml_value_umxml_element_tElementintInteger numberchar *Opaque stringdoubleReal numbermxml_text_tText fragmentmxml_node_t *Current nodemxml_node_t *Parent nodeNode typeconst char *String to writeFile to write toint(*cb)(mxml_node_t *int) intWhere valueCurrent column</p>
+<h3>Definition</h3>
+<pre>
+struct mxml_node_s
+{
+  mxml_node_t * child;
+  mxml_node_t * last_child;
+  mxml_node_t * next;
+  mxml_node_t * parent;
+  mxml_node_t * prev;
+  mxml_type_t type;
+  mxml_value_t value;
+};
+</pre>
+<h3>Members</h3>
+<p class="table"><table align="center" border="1" width="80%">
+<thead><tr><th>Name</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><tt>child</tt></td><td>First child node</td></tr>
+<tr><td><tt>last_child</tt></td><td>Last child node</td></tr>
+<tr><td><tt>next</tt></td><td>Next node under same parent</td></tr>
+<tr><td><tt>parent</tt></td><td>Parent node</td></tr>
+<tr><td><tt>prev</tt></td><td>Previous node under same parent</td></tr>
+<tr><td><tt>type</tt></td><td>Node type</td></tr>
+<tr><td><tt>value</tt></td><td>Node value</td></tr>
+</tbody></table></p>
+<hr noshade/>
+<h2><a name="mxml_text_s">mxml_text_s</a></h2>
+<p>char *Fragment stringintLeading whitespace?struct mxml_text_sNode TypeXML element with attributesInteger valueOpaque stringReal valueText fragmentAttribute ValueElement ValueText ValueNode ValueNodeC++ support...Prototypes...C++ support...End of &quot;$Id: documentation.html,v 1.3 2003/06/07 21:27:05 mike Exp $&quot;.enum mxml_type_emxml_attr_t *Attributeschar *Name of elementintNumber of attributesunion mxml_value_umxml_element_tElementintInteger numberchar *Opaque stringdoubleReal numbermxml_text_tText fragmentmxml_node_t *Current nodemxml_node_t *Parent nodeNode typeconst char *String to writeFile to write toint(*cb)(mxml_node_t *int) intWhere valueCurrent column</p>
+<h3>Definition</h3>
+<pre>
+struct mxml_text_s
+{
+  char * string;
+  int whitespace;
+};
+</pre>
+<h3>Members</h3>
+<p class="table"><table align="center" border="1" width="80%">
+<thead><tr><th>Name</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><tt>string</tt></td><td>Fragment string</td></tr>
+<tr><td><tt>whitespace</tt></td><td>Leading whitespace?</td></tr>
+</tbody></table></p>
+<hr noshade/>
+<h2><a name="mxml_value_s">mxml_value_s</a></h2>
+<p>mxml_attr_t *Attributeschar *Name of elementintNumber of attributesunion mxml_value_umxml_element_tElementintInteger numberchar *Opaque stringdoubleReal numbermxml_text_tText fragmentmxml_node_t *Current nodemxml_node_t *Parent nodeNode typeconst char *String to writeFile to write toint(*cb)(mxml_node_t *int) intWhere valueCurrent column</p>
+<h3>Definition</h3>
+<pre>
+struct mxml_value_s
+{
+  mxml_attr_t * attrs;
+  char * name;
+  int num_attrs;
+};
+</pre>
+<h3>Members</h3>
+<p class="table"><table align="center" border="1" width="80%">
+<thead><tr><th>Name</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><tt>attrs</tt></td><td>Attributes</td></tr>
+<tr><td><tt>name</tt></td><td>Name of element</td></tr>
+<tr><td><tt>num_attrs</tt></td><td>Number of attributes</td></tr>
+</tbody></table></p>
+<h1><a name="_types">Types</a></h1>
+<ul>
+	<li><a href="#mxml_attr_t"><tt>mxml_attr_t</tt></a></li>
+	<li><a href="#mxml_element_t"><tt>mxml_element_t</tt></a></li>
+	<li><a href="#mxml_text_t"><tt>mxml_text_t</tt></a></li>
+	<li><a href="#mxml_type_t"><tt>mxml_type_t</tt></a></li>
+	<li><a href="#mxml_value_t"><tt>mxml_value_t</tt></a></li>
+</ul>
+<hr noshade/>
+<h2><a name="mxml_attr_t">mxml_attr_t</a></h2>
+<h3>Definition</h3>
+<pre>
+typedef struct mxml_attr_s mxml_attr_t;
+</pre>
+<hr noshade/>
+<h2><a name="mxml_element_t">mxml_element_t</a></h2>
+<h3>Definition</h3>
+<pre>
+typedef struct mxml_value_s mxml_element_t;
+</pre>
+<hr noshade/>
+<h2><a name="mxml_text_t">mxml_text_t</a></h2>
+<h3>Definition</h3>
+<pre>
+typedef struct mxml_text_s mxml_text_t;
+</pre>
+<hr noshade/>
+<h2><a name="mxml_type_t">mxml_type_t</a></h2>
+<h3>Definition</h3>
+<pre>
+typedef enum mxml_type_e mxml_type_t;
+</pre>
+<hr noshade/>
+<h2><a name="mxml_value_t">mxml_value_t</a></h2>
+<h3>Definition</h3>
+<pre>
+typedef union mxml_value_u mxml_value_t;
+</pre>
+<h1><a name="_unions">Unions</a></h1>
+<ul>
+	<li><a href="#mxml_value_u"><tt>mxml_value_u</tt></a></li>
+</ul>
+<hr noshade/>
+<h2><a name="mxml_value_u">mxml_value_u</a></h2>
+<p>mxml_element_tElementintInteger numberchar *Opaque stringdoubleReal numbermxml_text_tText fragmentmxml_node_t *Current nodemxml_node_t *Parent nodeNode typeconst char *String to writeFile to write toint(*cb)(mxml_node_t *int) intWhere valueCurrent column</p>
+<h3>Definition</h3>
+<pre>
+struct mxml_value_u
+{
+  mxml_element_t element;
+  int integer;
+  char * opaque;
+  double real;
+  mxml_text_t text;
+};
+</pre>
+<h3>Members</h3>
+<p class="table"><table align="center" border="1" width="80%">
+<thead><tr><th>Name</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><tt>element</tt></td><td>Element</td></tr>
+<tr><td><tt>integer</tt></td><td>Integer number</td></tr>
+<tr><td><tt>opaque</tt></td><td>Opaque string</td></tr>
+<tr><td><tt>real</tt></td><td>Real number</td></tr>
+<tr><td><tt>text</tt></td><td>Text fragment</td></tr>
+</tbody></table></p>
 </body>
 </html>

@@ -1,6 +1,6 @@
 <?
 //
-// "$Id: auth.php,v 1.4 2004/05/18 01:39:00 mike Exp $"
+// "$Id: auth.php,v 1.5 2004/05/19 02:57:18 mike Exp $"
 //
 // Authentication functions for PHP pages...
 //
@@ -50,7 +50,9 @@ auth_current()
     return ("");
 
   // Lookup the username in the users table and compare...
-  $result = db_query("SELECT * FROM users WHERE name='".db_escape($cookie[0])."'");
+  $result = db_query("SELECT * FROM users WHERE "
+                    ."name='".db_escape($cookie[0])."' AND "
+		    ."is_published = 1");
   if (db_count($result) == 1 && ($row = db_next($result)))
   {
     // Compute the session ID...
@@ -92,7 +94,9 @@ auth_login($name,			// I - Username
   $LOGIN_USER = "";
 
   // Lookup the username in the database...
-  $result = db_query("SELECT * FROM users WHERE name='".db_escape($name)."'");
+  $result = db_query("SELECT * FROM users WHERE "
+                    ."name='".db_escape($name)."' AND "
+		    ."is_published = 1");
   if (db_count($result) == 1 && ($row = db_next($result)))
   {
     // Compute the hash of the name and password...
@@ -137,6 +141,6 @@ auth_logout()
 
 
 //
-// End of "$Id: auth.php,v 1.4 2004/05/18 01:39:00 mike Exp $".
+// End of "$Id: auth.php,v 1.5 2004/05/19 02:57:18 mike Exp $".
 //
 ?>

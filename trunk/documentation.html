@@ -41,6 +41,8 @@
 	<li><a href="#mxmlDelete"><tt>mxmlDelete()</tt></a></li>
 	<li><a href="#mxmlElementGetAttr"><tt>mxmlElementGetAttr()</tt></a></li>
 	<li><a href="#mxmlElementSetAttr"><tt>mxmlElementSetAttr()</tt></a></li>
+	<li><a href="#mxmlEntityGetName"><tt>mxmlEntityGetName()</tt></a></li>
+	<li><a href="#mxmlEntityGetValue"><tt>mxmlEntityGetValue()</tt></a></li>
 	<li><a href="#mxmlFindElement"><tt>mxmlFindElement()</tt></a></li>
 	<li><a href="#mxmlLoadFile"><tt>mxmlLoadFile()</tt></a></li>
 	<li><a href="#mxmlLoadString"><tt>mxmlLoadString()</tt></a></li>
@@ -158,6 +160,43 @@ mxmlElementSetAttr(
 </tbody></table></p>
 <h3>Returns</h3>
 <p>Nothing.</p>
+<h2><a name="mxmlEntityGetName">mxmlEntityGetName()</a></h2>
+<p>Get the name that corresponds to the character value.
+
+If val does not need to be represented by a named entity, NULL is returned.</p>
+<h3>Syntax</h3>
+<pre>
+const char *
+mxmlEntityGetName(
+    int val);
+</pre>
+<h3>Arguments</h3>
+<p class="table"><table align="center" border="1" width="80%">
+<thead><tr><th>Name</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><tt>val</tt></td><td>Character value</td></tr>
+</tbody></table></p>
+<h3>Returns</h3>
+<p>Entity name or NULL</p>
+<h2><a name="mxmlEntityGetValue">mxmlEntityGetValue()</a></h2>
+<p>Get the character corresponding to a named entity.
+
+The entity name can also be a numeric constant. -1 is returned if the
+name is not known.</p>
+<h3>Syntax</h3>
+<pre>
+int
+mxmlEntityGetValue(
+    const char * name);
+</pre>
+<h3>Arguments</h3>
+<p class="table"><table align="center" border="1" width="80%">
+<thead><tr><th>Name</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><tt>name</tt></td><td>Entity name</td></tr>
+</tbody></table></p>
+<h3>Returns</h3>
+<p>Character value or -1 on error</p>
 <h2><a name="mxmlFindElement">mxmlFindElement()</a></h2>
 <p>Find the named element.
 

@@ -1,5 +1,5 @@
 /*
- * "$Id: mxml-file.c,v 1.24 2003/12/13 16:32:42 mike Exp $"
+ * "$Id: mxml-file.c,v 1.25 2003/12/18 04:16:37 mike Exp $"
  *
  * File loading code for mini-XML, a small XML-like file parsing library.
  *
@@ -978,6 +978,15 @@ mxml_parse_element(mxml_node_t *node,	/* I - Element node */
         while ((ch = (*getc_cb)(p)) != EOF)
 	  if (ch == quote)
 	    break;
+	  else if (ch == '&')
+	  {
+	    if (mxml_add_char(ch, &ptr, &value, &valsize))
+	    {
+              free(name);
+	      free(value);
+	      return (EOF);
+	    }
+	  }
 	  else if (mxml_add_char(ch, &ptr, &value, &valsize))
 	  {
             free(name);
@@ -999,6 +1008,9 @@ mxml_parse_element(mxml_node_t *node,	/* I - Element node */
 	while ((ch = (*getc_cb)(p)) != EOF)
 	  if (isspace(ch) || ch == '=' || ch == '/' || ch == '>')
             break;
+	  else if (ch == '&')
+	  {
+	  }
 	  else if (mxml_add_char(ch, &ptr, &value, &valsize))
 	  {
             free(name);
@@ -1115,9 +1127,8 @@ mxml_write_name(const char *s,		/* I - Name to write */
 		int        (*putc_cb)(int, void *))
 					/* I - Write callback */
 {
-  char	buf[255],			/* Buffer */
-	*bufptr,			/* Pointer into buffer */
-	quote;				/* Quote character */
+  char		quote;			/* Quote character */
+  const char	*name;			/* Entity name */
 
 
   if (*s == '\"' || *s == '\'')
@@ -1133,105 +1144,21 @@ mxml_write_name(const char *s,		/* I - Name to write */
 
     while (*s && *s != quote)
     {
-      if (*s == '&')
+      if ((name = mxmlEntityGetName(*s)) != NULL)
       {
 	if ((*putc_cb)('&', p) < 0)
           return (-1);
-	if ((*putc_cb)('a', p) < 0)
-          return (-1);
-	if ((*putc_cb)('m', p) < 0)
-          return (-1);
-	if ((*putc_cb)('p', p) < 0)
-          return (-1);
-	if ((*putc_cb)(';', p) < 0)
-          return (-1);
-      }
-      else if (*s == '<')
-      {
-	if ((*putc_cb)('&', p) < 0)
-          return (-1);
-	if ((*putc_cb)('l', p) < 0)
-          return (-1);
-	if ((*putc_cb)('t', p) < 0)
-          return (-1);
-	if ((*putc_cb)(';', p) < 0)
-          return (-1);
-      }
-      else if (*s == '>')
-      {
-	if ((*putc_cb)('&', p) < 0)
-          return (-1);
-	if ((*putc_cb)('g', p) < 0)
-          return (-1);
-	if ((*putc_cb)('t', p) < 0)
-          return (-1);
-	if ((*putc_cb)(';', p) < 0)
-          return (-1);
-      }
-      else if (*s == '\"')
-      {
-	if ((*putc_cb)('&', p) < 0)
-          return (-1);
-	if ((*putc_cb)('q', p) < 0)
-          return (-1);
-	if ((*putc_cb)('u', p) < 0)
-          return (-1);
-	if ((*putc_cb)('o', p) < 0)
-          return (-1);
-	if ((*putc_cb)('t', p) < 0)
-          return (-1);
-	if ((*putc_cb)(';', p) < 0)
-          return (-1);
-      }
-      else if (*s & 128)
-      {
-       /*
-	* Convert UTF-8 to Unicode constant...
-	*/
 
-	int	ch;			/* Unicode character */
-
-
-	ch = *s & 255;
-
-	if ((ch & 0xe0) == 0xc0)
+        while (*name)
 	{
-          ch = ((ch & 0x1f) << 6) | (s[1] & 0x3f);
-	  s ++;
-	}
-	else if ((ch & 0xf0) == 0xe0)
-	{
-          ch = ((((ch * 0x0f) << 6) | (s[1] & 0x3f)) << 6) | (s[2] & 0x3f);
-	  s += 2;
+	  if ((*putc_cb)(*name, p) < 0)
+            return (-1);
+
+          name ++;
 	}
 
-	if (ch == 0xa0)
-	{
-	 /*
-          * Handle non-breaking space as-is...
-	  */
-
-	  if ((*putc_cb)('&', p) < 0)
-            return (-1);
-	  if ((*putc_cb)('n', p) < 0)
-            return (-1);
-	  if ((*putc_cb)('b', p) < 0)
-            return (-1);
-	  if ((*putc_cb)('s', p) < 0)
-            return (-1);
-	  if ((*putc_cb)('p', p) < 0)
-            return (-1);
-	  if ((*putc_cb)(';', p) < 0)
-            return (-1);
-	}
-	else
-	{
-          sprintf(buf, "&#x%x;", ch);
-
-	  for (bufptr = buf; *bufptr; bufptr ++)
-	    if ((*putc_cb)(*bufptr, p) < 0)
-	      return (-1);
-	}
+	if ((*putc_cb)(';', p) < 0)
+          return (-1);
       }
       else if ((*putc_cb)(*s, p) < 0)
 	return (-1);
@@ -1508,111 +1435,25 @@ mxml_write_string(const char *s,	/* I - String to write */
 		  int        (*putc_cb)(int, void *))
 					/* I - Write callback */
 {
-  char	buf[255],			/* Buffer */
-	*bufptr;			/* Pointer into buffer */
+  const char	*name;			/* Entity name, if any */
 
 
   while (*s)
   {
-    if (*s == '&')
+    if ((name = mxmlEntityGetName(*s)) != NULL)
     {
       if ((*putc_cb)('&', p) < 0)
         return (-1);
-      if ((*putc_cb)('a', p) < 0)
-        return (-1);
-      if ((*putc_cb)('m', p) < 0)
-        return (-1);
-      if ((*putc_cb)('p', p) < 0)
-        return (-1);
-      if ((*putc_cb)(';', p) < 0)
-        return (-1);
-    }
-    else if (*s == '<')
-    {
-      if ((*putc_cb)('&', p) < 0)
-        return (-1);
-      if ((*putc_cb)('l', p) < 0)
-        return (-1);
-      if ((*putc_cb)('t', p) < 0)
-        return (-1);
-      if ((*putc_cb)(';', p) < 0)
-        return (-1);
-    }
-    else if (*s == '>')
-    {
-      if ((*putc_cb)('&', p) < 0)
-        return (-1);
-      if ((*putc_cb)('g', p) < 0)
-        return (-1);
-      if ((*putc_cb)('t', p) < 0)
-        return (-1);
-      if ((*putc_cb)(';', p) < 0)
-        return (-1);
-    }
-    else if (*s == '\"')
-    {
-      if ((*putc_cb)('&', p) < 0)
-        return (-1);
-      if ((*putc_cb)('q', p) < 0)
-        return (-1);
-      if ((*putc_cb)('u', p) < 0)
-        return (-1);
-      if ((*putc_cb)('o', p) < 0)
-        return (-1);
-      if ((*putc_cb)('t', p) < 0)
-        return (-1);
-      if ((*putc_cb)(';', p) < 0)
-        return (-1);
-    }
-    else if (*s & 128)
-    {
-     /*
-      * Convert UTF-8 to Unicode constant...
-      */
 
-      int	ch;			/* Unicode character */
-
-
-      ch = *s & 255;
-
-      if ((ch & 0xe0) == 0xc0)
+      while (*name)
       {
-        ch = ((ch & 0x1f) << 6) | (s[1] & 0x3f);
-	s ++;
-      }
-      else if ((ch & 0xf0) == 0xe0)
-      {
-        ch = ((((ch * 0x0f) << 6) | (s[1] & 0x3f)) << 6) | (s[2] & 0x3f);
-	s += 2;
+	if ((*putc_cb)(*name, p) < 0)
+          return (-1);
+        name ++;
       }
 
-      if (ch == 0xa0)
-      {
-       /*
-        * Handle non-breaking space as-is...
-	*/
-
-	if ((*putc_cb)('&', p) < 0)
-          return (-1);
-	if ((*putc_cb)('n', p) < 0)
-          return (-1);
-	if ((*putc_cb)('b', p) < 0)
-          return (-1);
-	if ((*putc_cb)('s', p) < 0)
-          return (-1);
-	if ((*putc_cb)('p', p) < 0)
-          return (-1);
-	if ((*putc_cb)(';', p) < 0)
-          return (-1);
-      }
-      else
-      {
-        sprintf(buf, "&#x%x;", ch);
-
-	for (bufptr = buf; *bufptr; bufptr ++)
-	  if ((*putc_cb)(*bufptr, p) < 0)
-	    return (-1);
-      }
+      if ((*putc_cb)(';', p) < 0)
+        return (-1);
     }
     else if ((*putc_cb)(*s, p) < 0)
       return (-1);
@@ -1661,5 +1502,5 @@ mxml_write_ws(mxml_node_t *node,	/* I - Current node */
 
 
 /*
- * End of "$Id: mxml-file.c,v 1.24 2003/12/13 16:32:42 mike Exp $".
+ * End of "$Id: mxml-file.c,v 1.25 2003/12/18 04:16:37 mike Exp $".
  */

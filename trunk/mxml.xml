@@ -37,6 +37,20 @@ name="node" direction="I"><type>mxml_node_t *</type><description>Element node</d
 <argument name="name" direction="I"><type>const char *</type><description>Name of attribute</description></argument>
 <argument name="value" direction="I"><type>const char *</type><description>Attribute value</description></argument>
 </function>
+<function name="mxmlEntityGetName"><returnvalue><description>Entity name or NULL</description><type>const
+char *</type></returnvalue>
+<description>Get the name that corresponds to the character value.
+
+If val does not need to be represented by a named entity, NULL is returned.</description><argument
+name="val" direction="I"><type>int</type><description>Character value</description></argument>
+</function>
+<function name="mxmlEntityGetValue"><returnvalue><description>Character value or -1 on error</description><type>int</type></returnvalue>
+<description>Get the character corresponding to a named entity.
+
+The entity name can also be a numeric constant. -1 is returned if the
+name is not known.</description><argument
+name="name" direction="I"><type>const char *</type><description>Entity name</description></argument>
+</function>
 <function name="mxmlFindElement"><returnvalue><description>Element node or NULL</description><type>mxml_node_t
 *</type></returnvalue>
 <description>Find the named element.

@@ -1,15 +1,11 @@
-TODO - 05/16/2004
+TODO - 06/21/2004
 -----------------
 
-	- New documentation.
-	  -- Use HTMLDOC to generate
-	  -- Provide more tutorials
-	  -- Release notes
 	- Add access methods and make node structure opaque.
 	  -- To allow for C++ migration
 	  -- To make future binary compatibility easier
 	- Add VC++/VC++.NET project files.
-	  -- Include DLL .def file for making a DLL.
+	  -- Include DLL .def file for making a DLL?
 	- Add C++ class/struct.
 	  -- Make this the core implementation which the C API accesses?
 	  -- Class would allow for subclassing, is that necessary?

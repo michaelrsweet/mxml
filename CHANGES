@@ -1,9 +1,11 @@
-README - 06/18/2004
+README - 06/21/2004
 -------------------
 
 CHANGES IN Mini-XML 2.0
 
 	- New programmers manual.
+	- Added Visual C++ project files for Microsoft Windows
+	  users.
 	- Added optimizations to mxmldoc, mxmlSaveFile(), and
 	  mxmlIndexNew() (STR #2)
 	- mxmlEntityAddCallback() now returns an integer status

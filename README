@@ -1,4 +1,4 @@
-README - 06/18/2004
+README - 06/21/2004
 -------------------
 
 
@@ -29,11 +29,7 @@ INTRODUCTION
 
     Mini-XML doesn't do validation or other types of processing
     on the data based upon schema files or other sources of
-    definition information, nor does it support character
-    entities other than those required by the XML
-    specification.  Also, since Mini-XML does not support the
-    UTF-16 encoding, it is technically not a conforming XML
-    consumer/client.
+    definition information.
 
 
 BUILDING Mini-XML
@@ -58,6 +54,10 @@ BUILDING Mini-XML
     working, as follows:
 
         make
+
+    If you are using Mini-XML under Microsoft Windows with
+    Visual C++, use the included project files in the "vcnet"
+    subdirectory to build the library.
 
 
 INSTALLING Mini-XML

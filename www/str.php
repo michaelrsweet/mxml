@@ -1,6 +1,6 @@
 <?php
 //
-// "$Id: str.php,v 1.12 2004/05/20 21:37:57 mike Exp $"
+// "$Id: str.php,v 1.13 2004/06/01 00:25:29 mike Exp $"
 //
 // Software Trouble Report page...
 //
@@ -50,6 +50,7 @@ $subsystems = array(
 
 $versions = array(
   "CVS",
+  "+2.0",
   "+2.0rc2",
   "2.0rc1",
   "1.3",
@@ -1167,6 +1168,9 @@ switch ($op)
 	reset($versions);
 	while (list($key, $val) = each($versions))
 	{
+	  if ($val[0] == '+')
+	    $val = substr($val, 1);
+
 	  print("<option value='$val'");
 	  if ($row['fix_version'] == $val)
 	    print(" selected");
@@ -1773,6 +1777,9 @@ switch ($op)
 	reset($versions);
 	while (list($key, $val) = each($versions))
 	{
+	  if ($val[0] == '+')
+	    continue;
+
 	  print("<option value='$val'");
 	  if ($version == $val)
 	    print(" selected");
@@ -1890,6 +1897,6 @@ switch ($op)
 }
 
 //
-// End of "$Id: str.php,v 1.12 2004/05/20 21:37:57 mike Exp $".
+// End of "$Id: str.php,v 1.13 2004/06/01 00:25:29 mike Exp $".
 //
 ?>

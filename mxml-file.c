@@ -1,5 +1,5 @@
 /*
- * "$Id: mxml-file.c,v 1.18 2003/07/23 14:47:17 mike Exp $"
+ * "$Id: mxml-file.c,v 1.19 2003/07/26 17:24:14 mike Exp $"
  *
  * File loading code for mini-XML, a small XML-like file parsing library.
  *
@@ -80,7 +80,7 @@ static int		mxml_write_ws(mxml_node_t *node, void *p,
 mxml_node_t *				/* O - First node or NULL if the file could not be read. */
 mxmlLoadFile(mxml_node_t *top,		/* I - Top node */
              FILE        *fp,		/* I - File to read from */
-             mxml_type_t (*cb)(mxml_node_t *))
+             mxml_type_t (*cb)(mxml_node_t *node))
 					/* I - Callback function or MXML_NO_CALLBACK */
 {
   return (mxml_load_data(top, fp, cb, mxml_file_getc));
@@ -101,7 +101,7 @@ mxmlLoadFile(mxml_node_t *top,		/* I - Top node */
 mxml_node_t *				/* O - First node or NULL if the string has errors. */
 mxmlLoadString(mxml_node_t *top,	/* I - Top node */
                const char  *s,		/* I - String to load */
-               mxml_type_t (*cb)(mxml_node_t *))
+               mxml_type_t (*cb)(mxml_node_t *node))
 					/* I - Callback function or MXML_NO_CALLBACK */
 {
   return (mxml_load_data(top, &s, cb, mxml_string_getc));
@@ -120,7 +120,7 @@ mxmlLoadString(mxml_node_t *top,	/* I - Top node */
 
 char *					/* O - Allocated string or NULL */
 mxmlSaveAllocString(mxml_node_t *node,	/* I - Node to write */
-                    int         (*cb)(mxml_node_t *, int))
+                    int         (*cb)(mxml_node_t *node, int ws))
 					/* I - Whitespace callback or MXML_NO_CALLBACK */
 {
   int	bytes;				/* Required bytes */
@@ -178,7 +178,7 @@ mxmlSaveAllocString(mxml_node_t *node,	/* I - Node to write */
 int					/* O - 0 on success, -1 on error. */
 mxmlSaveFile(mxml_node_t *node,		/* I - Node to write */
              FILE        *fp,		/* I - File to write to */
-	     int         (*cb)(mxml_node_t *, int))
+	     int         (*cb)(mxml_node_t *node, int ws))
 					/* I - Whitespace callback or MXML_NO_CALLBACK */
 {
   int	col;				/* Final column */
@@ -215,7 +215,7 @@ int					/* O - Size of string */
 mxmlSaveString(mxml_node_t *node,	/* I - Node to write */
                char        *buffer,	/* I - String buffer */
                int         bufsize,	/* I - Size of string buffer */
-               int         (*cb)(mxml_node_t *, int))
+               int         (*cb)(mxml_node_t *node, int ws))
 					/* I - Whitespace callback or MXML_NO_CALLBACK */
 {
   int	col;				/* Final column */
@@ -1432,5 +1432,5 @@ mxml_write_ws(mxml_node_t *node,	/* I - Current node */
 
 
 /*
- * End of "$Id: mxml-file.c,v 1.18 2003/07/23 14:47:17 mike Exp $".
+ * End of "$Id: mxml-file.c,v 1.19 2003/07/26 17:24:14 mike Exp $".
  */

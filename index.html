@@ -103,6 +103,8 @@ href="testmxml.c">testmxml.c</a></tt> and <tt><a
 href="mxmldoc.c">mxmldoc.c</a></tt> source files for examples of
 using Mini-XML.</p>
 
+<h3>The Basics</h3>
+
 <p>Mini-XML provides a single header file which you include:</p>
 
 <pre>
@@ -129,6 +131,54 @@ href="documentation.html#mxmlNewText"><tt>mxmlNewText()</tt></a>
 functions. Only elements can have child nodes, and the top node
 must be an element, usually "?xml".</p>
 
+<p>Each node has pointers for the node above (<tt>parent</tt>), below (<tt>child</tt>),
+to the left (<tt>prev</tt>), and to the right (<tt>next</tt>) of the current
+node. If you have an XML file like the following:</p>
+
+<pre>
+    &lt;?xml version="1.0"?>
+        &lt;node>val1&lt;/node>
+        &lt;node>val2&lt;/node>
+        &lt;node>val3&lt;/node>
+        &lt;group>
+            &lt;node>val4&lt;/node>
+            &lt;node>val5&lt;/node>
+            &lt;node>val6&lt;/node>
+        &lt;/group>
+        &lt;node>val7&lt;/node>
+        &lt;node>val8&lt;/node>
+        &lt;node>val9&lt;/node>
+</pre>
+
+<p>the node tree returned by <tt>mxmlLoadFile()</tt> would look
+like the following in memory:</p>
+
+<pre>
+    ?xml
+      |
+    node - node - node - group - node - node - node
+      |      |      |      |       |      |      |
+    val1   val2   val3     |     val7   val8   val9
+                           |
+                         node - node - node
+                           |      |      |
+                         val4   val5   val6
+</pre>
+
+<p>where "-" is a pointer to the next node and "|" is a pointer
+to the first child node.</p>
+
+<p>Once you are done with the XML data, use the <a
+href="documentation.html#mxmlDelete"><tt>mxmlDelete()</tt></a>
+function to recursively free the memory that is used for a
+particular node or the entire tree:</p>
+
+<pre>
+mxmlDelete(tree);
+</pre>
+
+<h3>Loading and Saving XML Files</h3>
+
 <p>You load an XML file using the <a
 href="documentation.html#mxmlLoadFile"><tt>mxmlLoadFile()</tt></a>
 function:</p>
@@ -142,6 +192,15 @@ tree = mxmlLoadFile(NULL, fp, MXML_NO_CALLBACK);
 fclose(fp);
 </pre>
 
+<p>The third argument specifies a callback function which
+returns the value type of the immediate children for a new
+element node: <tt>MXML_INTEGER</tt>, <tt>MXML_OPAQUE</tt>,
+<tt>MXML_REAL</tt>, or <tt>MXML_TEXT</tt>. This function is
+called <i>after</i> the element and its attributes have been
+read, so you can look at the element name, attributes, and
+attribute values to determine the proper value type to return.
+The default value type is MXML_TEXT if no callback is used.</p>
+
 <p>Similarly, you save an XML file using the <a
 href="documentation.html#mxmlSaveFile"><tt>mxmlSaveFile()</tt></a>
 function:</p>
@@ -154,6 +213,16 @@ fp = fopen("filename.xml", "w");
 mxmlSaveFile(tree, fp, MXML_NO_CALLBACK);
 fclose(fp);
 </pre>
+
+<p>Callback functions for saving are used to optionally insert
+whitespace before and after elements in the node tree. Your
+function will be called up to four times for each element node
+with a pointer to the node and a "where" value of
+<tt>MXML_WS_BEFORE_OPEN</tt>, <tt>MXML_WS_AFTER_OPEN</tt>,
+<tt>MXML_WS_BEFORE_CLOSE</tt>, or <tt>MXML_WS_AFTER_CLOSE</tt>.
+The callback function should return 0 if no whitespace should be
+added and the character to insert (space, tab, newline)
+otherwise.</p>
 
 <p>The <a
 href="documentation.html#mxmlLoadString"><tt>mxmlLoadString()</tt></a>,
@@ -179,7 +248,21 @@ mxmlSaveString(tree, buffer, sizeof(buffer), MXML_NO_CALLBACK);
 ptr = mxmlSaveAllocString(tree, MXML_NO_CALLBACK);
 </pre>
 
-<p>You can find a named element/node using the <a
+<h3>Finding and Iterating Nodes</h3>
+
+<p>The <a
+href="documentation.html#mxmlWalkPrev"><tt>mxmlWalkPrev()</tt></a>
+and <a
+href="documentation.html#mxmlWalkNext"><tt>mxmlWalkNext()</tt></a>functions
+can be used to iterate through the XML node tree:</p>
+
+<pre>
+mxml_node_t *node = mxmlWalkPrev(current, tree, MXML_DESCEND);
+
+mxml_node_t *node = mxmlWalkNext(current, tree, MXML_DESCEND);
+</pre>
+
+<p>In addition, you can find a named element/node using the <a
 href="documentation.html#mxmlFindElement"><tt>mxmlFindElement()</tt></a>
 function:</p>
 
@@ -223,14 +306,63 @@ for (node = mxmlFindElement(tree, tree, "name", NULL, NULL, MXML_DESCEND);
 }
 </pre>
 
-<p>Finally, once you are done with the XML data, use the <a
-href="documentation.html#mxmlDelete"><tt>mxmlDelete()</tt></a>
-function to recursively free the memory that is used for a
-particular node or the entire tree:</p>
+<p>The <tt>MXML_DESCEND</tt> argument can actually be one of three constants:</p>
+
+<ul>
+
+	<li><tt>MXML_NO_DESCEND</tt> means to not to look at any
+	child nodes in the element hierarchy, just look at
+	siblings at the same level or parent nodes until the top
+	node or top-of-tree is reached. The previous node from
+	"group" would be the "node" element to the left, while
+	the next node from "group" would be the "node" element
+	to the right.</li>
+
+	<li><tt>MXML_DESCEND_FIRST</tt> means that it is OK to
+	descend to the first child of a node, but not to descend
+	further when searching. You'll normally use this when
+	iterating through direct children of a parent node, e.g.
+	all of the "node" elements under the "?xml" parent node
+	in the example above. This mode is only applicable to
+	the search function; the walk functions treat this as
+	<tt>MXML_DESCEND</tt> since every call is a first
+	time.</li>
+
+	<li><tt>MXML_DESCEND</tt> means to keep descending until
+	you hit the bottom of the tree.  The previous node from
+	"group" would be the "val3" node and the next node would
+	be the first node element under "group". If you were to
+	walk from the root node "?xml" to the end of the
+	tree with <tt>mxmlWalkNext()</tt>, the order would be:
 
 <pre>
-mxmlDelete(tree);
+    ?xml
+    node
+    val1
+    node
+    val2
+    node
+    val3
+    group
+    node
+    val4
+    node
+    val5
+    node
+    val6
+    node
+    val7
+    node
+    val8
+    node
+    val9
 </pre>
+
+	<p>If you started at "val9" and walked using
+	<tt>mxmlWalkPrev()</tt>, the order would be reversed,
+	ending at "?xml".</p></li>
+
+</ul>
 
 <h2>Getting Help and Reporting Problems</h2>
 

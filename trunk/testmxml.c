@@ -1,5 +1,5 @@
 /*
- * "$Id: testmxml.c,v 1.16 2004/05/02 16:04:40 mike Exp $"
+ * "$Id: testmxml.c,v 1.17 2004/05/16 18:25:20 mike Exp $"
  *
  * Test program for Mini-XML, a small XML-like file parsing library.
  *
@@ -51,6 +51,7 @@ main(int  argc,				/* I - Number of command-line args */
   FILE			*fp;		/* File to read */
   mxml_node_t		*tree,		/* XML tree */
 			*node;		/* Node which should be in test.xml */
+  mxml_index_t		*ind;		/* XML index */
   char			buffer[16384];	/* Save string */
   static const char	*types[] =	/* Strings for node types */
 			{
@@ -106,11 +107,11 @@ main(int  argc,				/* I - Number of command-line args */
   mxmlNewReal(tree, 123.4f);
   mxmlNewText(tree, 1, "text");
 
-  mxmlLoadString(tree, "<group>string string string</group>",
+  mxmlLoadString(tree, "<group type='string'>string string string</group>",
                  MXML_NO_CALLBACK);
-  mxmlLoadString(tree, "<group>1 2 3</group>",
+  mxmlLoadString(tree, "<group type='integer'>1 2 3</group>",
                  MXML_INTEGER_CALLBACK);
-  mxmlLoadString(tree, "<group>1.0 2.0 3.0</group>",
+  mxmlLoadString(tree, "<group type='real'>1.0 2.0 3.0</group>",
                  MXML_REAL_CALLBACK);
   mxmlLoadString(tree, "<group>opaque opaque opaque</group>",
                  MXML_OPAQUE_CALLBACK);
@@ -240,7 +241,127 @@ main(int  argc,				/* I - Number of command-line args */
       mxmlDelete(tree);
       return (1);
     }
-  } 
+  }
+
+ /*
+  * Test indices...
+  */
+
+  ind = mxmlIndexNew(tree, NULL, NULL);
+  if (!ind)
+  {
+    fputs("ERROR: Unable to create index of all nodes!\n", stderr);
+    mxmlDelete(tree);
+    return (1);
+  }
+
+  if (ind->num_nodes != 5)
+  {
+    fprintf(stderr, "ERROR: Index of all nodes contains %d "
+                    "nodes; expected 5!\n", ind->num_nodes);
+    mxmlIndexDelete(ind);
+    mxmlDelete(tree);
+    return (1);
+  }
+
+  mxmlIndexReset(ind);
+  if (!mxmlIndexFind(ind, "group", NULL))
+  {
+    fputs("ERROR: mxmlIndexFind for \"group\" failed!\n", stderr);
+    mxmlIndexDelete(ind);
+    mxmlDelete(tree);
+    return (1);
+  }
+
+  mxmlIndexDelete(ind);
+
+  ind = mxmlIndexNew(tree, "group", NULL);
+  if (!ind)
+  {
+    fputs("ERROR: Unable to create index of groups!\n", stderr);
+    mxmlDelete(tree);
+    return (1);
+  }
+
+  if (ind->num_nodes != 4)
+  {
+    fprintf(stderr, "ERROR: Index of groups contains %d "
+                    "nodes; expected 4!\n", ind->num_nodes);
+    mxmlIndexDelete(ind);
+    mxmlDelete(tree);
+    return (1);
+  }
+
+  mxmlIndexReset(ind);
+  if (!mxmlIndexEnum(ind))
+  {
+    fputs("ERROR: mxmlIndexEnum failed!\n", stderr);
+    mxmlIndexDelete(ind);
+    mxmlDelete(tree);
+    return (1);
+  }
+
+  mxmlIndexDelete(ind);
+
+  ind = mxmlIndexNew(tree, NULL, "type");
+  if (!ind)
+  {
+    fputs("ERROR: Unable to create index of type attributes!\n", stderr);
+    mxmlDelete(tree);
+    return (1);
+  }
+
+  if (ind->num_nodes != 3)
+  {
+    fprintf(stderr, "ERROR: Index of type attributes contains %d "
+                    "nodes; expected 3!\n", ind->num_nodes);
+    mxmlIndexDelete(ind);
+    mxmlDelete(tree);
+    return (1);
+  }
+
+  mxmlIndexReset(ind);
+  if (!mxmlIndexFind(ind, NULL, "string"))
+  {
+    fputs("ERROR: mxmlIndexFind for \"string\" failed!\n", stderr);
+    mxmlIndexDelete(ind);
+    mxmlDelete(tree);
+    return (1);
+  }
+
+  mxmlIndexDelete(ind);
+
+  ind = mxmlIndexNew(tree, "group", "type");
+  if (!ind)
+  {
+    fputs("ERROR: Unable to create index of elements and attributes!\n", stderr);
+    mxmlDelete(tree);
+    return (1);
+  }
+
+  if (ind->num_nodes != 3)
+  {
+    fprintf(stderr, "ERROR: Index of elements and attributes contains %d "
+                    "nodes; expected 3!\n", ind->num_nodes);
+    mxmlIndexDelete(ind);
+    mxmlDelete(tree);
+    return (1);
+  }
+
+  mxmlIndexReset(ind);
+  if (!mxmlIndexFind(ind, "group", "string"))
+  {
+    fputs("ERROR: mxmlIndexFind for \"string\" failed!\n", stderr);
+    mxmlIndexDelete(ind);
+    mxmlDelete(tree);
+    return (1);
+  }
+
+  mxmlIndexDelete(ind);
+
+ /*
+  * Check the mxmlDelete() works properly...
+  */
 
   for (i = 0; i < 8; i ++)
   {
@@ -431,5 +552,5 @@ whitespace_cb(mxml_node_t *node,	/* I - Element node */
 
 
 /*
- * End of "$Id: testmxml.c,v 1.16 2004/05/02 16:04:40 mike Exp $".
+ * End of "$Id: testmxml.c,v 1.17 2004/05/16 18:25:20 mike Exp $".
  */

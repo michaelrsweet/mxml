@@ -1,5 +1,5 @@
 /*
- * "$Id: mxml-file.c,v 1.4 2003/06/04 01:26:34 mike Exp $"
+ * "$Id: mxml-file.c,v 1.5 2003/06/04 02:34:29 mike Exp $"
  *
  * File loading code for mini-XML, a small XML-like file parsing library.
  *
@@ -20,6 +20,7 @@
  *   mxmlLoadFile()       - Load a file into an XML node tree.
  *   mxmlSaveFile()       - Save an XML tree to a file.
  *   mxml_parse_element() - Parse an element for any attributes...
+ *   mxml_write_node()    - Save an XML node to a file.
  *   mxml_write_string()  - Write a string, escaping & and < as needed.
  */
 
@@ -35,6 +36,7 @@
  */
 
 static int	mxml_parse_element(mxml_node_t *node, FILE *fp);
+static int	mxml_write_node(mxml_node_t *node, FILE *fp, int col);
 static int	mxml_write_string(const char *s, FILE *fp);
 
 
@@ -79,12 +81,11 @@ mxmlLoadFile(mxml_node_t *top,		/* I - Top node */
       */
 
       *bufptr = '\0';
-      bufptr  = buffer;
 
       switch (type)
       {
 	case MXML_INTEGER :
-            node = mxmlNewInteger(parent, strtol(buffer, NULL, 0));
+            node = mxmlNewInteger(parent, strtol(buffer, &bufptr, 0));
 	    break;
 
 	case MXML_OPAQUE :
@@ -92,7 +93,7 @@ mxmlLoadFile(mxml_node_t *top,		/* I - Top node */
 	    break;
 
 	case MXML_REAL :
-            node = mxmlNewReal(parent, strtod(buffer, NULL));
+            node = mxmlNewReal(parent, strtod(buffer, &bufptr));
 	    break;
 
 	case MXML_TEXT :
@@ -104,7 +105,20 @@ mxmlLoadFile(mxml_node_t *top,		/* I - Top node */
 	    break;
       }	  
 
-      whitespace = isspace(ch) != 0;
+      if (*bufptr)
+      {
+       /*
+        * Bad integer/real number value...
+	*/
+
+        fprintf(stderr, "Bad %s value '%s' in parent <%s>!\n",
+	        type == MXML_INTEGER ? "integer" : "real", buffer,
+		parent ? parent->value.element.name : "null");
+	break;
+      }
+
+      bufptr     = buffer;
+      whitespace = isspace(ch) && type == MXML_TEXT;
 
       if (!node)
       {
@@ -393,90 +407,15 @@ int					/* O - 0 on success, -1 on error */
 mxmlSaveFile(mxml_node_t *node,		/* I - Node to write */
              FILE        *fp)		/* I - File to write to */
 {
-  int	i;				/* Looping var */
+ /*
+  * Write the node...
+  */
 
+  if (mxml_write_node(node, fp, 0) < 0)
+    return (-1);
 
-  while (node != NULL)
-  {
-   /*
-    * Print the node value...
-    */
-
-    switch (node->type)
-    {
-      case MXML_ELEMENT :
-          if (fprintf(fp, "<%s", node->value.element.name) < 0)
-	    return (-1);
-
-	  for (i = 0; i < node->value.element.num_attrs; i ++)
-	    if (fprintf(fp, " %s=\"%s\"", node->value.element.attrs[i].name,
-	                node->value.element.attrs[i].value) < 0)
-              return (-1);
-
-	  if (node->child)
-	  {
-           /*
-	    * The ?xml element is a special-case and has no end tag...
-	    */
-
-	    if (node->value.element.name[0] == '?')
-	    {
-	      if (fputs("?>\n", fp) < 0)
-	        return (-1);
-            }
-	    else if (putc('>', fp) < 0)
-	      return (-1);
-
-	    if (mxmlSaveFile(node->child, fp) < 0)
-	      return (-1);
-
-            if (node->value.element.name[0] != '?')
-	      if (fprintf(fp, "</%s>", node->value.element.name) < 0)
-	        return (-1);
-	  }
-	  else if (fputs("/>", fp) < 0)
-	    return (-1);
-          break;
-
-      case MXML_INTEGER :
-	  if (node->prev)
-	    if (putc(' ', fp) < 0)
-	      return (-1);
-
-          if (fprintf(fp, "%d", node->value.integer) < 0)
-	    return (-1);
-          break;
-
-      case MXML_OPAQUE :
-          if (mxml_write_string(node->value.opaque, fp) < 0)
-	    return (-1);
-          break;
-
-      case MXML_REAL :
-	  if (node->prev)
-	    if (putc(' ', fp) < 0)
-	      return (-1);
-
-          if (fprintf(fp, "%f", node->value.real) < 0)
-	    return (-1);
-          break;
-
-      case MXML_TEXT :
-	  if (node->value.text.whitespace)
-	    if (putc(' ', fp) < 0)
-	      return (-1);
-
-          if (mxml_write_string(node->value.text.string, fp) < 0)
-	    return (-1);
-          break;
-    }
-
-   /*
-    * Next node...
-    */
-
-    node = node->next;
-  }
+  if (putc('\n', fp) < 0)
+    return (-1);
 
  /*
   * Return 0 (success)...
@@ -641,6 +580,179 @@ mxml_parse_element(mxml_node_t *node,	/* I - Element node */
 
 
 /*
+ * 'mxml_write_node()' - Save an XML node to a file.
+ */
+
+static int				/* O - Column or -1 on error */
+mxml_write_node(mxml_node_t *node,	/* I - Node to write */
+                FILE        *fp,	/* I - File to write to */
+		int         col)	/* I - Current column */
+{
+  int		i;			/* Looping var */
+  int		n;			/* Chars written */
+  mxml_attr_t	*attr;			/* Current attribute */
+
+
+  while (node != NULL)
+  {
+   /*
+    * Print the node value...
+    */
+
+    switch (node->type)
+    {
+      case MXML_ELEMENT :
+          if ((n = fprintf(fp, "<%s", node->value.element.name)) < 0)
+	    return (-1);
+
+          col += n;
+
+	  for (i = node->value.element.num_attrs, attr = node->value.element.attrs;
+	       i > 0;
+	       i --, attr ++)
+	  {
+	    if ((col + strlen(attr->name) + strlen(attr->value) + 3) > MXML_WRAP)
+	    {
+	      if (putc('\n', fp) < 0)
+	        return (-1);
+
+	      col = 0;
+	    }
+	    else
+	    {
+	      if (putc(' ', fp) < 0)
+	        return (-1);
+
+	      col ++;
+	    }
+
+	    if ((n = fprintf(fp, "%s=\"%s\"", attr->name, attr->value)) < 0)
+              return (-1);
+
+            col += n;
+	  }
+
+	  if (node->child)
+	  {
+           /*
+	    * The ?xml element is a special-case and has no end tag...
+	    */
+
+	    if (node->value.element.name[0] == '?')
+	    {
+	      if (fputs("?>\n", fp) < 0)
+	        return (-1);
+
+              col = 0;
+            }
+	    else if (putc('>', fp) < 0)
+	      return (-1);
+	    else
+	      col ++;
+
+	    if ((col = mxml_write_node(node->child, fp, col)) < 0)
+	      return (-1);
+
+            if (node->value.element.name[0] != '?')
+	    {
+	      if ((n = fprintf(fp, "</%s>", node->value.element.name)) < 0)
+	        return (-1);
+
+              col += n;
+	    }
+	  }
+	  else if (fputs("/>", fp) < 0)
+	    return (-1);
+	  else
+	    col += 2;
+          break;
+
+      case MXML_INTEGER :
+	  if (node->prev)
+	  {
+	    if (col > MXML_WRAP)
+	    {
+	      if (putc('\n', fp) < 0)
+	        return (-1);
+
+	      col = 0;
+	    }
+	    else if (putc(' ', fp) < 0)
+	      return (-1);
+	    else
+	      col ++;
+          }
+
+          if ((n = fprintf(fp, "%d", node->value.integer)) < 0)
+	    return (-1);
+
+	  col += n;
+          break;
+
+      case MXML_OPAQUE :
+          if (mxml_write_string(node->value.opaque, fp) < 0)
+	    return (-1);
+
+          col += strlen(node->value.opaque);
+          break;
+
+      case MXML_REAL :
+	  if (node->prev)
+	  {
+	    if (col > MXML_WRAP)
+	    {
+	      if (putc('\n', fp) < 0)
+	        return (-1);
+
+	      col = 0;
+	    }
+	    else if (putc(' ', fp) < 0)
+	      return (-1);
+	    else
+	      col ++;
+          }
+
+          if ((n = fprintf(fp, "%f", node->value.real)) < 0)
+	    return (-1);
+
+	  col += n;
+          break;
+
+      case MXML_TEXT :
+	  if (node->value.text.whitespace)
+	  {
+	    if (col > MXML_WRAP)
+	    {
+	      if (putc('\n', fp) < 0)
+	        return (-1);
+
+	      col = 0;
+	    }
+	    else if (putc(' ', fp) < 0)
+	      return (-1);
+	    else
+	      col ++;
+          }
+
+          if (mxml_write_string(node->value.text.string, fp) < 0)
+	    return (-1);
+
+	  col += strlen(node->value.text.string);
+          break;
+    }
+
+   /*
+    * Next node...
+    */
+
+    node = node->next;
+  }
+
+  return (col);
+}
+
+
+/*
  * 'mxml_write_string()' - Write a string, escaping & and < as needed.
  */
 
@@ -672,5 +784,5 @@ mxml_write_string(const char *s,	/* I - String to write */
 
 
 /*
- * End of "$Id: mxml-file.c,v 1.4 2003/06/04 01:26:34 mike Exp $".
+ * End of "$Id: mxml-file.c,v 1.5 2003/06/04 02:34:29 mike Exp $".
  */

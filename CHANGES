@@ -7,6 +7,8 @@ CHANGES IN Mini-XML 0.93
 	- mxmlLoadFile() now correctly handles comments.
 	- mxmlLoadFile() now supports the "gt" and "nbsp"
 	  character entities.
+	- mxmlSaveFile() now uses newlines as whitespace
+	  when valid to do so.
 
 
 CHANGES IN Mini-XML 0.92

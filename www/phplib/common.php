@@ -1,8 +1,10 @@
 <?
 //
-// "$Id: common.php,v 1.4 2004/05/18 19:58:35 mike Exp $"
+// "$Id: common.php,v 1.5 2004/05/18 21:26:52 mike Exp $"
 //
 // Common utility functions for PHP pages...
+//
+// This file should be included using "include_once"...
 //
 // Contents:
 //
@@ -13,6 +15,7 @@
 //                           can't read...
 //   sanitize_text()       - Sanitize text.
 //   select_is_published() - Do a <select> for the "is published" field...
+//   show_comments()       - Show comments for the given path...
 //
 
 
@@ -72,6 +75,30 @@ abbreviate($text,			// I - String
     return ($newtext . "...");
   else
     return ($newtext);
+}
+
+
+//
+// 'count_comments()' - Count visible comments for the given path...
+//
+
+function				// O - Number of comments
+count_comments($url,			// I - URL for comment
+               $parent_id = 0)		// I - Parent comment
+{
+  $result = db_query("SELECT * FROM comment WHERE "
+                    ."url = '" . db_escape($url) ."' "
+                    ."AND status > 0 AND parent_id = $parent_id "
+		    ."ORDER BY id");
+
+  $num_comments = db_count($result);
+
+  while ($row = db_next($result))
+    $num_comments += count_comments($url, $row['id']);
+
+  db_free($result);
+
+  return ($num_comments);
 }
 
 
@@ -486,6 +513,78 @@ select_is_published($is_published = 1)	// I - Default state
 
 
 //
-// End of "$Id: common.php,v 1.4 2004/05/18 19:58:35 mike Exp $".
+// 'show_comments()' - Show comments for the given path...
+//
+
+function				// O - Number of comments
+show_comments($url,			// I - URL for comment
+              $path = "",		// I - Path component
+              $parent_id = 0,		// I - Parent comment
+	      $heading = 3)		// I - Heading level
+{
+  global $_COOKIE;
+
+
+  $result = db_query("SELECT * FROM comment WHERE "
+                    ."url = '" . db_escape($url) ."' "
+                    ."AND status > 0 AND parent_id = $parent_id "
+		    ."ORDER BY id");
+
+  if (array_key_exists("MODPOINTS", $_COOKIE))
+    $modpoints = $_COOKIE["MODPOINTS"];
+  else
+    $modpoints = 5;
+
+  if ($parent_id == 0 && $modpoints > 0)
+    print("<P>You have $modpoints moderation points available.</P>\n");
+  
+  if ($heading > 6)
+    $heading = 6;
+
+  $safeurl      = urlencode($url);
+  $num_comments = 0;
+
+  while ($row = db_next($result))
+  {
+    if ($heading > 3 && $num_comments == 0)
+      print("<div style='margin-left: 3em;'>\n");
+
+    $num_comments ++;
+
+    $create_date = date("M d, Y", $row['create_date']);
+    $create_user = sanitize_email($row['create_user']);
+    $contents    = sanitize_text($row['contents']);
+
+    print("<h$heading>From $create_user on $create_date (score=$row[status])</h$heading>\n"
+	 ."<p><tt>$contents</tt></p>\n");
+
+    html_start_links();
+    html_link("Reply", "${path}comment.php?r$row[id]+p$safeurl");
+
+    if ($modpoints > 0)
+    {
+      if ($row['status'] > 0)
+        html_link("Moderate Down", "${path}comment.php?md$row[id]+p$safeurl");
+
+      if ($row['status'] < 5)
+        html_link("Moderate Up", "${path}comment.php?mu$row[id]+p$safeurl");
+    }
+
+    html_end_links();
+
+    $num_comments += show_comments($url, $path, $row['id'], $heading + 1);
+  }
+
+  db_free($result);
+
+  if ($num_comments > 0 && $heading > 3)
+    print("</div>\n");
+
+  return ($num_comments);
+}
+
+
+//
+// End of "$Id: common.php,v 1.5 2004/05/18 21:26:52 mike Exp $".
 //
 ?>

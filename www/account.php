@@ -1,6 +1,6 @@
 <?php
 //
-// "$Id: account.php,v 1.3 2004/05/18 12:13:51 mike Exp $"
+// "$Id: account.php,v 1.4 2004/05/18 21:26:52 mike Exp $"
 //
 // Account management page...
 //
@@ -36,6 +36,7 @@ switch ($op)
 
       html_start_links(1);
       html_link("New/Pending", "$PHP_SELF?L");
+      html_link("Manage Comments", "comment.php?l");
       html_link("Change Password", "$PHP_SELF?P");
       html_link("Logout", "$PHP_SELF?X");
       html_end_links();
@@ -183,6 +184,6 @@ switch ($op)
 
 
 //
-// End of "$Id: account.php,v 1.3 2004/05/18 12:13:51 mike Exp $".
+// End of "$Id: account.php,v 1.4 2004/05/18 21:26:52 mike Exp $".
 //
 ?>

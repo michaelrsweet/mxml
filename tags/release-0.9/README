@@ -1,0 +1,138 @@
+README - 06/03/2003
+-------------------
+
+
+INTRODUCTION
+
+    This README file describes the Mini-XML library version 0.9.
+    Mini-XML is a small XML parsing library that you can use to
+    read XML and XML-like data files in your application without
+    requiring large non-standard libraries.  Mini-XML only
+    requires an ANSI C compatible compiler (GCC works, as do
+    most vendors' ANSI C compilers) and a "make" program.
+
+    Mini-XML was created to support the basic hierarchy provided
+    by XML and some simple data types, but doesn't do validation
+    or other types of processing on the data.
+
+
+BUILDING Mini-XML
+
+    Mini-XML comes with an autoconf-based configure script; just
+    type the following command to get things going:
+
+        ./configure
+
+    The default install prefix is /usr/local, which can be
+    overridden using the --prefix option:
+
+        ./configure --prefix=/foo
+
+    Once you have configured the software, type "make" to do the
+    build and then run the test program to verify that things
+    are working, as follows:
+
+        make
+	./testmxml test.xml
+
+
+INSTALLING Mini-XML
+
+    The "install" target will install Mini-XML in the lib and
+    include directories:
+
+        make install
+
+    Once you have installed it, use the "-lmxml" option to link
+    your application against it.
+
+
+DOCUMENTATION
+
+    The documentation is currently just in this README file.  At
+    some point I'll probably do some proper documentation, but
+    for now just read here and look at the testmxml.c source
+    file for an example of reading and printing the contents of
+    an XML file to stdout.
+
+    Mini-XML provides a single header file which you include:
+
+        #include <mxml.h>
+
+    Nodes are defined by the "mxml_node_t" structure; the "type"
+    member defines the node type (element, integer, opaque,
+    real, or text) which determines which value you want to look
+    at in the "value" union.  New nodes can be created using the
+    "mxmlNewElement()", "mxmlNewInteger()", "mxmlNewOpaque()",
+    "mxmlNewReal()", and "mxmlNewText()" functions.  Only
+    elements can have child nodes, and the top node must be an
+    element, usually "?xml".
+
+    You load an XML file using the "mxmlLoadFile()" function:
+
+        FILE *fp;
+        mxml_node_t *tree;
+
+	fp = fopen("filename.xml", "r");
+	tree = mxmlLoadFile(NULL, fp, MXML_NO_CALLBACK);
+	fclose(fp);
+
+    Similarly, you save an XML file using the "mxmlSaveFile()"
+    function:
+
+        FILE *fp;
+        mxml_node_t *tree;
+
+	fp = fopen("filename.xml", "w");
+	mxmlSaveFile(tree, fp);
+	fclose(fp);
+
+    You can find a named element/node using the
+    "mxmlFindElement()" function:
+
+        mxml_node_t *node = mxmlFindElement(tree, tree, "name");
+
+    You can also iterate with the same function:
+
+        mxml_node_t *node;
+
+	for (node = mxmlFindElement(tree, tree, "name");
+	     node != NULL;
+	     node = mxmlFindElement(node, tree, "name"))
+        {
+	  ... do something ...
+	}
+
+    Finally, once you are done with the XML data, use the
+    "mxmlDelete()" function to free the memory that is used:
+
+        mxmlDelete(tree);
+
+
+GETTING HELP AND REPORTING PROBLEMS
+
+    You can email me at "mxml@easysw.com" to report problems
+    and/or ask for help.  Just don't expect an instant response,
+    as I get a *lot* of email...
+
+
+LEGAL STUFF
+
+    The Mini-XML library is Copyright 2003 by Michael Sweet.
+
+    This library is free software; you can redistribute it
+    and/or modify it under the terms of the GNU Library General
+    Public License as published by the Free Software Foundation;
+    either version 2 of the License, or (at your option) any
+    later version.
+
+    This library is distributed in the hope that it will be
+    useful, but WITHOUT ANY WARRANTY; without even the implied
+    warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+    PURPOSE.  See the GNU Library General Public License for
+    more details.
+
+    You should have received a copy of the GNU Library General
+    Public License along with this library; if not, write to the
+    Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA
+    02139, USA.

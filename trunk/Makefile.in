@@ -25,7 +25,11 @@ ARFLAGS		=	@ARFLAGS@
 CC		=	@CC@
 CFLAGS		=	$(OPTIM) @CFLAGS@ @CPPFLAGS@
 CP		=	@CP@
+DSO		=	@DSO@
+DSOFLAGS	=	@DSOFLAGS@
 LDFLAGS		=	$(OPTIM) @LDFLAGS@
+LIBMXML		=	@LIBMXML@
+LN		=	@LN@ -s
 MKDIR		=	@MKDIR@
 NROFF		=	@NROFF@
 OPTIM		=	@OPTIM@
@@ -80,7 +84,7 @@ PUBLIBOBJS	=	mxml-attr.o mxml-entity.o mxml-file.o mxml-index.o \
 			mxml-node.o mxml-search.o mxml-set.o
 LIBOBJS		=	$(PUBLIBOBJS) mxml-private.o mxml-string.o
 OBJS		=	mxmldoc.o testmxml.o $(LIBOBJS)
-TARGETS		=	libmxml.a mxmldoc doc/mxml.$(CAT3EXT) \
+TARGETS		=	$(LIBMXML) mxmldoc doc/mxml.$(CAT3EXT) \
 			doc/mxmldoc.$(CAT1EXT) testmxml mxml.xml
 
 
@@ -106,15 +110,13 @@ clean:
 # Install everything...
 #
 
-install:	$(TARGETS)
+install:	$(TARGETS) install-$(LIBMXML) install-libmxml.a
 	-$(MKDIR) -p $(BUILDROOT)$(bindir)
 	$(CP) mxmldoc $(BUILDROOT)$(bindir) 
 	-$(MKDIR) -p $(BUILDROOT)$(docdir)
 	$(CP) $(DOCFILES) $(BUILDROOT)$(docdir)
 	-$(MKDIR) -p $(BUILDROOT)$(includedir)
 	$(CP) mxml.h $(BUILDROOT)$(includedir)
-	-$(MKDIR) -p $(BUILDROOT)$(libdir)
-	$(CP) libmxml.a $(BUILDROOT)$(libdir)
 	-$(MKDIR) -p $(BUILDROOT)$(libdir)/pkgconfig
 	$(CP) mxml.pc $(BUILDROOT)$(libdir)/pkgconfig
 	-$(MKDIR) -p $(BUILDROOT)$(mandir)/cat1
@@ -126,21 +128,60 @@ install:	$(TARGETS)
 	-$(MKDIR) -p $(BUILDROOT)$(mandir)/man3
 	$(CP) doc/mxml.man $(BUILDROOT)$(mandir)/man3/mxml.$(MAN3EXT)
 
+install-libmxml.a:
+	-$(MKDIR) -p $(BUILDROOT)$(libdir)
+	$(CP) libmxml.a $(BUILDROOT)$(libdir)
+
+install-libmxml.so.1.0:
+	-$(MKDIR) -p $(BUILDROOT)$(libdir)
+	$(CP) libmxml.so.1.0 $(BUILDROOT)$(libdir)
+	$(RM) $(BUILDROOT)$(libdir)/libmxml.so
+	$(LN) libmxml.so.1.0 $(BUILDROOT)$(libdir)/libmxml.so
+	$(RM) $(BUILDROOT)$(libdir)/libmxml.so.1
+	$(LN) libmxml.so.1.0 $(BUILDROOT)$(libdir)/libmxml.so.1
+
+install-libmxml.sl.1:
+	-$(MKDIR) -p $(BUILDROOT)$(libdir)
+	$(CP) libmxml.sl.1 $(BUILDROOT)$(libdir)
+	$(RM) $(BUILDROOT)$(libdir)/libmxml.so
+	$(LN) libmxml.sl.1 $(BUILDROOT)$(libdir)/libmxml.sl
+
+install-libmxml.1.dylib:
+	-$(MKDIR) -p $(BUILDROOT)$(libdir)
+	$(CP) libmxml.1.dylib $(BUILDROOT)$(libdir)
+	$(RM) $(BUILDROOT)$(libdir)/libmxml.dylib
+	$(LN) libmxml.1.dylib $(BUILDROOT)$(libdir)/libmxml.dylib
+
 
 #
 # Uninstall everything...
 #
 
-uninstall:
+uninstall: uninstall-$(LIBMXML) uninstall-libmxml.a
 	$(RM) $(BUILDROOT)$(bindir)/mxmldoc
 	$(RM) -r $(BUILDROOT)$(docdir)
 	$(RM) $(BUILDROOT)$(includedir)/mxml.h
-	$(RM) $(BUILDROOT)$(libdir)/libmxml.a
 	$(RM) $(BUILDROOT)$(libdir)/pkgconfig/mxml.pc
 	$(RM) $(BUILDROOT)$(mandir)/cat1/mxmldoc.$(CAT1EXT)
 	$(RM) $(BUILDROOT)$(mandir)/cat3/mxml.$(CAT3EXT)
 	$(RM) $(BUILDROOT)$(mandir)/man1/mxmldoc.$(MAN1EXT)
 	$(RM) $(BUILDROOT)$(mandir)/man3/mxml.$(MAN3EXT)
+
+uninstall-libmxml.a:
+	$(RM) $(BUILDROOT)$(libdir)/libmxml.a
+
+uninstall-libmxml.so.1.0:
+	$(RM) $(BUILDROOT)$(libdir)/libmxml.so
+	$(RM) $(BUILDROOT)$(libdir)/libmxml.so.1
+	$(RM) $(BUILDROOT)$(libdir)/libmxml.so.1.0
+
+uninstall-libmxml.sl.1:
+	$(RM) $(BUILDROOT)$(libdir)/libmxml.sl
+	$(RM) $(BUILDROOT)$(libdir)/libmxml.sl.1
+
+uninstall-libmxml.1.dylib:
+	$(RM) $(BUILDROOT)$(libdir)/libmxml.dylib
+	$(RM) $(BUILDROOT)$(libdir)/libmxml.1.dylib
 
 
 #
@@ -201,10 +242,48 @@ $(LIBOBJS):	mxml.h
 
 
 #
+# libmxml.so.1.0
+#
+
+libmxml.so.1.0:	$(LIBOBJS)
+	$(DSO) $(DSOFLAGS) -o libmxml.so.1.0 $(LIBOBJS)
+	$(RM) libmxml.so libmxml.so.1
+	$(LN) libmxml.so.1.0 libmxml.so
+	$(LN) libmxml.so.1.0 libmxml.so.1
+
+
+#
+# libmxml.sl.1
+#
+
+libmxml.sl.1:	$(LIBOBJS)
+	$(DSO) $(DSOFLAGS) -o libmxml.sl.1 $(LIBOBJS)
+	$(RM) libmxml.sl libmxml.sl.1
+	$(LN) libmxml.sl.1 libmxml.sl
+
+
+#
+# libmxml.1.dylib
+#
+
+libmxml.1.dylib:	$(LIBOBJS)
+	$(DSO) $(DSOFLAGS) -o libmxml.1.dylib \
+		-install_name $(libdir)/libmxml.dylib \
+		-current_version 1.0.0 \
+		-compatibility_version 1.0.0 \
+		$(LIBOBJS)
+	$(RM) libmxml.dylib libmxml.1.dylib
+	$(LN) libmxml.1.dylib libmxml.dylib
+
+
+#
 # mxmldoc
 #
 
-mxmldoc:	libmxml.a mxmldoc.o
+mxmldoc:	$(LIBMXML) mxmldoc.o
+	$(CC) $(LDFLAGS) -o $@ mxmldoc.o -L. -lmxml
+
+mxmldoc-static:	libmxml.a mxmldoc.o
 	$(CC) $(LDFLAGS) -o $@ mxmldoc.o libmxml.a
 
 mxmldoc.o:	mxml.h
@@ -245,13 +324,13 @@ testmxml.o:	mxml.h
 # mxml.xml
 #
 
-mxml.xml:	mxmldoc mxml.h $(PUBLIBOBJS:.o=.c)
+mxml.xml:	mxmldoc-static mxml.h $(PUBLIBOBJS:.o=.c)
 	$(RM) mxml.xml
-	./mxmldoc mxml.xml mxml.h $(PUBLIBOBJS:.o=.c) >doc/reference.html
+	./mxmldoc-static mxml.xml mxml.h $(PUBLIBOBJS:.o=.c) >doc/reference.html
 
-valgrind:	mxmldoc
+valgrind:	mxmldoc-static
 	$(RM) valgrind.xml
-	valgrind --leak-check=yes ./mxmldoc valgrind.xml mxml.h \
+	valgrind --leak-check=yes ./mxmldoc-static valgrind.xml mxml.h \
 		$(PUBLIBOBJS:.o=.c) >valgrind.html 2>valgrind.out
 
 

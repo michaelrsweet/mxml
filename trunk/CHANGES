@@ -1,8 +1,9 @@
-CHANGES - 01/29/2005
+CHANGES - 02/25/2005
 --------------------
 
-CHANGES IN Mini-XML 2.1.1
+CHANGES IN Mini-XML 2.2
 
+	- Added shared library support (STR #17)
 	- mxmlLoad*() now returns an error when an XML stream
 	  contains illegal control characters (STR #10)
 	- mxmlLoad*() now returns an error when an element

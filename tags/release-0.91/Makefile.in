@@ -1,0 +1,113 @@
+#
+# "$Id: Makefile.in,v 1.1 2003/06/03 19:46:30 mike Exp $"
+#
+# Makefile for mini-XML, a small XML-like file parsing library.
+#
+# Copyright 2003 by Michael Sweet.
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Library General Public
+# License as published by the Free Software Foundation; either
+# version 2, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+
+#
+# Compiler tools definitions...
+#
+
+AR		=	@AR@
+ARFLAGS		=	@ARFLAGS@
+CC		=	@CC@
+CFLAGS		=	@CFLAGS@ @CPPFLAGS@
+LDFLAGS		=	@LDFLAGS@
+RANLIB		=	@RANLIB@
+SHELL		=	/bin/sh
+
+
+#
+# Configured directories...
+#
+
+prefix		=	@prefix@
+exec_prefix	=	@exec_prefix@
+includedir	=	@includedir@
+libdir		=	@libdir@
+
+
+#
+# Rules...
+#
+
+.SUFFIXES:	.c .o
+.c.o:
+	$(CC) $(CFLAGS) -c $<
+
+
+#
+# Targets...
+#
+
+LIBOBJS		=	mxml-attr.o mxml-file.o mxml-node.o mxml-search.o
+OBJS		=	testmxml.o $(LIBOBJS)
+TARGETS		=	libmxml.a testmxml
+
+
+#
+# Make everything...
+#
+
+all:		$(TARGETS)
+
+
+#
+# Clean everything...
+#
+
+clean:
+	rm -f $(OBJS) $(TARGETS)
+	rm -f *.bck *.bak
+	rm -f config.cache config.log config.status
+	rm -rf autom4te*.cache
+
+
+#
+# Install everything...
+#
+
+install:	$(TARGETS)
+	-mkdir -p $(libdir)
+	cp libmxml.a $(libdir)
+	-mkdir -p $(includedir)
+	cp mxml.h $(includedir)
+
+
+#
+# libmxml.a
+#
+
+libmxml.a:	$(LIBOBJS)
+	rm -f $@
+	$(AR) $(ARFLAGS) $@ $(LIBOBJS)
+	$(RANLIB) $@
+
+$(LIBOBJS):	mxml.h
+
+
+#
+# testmxml
+#
+
+testmxml:	libmxml.a testmxml.o
+	$(CC) $(LDFLAGS) -o $@ testmxml.o libmxml.a
+
+testmxml.o:	mxml.h
+
+
+#
+# End of "$Id: Makefile.in,v 1.1 2003/06/03 19:46:30 mike Exp $".
+#

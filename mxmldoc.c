@@ -1,5 +1,5 @@
 /*
- * "$Id: mxmldoc.c,v 1.38 2004/10/28 01:07:00 mike Exp $"
+ * "$Id: mxmldoc.c,v 1.39 2004/10/31 15:32:14 mike Exp $"
  *
  * Documentation generator using Mini-XML, a small XML-like file parsing
  * library.
@@ -1066,7 +1066,7 @@ scan_file(const char  *filename,	/* I - Filename */
 	        if (ch == '/' && bufptr > buffer && bufptr[-1] == '*')
 		{
 		  while (bufptr > buffer &&
-		         (bufptr[-1] == '*' || isspace(bufptr[-1])))
+		         (bufptr[-1] == '*' || isspace(bufptr[-1] & 255)))
 		    bufptr --;
 		  *bufptr = '\0';
 
@@ -1523,7 +1523,7 @@ scan_file(const char  *filename,	/* I - Filename */
 			    buffer);
 	      }
 	    }
-	    else if (enumeration && !isdigit(buffer[0]))
+	    else if (enumeration && !isdigit(buffer[0] & 255))
 	    {
 #ifdef DEBUG
 	      fprintf(stderr, "Constant: <<<< %s >>>\n", buffer);
@@ -1697,13 +1697,13 @@ update_comment(mxml_node_t *parent,	/* I - Parent node */
     if (*ptr == '\'')
     {
       ptr ++;
-      while (isspace(*ptr))
+      while (isspace(*ptr & 255))
         ptr ++;
 
       if (*ptr == '-')
         ptr ++;
 
-      while (isspace(*ptr))
+      while (isspace(*ptr & 255))
         ptr ++;
 
       safe_strcpy(comment->value.text.string, ptr);
@@ -1723,13 +1723,13 @@ update_comment(mxml_node_t *parent,	/* I - Parent node */
     if (!strcmp(parent->value.element.name, "argument"))
       mxmlElementSetAttr(parent, "direction", comment->value.text.string);
 
-    while (isspace(*ptr))
+    while (isspace(*ptr & 255))
       ptr ++;
 
     if (*ptr == '-')
       ptr ++;
 
-    while (isspace(*ptr))
+    while (isspace(*ptr & 255))
       ptr ++;
 
     safe_strcpy(comment->value.text.string, ptr);
@@ -1740,7 +1740,7 @@ update_comment(mxml_node_t *parent,	/* I - Parent node */
   */
 
   for (ptr = comment->value.text.string; *ptr == '*'; ptr ++);
-  for (; isspace(*ptr); ptr ++);
+  for (; isspace(*ptr & 255); ptr ++);
   if (ptr > comment->value.text.string)
     safe_strcpy(comment->value.text.string, ptr);
 
@@ -1748,7 +1748,7 @@ update_comment(mxml_node_t *parent,	/* I - Parent node */
        ptr > comment->value.text.string && *ptr == '*';
        ptr --)
     *ptr = '\0';
-  for (; ptr > comment->value.text.string && isspace(*ptr); ptr --)
+  for (; ptr > comment->value.text.string && isspace(*ptr & 255); ptr --)
     *ptr = '\0';
 
 #ifdef DEBUG
@@ -2745,5 +2745,5 @@ ws_cb(mxml_node_t *node,		/* I - Element node */
 
 
 /*
- * End of "$Id: mxmldoc.c,v 1.38 2004/10/28 01:07:00 mike Exp $".
+ * End of "$Id: mxmldoc.c,v 1.39 2004/10/31 15:32:14 mike Exp $".
  */

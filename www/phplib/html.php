@@ -1,6 +1,6 @@
 <?php
 //
-// "$Id: html.php,v 1.5 2004/05/18 01:39:00 mike Exp $"
+// "$Id: html.php,v 1.6 2004/05/18 03:39:38 mike Exp $"
 //
 // PHP functions for standardized HTML output...
 //
@@ -109,6 +109,7 @@ html_header($title = "")		// I - Additional document title
        ."<td><img src='images/logo.gif' width='39' height='32' "
        ."alt='Mini-XML' align='middle'/>&nbsp;&nbsp;&nbsp;</td>"
        ."<td width='100%'>[&nbsp;<a href='index.php'>Home</a> | "
+       ."<a href='articles.php'>Articles</a> | "
        ."<a href='documentation.php'>Documentation</a> | "
        ."<a href='software.php'>Download</a> | "
        ."<a href='faq.php'>FAQ</a> | "

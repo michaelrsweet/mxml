@@ -70,18 +70,12 @@ MXML_ADD_TO_PARENT can be used to specify a NULL child pointer.</p>
 <pre>
 void
 mxmlAdd(
-    <a href="#mxml_node_t">mxml_node_t</a> * parent,
-    int where,
-    <a href="#mxml_node_t">mxml_node_t</a> * child,
-    <a href="#mxml_node_t">mxml_node_t</a> * node);
+    <a href="#mxml_node_t">mxml_node_t</a> *parent, int where, <a href="#mxml_node_t">mxml_node_t</a> *child, <a href="#mxml_node_t">mxml_node_t</a> * node);
 </pre>
 <h3>Arguments</h3>
 <p class="table"><table align="center" border="1" width="80%">
 <thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
-<tr><td><tt>parent</tt></td><td>Parent node</td></tr>
-<tr><td><tt>where</tt></td><td>Where to add, MXML_ADD_BEFORE or MXML_ADD_AFTER</td></tr>
-<tr><td><tt>child</tt></td><td>Child node for where or MXML_ADD_TO_PARENT</td></tr>
 <tr><td><tt>node</tt></td><td>Node to add</td></tr>
 </tbody></table></p>
 <h3>Returns</h3>
@@ -116,14 +110,12 @@ named attribute does not exist.</p>
 <pre>
 const char *
 mxmlElementGetAttr(
-    <a href="#mxml_node_t">mxml_node_t</a> * node,
-    const char * name);
+    <a href="#mxml_node_t">mxml_node_t</a> *node, const char * name);
 </pre>
 <h3>Arguments</h3>
 <p class="table"><table align="center" border="1" width="80%">
 <thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
-<tr><td><tt>node</tt></td><td>Element node</td></tr>
 <tr><td><tt>name</tt></td><td>Name of attribute</td></tr>
 </tbody></table></p>
 <h3>Returns</h3>
@@ -140,16 +132,12 @@ not an element.</p>
 <pre>
 void
 mxmlElementSetAttr(
-    <a href="#mxml_node_t">mxml_node_t</a> * node,
-    const char * name,
-    const char * value);
+    <a href="#mxml_node_t">mxml_node_t</a> *node, const char *name, const char * value);
 </pre>
 <h3>Arguments</h3>
 <p class="table"><table align="center" border="1" width="80%">
 <thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
-<tr><td><tt>node</tt></td><td>Element node</td></tr>
-<tr><td><tt>name</tt></td><td>Name of attribute</td></tr>
 <tr><td><tt>value</tt></td><td>Attribute value</td></tr>
 </tbody></table></p>
 <h3>Returns</h3>
@@ -170,22 +158,12 @@ constrains the search to a particular node's children.</p>
 <pre>
 <a href="#mxml_node_t">mxml_node_t</a> *
 mxmlFindElement(
-    <a href="#mxml_node_t">mxml_node_t</a> * node,
-    <a href="#mxml_node_t">mxml_node_t</a> * top,
-    const char * name,
-    const char * attr,
-    const char * value,
-    int descend);
+    <a href="#mxml_node_t">mxml_node_t</a> *node, <a href="#mxml_node_t">mxml_node_t</a> *top, const char *name, const char *attr, const char *value, int descend);
 </pre>
 <h3>Arguments</h3>
 <p class="table"><table align="center" border="1" width="80%">
 <thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
-<tr><td><tt>node</tt></td><td>Current node</td></tr>
-<tr><td><tt>top</tt></td><td>Top node</td></tr>
-<tr><td><tt>name</tt></td><td>Element name or NULL for any</td></tr>
-<tr><td><tt>attr</tt></td><td>Attribute name, or NULL for none</td></tr>
-<tr><td><tt>value</tt></td><td>Attribute value, or NULL for any</td></tr>
 <tr><td><tt>descend</tt></td><td>Descend into tree - MXML_DESCEND, MXML_NO_DESCEND, or MXML_DESCEND_FIRST</td></tr>
 </tbody></table></p>
 <h3>Returns</h3>
@@ -204,17 +182,13 @@ MXML_ELEMENT or MXML_TEXT nodes.</p>
 <pre>
 <a href="#mxml_node_t">mxml_node_t</a> *
 mxmlLoadFile(
-    <a href="#mxml_node_t">mxml_node_t</a> * top,
-    FILE * fp,
-    <a href="#mxml_type_t">mxml_type_t</a> (*cb)(mxml_node_t *));
+    <a href="#mxml_node_t">mxml_node_t</a> *top, FILE *fp, <a href="#mxml_type_t">mxml_type_t</a> (*cb)(mxml_node_t *node));
 </pre>
 <h3>Arguments</h3>
 <p class="table"><table align="center" border="1" width="80%">
 <thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
-<tr><td><tt>top</tt></td><td>Top node</td></tr>
-<tr><td><tt>fp</tt></td><td>File to read from</td></tr>
-<tr><td><tt>(*cb)(mxml_node_t *)</tt></td><td>Callback function or MXML_NO_CALLBACK</td></tr>
+<tr><td><tt>(*cb)(mxml_node_t *node)</tt></td><td>Callback function or MXML_NO_CALLBACK</td></tr>
 </tbody></table></p>
 <h3>Returns</h3>
 <p>First node or NULL if the file could not be read.</p>
@@ -232,17 +206,13 @@ MXML_ELEMENT or MXML_TEXT nodes.</p>
 <pre>
 <a href="#mxml_node_t">mxml_node_t</a> *
 mxmlLoadString(
-    <a href="#mxml_node_t">mxml_node_t</a> * top,
-    const char * s,
-    <a href="#mxml_type_t">mxml_type_t</a> (*cb)(mxml_node_t *));
+    <a href="#mxml_node_t">mxml_node_t</a> *top, const char *s, <a href="#mxml_type_t">mxml_type_t</a> (*cb)(mxml_node_t *node));
 </pre>
 <h3>Arguments</h3>
 <p class="table"><table align="center" border="1" width="80%">
 <thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
-<tr><td><tt>top</tt></td><td>Top node</td></tr>
-<tr><td><tt>s</tt></td><td>String to load</td></tr>
-<tr><td><tt>(*cb)(mxml_node_t *)</tt></td><td>Callback function or MXML_NO_CALLBACK</td></tr>
+<tr><td><tt>(*cb)(mxml_node_t *node)</tt></td><td>Callback function or MXML_NO_CALLBACK</td></tr>
 </tbody></table></p>
 <h3>Returns</h3>
 <p>First node or NULL if the string has errors.</p>
@@ -257,14 +227,12 @@ element node has no parent.</p>
 <pre>
 <a href="#mxml_node_t">mxml_node_t</a> *
 mxmlNewElement(
-    <a href="#mxml_node_t">mxml_node_t</a> * parent,
-    const char * name);
+    <a href="#mxml_node_t">mxml_node_t</a> *parent, const char * name);
 </pre>
 <h3>Arguments</h3>
 <p class="table"><table align="center" border="1" width="80%">
 <thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
-<tr><td><tt>parent</tt></td><td>Parent node or MXML_NO_PARENT</td></tr>
 <tr><td><tt>name</tt></td><td>Name of element</td></tr>
 </tbody></table></p>
 <h3>Returns</h3>
@@ -280,14 +248,12 @@ integer node has no parent.</p>
 <pre>
 <a href="#mxml_node_t">mxml_node_t</a> *
 mxmlNewInteger(
-    <a href="#mxml_node_t">mxml_node_t</a> * parent,
-    int integer);
+    <a href="#mxml_node_t">mxml_node_t</a> *parent, int integer);
 </pre>
 <h3>Arguments</h3>
 <p class="table"><table align="center" border="1" width="80%">
 <thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
-<tr><td><tt>parent</tt></td><td>Parent node or MXML_NO_PARENT</td></tr>
 <tr><td><tt>integer</tt></td><td>Integer value</td></tr>
 </tbody></table></p>
 <h3>Returns</h3>
@@ -304,14 +270,12 @@ is copied into the new node.</p>
 <pre>
 <a href="#mxml_node_t">mxml_node_t</a> *
 mxmlNewOpaque(
-    <a href="#mxml_node_t">mxml_node_t</a> * parent,
-    const char * opaque);
+    <a href="#mxml_node_t">mxml_node_t</a> *parent, const char * opaque);
 </pre>
 <h3>Arguments</h3>
 <p class="table"><table align="center" border="1" width="80%">
 <thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
-<tr><td><tt>parent</tt></td><td>Parent node or MXML_NO_PARENT</td></tr>
 <tr><td><tt>opaque</tt></td><td>Opaque string</td></tr>
 </tbody></table></p>
 <h3>Returns</h3>
@@ -327,14 +291,12 @@ the new real number node has no parent.</p>
 <pre>
 <a href="#mxml_node_t">mxml_node_t</a> *
 mxmlNewReal(
-    <a href="#mxml_node_t">mxml_node_t</a> * parent,
-    double real);
+    <a href="#mxml_node_t">mxml_node_t</a> *parent, double real);
 </pre>
 <h3>Arguments</h3>
 <p class="table"><table align="center" border="1" width="80%">
 <thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
-<tr><td><tt>parent</tt></td><td>Parent node or MXML_NO_PARENT</td></tr>
 <tr><td><tt>real</tt></td><td>Real number value</td></tr>
 </tbody></table></p>
 <h3>Returns</h3>
@@ -352,16 +314,12 @@ string must be nul-terminated and is copied into the new node.</p>
 <pre>
 <a href="#mxml_node_t">mxml_node_t</a> *
 mxmlNewText(
-    <a href="#mxml_node_t">mxml_node_t</a> * parent,
-    int whitespace,
-    const char * string);
+    <a href="#mxml_node_t">mxml_node_t</a> *parent, int whitespace, const char * string);
 </pre>
 <h3>Arguments</h3>
 <p class="table"><table align="center" border="1" width="80%">
 <thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
-<tr><td><tt>parent</tt></td><td>Parent node or MXML_NO_PARENT</td></tr>
-<tr><td><tt>whitespace</tt></td><td>1 = leading whitespace, 0 = no whitespace</td></tr>
 <tr><td><tt>string</tt></td><td>String</td></tr>
 </tbody></table></p>
 <h3>Returns</h3>
@@ -399,15 +357,13 @@ allocated.</p>
 <pre>
 char *
 mxmlSaveAllocString(
-    <a href="#mxml_node_t">mxml_node_t</a> * node,
-    int (*cb)(mxml_node_t *int));
+    <a href="#mxml_node_t">mxml_node_t</a> *node, int (*cb)(mxml_node_t *node, int ws));
 </pre>
 <h3>Arguments</h3>
 <p class="table"><table align="center" border="1" width="80%">
 <thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
-<tr><td><tt>node</tt></td><td>Node to write</td></tr>
-<tr><td><tt>(*cb)(mxml_node_t *int)</tt></td><td>Whitespace callback or MXML_NO_CALLBACK</td></tr>
+<tr><td><tt>(*cb)(mxml_node_t *node, int ws)</tt></td><td>Whitespace callback or MXML_NO_CALLBACK</td></tr>
 </tbody></table></p>
 <h3>Returns</h3>
 <p>Allocated string or NULL</p>
@@ -424,17 +380,13 @@ element tags.</p>
 <pre>
 int
 mxmlSaveFile(
-    <a href="#mxml_node_t">mxml_node_t</a> * node,
-    FILE * fp,
-    int (*cb)(mxml_node_t *int));
+    <a href="#mxml_node_t">mxml_node_t</a> *node, FILE *fp, int (*cb)(mxml_node_t *node, int ws));
 </pre>
 <h3>Arguments</h3>
 <p class="table"><table align="center" border="1" width="80%">
 <thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
-<tr><td><tt>node</tt></td><td>Node to write</td></tr>
-<tr><td><tt>fp</tt></td><td>File to write to</td></tr>
-<tr><td><tt>(*cb)(mxml_node_t *int)</tt></td><td>Whitespace callback or MXML_NO_CALLBACK</td></tr>
+<tr><td><tt>(*cb)(mxml_node_t *node, int ws)</tt></td><td>Whitespace callback or MXML_NO_CALLBACK</td></tr>
 </tbody></table></p>
 <h3>Returns</h3>
 <p>0 on success, -1 on error.</p>
@@ -449,19 +401,13 @@ into the specified buffer.</p>
 <pre>
 int
 mxmlSaveString(
-    <a href="#mxml_node_t">mxml_node_t</a> * node,
-    char * buffer,
-    int bufsize,
-    int (*cb)(mxml_node_t *int));
+    <a href="#mxml_node_t">mxml_node_t</a> *node, char *buffer, int bufsize, int (*cb)(mxml_node_t *node, int ws));
 </pre>
 <h3>Arguments</h3>
 <p class="table"><table align="center" border="1" width="80%">
 <thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
-<tr><td><tt>node</tt></td><td>Node to write</td></tr>
-<tr><td><tt>buffer</tt></td><td>String buffer</td></tr>
-<tr><td><tt>bufsize</tt></td><td>Size of string buffer</td></tr>
-<tr><td><tt>(*cb)(mxml_node_t *int)</tt></td><td>Whitespace callback or MXML_NO_CALLBACK</td></tr>
+<tr><td><tt>(*cb)(mxml_node_t *node, int ws)</tt></td><td>Whitespace callback or MXML_NO_CALLBACK</td></tr>
 </tbody></table></p>
 <h3>Returns</h3>
 <p>Size of string</p>
@@ -476,16 +422,12 @@ the node's children.</p>
 <pre>
 <a href="#mxml_node_t">mxml_node_t</a> *
 mxmlWalkNext(
-    <a href="#mxml_node_t">mxml_node_t</a> * node,
-    <a href="#mxml_node_t">mxml_node_t</a> * top,
-    int descend);
+    <a href="#mxml_node_t">mxml_node_t</a> *node, <a href="#mxml_node_t">mxml_node_t</a> *top, int descend);
 </pre>
 <h3>Arguments</h3>
 <p class="table"><table align="center" border="1" width="80%">
 <thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
-<tr><td><tt>node</tt></td><td>Current node</td></tr>
-<tr><td><tt>top</tt></td><td>Top node</td></tr>
 <tr><td><tt>descend</tt></td><td>Descend into tree - MXML_DESCEND, MXML_NO_DESCEND, or MXML_DESCEND_FIRST</td></tr>
 </tbody></table></p>
 <h3>Returns</h3>
@@ -501,16 +443,12 @@ the walk to the node's children.</p>
 <pre>
 <a href="#mxml_node_t">mxml_node_t</a> *
 mxmlWalkPrev(
-    <a href="#mxml_node_t">mxml_node_t</a> * node,
-    <a href="#mxml_node_t">mxml_node_t</a> * top,
-    int descend);
+    <a href="#mxml_node_t">mxml_node_t</a> *node, <a href="#mxml_node_t">mxml_node_t</a> *top, int descend);
 </pre>
 <h3>Arguments</h3>
 <p class="table"><table align="center" border="1" width="80%">
 <thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
-<tr><td><tt>node</tt></td><td>Current node</td></tr>
-<tr><td><tt>top</tt></td><td>Top node</td></tr>
 <tr><td><tt>descend</tt></td><td>Descend into tree - MXML_DESCEND, MXML_NO_DESCEND, or MXML_DESCEND_FIRST</td></tr>
 </tbody></table></p>
 <h3>Returns</h3>

@@ -1,5 +1,5 @@
 /*
- * "$Id: config.h.in,v 1.1 2003/07/20 13:41:17 mike Exp $"
+ * "$Id: config.h.in,v 1.2 2003/07/27 23:11:40 mike Exp $"
  *
  * Configuration file for mini-XML, a small XML-like file parsing library.
  *
@@ -15,6 +15,15 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
+
+/*
+ * Include necessary headers...
+ */
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 
 /*
  * Do we have the strXXX() functions?
@@ -36,5 +45,5 @@ extern char	*mxml_strdup(const char *);
 
 
 /*
- * End of "$Id: config.h.in,v 1.1 2003/07/20 13:41:17 mike Exp $".
+ * End of "$Id: config.h.in,v 1.2 2003/07/27 23:11:40 mike Exp $".
  */

@@ -1,5 +1,5 @@
 #
-# "$Id: mxml.spec,v 1.11 2004/05/02 16:04:40 mike Exp $"
+# "$Id: mxml.spec,v 1.12 2004/05/21 03:05:19 mike Exp $"
 #
 # RPM "spec" file for Mini-XML, a small XML-like file parsing library.
 #
@@ -36,8 +36,8 @@ XML and XML-like data files in your application without
 requiring large non-standard libraries.  Mini-XML provides the
 following functionality:
 
-    - Reading and writing of UTF-8 encoded XML files and
-      strings.
+    - Reading of UTF-8 and UTF-16 and writing of UTF-8 encoded
+      XML files and strings.
     - Data is stored in a linked-list tree structure, preserving
       the XML data hierarchy.
     - Supports arbitrary element names, attributes, and
@@ -95,5 +95,5 @@ rm -rf $RPM_BUILD_ROOT
 /usr/share/man/man3/*
 
 #
-# End of "$Id: mxml.spec,v 1.11 2004/05/02 16:04:40 mike Exp $".
+# End of "$Id: mxml.spec,v 1.12 2004/05/21 03:05:19 mike Exp $".
 #

@@ -1,6 +1,6 @@
 <?
 //
-// "$Id: auth.php,v 1.2 2004/05/17 21:00:42 mike Exp $"
+// "$Id: auth.php,v 1.3 2004/05/17 21:04:16 mike Exp $"
 //
 // Authentication functions for PHP pages...
 //
@@ -23,7 +23,9 @@ include_once "db.php";
 //
 
 $LOGIN_LEVEL = 0;
-$LOGIN_USER  = auth_current();
+$LOGIN_USER  = "";
+
+auth_current();
 
 
 //
@@ -33,7 +35,7 @@ $LOGIN_USER  = auth_current();
 function				// O - Current username or ""
 auth_current()
 {
-  global $_COOKIE, $_SERVER, $LOGIN_LEVEL;
+  global $_COOKIE, $_SERVER, $LOGIN_LEVEL, $LOGIN_USER;
 
 
   // See if the SID cookie is set; if not, the user is not logged in...
@@ -57,8 +59,16 @@ auth_current()
     // See if it matches the cookie value...
     if ($cookie[1] == $sid)
     {
+      // Refresh the cookies so they don't expire...
+      setcookie("SID", $sid, time() + 90 * 86400, "/");
+      setcookie("FROM", $row['email'], time() + 90 * 86400, "/");
+
+      // Set globals...
+      $LOGIN_USER      = $cookie[0];
       $LOGIN_LEVEL     = $row["level"];
       $_COOKIE["FROM"] = $row["email"];
+
+      // Return the current user...
       return ($cookie[0]);
     }
   }
@@ -127,6 +137,6 @@ auth_logout()
 
 
 //
-// End of "$Id: auth.php,v 1.2 2004/05/17 21:00:42 mike Exp $".
+// End of "$Id: auth.php,v 1.3 2004/05/17 21:04:16 mike Exp $".
 //
 ?>

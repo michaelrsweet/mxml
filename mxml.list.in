@@ -1,0 +1,89 @@
+#
+# "$Id: mxml.list.in,v 1.1 2003/06/15 00:44:34 mike Exp $"
+#
+# EPM software list file for mini-XML, a small XML-like file parsing library.
+#
+# Copyright 2003 by Michael Sweet.
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Library General Public
+# License as published by the Free Software Foundation; either
+# version 2, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+
+# Directories...
+$prefix=@prefix@
+$exec_prefix=@exec_prefix@
+$bindir=@bindir@
+$docdir=@docdir@
+$includedir=@includedir@
+$libdir=@libdir@
+$mandir=@mandir@
+$srcdir=@srcdir@
+
+# Product information
+%product mxml
+%copyright 2003 by Michael Sweet
+%vendor Michael Sweet
+%license ${srcdir}/COPYING
+%readme ${srcdir}/README
+%version 1.0
+
+%description <<EOF
+Mini-XML is a small XML parsing library that you can use to read
+XML and XML-like data files in your application without
+requiring large non-standard libraries.  Mini-XML provides the
+following functionality:
+
+    - Reading and writing of UTF-8 encoded XML files.
+    - Data is stored in a linked-list tree structure, preserving
+      the XML data hierarchy.
+    - Supports arbitrary element names, attributes, and
+      attribute values with no preset limits, just available
+      memory.
+    - Supports integer, real, opaque ("cdata"), and text data
+      types in "leaf" nodes.
+    - Functions for creating and managing trees of data.
+    - "Find" and "walk" functions for easily locating and
+      navigating trees of data.
+
+Mini-XML doesn't do validation or other types of processing on
+the data based upon schema files or other sources of definition
+information, nor does it support character entities other than
+those required by the XML specification.  Also, since Mini-XML
+does not support the UTF-16 encoding, it is technically not a
+conforming XML consumer/client.
+EOF
+
+# Manpage extensions...
+$CAT1EXT=@CAT1EXT@
+$MAN1EXT=@MAN1EXT@
+
+# Executables
+f 0555 root sys ${bindir}/mxmldoc mxmldoc
+
+# Header files
+f 0444 root sys ${includedir}/mxml.h mxml.h
+
+# Libraries
+f 0444 root sys ${libdir}/libmxml.a libmxml.a
+
+# Documentation
+f 0444 root sys ${docdir}/README $srcdir/README
+f 0444 root sys ${docdir}/COPYING $srcdir/COPYING
+f 0444 root sys ${docdir}/CHANGES $srcdir/CHANGES
+f 0444 root sys ${docdir}/index.html $srcdir/index.html
+f 0444 root sys ${docdir}/documentation.html $srcdir/documentation.html
+
+# Man pages
+f 0444 root sys ${mandir}/cat1/mxmldoc.$CAT1EXT $srcdir/mxmldoc.$CAT1EXT
+f 0444 root sys ${mandir}/man1/mxmldoc.$MAN1EXT $srcdir/mxmldoc.man
+
+#
+# End of "$Id: mxml.list.in,v 1.1 2003/06/15 00:44:34 mike Exp $".
+#

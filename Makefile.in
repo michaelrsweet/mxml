@@ -1,5 +1,5 @@
 #
-# "$Id: Makefile.in,v 1.5 2003/06/05 13:49:14 mike Exp $"
+# "$Id: Makefile.in,v 1.6 2003/06/15 00:44:33 mike Exp $"
 #
 # Makefile for mini-XML, a small XML-like file parsing library.
 #
@@ -23,9 +23,14 @@
 AR		=	@AR@
 ARFLAGS		=	@ARFLAGS@
 CC		=	@CC@
-CFLAGS		=	@CFLAGS@ @CPPFLAGS@
-LDFLAGS		=	@LDFLAGS@
+CFLAGS		=	$(OPTIM) @CFLAGS@ @CPPFLAGS@
+CP		=	@CP@
+LDFLAGS		=	$(OPTIM) @LDFLAGS@
+MKDIR		=	@MKDIR@
+NROFF		=	@NROFF@
+OPTIM		=	@OPTIM@
 RANLIB		=	@RANLIB@
+RM		=	@RM@ -f
 SHELL		=	/bin/sh
 
 
@@ -35,26 +40,42 @@ SHELL		=	/bin/sh
 
 prefix		=	@prefix@
 exec_prefix	=	@exec_prefix@
+bindir		=	@bindir@
 includedir	=	@includedir@
 libdir		=	@libdir@
+mandir		=	@mandir@
+docdir		=	@docdir@
+BUILDROOT	=	$(DSTROOT)
+
+
+#
+# Manpage extensions...
+#
+
+CAT1EXT		=	@CAT1EXT@
+MAN1EXT		=	@MAN1EXT@
 
 
 #
 # Rules...
 #
 
-.SUFFIXES:	.c .o
+.SUFFIXES:	.0 .1 .c .man .o
 .c.o:
 	$(CC) $(CFLAGS) -c $<
+.man.0 .man.1:
+	$(RM) $@
+	$(NROFF) -man $< >$@
 
 
 #
 # Targets...
 #
 
+DOCFILES	=	index.html documentation.html README COPYING CHANGES
 LIBOBJS		=	mxml-attr.o mxml-file.o mxml-node.o mxml-search.o
 OBJS		=	mxmldoc.o testmxml.o $(LIBOBJS)
-TARGETS		=	libmxml.a mxmldoc testmxml mxml.xml
+TARGETS		=	libmxml.a mxmldoc mxmldoc.$(CAT1EXT) testmxml mxml.xml
 
 
 #
@@ -69,10 +90,10 @@ all:		Makefile configure $(TARGETS)
 #
 
 clean:
-	rm -f $(OBJS) $(TARGETS)
-	rm -f *.bck *.bak
-	rm -f config.cache config.log config.status
-	rm -rf autom4te*.cache
+	$(RM) $(OBJS) $(TARGETS)
+	$(RM) *.bck *.bak
+	$(RM) config.cache config.log config.status
+	$(RM) -r autom4te*.cache
 
 
 #
@@ -80,10 +101,18 @@ clean:
 #
 
 install:	$(TARGETS)
-	-mkdir -p $(libdir)
-	cp libmxml.a $(libdir)
-	-mkdir -p $(includedir)
-	cp mxml.h $(includedir)
+	-$(MKDIR) -p $(BUILDROOT)/$(bindir)
+	$(CP) mxmldoc $(BUILDROOT)/$(bindir) 
+	-$(MKDIR) -p $(BUILDROOT)/$(docdir)
+	$(CP) $(DOCFILES) $(BUILDROOT)/$(docdir)
+	-$(MKDIR) -p $(BUILDROOT)/$(includedir)
+	$(CP) mxml.h $(BUILDROOT)/$(includedir)
+	-$(MKDIR) -p $(BUILDROOT)/$(libdir)
+	$(CP) libmxml.a $(BUILDROOT)/$(libdir)
+	-$(MKDIR) -p $(BUILDROOT)/$(mandir)/cat1
+	$(CP) mxmldoc.$(CAT1EXT) $(BUILDROOT)/$(mandir)/cat1/mxmldoc.$(CAT1EXT)
+	-$(MKDIR) -p $(BUILDROOT)/$(mandir)/man1
+	$(CP) mxmldoc.man $(BUILDROOT)/$(mandir)/man1/mxmldoc.$(MAN1EXT)
 
 
 #
@@ -91,8 +120,12 @@ install:	$(TARGETS)
 #
 
 uninstall:
-	rm -f $(libdir)/libmxml.a
-	rm -f $(includedir)/mxml.h
+	$(RM) $(BUILDROOT)/$(bindir)/mxmldoc
+	$(RM) -r $(BUILDROOT)/$(docdir)
+	$(RM) $(BUILDROOT)/$(includedir)/mxml.h
+	$(RM) $(BUILDROOT)/$(libdir)/libmxml.a
+	$(RM) $(BUILDROOT)/$(mandir)/cat1/mxmldoc.$(CAT1EXT)
+	$(RM) $(BUILDROOT)/$(mandir)/man1/mxmldoc.$(MAN1EXT)
 
 
 #
@@ -122,7 +155,7 @@ configure:	configure.in
 #
 
 libmxml.a:	$(LIBOBJS)
-	rm -f $@
+	$(RM) $@
 	$(AR) $(ARFLAGS) $@ $(LIBOBJS)
 	$(RANLIB) $@
 
@@ -150,7 +183,7 @@ testmxml:	libmxml.a testmxml.o
 	@./testmxml temp1.xml >temp2.xml
 	@if cmp temp1.xml temp2.xml; then \
 		echo Test passed!; \
-		rm -f temp1.xml temp2.xml; \
+		$(RM) temp1.xml temp2.xml; \
 	else \
 		echo Test failed!; \
 	fi
@@ -163,7 +196,7 @@ testmxml.o:	mxml.h
 #
 
 mxml.xml:	mxmldoc mxml.h $(LIBOBJS:.o=.c)
-	rm -f mxml.xml
+	$(RM) mxml.xml
 	./mxmldoc mxml.xml mxml.h $(LIBOBJS:.o=.c) >documentation.html
 
 
@@ -175,5 +208,5 @@ $(OBJS):	Makefile
 
 
 #
-# End of "$Id: Makefile.in,v 1.5 2003/06/05 13:49:14 mike Exp $".
+# End of "$Id: Makefile.in,v 1.6 2003/06/15 00:44:33 mike Exp $".
 #

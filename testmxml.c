@@ -1,9 +1,9 @@
 /*
- * "$Id: testmxml.c,v 1.13 2003/12/13 16:32:42 mike Exp $"
+ * "$Id: testmxml.c,v 1.14 2004/04/06 01:47:20 mike Exp $"
  *
  * Test program for mini-XML, a small XML-like file parsing library.
  *
- * Copyright 2003 by Michael Sweet.
+ * Copyright 2003-2004 by Michael Sweet.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -431,5 +431,5 @@ whitespace_cb(mxml_node_t *node,	/* I - Element node */
 
 
 /*
- * End of "$Id: testmxml.c,v 1.13 2003/12/13 16:32:42 mike Exp $".
+ * End of "$Id: testmxml.c,v 1.14 2004/04/06 01:47:20 mike Exp $".
  */

@@ -1,9 +1,9 @@
 /*
- * "$Id: mxml-index.c,v 1.5 2004/06/01 20:19:34 mike Exp $"
+ * "$Id$"
  *
  * Index support code for Mini-XML, a small XML-like file parsing library.
  *
- * Copyright 2003-2004 by Michael Sweet.
+ * Copyright 2003-2005 by Michael Sweet.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -645,5 +645,5 @@ index_sort(mxml_index_t *ind,		/* I - Index to sort */
 
 
 /*
- * End of "$Id: mxml-index.c,v 1.5 2004/06/01 20:19:34 mike Exp $".
+ * End of "$Id$".
  */

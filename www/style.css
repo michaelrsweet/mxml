@@ -1,30 +1,82 @@
 BODY {
   background: #ffffff;
-  font-family: sans-serif;
+  color: #000000;
+  font-family: serif;
   text-align: justify;
 }
 
+P, TD, TH {
+  color: #000000;
+  font-family: serif;
+}
+
+H1, H2, H3, H4, H5, H6 {
+  color: #000000;
+  font-family: sans-serif;
+}
+
+KBD {
+  color: #006600;
+  font-family: monospace;
+  font-weight: bold;
+}
+
+PRE {
+  color: #000000;
+  font-family: monospace;
+}
+
+PRE.command {
+  margin-left: 2em;
+  font-size: smaller;
+}
+
+SUB, SUP {
+  font-size: smaller;
+}
+
+TR.header, TR.header TH, TH.header {
+  background-color: #cccccc;
+}
+
+TR.data0, TD.data0 {
+  background-color: #eeeeee;
+}
+
+TR.data1, TD.data1 {
+  background-color: #dddddd;
+}
+
+INPUT[TYPE="TEXT"], TEXTAREA {
+  font-family: monospace;
+}
+
 A:link {
+  font-family: sans-serif;
   font-weight: bold;
   text-decoration: none;
   color: #00007f;
 }
 
 A:visited {
+  font-family: sans-serif;
   font-weight: bold;
   text-decoration: none;
   color: #0000ff;
 }
 
 A:hover {
+  font-family: sans-serif;
   font-weight: bold;
   text-decoration: none;
   color: #7f0000;
 }
 
 A:active {
+  font-family: sans-serif;
   font-weight: bold;
   text-decoration: underline;
   color: #ff0000;
 }
+
 

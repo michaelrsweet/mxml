@@ -1,6 +1,6 @@
 <?
 //
-// "$Id: common.php,v 1.5 2004/05/18 21:26:52 mike Exp $"
+// "$Id: common.php,v 1.6 2004/05/19 00:57:33 mike Exp $"
 //
 // Common utility functions for PHP pages...
 //
@@ -122,7 +122,57 @@ format_text($text)			// I - Original string
     {
       case '<' :
           $col ++;
-          $ftext .= "&lt;";
+	  if (tolower(substr($text, $i, 8)) == "<a href=" ||
+	      tolower(substr($text, $i, 8)) == "<a name=" ||
+	      tolower(substr($text, $i, 4)) == "</a>" ||
+	      tolower(substr($text, $i, 3)) == "<b>" ||
+	      tolower(substr($text, $i, 4)) == "</b>" ||
+	      tolower(substr($text, $i, 12)) == "<blockquote>" ||
+	      tolower(substr($text, $i, 13)) == "</blockquote>" ||
+	      tolower(substr($text, $i, 6)) == "<code>" ||
+	      tolower(substr($text, $i, 7)) == "</code>" ||
+	      tolower(substr($text, $i, 4)) == "<em>" ||
+	      tolower(substr($text, $i, 5)) == "</em>" ||
+	      tolower(substr($text, $i, 4)) == "<h1>" ||
+	      tolower(substr($text, $i, 5)) == "</h1>" ||
+	      tolower(substr($text, $i, 4)) == "<h2>" ||
+	      tolower(substr($text, $i, 5)) == "</h2>" ||
+	      tolower(substr($text, $i, 4)) == "<h3>" ||
+	      tolower(substr($text, $i, 5)) == "</h3>" ||
+	      tolower(substr($text, $i, 4)) == "<h4>" ||
+	      tolower(substr($text, $i, 5)) == "</h4>" ||
+	      tolower(substr($text, $i, 4)) == "<h5>" ||
+	      tolower(substr($text, $i, 5)) == "</h5>" ||
+	      tolower(substr($text, $i, 4)) == "<h6>" ||
+	      tolower(substr($text, $i, 5)) == "</h6>" ||
+	      tolower(substr($text, $i, 3)) == "<i>" ||
+	      tolower(substr($text, $i, 4)) == "</i>" ||
+	      tolower(substr($text, $i, 5)) == "<img " ||
+	      tolower(substr($text, $i, 4)) == "<li>" ||
+	      tolower(substr($text, $i, 5)) == "</li>" ||
+	      tolower(substr($text, $i, 4)) == "<ol>" ||
+	      tolower(substr($text, $i, 5)) == "</ol>" ||
+	      tolower(substr($text, $i, 3)) == "<p>" ||
+	      tolower(substr($text, $i, 4)) == "</p>" ||
+	      tolower(substr($text, $i, 5)) == "<pre>" ||
+	      tolower(substr($text, $i, 6)) == "</pre>" ||
+	      tolower(substr($text, $i, 4)) == "<tt>" ||
+	      tolower(substr($text, $i, 5)) == "</tt>" ||
+	      tolower(substr($text, $i, 3)) == "<u>" ||
+	      tolower(substr($text, $i, 4)) == "</u>" ||
+	      tolower(substr($text, $i, 4)) == "<ul>" ||
+	      tolower(substr($text, $i, 5)) == "</ul>")
+          {
+	    while ($i < $len && $text[$i] != '>')
+	    {
+	      $ftext .= $text[$i];
+	      $i ++;
+	    }
+
+	    $ftext .= ">";
+	  }
+	  else
+            $ftext .= "&lt;";
 	  break;
 
       case '>' :
@@ -183,13 +233,13 @@ format_text($text)			// I - Original string
 	  break;
 
       case " " :
-          if ($col == 0 && !pre)
+          if ($col == 0 && !$pre)
 	  {
 	    for ($j = $i + 1; $j < $len; $j ++)
 	      if ($text[$j] != " " && $text[$j] != "\t")
 	        break;
 
-            if ($j < $len && $text[$j] == "%")
+            if ($j < $len && $text[$j] == '%')
 	    {
 	      $ftext .= "\n<pre>";
 	      $pre   = 1;
@@ -585,6 +635,6 @@ show_comments($url,			// I - URL for comment
 
 
 //
-// End of "$Id: common.php,v 1.5 2004/05/18 21:26:52 mike Exp $".
+// End of "$Id: common.php,v 1.6 2004/05/19 00:57:33 mike Exp $".
 //
 ?>

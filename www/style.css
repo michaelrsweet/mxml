@@ -26,13 +26,8 @@ KBD {
 }
 
 PRE {
-  color: #000000;
+  color: #7f0000;
   font-family: monospace;
-}
-
-PRE.command {
-  margin-left: 2em;
-  font-size: smaller;
 }
 
 SUB, SUP {

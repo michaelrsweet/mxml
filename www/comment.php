@@ -1,6 +1,6 @@
 <?php
 //
-// "$Id: comment.php,v 1.2 2004/05/18 21:26:52 mike Exp $"
+// "$Id: comment.php,v 1.3 2004/05/19 00:57:33 mike Exp $"
 //
 // Comment and moderation interface for PHP pages...
 //
@@ -232,7 +232,7 @@ else
 	    print("<tr><th align='right'>File Path:</th>"
 		 ."<td><input type='text' name='FILE' value='$path' "
 		 ."size='40'/></td></tr>\n");
-	    print("<tr><th align='right'>Status:</th>"
+	    print("<tr><th align='right'>Score:</th>"
 		 ."<td><select name='STATUS'>");
             for ($i = 0; $i <= 5; $i ++)
 	      if ($i == $status)
@@ -361,6 +361,6 @@ else
 }
 
 //
-// End of "$Id: comment.php,v 1.2 2004/05/18 21:26:52 mike Exp $".
+// End of "$Id: comment.php,v 1.3 2004/05/19 00:57:33 mike Exp $".
 //
 ?>

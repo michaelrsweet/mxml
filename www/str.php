@@ -1,6 +1,6 @@
 <?php
 //
-// "$Id: str.php,v 1.6 2004/05/18 19:58:34 mike Exp $"
+// "$Id: str.php,v 1.7 2004/05/19 00:57:33 mike Exp $"
 //
 // Software Trouble Report page...
 //
@@ -76,7 +76,7 @@ notify_creator($id,			// I - STR #
   global $priority_long;
   global $scope_long;
   global $status_long;
-  global $PHP_SELF, $STR_EMAIL, $STR_PROJECT;
+  global $PHP_SELF, $EMAIL, $PROJECT;
 
 
   $result = db_query("SELECT * FROM str WHERE id = $id");
@@ -100,7 +100,7 @@ notify_creator($id,			// I - STR #
 
     if ($row['create_user'] != $row['modify_user'] &&
         $row['create_user'] != $manager)
-      mail($row['create_user'], "$STR_PROJECT STR #$id $what",
+      mail($row['create_user'], "$PROJECT STR #$id $what",
 	   "Your software trouble report #$id has been $what.  You can check\n"
 	  ."the status of the report and add additional comments and/or files\n"
 	  ."at the following URL:\n"
@@ -116,7 +116,7 @@ notify_creator($id,			// I - STR #
 	  ."Fix Version: $fix_version\n"
 	  ."\n$contents"
 	  ."________________________________________________________________\n"
-	  ."Thank you for using the $STR_PROJECT Software Trouble Report page!",
+	  ."Thank you for using the $PROJECT Software Trouble Report page!",
 	   "From: noreply@easysw.com\r\n");
 
     $ccresult = db_query("SELECT email FROM strcc WHERE str_id = $id");
@@ -124,7 +124,7 @@ notify_creator($id,			// I - STR #
     {
       while ($ccrow = db_next($ccresult))
       {
-	mail($ccrow->email, "$STR_PROJECT STR #$id $what",
+	mail($ccrow->email, "$PROJECT STR #$id $what",
 	     "Software trouble report #$id has been $what.  You can check\n"
 	    ."the status of the report and add additional comments and/or files\n"
 	    ."at the following URL:\n"
@@ -140,7 +140,7 @@ notify_creator($id,			// I - STR #
 	    ."Fix Version: $fix_version\n"
 	    ."\n$contents"
 	    ."________________________________________________________________\n"
-	    ."Thank you for using the $STR_PROJECT Software Trouble Report page!",
+	    ."Thank you for using the $PROJECT Software Trouble Report page!",
 	     "From: noreply@easysw.com\r\n");
       }
 
@@ -150,10 +150,10 @@ notify_creator($id,			// I - STR #
     if ($row['manager_email'] != "")
       $manager = $row['manager_email'];
     else
-      $manager = "$STR_EMAIL";
+      $manager = "$EMAIL";
 
     if ($row['modify_user'] != $manager)
-      mail($manager, "$STR_PROJECT STR #$id $what",
+      mail($manager, "$PROJECT STR #$id $what",
 	   "The software trouble report #$id assigned to you has been $what.\n"
 	  ."You can manage the report and add additional comments and/or files\n"
 	  ."at the following URL:\n"
@@ -748,26 +748,26 @@ switch ($op)
 	}
 
         if ($index >= $count)
-	  $index = $count - ($count % $STR_PAGE_MAX);
+	  $index = $count - ($count % $PAGE_MAX);
 	if ($index < 0)
 	  $index = 0;
 
         $start = $index + 1;
-        $end   = $index + $STR_PAGE_MAX;
+        $end   = $index + $PAGE_MAX;
 	if ($end > $count)
 	  $end = $count;
 
-        $prev = $index - $STR_PAGE_MAX;
+        $prev = $index - $PAGE_MAX;
 	if ($prev < 0)
 	  $prev = 0;
-	$next = $index + $STR_PAGE_MAX;
+	$next = $index + $PAGE_MAX;
 
         print("<p>$count STR(s) found, showing $start to $end:</p>\n");
 
         if ($LOGIN_USER)
 	  print("<form method='POST' action='$PHP_SELF?B$options'>\n");
 
-        if ($count > $STR_PAGE_MAX)
+        if ($count > $PAGE_MAX)
 	{
           print("<p><table border='0' cellspacing='0' cellpadding='0' "
 	       ."width='100%'>\n");
@@ -777,11 +777,11 @@ switch ($op)
 	    print("[&nbsp;<a href='$PHP_SELF?L+P$priority+S$status+C$scope+I$prev+"
 		 ."E$femail+Q"
 		 . urlencode($search)
-		 ."'>Previous&nbsp;$STR_PAGE_MAX</a>&nbsp;]");
+		 ."'>Previous&nbsp;$PAGE_MAX</a>&nbsp;]");
           print("</td><td align='right'>");
 	  if ($end < $count)
 	  {
-	    $next_count = min($STR_PAGE_MAX, $count - $end);
+	    $next_count = min($PAGE_MAX, $count - $end);
 	    print("[&nbsp;<a href='$PHP_SELF?L+P$priority+S$status+C$scope+I$next+"
 		 ."E$femail+Q"
 		 . urlencode($search)
@@ -796,7 +796,7 @@ switch ($op)
 			       "Assigned To"));
 
 	db_seek($result, $index);
-	for ($i = 0; $i < $STR_PAGE_MAX && $row = db_next($result); $i ++)
+	for ($i = 0; $i < $PAGE_MAX && $row = db_next($result); $i ++)
 	{
 	  $date     = date("M d, Y", $row['modify_date']);
           $summary  = htmlspecialchars($row['summary'], ENT_QUOTES);
@@ -808,6 +808,10 @@ switch ($op)
 	             ."alt='STR #$row[id]: $summary'>";
 
           html_start_row();
+
+          if ($row['is_published'] == 0)
+	    $summabbr .= " <img src='images/private.gif' width='16' height='16' "
+	                ."border='0' align='middle' alt='Private'/>";
 
           print("<td nowrap>");
           if ($LOGIN_USER)
@@ -901,7 +905,7 @@ switch ($op)
 
         html_end_table();
 
-        if ($count > $STR_PAGE_MAX)
+        if ($count > $PAGE_MAX)
 	{
           print("<p><table border='0' cellspacing='0' cellpadding='0' "
 	       ."width='100%'>\n");
@@ -911,11 +915,11 @@ switch ($op)
 	    print("[&nbsp;<a href='$PHP_SELF?L+P$priority+S$status+C$scope+I$prev+"
 		 ."E$femail+Q"
 		 . urlencode($search)
-		 ."'>Previous&nbsp;$STR_PAGE_MAX</a>&nbsp;]");
+		 ."'>Previous&nbsp;$PAGE_MAX</a>&nbsp;]");
           print("</td><td align='right'>");
 	  if ($end < $count)
 	  {
-	    $next_count = min($STR_PAGE_MAX, $count - $end);
+	    $next_count = min($PAGE_MAX, $count - $end);
 	    print("[&nbsp;<a href='$PHP_SELF?L+P$priority+S$status+C$scope+I$next+"
 		 ."E$femail+Q"
 		 . urlencode($search)
@@ -1656,11 +1660,11 @@ switch ($op)
 	else
 	{
 	  print("<p>Please use this form to report all bugs and request "
-	       ."features in the $STR_PROJECT software. Be sure to include "
+	       ."features in the $PROJECT software. Be sure to include "
 	       ."the operating system, compiler, sample programs and/or "
 	       ."files, and any other information you can about your "
 	       ."problem. <i>Thank you</i> for helping us to improve "
-	       ."$STR_PROJECT!</p><hr noshade/>\n");
+	       ."$PROJECT!</p><hr noshade/>\n");
 
 	  $hstart = "";
 	  $hend   = "";
@@ -1848,6 +1852,6 @@ switch ($op)
 }
 
 //
-// End of "$Id: str.php,v 1.6 2004/05/18 19:58:34 mike Exp $".
+// End of "$Id: str.php,v 1.7 2004/05/19 00:57:33 mike Exp $".
 //
 ?>

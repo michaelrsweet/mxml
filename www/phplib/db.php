@@ -1,6 +1,6 @@
 <?php
 //
-// "$Id: db.php,v 1.3 2004/05/17 20:28:52 mike Exp $"
+// "$Id: db.php,v 1.4 2004/05/19 00:57:33 mike Exp $"
 //
 // Common database include file for PHP web pages.  This file can be used
 // to abstract the specific database in use...
@@ -122,7 +122,7 @@ function				// O - Row object or NULL at end
 db_next($result)			// I - Result of query
 {
   if ($result)
-    return (sqlite_fetch_array($result, SQLITE_ASSOC));
+    return (sqlite_fetch_array($result, SQLITE_ASSOC, TRUE));
   else
     return (NULL);
 }
@@ -159,6 +159,6 @@ db_seek($result,			// I - Result of query
 
 
 //
-// End of "$Id: db.php,v 1.3 2004/05/17 20:28:52 mike Exp $".
+// End of "$Id: db.php,v 1.4 2004/05/19 00:57:33 mike Exp $".
 //
 ?>

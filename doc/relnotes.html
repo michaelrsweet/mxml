@@ -9,6 +9,28 @@
 
 	<li>New programmers manual.</li>
 
+	<li>Added UTF-16 support (input only; all output is
+	UTF-8)</li>
+
+	<li>Added index functions to build a searchable index of
+	XML nodes.</li>
+
+	<li>Added character entity callback interface to support
+	additional character entities beyond those defined in
+	the XHTML specification.</li>
+
+	<li>Added support for XHTML character entities.</li>
+
+	<li>The mxmldoc utility now produces XML output which
+	conforms to an updated XML schema, described in the file
+	"doc/mxmldoc.xsd".</li>
+
+	<li>Changed the whitespace callback interface to return
+	strings instead of a single character, allowing for
+	greater control over the formatting of XML files written
+	using Mini-XML.  THIS CHANGE WILL REQUIRE CHANGES TO
+	YOUR 1.x CODE IF YOU USE WHITESPACE CALLBACKS.</li>
+
 	<li>The mxmldoc utility now produces XML output which
 	conforms to an updated XML schema, described in the file
 	"doc/mxmldoc.xsd".</li>

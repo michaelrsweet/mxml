@@ -55,6 +55,7 @@
 	<li><a href="#mxmlSaveFile"><tt>mxmlSaveFile()</tt></a></li>
 	<li><a href="#mxmlSaveString"><tt>mxmlSaveString()</tt></a></li>
 	<li><a href="#mxmlSetElement"><tt>mxmlSetElement()</tt></a></li>
+	<li><a href="#mxmlSetErrorCallback"><tt>mxmlSetErrorCallback()</tt></a></li>
 	<li><a href="#mxmlSetInteger"><tt>mxmlSetInteger()</tt></a></li>
 	<li><a href="#mxmlSetOpaque"><tt>mxmlSetOpaque()</tt></a></li>
 	<li><a href="#mxmlSetReal"><tt>mxmlSetReal()</tt></a></li>
@@ -512,6 +513,22 @@ mxmlSetElement(
 </tbody></table></p>
 <h3>Returns</h3>
 <p>0 on success, -1 on failure</p>
+<h2><a name="mxmlSetErrorCallback">mxmlSetErrorCallback()</a></h2>
+<p>Set the error message callback.</p>
+<h3>Syntax</h3>
+<pre>
+void
+mxmlSetErrorCallback(
+    void (*cb)(const char *));
+</pre>
+<h3>Arguments</h3>
+<p class="table"><table align="center" border="1" width="80%">
+<thead><tr><th>Name</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><tt>(*cb)(const char *)</tt></td><td>Error callback function</td></tr>
+</tbody></table></p>
+<h3>Returns</h3>
+<p>Nothing.</p>
 <h2><a name="mxmlSetInteger">mxmlSetInteger()</a></h2>
 <p>Set the value of an integer node.
 

@@ -1,5 +1,5 @@
 /*
- * "$Id: mxml-attr.c,v 1.5 2003/12/01 15:27:47 mike Exp $"
+ * "$Id: mxml-attr.c,v 1.6 2003/12/03 03:59:04 mike Exp $"
  *
  * Attribute support code for mini-XML, a small XML-like file parsing library.
  *
@@ -44,6 +44,11 @@ mxmlElementGetAttr(mxml_node_t *node,	/* I - Element node */
   mxml_attr_t	*attr;			/* Cirrent attribute */
 
 
+#ifdef DEBUG
+  fprintf(stderr, "mxmlElementGetAttr(node=%p, name=\"%s\")\n",
+          node, name ? name : "(null)");
+#endif /* DEBUG */
+
  /*
   * Range check input...
   */
@@ -87,6 +92,11 @@ mxmlElementSetAttr(mxml_node_t *node,	/* I - Element node */
   mxml_attr_t	*attr;			/* New attribute */
 
 
+#ifdef DEBUG
+  fprintf(stderr, "mxmlElementSetAttr(node=%p, name=\"%s\", value=\"%s\")\n",
+          node, name ? name : "(null)", value ? value : "(null)");
+#endif /* DEBUG */
+
  /*
   * Range check input...
   */
@@ -129,15 +139,15 @@ mxmlElementSetAttr(mxml_node_t *node,	/* I - Element node */
 
   if (!attr)
   {
-    fprintf(stderr, "Unable to allocate memory for attribute '%s' in element %s!\n",
-            name, node->value.element.name);
+    mxml_error("Unable to allocate memory for attribute '%s' in element %s!",
+               name, node->value.element.name);
     return;
   }
 
   node->value.element.attrs = attr;
   attr += node->value.element.num_attrs;
 
-  attr->name  = strdup(name);
+  attr->name = strdup(name);
   if (value)
     attr->value = strdup(value);
   else
@@ -151,8 +161,8 @@ mxmlElementSetAttr(mxml_node_t *node,	/* I - Element node */
     if (attr->value)
       free(attr->value);
 
-    fprintf(stderr, "Unable to allocate memory for attribute '%s' in element %s!\n",
-            name, node->value.element.name);
+    mxml_error("Unable to allocate memory for attribute '%s' in element %s!",
+               name, node->value.element.name);
 
     return;
   }
@@ -162,5 +172,5 @@ mxmlElementSetAttr(mxml_node_t *node,	/* I - Element node */
 
 
 /*
- * End of "$Id: mxml-attr.c,v 1.5 2003/12/01 15:27:47 mike Exp $".
+ * End of "$Id: mxml-attr.c,v 1.6 2003/12/03 03:59:04 mike Exp $".
  */

@@ -208,6 +208,9 @@ The node is not changed if it is not an element node.</description><argument
 name="node" direction="I"><type>mxml_node_t *</type><description>Node to set</description></argument>
 <argument name="name" direction="I"><type>const char *</type><description>New name string</description></argument>
 </function>
+<function name="mxmlSetErrorCallback"><description>Set the error message callback.</description><argument
+name="(*cb)(const char *)" direction="I"><type>void</type><description>Error callback function</description></argument>
+</function>
 <function name="mxmlSetInteger"><returnvalue><description>0 on success, -1 on failure</description><type>int</type></returnvalue>
 <description>Set the value of an integer node.
 

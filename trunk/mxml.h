@@ -1,5 +1,5 @@
 /*
- * "$Id: mxml.h,v 1.3 2003/06/04 00:30:04 mike Exp $"
+ * "$Id: mxml.h,v 1.4 2003/06/04 02:34:30 mike Exp $"
  *
  * Header file for mini-XML, a small XML-like file parsing library.
  *
@@ -38,6 +38,7 @@
  */
 
 #  define MXML_NO_CALLBACK	(mxml_type_t (*)(mxml_node_t *))0
+#  define MXML_WRAP		72
 
 
 /*
@@ -133,5 +134,5 @@ extern mxml_node_t	*mxmlWalkPrev(mxml_node_t *node, mxml_node_t *top);
 
 
 /*
- * End of "$Id: mxml.h,v 1.3 2003/06/04 00:30:04 mike Exp $".
+ * End of "$Id: mxml.h,v 1.4 2003/06/04 02:34:30 mike Exp $".
  */

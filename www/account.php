@@ -1,6 +1,6 @@
 <?php
 //
-// "$Id: account.php,v 1.2 2004/05/18 01:39:00 mike Exp $"
+// "$Id: account.php,v 1.3 2004/05/18 12:13:51 mike Exp $"
 //
 // Account management page...
 //
@@ -46,7 +46,45 @@ switch ($op)
 
       print("<h2>New/Pending Articles:</h2>\n");
 
-      print("<p>No new/pending articles found.</p>\n");
+      $result = db_query("SELECT * FROM article WHERE is_published = 0 "
+	                ."ORDER BY modify_date");
+      $count  = db_count($result);
+
+      if ($count == 0)
+	print("<p>No new/pending articles found.</p>\n");
+      else
+      {
+        html_start_table(array("Id", "Title", "Last Updated"));
+
+	while ($row = db_next($result))
+	{
+	  $id       = $row['id'];
+          $title    = htmlspecialchars($row['title'], ENT_QUOTES);
+          $abstract = htmlspecialchars($row['abstract'], ENT_QUOTES);
+	  $date     = date("M d, Y", $row['modify_date']);
+
+          html_start_row();
+
+          print("<td align='center' nowrap><a "
+	       ."href='articles.php?L$id$options'>$id</a></td>"
+	       ."<td width='67%' align='center'><a "
+	       ."href='articles.php?L$id$options'>$title</a></td>"
+	       ."<td align='center'><a "
+	       ."href='articles.php?L$id$options'>$date</a></td>");
+
+	  html_end_row();
+
+          html_start_row();
+
+	  print("<td></td><td colspan='2'>$abstract</td>");
+
+	  html_end_row();
+	}
+
+        html_end_table();
+      }
+
+      db_free($result);
 
       print("<h2>New/Pending STRs:</h2>\n");
 
@@ -145,6 +183,6 @@ switch ($op)
 
 
 //
-// End of "$Id: account.php,v 1.2 2004/05/18 01:39:00 mike Exp $".
+// End of "$Id: account.php,v 1.3 2004/05/18 12:13:51 mike Exp $".
 //
 ?>

@@ -1,6 +1,6 @@
-/*#define DEBUG 2*/
+#define DEBUG 2
 /*
- * "$Id: mxmldoc.c,v 1.27 2004/04/29 20:48:52 mike Exp $"
+ * "$Id: mxmldoc.c,v 1.28 2004/04/30 01:40:55 mike Exp $"
  *
  * Documentation generator using mini-XML, a small XML-like file parsing
  * library.
@@ -353,6 +353,7 @@ scan_file(const char  *filename,	/* I - Filename */
 		*constant,		/* <constant> node */
 		*enumeration,		/* <enumeration> node */
 		*function,		/* <function> node */
+		*fstructclass,		/* function struct/class node */
 		*structclass,		/* <struct> or <class> node */
 		*typedefnode,		/* <typedef> node */
 		*variable,		/* <variable> or <argument> node */
@@ -465,7 +466,15 @@ scan_file(const char  *filename,	/* I - Filename */
 #endif /* DEBUG */
 
 	        if (function)
-		  sort_node(tree, function);
+		{
+		  if (fstructclass)
+		  {
+		    sort_node(fstructclass, function);
+		    fstructclass = NULL;
+		  }
+		  else
+		    sort_node(tree, function);
+		}
 		else if (type && type->child &&
 		         ((!strcmp(type->child->value.text.string, "typedef") &&
 			   type->child->next &&
@@ -768,7 +777,7 @@ scan_file(const char  *filename,	/* I - Filename */
 		break;
 
             default :			/* Other */
-	        if (isalnum(ch) || ch == '_' || ch == '.')
+	        if (isalnum(ch) || ch == '_' || ch == '.' || ch == ':' || ch == '~')
 		{
 		  state     = STATE_IDENTIFIER;
 		  bufptr    = buffer;
@@ -824,6 +833,7 @@ scan_file(const char  *filename,	/* I - Filename */
 #endif /* DEBUG */
 			update_comment(variable,
 			               mxmlNewText(description, 0, buffer));
+                        variable = NULL;
 		      }
 		      else if (constant)
 		      {
@@ -833,6 +843,7 @@ scan_file(const char  *filename,	/* I - Filename */
 #endif /* DEBUG */
 			update_comment(constant,
 			               mxmlNewText(description, 0, buffer));
+                        constant = NULL;
 		      }
 		      else if (typedefnode)
 		      {
@@ -1058,7 +1069,7 @@ scan_file(const char  *filename,	/* I - Filename */
 
       case STATE_IDENTIFIER :		/* Inside a keyword or identifier */
 	  if (isalnum(ch) || ch == '_' || ch == '[' || ch == ']' ||
-	      (ch == ',' && parens > 1) || ch == ':' || ch == '.')
+	      (ch == ',' && parens > 1) || ch == ':' || ch == '.' || ch == '~')
 	  {
 	    if (bufptr < (buffer + sizeof(buffer) - 1))
 	      *bufptr++ = ch;
@@ -1109,7 +1120,22 @@ scan_file(const char  *filename,	/* I - Filename */
 		}
 
 	        function = mxmlNewElement(MXML_NO_PARENT, "function");
-		mxmlElementSetAttr(function, "name", buffer);
+		if ((bufptr = strchr(buffer, ':')) != NULL && bufptr[1] == ':')
+		{
+		  *bufptr = '\0';
+		  bufptr += 2;
+
+		  if ((fstructclass =
+		           mxmlFindElement(tree, tree, "class", "name", buffer,
+		                           MXML_DESCEND_FIRST)) == NULL)
+		    fstructclass =
+		        mxmlFindElement(tree, tree, "struct", "name", buffer,
+		                        MXML_DESCEND_FIRST);
+		}
+		else
+		  bufptr = buffer;
+
+		mxmlElementSetAttr(function, "name", bufptr);
 
 #ifdef DEBUG
                 fprintf(stderr, "function: %s\n", buffer);
@@ -1124,7 +1150,7 @@ scan_file(const char  *filename,	/* I - Filename */
 			    comment->last_child->value.text.string : "(null)");
 #endif /* DEBUG */
 
-                if (!type->last_child ||
+                if (type->last_child &&
 		    strcmp(type->last_child->value.text.string, "void"))
 		{
                   returnvalue = mxmlNewElement(function, "returnvalue");
@@ -1618,7 +1644,7 @@ write_documentation(mxml_node_t *doc)	/* I - XML documentation */
 	    write_element(doc, mxmlFindElement(arg, arg, "type", NULL,
                                                NULL, MXML_DESCEND_FIRST));
 	}
-	else
+	else if (strcmp(cname, name) && strcmp(cname, name + 1))
 	  fputs("void ", stdout);
 
 	printf("<a href='#%s.%s'>%s</a>", cname, name, name);
@@ -1947,6 +1973,50 @@ write_documentation(mxml_node_t *doc)	/* I - XML documentation */
 	printf(" %s;\n", mxmlElementGetAttr(arg, "name"));
       }
 
+      for (function = mxmlFindElement(scut, scut, "function", NULL, NULL,
+                                      MXML_DESCEND_FIRST);
+	   function;
+	   function = mxmlFindElement(function, scut, "function", NULL, NULL,
+                                      MXML_NO_DESCEND))
+      {
+        name = mxmlElementGetAttr(function, "name");
+
+        printf("  ");
+
+	arg = mxmlFindElement(function, function, "returnvalue", NULL,
+                              NULL, MXML_DESCEND_FIRST);
+
+	if (arg)
+	{
+	  if (arg->child->value.text.string)
+	    write_element(doc, mxmlFindElement(arg, arg, "type", NULL,
+                                               NULL, MXML_DESCEND_FIRST));
+	}
+	else if (strcmp(cname, name) && strcmp(cname, name + 1))
+	  fputs("void ", stdout);
+
+	printf("<a href='#%s.%s'>%s</a>", cname, name, name);
+
+	for (arg = mxmlFindElement(function, function, "argument", NULL, NULL,
+                        	   MXML_DESCEND_FIRST), prefix = '(';
+	     arg;
+	     arg = mxmlFindElement(arg, function, "argument", NULL, NULL,
+                        	   MXML_NO_DESCEND), prefix = ',')
+	{
+	  type = mxmlFindElement(arg, arg, "type", NULL, NULL,
+	                	 MXML_DESCEND_FIRST);
+
+	  printf("%c", prefix);
+	  write_element(doc, type);
+	  printf("%s%s", type->child ? " " : "", mxmlElementGetAttr(arg, "name"));
+	}
+
+	if (prefix == '(')
+	  puts("(void);");
+	else
+	  puts(");");
+      }
+
       puts("};\n</pre>");
 
       puts("<h4>Members</h4>");
@@ -1966,6 +2036,35 @@ write_documentation(mxml_node_t *doc)	/* I - XML documentation */
 
 	write_element(NULL, mxmlFindElement(arg, arg, "description", NULL,
                                             NULL, MXML_DESCEND_FIRST));
+
+	puts("</td></tr>");
+      }
+
+      for (function = mxmlFindElement(scut, scut, "function", NULL, NULL,
+                                      MXML_DESCEND_FIRST);
+	   function;
+	   function = mxmlFindElement(function, scut, "function", NULL, NULL,
+                                      MXML_NO_DESCEND))
+      {
+	name = mxmlElementGetAttr(function, "name");
+
+	printf("<tr><td><tt><a name='%s.%s'>%s()</a></tt></td><td>",
+	       cname, name, name);
+
+	description = mxmlFindElement(function, function, "description", NULL,
+                                      NULL, MXML_DESCEND_FIRST);
+	if (description)
+	  write_element(NULL, description);
+
+	arg = mxmlFindElement(function, function, "returnvalue", NULL,
+                              NULL, MXML_DESCEND_FIRST);
+
+	if (arg)
+	{
+	  fputs("\n<i>Returns:</i> ", stdout);
+	  write_element(NULL, mxmlFindElement(arg, arg, "description", NULL,
+                                              NULL, MXML_DESCEND_FIRST));
+	}
 
 	puts("</td></tr>");
       }
@@ -2305,5 +2404,5 @@ ws_cb(mxml_node_t *node,		/* I - Element node */
 
 
 /*
- * End of "$Id: mxmldoc.c,v 1.27 2004/04/29 20:48:52 mike Exp $".
+ * End of "$Id: mxmldoc.c,v 1.28 2004/04/30 01:40:55 mike Exp $".
  */

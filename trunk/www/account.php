@@ -1,6 +1,6 @@
 <?php
 //
-// "$Id: account.php,v 1.7 2004/05/19 02:57:18 mike Exp $"
+// "$Id: account.php,v 1.8 2004/05/19 14:02:38 mike Exp $"
 //
 // Account management page...
 //
@@ -19,9 +19,9 @@ include_once "phplib/str.php";
 //
 
 $levels = array(
-  0 => "User",
-  50 => "Devel",
-  100 => "Admin"
+  AUTH_USER => "User",
+  AUTH_DEVEL => "Devel",
+  AUTH_ADMIN => "Admin"
 );
 
 
@@ -32,13 +32,17 @@ $levels = array(
 function
 account_header($title)
 {
+  global $PHP_SELF, $LOGIN_USER, $LOGIN_LEVEL;
+
   html_header("$title");
 
   html_start_links(1);
-  html_link("$title", "$PHP_SELF?L");
-  html_link("Manage Accounts", "$PHP_SELF?A");
-  html_link("Manage Comments", "comment.php?l");
+  html_link("$LOGIN_USER", "$PHP_SELF");
   html_link("Change Password", "$PHP_SELF?P");
+  if ($LOGIN_LEVEL == AUTH_ADMIN)
+    html_link("Manage Accounts", "$PHP_SELF?A");
+  if ($LOGIN_LEVEL > AUTH_USER)
+    html_link("New/Pending", "$PHP_SELF?L");
   html_link("Logout", "$PHP_SELF?X");
   html_end_links();
 
@@ -61,12 +65,18 @@ if ($argc >= 1)
   $data = substr($argv[0], 1);
 }
 else
-  $op = "L";
+  $op = "";
 
 switch ($op)
 {
   case 'A' :
       // Manage accounts...
+      if ($LOGIN_LEVEL < AUTH_ADMIN)
+      {
+        header("Location: $PHP_SELF");
+	exit();
+      }
+
       if ($data == "add")
       {
 	if ($REQUEST_METHOD == "POST")
@@ -100,7 +110,7 @@ switch ($op)
           if (array_key_exists("LEVEL", $_POST))
 	    $level = (int)$_POST["LEVEL"];
 	  else
-	    $level = 0;
+	    $level = AUTH_USER;
 
           if ($name != "" && $email != "" &&
 	      (($password == "" && $password2 == "") ||
@@ -121,7 +131,7 @@ switch ($op)
 	  $havedata     = 0;
 	}
 
-	account_header("Manage Accounts");
+	account_header("Add Account");
 
 	if ($havedata)
 	{
@@ -161,20 +171,14 @@ switch ($op)
 	       ."<tr><th align='right'>Access Level:</th>"
 	       ."<td><select name='LEVEL'>");
 
-          if ($level == 0)
-	    print("<option value='0' selected>User</option>");
-	  else
-	    print("<option value='0'>User</option>");
-
-          if ($level == 50)
-	    print("<option value='50' selected>Devel</option>");
-	  else
-	    print("<option value='50'>Devel</option>");
-
-          if ($level == 100)
-	    print("<option value='100' selected>Admin</option>");
-	  else
-	    print("<option value='100'>Admin</option>");
+          reset($levels);
+	  while (list($key, $val) = each($levels))
+	  {
+	    if ($level == $key)
+	      print("<option value='$key' selected>$val</option>");
+	    else
+	      print("<option value='$key'>$val</option>");
+          }
 
 	  print("</select></td></tr>\n"
 	       ."<tr><th align='right'>Password:</th>"
@@ -248,7 +252,7 @@ switch ($op)
           if (array_key_exists("LEVEL", $_POST))
 	    $level = (int)$_POST["LEVEL"];
 	  else
-	    $level = 0;
+	    $level = AUTH_USER;
 
           if ($email != "" &&
 	      (($password == "" && $password2 == "") ||
@@ -279,7 +283,7 @@ switch ($op)
 	  db_free($result);
 	}
 
-	account_header("Manage Accounts");
+	account_header("Modify $name");
 
 	if ($havedata)
 	{
@@ -330,20 +334,14 @@ switch ($op)
 	  {
 	    print("<select name='LEVEL'>");
 
-            if ($level == 0)
-	      print("<option value='0' selected>User</option>");
-	    else
-	      print("<option value='0'>User</option>");
-
-            if ($level == 50)
-	      print("<option value='50' selected>Devel</option>");
-	    else
-	      print("<option value='50'>Devel</option>");
-
-            if ($level == 100)
-	      print("<option value='100' selected>Admin</option>");
-	    else
-	      print("<option value='100'>Admin</option>");
+            reset($levels);
+	    while (list($key, $val) = each($levels))
+	    {
+	      if ($level == $key)
+		print("<option value='$key' selected>$val</option>");
+	      else
+		print("<option value='$key'>$val</option>");
+            }
 
 	    print("</select>");
 	  }
@@ -410,6 +408,12 @@ switch ($op)
 
   case 'L' :
       // List
+      if ($LOGIN_LEVEL < AUTH_DEVEL)
+      {
+        header("Location: $PHP_SELF");
+	exit();
+      }
+
       account_header("New/Pending");
 
       $email = db_escape($_COOKIE["FROM"]);
@@ -515,6 +519,36 @@ switch ($op)
 
       db_free($result);
 
+      // Show hidden comments...
+      print("<h2>Hidden Comments:</h2>\n");
+
+      $result = db_query("SELECT * FROM comment WHERE status = 0 ORDER BY id");
+
+      if (db_count($result) == 0)
+        print("<p>No hidden comments.</p>\n");
+      else
+      {
+        print("<ul>\n");
+
+        while ($row = db_next($result))
+	{
+	  $create_date  = date("M d, Y", $row['date']);
+	  $create_user  = sanitize_email($row['create_user']);
+	  $contents     = sanitize_text($row['contents']);
+          $location     = str_replace("_", "?", $row['url']);
+
+	  print("<li><a href='$location'>$row[url]</a> "
+	       ." by $create_user on $create_date "
+	       ."[&nbsp;<a href='comment.php?e$row[id]+p$row[url]'>Edit</a> "
+	       ."| <a href='comment.php?d$row[id]+p$row[url]'>Delete</a>&nbsp;"
+	       ."]<br /><tt>$contents</tt></li>\n");
+	}
+
+        print("</ul>\n");
+      }
+
+      db_free($result);
+
       html_footer();
       break;
 
@@ -547,10 +581,29 @@ switch ($op)
 
       html_footer();
       break;
+
+  default :
+      // Show account info...
+      account_header($LOGIN_USER);
+
+      if (array_key_exists("FROM", $_COOKIE))
+        $email = htmlspecialchars($_COOKIE["FROM"]);
+      else
+        $email = "<i>unknown</i>";
+
+      print("<center><table border='0'>\n"
+           ."<tr><th align='right'>Username:</th><td>$LOGIN_USER</td></tr>\n"
+	   ."<tr><th align='right'>EMail:</th><td>$email</td></tr>\n"
+	   ."<tr><th align='right'>Access Level:</th>"
+	   ."<td>$levels[$LOGIN_LEVEL]</td></tr>\n"
+	   ."</table></center>\n");
+
+      html_footer();
+      break;
 }
 
 
 //
-// End of "$Id: account.php,v 1.7 2004/05/19 02:57:18 mike Exp $".
+// End of "$Id: account.php,v 1.8 2004/05/19 14:02:38 mike Exp $".
 //
 ?>

@@ -1,6 +1,6 @@
 <?
 //
-// "$Id: auth.php,v 1.5 2004/05/19 02:57:18 mike Exp $"
+// "$Id: auth.php,v 1.6 2004/05/19 14:02:38 mike Exp $"
 //
 // Authentication functions for PHP pages...
 //
@@ -16,6 +16,15 @@
 //
 
 include_once "db.php";
+
+
+//
+// Define authorization levels...
+//
+
+define("AUTH_USER", 0);
+define("AUTH_DEVEL", 50);
+define("AUTH_ADMIN", 100);
 
 
 //
@@ -141,6 +150,6 @@ auth_logout()
 
 
 //
-// End of "$Id: auth.php,v 1.5 2004/05/19 02:57:18 mike Exp $".
+// End of "$Id: auth.php,v 1.6 2004/05/19 14:02:38 mike Exp $".
 //
 ?>

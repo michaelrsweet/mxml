@@ -1,6 +1,6 @@
 <?php
 //
-// "$Id: software.php,v 1.2 2004/05/19 12:15:20 mike Exp $"
+// "$Id: software.php,v 1.3 2004/05/19 14:02:38 mike Exp $"
 //
 // Software download page.
 //
@@ -61,9 +61,14 @@ html_header("Download");
 print("<h1>Download</h1>");
 
 html_start_table(array("Version", "Filename", "Size", "MD5 Sum"));
-$curversion   = "";
-$firstversion = current($files);
+$curversion = "";
 reset($files);
+
+if ($argc >= 1)
+  $firstversion = $argv[0];
+else
+  $firstversion = current($files);
+
 while (list($file, $version) = each($files))
 {
   html_start_row();
@@ -109,6 +114,6 @@ html_end_table();
 html_footer();
 
 //
-// End of "$Id: software.php,v 1.2 2004/05/19 12:15:20 mike Exp $".
+// End of "$Id: software.php,v 1.3 2004/05/19 14:02:38 mike Exp $".
 //
 ?>

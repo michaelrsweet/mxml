@@ -1,8 +1,8 @@
 <?php
 //
-// "$Id: globals.php,v 1.2 2004/05/19 00:57:33 mike Exp $"
+// "$Id: globals.php,v 1.3 2004/05/19 14:02:38 mike Exp $"
 //
-// Global PHP variables...
+// Global PHP constants and variables...
 //
 // This file should be included using "include_once"...
 //
@@ -13,7 +13,12 @@
 
 $PROJECT = "Mini-XML";			// Title of project
 $EMAIL = "mxml@easysw.com";		// Default notification address
-$PAGE_MAX = 10; 			// Max STRs per page
+$PAGE_MAX = 10; 			// Max items per page
+
+
+//
+// PHP transition stuff...
+//
 
 global $_COOKIE, $_FILES, $_POST, $_SERVER;
 
@@ -25,6 +30,6 @@ $SERVER_NAME    = $_SERVER["SERVER_NAME"];
 
 
 //
-// End of "$Id: globals.php,v 1.2 2004/05/19 00:57:33 mike Exp $".
+// End of "$Id: globals.php,v 1.3 2004/05/19 14:02:38 mike Exp $".
 //
 ?>

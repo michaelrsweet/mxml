@@ -1,6 +1,5 @@
 <?xml version="1.0"?>
-<variable name="fp"><type>FILE *</type><description>File to write to</description><description>Callback function</description></variable>
-<function name="mxmlAdd"><description>Local functions...</description><argument
+<function name="mxmlAdd"><description>Add a node to a tree.</description><argument
 name="parent" direction="I"><type>mxml_node_t *</type><description>Parent node</description></argument>
 <argument name="where" direction="I"><type>int</type><description>Where to add</description></argument>
 <argument name="child" direction="I"><type>mxml_node_t *</type><description>Child node for where</description></argument>
@@ -30,9 +29,10 @@ direction="I"><type>mxml_node_t *</type><description>Current node</description><
 <argument name="value" direction="I"><type>const char *</type><description>Attribute value, or NULL for any</description></argument>
 <argument name="descend" direction="I"><type>int</type><description>Descend into tree?</description></argument>
 </function>
-<function name="mxmlLoadFile"><returnvalue><description>Local functions...</description><type>mxml_node_t
+<function name="mxmlLoadFile"><returnvalue><description>First node</description><type>mxml_node_t
 *</type></returnvalue>
-<description/><argument name="top" direction="I"><type>mxml_node_t *</type><description>Top node</description></argument>
+<description>Load a file into an XML node tree.</description><argument
+name="top" direction="I"><type>mxml_node_t *</type><description>Top node</description></argument>
 <argument name="fp" direction="I"><type>FILE *</type><description>File to read from</description></argument>
 <argument name="(*cb)(mxml_node_t *)" direction="I"><type>mxml_type_t</type><description>Callback function</description></argument>
 </function>
@@ -90,14 +90,16 @@ name="node" direction="I"><type>mxml_node_t *</type><description>Current node</d
 <argument name="top" direction="I"><type>mxml_node_t *</type><description>Top node</description></argument>
 <argument name="descend" direction="I"><type>int</type><description>Descend into tree?</description></argument>
 </function>
-<struct name="mxml_attr_s"><description>Data types...</description><variable
+<struct name="mxml_attr_s"><description>Attribute Value</description><variable
 name="name"><type>char *</type><description>Attribute name</description></variable>
 <variable name="value"><type>char *</type><description>Attribute value</description></variable>
 </struct>
-<typedef name="mxml_attr_t"><type>struct mxml_attr_s</type></typedef>
-<typedef name="mxml_element_t"><type>struct mxml_value_s</type></typedef>
-<struct name="mxml_node_s"><description/><variable name="child"><type>mxml_node_t
-*</type><description>First child node</description></variable>
+<typedef name="mxml_attr_t"><description>Attribute Value</description><type>struct
+mxml_attr_s</type></typedef>
+<typedef name="mxml_element_t"><description>Element Value</description><type>struct
+mxml_value_s</type></typedef>
+<struct name="mxml_node_s"><description>Node</description><variable
+name="child"><type>mxml_node_t *</type><description>First child node</description></variable>
 <variable name="last_child"><type>mxml_node_t *</type><description>Last child node</description></variable>
 <variable name="next"><type>mxml_node_t *</type><description>Next node under same parent</description></variable>
 <variable name="parent"><type>mxml_node_t *</type><description>Parent node</description></variable>
@@ -105,31 +107,32 @@ name="name"><type>char *</type><description>Attribute name</description></variab
 <variable name="type"><type>mxml_type_t</type><description>Node type</description></variable>
 <variable name="value"><type>mxml_value_t</type><description>Node value</description></variable>
 </struct>
-<struct name="mxml_text_s"><description/><variable name="string"><type>char
-*</type><description>Fragment string</description></variable>
+<struct name="mxml_text_s"><description>Text Value</description><variable
+name="string"><type>char *</type><description>Fragment string</description></variable>
 <variable name="whitespace"><type>int</type><description>Leading whitespace?</description></variable>
 </struct>
-<typedef name="mxml_text_t"><type>struct mxml_text_s</type></typedef>
+<typedef name="mxml_text_t"><description>Text Value</description><type>struct
+mxml_text_s</type></typedef>
 <enumeration name="mxml_type_e"><description>Node Type</description><constant
 name="MXML_ELEMENT"><description>XML element with attributes</description></constant>
 <constant name="MXML_INTEGER"><description>Integer value</description></constant>
 <constant name="MXML_OPAQUE"><description>Opaque string</description></constant>
 <constant name="MXML_REAL"><description>Real value</description></constant>
-<constant name="MXML_TEXT"><description>Text fragment</description><description>Attribute Value</description><description>Element Value</description><description>Text Value</description><description>Node Value</description><description>Node</description><description>C++ support...</description><description>Prototypes...</description><description>C++ support...</description><description>End of &quot;$Id: mxml.xml,v 1.3 2003/06/07 21:27:05 mike Exp $&quot;.</description></constant>
+<constant name="MXML_TEXT"><description>Text fragment</description></constant>
 </enumeration>
-<typedef name="mxml_type_t"><type>enum mxml_type_e</type></typedef>
-<struct name="mxml_value_s"><description/><variable name="attrs"><type>mxml_attr_t
-*</type><description>Attributes</description></variable>
+<typedef name="mxml_type_t"><description>Node Type</description><type>enum
+mxml_type_e</type></typedef>
+<struct name="mxml_value_s"><description>Element Value</description><variable
+name="attrs"><type>mxml_attr_t *</type><description>Attributes</description></variable>
 <variable name="name"><type>char *</type><description>Name of element</description></variable>
 <variable name="num_attrs"><type>int</type><description>Number of attributes</description></variable>
 </struct>
-<typedef name="mxml_value_t"><type>union mxml_value_u</type></typedef>
-<union name="mxml_value_u"><description/><variable name="element"><type>mxml_element_t</type><description>Element</description></variable>
+<typedef name="mxml_value_t"><description>Node Value</description><type>union
+mxml_value_u</type></typedef>
+<union name="mxml_value_u"><description>Node Value</description><variable
+name="element"><type>mxml_element_t</type><description>Element</description></variable>
 <variable name="integer"><type>int</type><description>Integer number</description></variable>
 <variable name="opaque"><type>char *</type><description>Opaque string</description></variable>
 <variable name="real"><type>double</type><description>Real number</description></variable>
 <variable name="text"><type>mxml_text_t</type><description>Text fragment</description></variable>
-</union><variable name="node"><type>mxml_node_t *</type><description>Current node</description></variable>
-<variable name="parent"><type>mxml_node_t *</type><description>Parent node</description><description>Node type</description></variable>
-<variable name="s"><type>const char *</type><description>String to write</description><description>File to write to</description></variable>
-<variable name="ws"><type>int(*cb)(mxml_node_t *int) int</type><description>Where value</description><description>Current column</description></variable>
+</union>

@@ -1,6 +1,6 @@
 <?
 //
-// "$Id: links.php,v 1.3 2004/05/20 21:37:57 mike Exp $"
+// "$Id: links.php,v 1.4 2004/05/31 22:54:19 mike Exp $"
 //
 // Hierarchical link interface.
 //
@@ -50,7 +50,7 @@ get_category($id,			// I - Category ID
     if ($row)
     {
       if ($with_links || $row['parent_id'] > 0)
-        $category = get_category($row['parent_id'], 1) . "/";
+        $category = get_category($row['parent_id'], $with_links) . "/";
 
       if ($with_links == 1)
         $category .= "<a href='$PHP_SELF?L+P$row[id]'>"
@@ -1035,6 +1035,6 @@ db_close();
 
 
 //
-// End of "$Id: links.php,v 1.3 2004/05/20 21:37:57 mike Exp $".
+// End of "$Id: links.php,v 1.4 2004/05/31 22:54:19 mike Exp $".
 //
 ?>

@@ -1,8 +1,11 @@
-CHANGES - 07/11/2004
+CHANGES - 10/26/2004
 --------------------
 
 CHANGES IN Mini-XML 2.1
 
+	- Fixed entity number support (STR #8)
+	- Fixed mxmlLoadString() bug with UTF-8 (STR #7)
+	- Fixed entity lookup bug (STR #5)
 	- Added mxmlLoadFd() and mxmlSaveFd() functions.
 	- Fixed multi-word UTF-16 handling.
 

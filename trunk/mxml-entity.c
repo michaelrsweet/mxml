@@ -1,5 +1,5 @@
 /*
- * "$Id: mxml-entity.c,v 1.5 2004/06/01 20:19:34 mike Exp $"
+ * "$Id: mxml-entity.c,v 1.6 2004/10/26 21:04:32 mike Exp $"
  *
  * Character entity support code for Mini-XML, a small XML-like
  * file parsing library.
@@ -434,10 +434,14 @@ default_callback(const char *name)	/* I - Entity name */
   };
 
 
+ /*
+  * Do a binary search for the named entity...
+  */
+
   first = 0;
   last  = (int)(sizeof(entities) / sizeof(entities[0]) - 1);
 
-  while (last > first)
+  while ((last - first) > 1)
   {
     current = (first + last) / 2;
 
@@ -449,15 +453,20 @@ default_callback(const char *name)	/* I - Entity name */
       first = current;
   }
 
-  current = (first + last) / 2;
+ /*
+  * If we get here, there is a small chance that there is still
+  * a match; check first and last...
+  */
 
-  if (!strcmp(name, entities[current].name))
-    return (entities[current].val);
+  if (!strcmp(name, entities[first].name))
+    return (entities[first].val);
+  else if (!strcmp(name, entities[last].name))
+    return (entities[last].val);
   else
     return (-1);
 }
 
 
 /*
- * End of "$Id: mxml-entity.c,v 1.5 2004/06/01 20:19:34 mike Exp $".
+ * End of "$Id: mxml-entity.c,v 1.6 2004/10/26 21:04:32 mike Exp $".
  */

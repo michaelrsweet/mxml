@@ -1,6 +1,6 @@
 <?php
 //
-// "$Id: str.php,v 1.1 2004/05/18 01:39:00 mike Exp $"
+// "$Id: str.php,v 1.2 2004/05/19 00:57:33 mike Exp $"
 //
 // Common STR definitions...
 //
@@ -10,10 +10,6 @@
 //
 // STR constants...
 //
-
-$STR_PROJECT = "Mini-XML";		// Title of project
-$STR_EMAIL = "mxml@easysw.com";		// Default notification address
-$STR_PAGE_MAX = 10; 			// Max STRs per page
 
 $STR_STATUS_RESOLVED   = 1;
 $STR_STATUS_UNRESOLVED = 2;
@@ -81,6 +77,6 @@ $scope_long = array(
 
 
 //
-// End of "$Id: str.php,v 1.1 2004/05/18 01:39:00 mike Exp $".
+// End of "$Id: str.php,v 1.2 2004/05/19 00:57:33 mike Exp $".
 //
 ?>

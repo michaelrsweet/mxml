@@ -1,0 +1,165 @@
+<HTML>
+<HEAD>
+	<TITLE>Mini-XML Home Page</TITLE>
+</HEAD>
+<BODY>
+
+<SPAN STYLE="text-align: justify;">
+
+<H1 ALIGN="CENTER">Mini-XML Home Page</H1>
+
+<P ALIGN="CENTER">Current Release: v0.9 ( <A
+HREF="mxml-0.9.tar.gz">download 40k</A> )</P>
+
+<H2>Introduction</H2>
+
+<P>Mini-XML is a small XML parsing library that you can use to
+read XML and XML-like data files in your application without
+requiring large non-standard libraries. Mini-XML only requires
+an ANSI C compatible compiler (GCC works, as do most vendors'
+ANSI C compilers) and a "make" program.
+
+<P>Mini-XML was created to support the basic hierarchy provided
+by XML and some simple data types, but doesn't do validation or
+other types of processing on the data.
+
+<H2>Building Mini-XML</H2>
+
+<P>Mini-XML comes with an autoconf-based configure script; just
+type the following command to get things going:
+
+<PRE>
+    ./configure
+</PRE>
+
+<P>The default install prefix is /usr/local, which can be
+overridden using the --prefix option:
+
+<PRE>
+    ./configure --prefix=/foo
+</PRE>
+
+<P>Once you have configured the software, type "make" to do the
+build and then run the test program to verify that things are
+working, as follows:
+
+<PRE>
+    make
+    ./testmxml test.xml
+</PRE>
+
+<H2>Installing Mini-XML</H2>
+
+<P>The "install" target will install Mini-XML in the lib and
+include directories:
+
+<PRE>
+    make install
+</PRE>
+
+<P>Once you have installed it, use the "-lmxml" option to link
+your application against it.
+
+<H2>Documentation</H2>
+
+<P>The documentation is currently just in this page.  At
+some point I'll probably do some proper documentation, but
+for now just read here and look at the testmxml.c source
+file for an example of reading and printing the contents of
+an XML file to stdout.
+
+<P>Mini-XML provides a single header file which you include:
+
+<PRE>
+    #include &lt;mxml.h>
+</PRE>
+
+<P>Nodes are defined by the "mxml_node_t" structure; the "type"
+member defines the node type (element, integer, opaque,
+real, or text) which determines which value you want to look
+at in the "value" union.  New nodes can be created using the
+"mxmlNewElement()", "mxmlNewInteger()", "mxmlNewOpaque()",
+"mxmlNewReal()", and "mxmlNewText()" functions.  Only
+elements can have child nodes, and the top node must be an
+element, usually "?xml".
+
+<P>You load an XML file using the "mxmlLoadFile()" function:
+
+<PRE>
+    FILE *fp;
+    mxml_node_t *tree;
+
+    fp = fopen("filename.xml", "r");
+    tree = mxmlLoadFile(NULL, fp, MXML_NO_CALLBACK);
+    fclose(fp);
+</PRE>
+
+<P>Similarly, you save an XML file using the "mxmlSaveFile()"
+function:
+
+<PRE>
+    FILE *fp;
+    mxml_node_t *tree;
+
+    fp = fopen("filename.xml", "w");
+    mxmlSaveFile(tree, fp);
+    fclose(fp);
+</PRE>
+
+<P>You can find a named element/node using the
+"mxmlFindElement()" function:
+
+<PRE>
+    mxml_node_t *node = mxmlFindElement(tree, tree, "name");
+</PRE>
+
+<P>You can also iterate with the same function:
+
+<PRE>
+    mxml_node_t *node;
+
+    for (node = mxmlFindElement(tree, tree, "name");
+	 node != NULL;
+	 node = mxmlFindElement(node, tree, "name"))
+    {
+      ... do something ...
+    }
+</PRE>
+
+<P>Finally, once you are done with the XML data, use the
+"mxmlDelete()" function to free the memory that is used:
+
+<PRE>
+    mxmlDelete(tree);
+</PRE>
+
+<H2>Getting Help and Reporting Problems</H2>
+
+<P>You can email me at "mxml <I>at</I> easysw <I>dot</I> com" to
+report problems and/or ask for help.  Just don't expect an
+instant response, as I get a *lot* of email...
+
+<H2>Legal Stuff</H2>
+
+<P>The Mini-XML library is Copyright 2003 by Michael Sweet.
+
+<P>This library is free software; you can redistribute it
+and/or modify it under the terms of the GNU Library General
+Public License as published by the Free Software Foundation;
+either version 2 of the License, or (at your option) any
+later version.
+
+<P>This library is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied
+warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+PURPOSE.  See the GNU Library General Public License for
+more details.
+
+<P>You should have received a copy of the GNU Library General
+Public License along with this library; if not, write to the
+Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA
+02139, USA.
+
+</SPAN>
+</BODY>
+</HTML>

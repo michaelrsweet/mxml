@@ -1,11 +1,11 @@
-README - 07/22/2003
+README - 07/23/2003
 -------------------
 
 
 INTRODUCTION
 
     This README file describes the Mini-XML library version
-    1.1.1.
+    1.1.2.
 
     Mini-XML is a small XML parsing library that you can use to
     read XML and XML-like data files in your application without
@@ -16,6 +16,7 @@ INTRODUCTION
     Mini-XML provides the following functionality:
 
 	- Reading and writing of UTF-8 encoded XML files.
+	- Reading and writing of UTF-8 encoded XML strings.
 	- Data is stored in a linked-list tree structure,
 	  preserving the XML data hierarchy.
 	- Supports arbitrary element names, attributes, and

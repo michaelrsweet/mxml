@@ -1,5 +1,5 @@
 /*
- * "$Id: mxml-file.c,v 1.17 2003/07/22 10:29:19 mike Exp $"
+ * "$Id: mxml-file.c,v 1.18 2003/07/23 14:47:17 mike Exp $"
  *
  * File loading code for mini-XML, a small XML-like file parsing library.
  *
@@ -248,7 +248,7 @@ mxmlSaveString(mxml_node_t *node,	/* I - Node to write */
   * Return the number of characters...
   */
 
-  return (ptr[1] - ptr[0]);
+  return (ptr[0] - buffer);
 }
 
 
@@ -286,8 +286,8 @@ mxml_add_char(int  ch,			/* I  - Character to add */
       return (-1);
     }
 
-    *buffer = newbuffer;
     *bufptr = newbuffer + (*bufptr - *buffer);
+    *buffer = newbuffer;
   }
 
   *(*bufptr)++ = ch;
@@ -1432,5 +1432,5 @@ mxml_write_ws(mxml_node_t *node,	/* I - Current node */
 
 
 /*
- * End of "$Id: mxml-file.c,v 1.17 2003/07/22 10:29:19 mike Exp $".
+ * End of "$Id: mxml-file.c,v 1.18 2003/07/23 14:47:17 mike Exp $".
  */

@@ -1,15 +1,11 @@
 #!/bin/sh
 #
+# "$Id$"
+#
 # makesrcdist - make a source distribution of mxml.
 #
 
 echo "Getting distribution..."
-
-CVS_RSH=ssh; export CVS_RSH
-MAINTAINER=mike
-
-cd /tmp
-cvs -q -d$MAINTAINER@tango.easysw.com:/development/cvs get mxml
 
 if test $# = 0; then
 	echo -n "Version number for distribution? "
@@ -18,34 +14,38 @@ else
 	version=$1
 fi
 
-rm -rf mxml-$version
-mv mxml mxml-$version
-cd mxml-$version
+cd /tmp
 
-if test x$version != xsnapshot; then
-	echo "Tagging release..."
+if test $version = snapshot; then
+	url="https://svn.easysw.com/public/mxml/trunk"
+else
+	url="https://svn.easysw.com/public/mxml/tags/release-$version"
 
-	tag=`echo v$version | tr '.' '_'`
-
-	cvs tag -F $tag
+	svn copy https://svn.easysw.com/public/mxml/trunk "$url" \
+		-m "Tag $version" || exit 1
 fi
 
-echo "Removing CVS directories..."
+rm -rf mxml-$version
+svn export $url mxml-$version
+cd mxml-$version
 
-find . -name .cvsignore -exec rm -f '{}' \;
-find . -name CVS -exec rm -rf '{}' \;
+echo "Removing Subversion files and directories..."
 
-rm makesrcdist
+rm -f makesrcdist TODO
 rm -rf www
 
 cd ..
 
-echo "Making UNIX distribution..."
+echo "Making .tar.gz distribution..."
 
 gtar czf mxml-$version.tar.gz mxml-$version
 
 echo "Removing distribution directory..."
 
-#rm -rf mxml-$version
+rm -rf mxml-$version
 
 echo "Done!"
+
+#
+# End of "$Id$".
+#

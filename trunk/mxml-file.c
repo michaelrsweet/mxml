@@ -1,5 +1,5 @@
 /*
- * "$Id: mxml-file.c,v 1.2 2003/06/04 00:25:59 mike Exp $"
+ * "$Id: mxml-file.c,v 1.3 2003/06/04 01:23:21 mike Exp $"
  *
  * File loading code for mini-XML, a small XML-like file parsing library.
  *
@@ -135,7 +135,37 @@ mxmlLoadFile(mxml_node_t *top,		/* I - Top node */
       *bufptr = '\0';
       bufptr  = buffer;
 
-      if (buffer[0] == '/')
+      if (!strcmp(buffer, "!--"))
+      {
+       /*
+        * Skip comment...
+	*/
+
+        buffer[3] = '\0';
+
+	while ((ch = getc(fp)) != EOF)
+	{
+	  *bufptr++ = ch;
+
+	  if ((bufptr - buffer) == 3)
+	  {
+	    if (!strcmp(buffer, "-->"))
+	      break;
+
+            buffer[0] = buffer[1];
+	    buffer[1] = buffer[2];
+	    bufptr --;
+	  }
+	}
+
+        bufptr = buffer;
+
+        if (ch == EOF)
+	  break;
+	else
+	  continue;
+      }
+      else if (buffer[0] == '/')
       {
        /*
         * Handle close tag...
@@ -638,5 +668,5 @@ mxml_write_string(const char *s,	/* I - String to write */
 
 
 /*
- * End of "$Id: mxml-file.c,v 1.2 2003/06/04 00:25:59 mike Exp $".
+ * End of "$Id: mxml-file.c,v 1.3 2003/06/04 01:23:21 mike Exp $".
  */

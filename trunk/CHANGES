@@ -2,6 +2,11 @@ README - 06/03/2003
 -------------------
 
 
+CHANGES IN Mini-XML 0.93
+
+	- mxmlLoadFile() now correctly handles comments.
+
+
 CHANGES IN Mini-XML 0.92
 
 	- mxmlSaveFile() didn't return a value on success.

@@ -1,5 +1,5 @@
 /*
- * "$Id: testmxml.c,v 1.7 2003/06/04 21:19:00 mike Exp $"
+ * "$Id: testmxml.c,v 1.8 2003/06/14 22:14:17 mike Exp $"
  *
  * Test program for mini-XML, a small XML-like file parsing library.
  *
@@ -46,9 +46,17 @@ int					/* O - Exit status */
 main(int  argc,				/* I - Number of command-line args */
      char *argv[])			/* I - Command-line args */
 {
-  FILE		*fp;			/* File to read */
-  mxml_node_t	*tree,			/* XML tree */
-		*node;			/* Node which should be in test.xml */
+  FILE			*fp;		/* File to read */
+  mxml_node_t		*tree,		/* XML tree */
+			*node;		/* Node which should be in test.xml */
+  static const char	*types[] =	/* Strings for node types */
+			{
+			  "MXML_ELEMENT",
+			  "MXML_INTEGER",
+			  "MXML_OPAQUE",
+			  "MXML_REAL",
+			  "MXML_TEXT"
+			};
 
 
  /*
@@ -60,6 +68,165 @@ main(int  argc,				/* I - Number of command-line args */
     fputs("Usage: testmxml filename.xml\n", stderr);
     return (1);
   }
+
+ /*
+  * Test the basic functionality...
+  */
+
+  tree = mxmlNewElement(MXML_NO_PARENT, "element");
+
+  if (!tree)
+  {
+    fputs("ERROR: No parent node in basic test!\n", stderr);
+    return (1);
+  }
+
+  if (tree->type != MXML_ELEMENT)
+  {
+    fprintf(stderr, "ERROR: Parent has type %s (%d), expected MXML_ELEMENT!\n",
+            tree->type < MXML_ELEMENT || tree->type > MXML_TEXT ?
+	        "UNKNOWN" : types[tree->type], tree->type);
+    mxmlDelete(tree);
+    return (1);
+  }
+
+  if (strcmp(tree->value.element.name, "element"))
+  {
+    fprintf(stderr, "ERROR: Parent value is \"%s\", expected \"element\"!\n",
+            tree->value.element.name);
+    mxmlDelete(tree);
+    return (1);
+  }
+
+  mxmlNewInteger(tree, 123);
+  mxmlNewOpaque(tree, "opaque");
+  mxmlNewReal(tree, 123.4f);
+  mxmlNewText(tree, 1, "text");
+
+  node = tree->child;
+
+  if (!node)
+  {
+    fputs("ERROR: No first child node in basic test!\n", stderr);
+    mxmlDelete(tree);
+    return (1);
+  }
+
+  if (node->type != MXML_INTEGER)
+  {
+    fprintf(stderr, "ERROR: First child has type %s (%d), expected MXML_INTEGER!\n",
+            node->type < MXML_ELEMENT || node->type > MXML_TEXT ?
+	        "UNKNOWN" : types[node->type], node->type);
+    mxmlDelete(tree);
+    return (1);
+  }
+
+  if (node->value.integer != 123)
+  {
+    fprintf(stderr, "ERROR: First child value is %d, expected 123!\n",
+            node->value.integer);
+    mxmlDelete(tree);
+    return (1);
+  }
+
+  node = node->next;
+
+  if (!node)
+  {
+    fputs("ERROR: No second child node in basic test!\n", stderr);
+    mxmlDelete(tree);
+    return (1);
+  }
+
+  if (node->type != MXML_OPAQUE)
+  {
+    fprintf(stderr, "ERROR: Second child has type %s (%d), expected MXML_OPAQUE!\n",
+            node->type < MXML_ELEMENT || node->type > MXML_TEXT ?
+	        "UNKNOWN" : types[node->type], node->type);
+    mxmlDelete(tree);
+    return (1);
+  }
+
+  if (!node->value.opaque || strcmp(node->value.opaque, "opaque"))
+  {
+    fprintf(stderr, "ERROR: Second child value is \"%s\", expected \"opaque\"!\n",
+            node->value.opaque ? node->value.opaque : "(null)");
+    mxmlDelete(tree);
+    return (1);
+  }
+
+  node = node->next;
+
+  if (!node)
+  {
+    fputs("ERROR: No third child node in basic test!\n", stderr);
+    mxmlDelete(tree);
+    return (1);
+  }
+
+  if (node->type != MXML_REAL)
+  {
+    fprintf(stderr, "ERROR: Third child has type %s (%d), expected MXML_REAL!\n",
+            node->type < MXML_ELEMENT || node->type > MXML_TEXT ?
+	        "UNKNOWN" : types[node->type], node->type);
+    mxmlDelete(tree);
+    return (1);
+  }
+
+  if (node->value.real != 123.4f)
+  {
+    fprintf(stderr, "ERROR: Third child value is %f, expected 123.4!\n",
+            node->value.real);
+    mxmlDelete(tree);
+    return (1);
+  }
+
+  node = node->next;
+
+  if (!node)
+  {
+    fputs("ERROR: No fourth child node in basic test!\n", stderr);
+    mxmlDelete(tree);
+    return (1);
+  }
+
+  if (node->type != MXML_TEXT)
+  {
+    fprintf(stderr, "ERROR: Fourth child has type %s (%d), expected MXML_TEXT!\n",
+            node->type < MXML_ELEMENT || node->type > MXML_TEXT ?
+	        "UNKNOWN" : types[node->type], node->type);
+    mxmlDelete(tree);
+    return (1);
+  }
+
+  if (!node->value.text.whitespace ||
+      !node->value.text.string || strcmp(node->value.text.string, "text"))
+  {
+    fprintf(stderr, "ERROR: Fourth child value is %d,\"%s\", expected 1,\"text\"!\n",
+            node->value.text.whitespace,
+	    node->value.text.string ? node->value.text.string : "(null)");
+    mxmlDelete(tree);
+    return (1);
+  }
+
+  mxmlDelete(tree->child);
+  mxmlDelete(tree->child);
+  mxmlDelete(tree->child);
+  mxmlDelete(tree->child);
+
+  if (tree->child)
+  {
+    fputs("ERROR: Child pointer not NULL after deleting all children!\n", stderr);
+    return (1);
+  }
+
+  if (tree->last_child)
+  {
+    fputs("ERROR: Last child pointer not NULL after deleting all children!\n", stderr);
+    return (1);
+  }
+
+  mxmlDelete(tree);
 
  /*
   * Open the file...
@@ -212,5 +379,5 @@ whitespace_cb(mxml_node_t *node,	/* I - Element node */
 
 
 /*
- * End of "$Id: testmxml.c,v 1.7 2003/06/04 21:19:00 mike Exp $".
+ * End of "$Id: testmxml.c,v 1.8 2003/06/14 22:14:17 mike Exp $".
  */

@@ -1,5 +1,5 @@
 /*
- * "$Id: mxml-node.c,v 1.2 2003/06/04 17:37:23 mike Exp $"
+ * "$Id: mxml-node.c,v 1.3 2003/06/04 21:19:00 mike Exp $"
  *
  * Node support code for mini-XML, a small XML-like file parsing library.
  *
@@ -52,11 +52,23 @@ mxmlAdd(mxml_node_t *parent,		/* I - Parent node */
         mxml_node_t *child,		/* I - Child node for where */
 	mxml_node_t *node)		/* I - Node to add */
 {
-  if (!parent)
+ /*
+  * Range check input...
+  */
+
+  if (!parent || !node)
     return;
+
+ /*
+  * Remove the node from any existing parent...
+  */
 
   if (node->parent)
     mxmlRemove(node);
+
+ /*
+  * Reset pointers...
+  */
 
   node->parent = parent;
 
@@ -430,5 +442,5 @@ mxml_new(mxml_node_t *parent,		/* I - Parent node */
 
 
 /*
- * End of "$Id: mxml-node.c,v 1.2 2003/06/04 17:37:23 mike Exp $".
+ * End of "$Id: mxml-node.c,v 1.3 2003/06/04 21:19:00 mike Exp $".
  */

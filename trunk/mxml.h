@@ -1,5 +1,5 @@
 /*
- * "$Id: mxml.h,v 1.6 2003/06/04 17:37:23 mike Exp $"
+ * "$Id: mxml.h,v 1.7 2003/06/04 21:19:00 mike Exp $"
  *
  * Header file for mini-XML, a small XML-like file parsing library.
  *
@@ -38,16 +38,20 @@
  * Constants...
  */
 
-#  define MXML_NO_CALLBACK	0	/* Don't use a type callback */
 #  define MXML_WRAP		72	/* Wrap XML output at this column position */
+#  define MXML_TAB		8	/* Tabs every N columns */
+
+#  define MXML_NO_CALLBACK	0	/* Don't use a type callback */
+#  define MXML_NO_PARENT	0	/* No parent for the node */
 
 #  define MXML_DESCEND		1	/* Descend when finding/walking */
 #  define MXML_NO_DESCEND	0	/* Don't descend when finding/walking */
 #  define MXML_DESCEND_FIRST	-1	/* Descend for first find */
 
-#  define MXML_SAVE_OPEN_TAG	0	/* Callback for open tag */
-#  define MXML_SAVE_CLOSE_TAG	1	/* Callback for close tag */
-
+#  define MXML_WS_BEFORE_OPEN	0	/* Callback for before open tag */
+#  define MXML_WS_AFTER_OPEN	1	/* Callback for after open tag */
+#  define MXML_WS_BEFORE_CLOSE	2	/* Callback for before close tag */
+#  define MXML_WS_AFTER_CLOSE	3	/* Callback for after close tag */
 
 #  define MXML_ADD_BEFORE	0	/* Add node before specified node */
 #  define MXML_ADD_AFTER	1	/* Add node after specified node */
@@ -154,5 +158,5 @@ extern mxml_node_t	*mxmlWalkPrev(mxml_node_t *node, mxml_node_t *top,
 
 
 /*
- * End of "$Id: mxml.h,v 1.6 2003/06/04 17:37:23 mike Exp $".
+ * End of "$Id: mxml.h,v 1.7 2003/06/04 21:19:00 mike Exp $".
  */

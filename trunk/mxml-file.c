@@ -1,5 +1,5 @@
 /*
- * "$Id: mxml-file.c,v 1.7 2003/06/04 17:37:23 mike Exp $"
+ * "$Id: mxml-file.c,v 1.8 2003/06/04 21:18:59 mike Exp $"
  *
  * File loading code for mini-XML, a small XML-like file parsing library.
  *
@@ -22,6 +22,7 @@
  *   mxml_parse_element() - Parse an element for any attributes...
  *   mxml_write_node()    - Save an XML node to a file.
  *   mxml_write_string()  - Write a string, escaping & and < as needed.
+ *   mxml_write_ws()      - Do whitespace callback...
  */
 
 /*
@@ -39,6 +40,8 @@ static int	mxml_parse_element(mxml_node_t *node, FILE *fp);
 static int	mxml_write_node(mxml_node_t *node, FILE *fp,
 		                int (*cb)(mxml_node_t *, int), int col);
 static int	mxml_write_string(const char *s, FILE *fp);
+static int	mxml_write_ws(mxml_node_t *node, FILE *fp, 
+                              int (*cb)(mxml_node_t *, int), int ws, int col);
 
 
 /*
@@ -702,7 +705,6 @@ mxml_write_node(mxml_node_t *node,	/* I - Node to write */
 		int         col)	/* I - Current column */
 {
   int		i;			/* Looping var */
-  int		ch;			/* Whitespace character */
   int		n;			/* Chars written */
   mxml_attr_t	*attr;			/* Current attribute */
 
@@ -716,17 +718,7 @@ mxml_write_node(mxml_node_t *node,	/* I - Node to write */
     switch (node->type)
     {
       case MXML_ELEMENT :
-          if (cb && (ch = (*cb)(node, MXML_SAVE_OPEN_TAG)) != 0)
-	  {
-	    if (putc(ch, fp) < 0)
-	      return (-1);
-	    else if (ch == '\n')
-	      col = 0;
-	    else if (ch == '\t')
-	      col += 8;
-	    else
-	      col ++;
-	  }
+          col = mxml_write_ws(node, fp, cb, MXML_WS_BEFORE_OPEN, col);
 
           if ((n = fprintf(fp, "<%s", node->value.element.name)) < 0)
 	    return (-1);
@@ -776,16 +768,22 @@ mxml_write_node(mxml_node_t *node,	/* I - Node to write */
 	    else
 	      col ++;
 
+            col = mxml_write_ws(node, fp, cb, MXML_WS_AFTER_OPEN, col);
+
 	    if ((col = mxml_write_node(node->child, fp, cb, col)) < 0)
 	      return (-1);
 
             if (node->value.element.name[0] != '?' &&
 	        node->value.element.name[0] != '!')
 	    {
+              col = mxml_write_ws(node, fp, cb, MXML_WS_BEFORE_CLOSE, col);
+
 	      if ((n = fprintf(fp, "</%s>", node->value.element.name)) < 0)
 	        return (-1);
 
               col += n;
+
+              col = mxml_write_ws(node, fp, cb, MXML_WS_AFTER_CLOSE, col);
 	    }
 	  }
 	  else if (node->value.element.name[0] == '!')
@@ -794,22 +792,16 @@ mxml_write_node(mxml_node_t *node,	/* I - Node to write */
 	      return (-1);
 	    else
 	      col ++;
+
+            col = mxml_write_ws(node, fp, cb, MXML_WS_AFTER_OPEN, col);
           }
 	  else if (fputs("/>", fp) < 0)
 	    return (-1);
 	  else
+	  {
 	    col += 2;
 
-          if (cb && (ch = (*cb)(node, MXML_SAVE_CLOSE_TAG)) != 0)
-	  {
-	    if (putc(ch, fp) < 0)
-	      return (-1);
-	    else if (ch == '\n')
-	      col = 0;
-	    else if (ch == '\t')
-	      col += 8;
-	    else
-	      col ++;
+            col = mxml_write_ws(node, fp, cb, MXML_WS_AFTER_OPEN, col);
 	  }
           break;
 
@@ -972,7 +964,40 @@ mxml_write_string(const char *s,	/* I - String to write */
 }
 
 
+/*
+ * 'mxml_write_ws()' - Do whitespace callback...
+ */
+
+static int				/* O - New column */
+mxml_write_ws(mxml_node_t *node,	/* I - Current node */
+              FILE        *fp,		/* I - File to write to */
+              int         (*cb)(mxml_node_t *, int),
+					/* I - Callback function */
+	      int         ws,		/* I - Where value */
+	      int         col)		/* I - Current column */
+{
+  int	ch;				/* Whitespace character */
+
+
+  if (cb && (ch = (*cb)(node, MXML_WS_BEFORE_OPEN)) != 0)
+  {
+    if (putc(ch, fp) < 0)
+      return (-1);
+    else if (ch == '\n')
+      col = 0;
+    else if (ch == '\t')
+    {
+      col += MXML_TAB;
+      col = col - (col % MXML_TAB);
+    }
+    else
+      col ++;
+  }
+
+  return (col);
+}
+
 
 /*
- * End of "$Id: mxml-file.c,v 1.7 2003/06/04 17:37:23 mike Exp $".
+ * End of "$Id: mxml-file.c,v 1.8 2003/06/04 21:18:59 mike Exp $".
  */

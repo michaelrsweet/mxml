@@ -104,7 +104,8 @@ DOCUMENTATION
 	}
 
     Finally, once you are done with the XML data, use the
-    "mxmlDelete()" function to free the memory that is used:
+    "mxmlDelete()" function to recursively free the memory that
+    is used for a particular node or the entire tree:
 
         mxmlDelete(tree);
 

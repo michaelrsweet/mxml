@@ -1,5 +1,5 @@
 /*
- * "$Id: mxml-node.c,v 1.3 2003/06/04 21:19:00 mike Exp $"
+ * "$Id: mxml-node.c,v 1.4 2003/06/05 03:06:20 mike Exp $"
  *
  * Node support code for mini-XML, a small XML-like file parsing library.
  *
@@ -52,6 +52,9 @@ mxmlAdd(mxml_node_t *parent,		/* I - Parent node */
         mxml_node_t *child,		/* I - Child node for where */
 	mxml_node_t *node)		/* I - Node to add */
 {
+/*  fprintf(stderr, "mxmlAdd(parent=%p, where=%d, child=%p, node=%p)\n", parent,
+         where, child, node);*/
+
  /*
   * Range check input...
   */
@@ -155,6 +158,8 @@ mxmlDelete(mxml_node_t *node)		/* I - Node */
 {
   int	i;				/* Looping var */
 
+
+/*  fprintf(stderr, "mxmlDelete(node=%p)\n", node);*/
 
  /*
   * Range check input...
@@ -383,6 +388,8 @@ mxmlRemove(mxml_node_t *node)		/* I - Node to remove */
   * Range check input...
   */
 
+/*  fprintf(stderr, "mxmlRemove(node=%p)\n", node);*/
+
   if (!node || !node->parent)
     return;
 
@@ -399,6 +406,10 @@ mxmlRemove(mxml_node_t *node)		/* I - Node to remove */
     node->next->prev = node->prev;
   else
     node->parent->last_child = node->prev;
+
+  node->parent = NULL;
+  node->prev   = NULL;
+  node->next   = NULL;
 }
 
 
@@ -442,5 +453,5 @@ mxml_new(mxml_node_t *parent,		/* I - Parent node */
 
 
 /*
- * End of "$Id: mxml-node.c,v 1.3 2003/06/04 21:19:00 mike Exp $".
+ * End of "$Id: mxml-node.c,v 1.4 2003/06/05 03:06:20 mike Exp $".
  */

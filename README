@@ -1,11 +1,10 @@
-README - 07/25/2003
+README - 09/28/2003
 -------------------
 
 
 INTRODUCTION
 
-    This README file describes the Mini-XML library version
-    1.1.2.
+    This README file describes the Mini-XML library version 1.2.
 
     Mini-XML is a small XML parsing library that you can use to
     read XML and XML-like data files in your application without
@@ -48,6 +47,11 @@ BUILDING Mini-XML
     overridden using the --prefix option:
 
         ./configure --prefix=/foo
+
+    Other configure options can be found using the --help
+    option:
+
+        ./configure --help
 
     Once you have configured the software, type "make" to do the
     build and run the test program to verify that things are

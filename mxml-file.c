@@ -1,5 +1,5 @@
 /*
- * "$Id: mxml-file.c,v 1.33 2004/06/25 18:52:34 mike Exp $"
+ * "$Id: mxml-file.c,v 1.34 2004/07/11 13:14:07 mike Exp $"
  *
  * File loading code for Mini-XML, a small XML-like file parsing library.
  *
@@ -17,16 +17,22 @@
  *
  * Contents:
  *
+ *   mxmlLoadFd()           - Load a file descriptor into an XML node tree.
  *   mxmlLoadFile()         - Load a file into an XML node tree.
  *   mxmlLoadString()       - Load a string into an XML node tree.
  *   mxmlSaveAllocString()  - Save an XML node tree to an allocated string.
+ *   mxmlSaveFd()           - Save an XML tree to a file descriptor.
  *   mxmlSaveFile()         - Save an XML tree to a file.
  *   mxmlSaveString()       - Save an XML node tree to a string.
  *   mxmlSetErrorCallback() - Set the error message callback.
  *   mxml_add_char()        - Add a character to a buffer, expanding as needed.
- *   mxml_get_entity()      - Get the character corresponding to an entity...
+ *   mxml_fd_getc()         - Read a character from a file descriptor.
+ *   mxml_fd_putc()         - Write a character to a file descriptor.
+ *   mxml_fd_read()         - Read a buffer of data from a file descriptor.
+ *   mxml_fd_write()        - Write a buffer of data to a file descriptor.
  *   mxml_file_getc()       - Get a character from a file.
  *   mxml_file_putc()       - Write a character to a file.
+ *   mxml_get_entity()      - Get the character corresponding to an entity...
  *   mxml_load_data()       - Load data into an XML node tree.
  *   mxml_parse_element()   - Parse an element for any attributes...
  *   mxml_string_getc()     - Get a character from a string.
@@ -42,6 +48,11 @@
 
 #include "config.h"
 #include "mxml.h"
+#ifdef WIN32
+#  include <io.h>
+#else
+#  include <unistd.h>
+#endif /* WIN32 */
 
 
 /*
@@ -51,6 +62,19 @@
 #define ENCODE_UTF8	0		/* UTF-8 */
 #define ENCODE_UTF16BE	1		/* UTF-16 Big-Endian */
 #define ENCODE_UTF16LE	2		/* UTF-16 Little-Endian */
+
+
+/*
+ * File descriptor buffer...
+ */
+
+typedef struct mxml_fdbuf_s		/**** File descriptor buffer (@private) ****/
+{
+  int		fd;			/* File descriptor */
+  unsigned char	*current,		/* Current position in buffer */
+		*end,			/* End of buffer */
+		buffer[8192];		/* Character buffer */
+} mxml_fdbuf_t;
 
 
 /*
@@ -66,11 +90,15 @@ extern void	(*mxml_error_cb)(const char *);
 
 static int		mxml_add_char(int ch, char **ptr, char **buffer,
 			              int *bufsize);
+static int		mxml_fd_getc(void *p, int *encoding);
+static int		mxml_fd_putc(int ch, void *p);
+static int		mxml_fd_read(mxml_fdbuf_t *buf);
+static int		mxml_fd_write(mxml_fdbuf_t *buf);
+static int		mxml_file_getc(void *p, int *encoding);
+static int		mxml_file_putc(int ch, void *p);
 static int		mxml_get_entity(mxml_node_t *parent, void *p,
 			                int *encoding,
 					int (*getc_cb)(void *, int *));
-static int		mxml_file_getc(void *p, int *encoding);
-static int		mxml_file_putc(int ch, void *p);
 static mxml_node_t	*mxml_load_data(mxml_node_t *top, void *p,
 			                mxml_type_t (*cb)(mxml_node_t *),
 			                int (*getc_cb)(void *, int *));
@@ -90,6 +118,46 @@ static int		mxml_write_string(const char *s, void *p,
 static int		mxml_write_ws(mxml_node_t *node, void *p, 
 			              const char *(*cb)(mxml_node_t *, int), int ws,
 				      int col, int (*putc_cb)(int, void *));
+
+
+/*
+ * 'mxmlLoadFd()' - Load a file descriptor into an XML node tree.
+ *
+ * The nodes in the specified file are added to the specified top node.
+ * If no top node is provided, the XML file MUST be well-formed with a
+ * single parent node like <?xml> for the entire file. The callback
+ * function returns the value type that should be used for child nodes.
+ * If MXML_NO_CALLBACK is specified then all child nodes will be either
+ * MXML_ELEMENT or MXML_TEXT nodes.
+ *
+ * The constants MXML_INTEGER_CALLBACK, MXML_OPAQUE_CALLBACK,
+ * MXML_REAL_CALLBACK, and MXML_TEXT_CALLBACK are defined for loading
+ * child nodes of the specified type.
+ */
+
+mxml_node_t *				/* O - First node or NULL if the file could not be read. */
+mxmlLoadFd(mxml_node_t *top,		/* I - Top node */
+           int         fd,		/* I - File descriptor to read from */
+           mxml_type_t (*cb)(mxml_node_t *node))
+					/* I - Callback function or MXML_NO_CALLBACK */
+{
+  mxml_fdbuf_t	buf;			/* File descriptor buffer */
+
+
+ /*
+  * Initialize the file descriptor buffer...
+  */
+
+  buf.fd      = fd;
+  buf.current = buf.buffer;
+  buf.end     = buf.buffer;
+
+ /*
+  * Read the XML data...
+  */
+
+  return (mxml_load_data(top, &buf, cb, mxml_fd_getc));
+}
 
 
 /*
@@ -113,6 +181,10 @@ mxmlLoadFile(mxml_node_t *top,		/* I - Top node */
              mxml_type_t (*cb)(mxml_node_t *node))
 					/* I - Callback function or MXML_NO_CALLBACK */
 {
+ /*
+  * Read the XML data...
+  */
+
   return (mxml_load_data(top, fp, cb, mxml_file_getc));
 }
 
@@ -138,6 +210,10 @@ mxmlLoadString(mxml_node_t *top,	/* I - Top node */
                mxml_type_t (*cb)(mxml_node_t *node))
 					/* I - Callback function or MXML_NO_CALLBACK */
 {
+ /*
+  * Read the XML data...
+  */
+
   return (mxml_load_data(top, &s, cb, mxml_string_getc));
 }
 
@@ -150,6 +226,12 @@ mxmlLoadString(mxml_node_t *top,	/* I - Top node */
  * using the free() function when you are done with it.  NULL is returned
  * if the node would produce an empty string or if the string cannot be
  * allocated.
+ *
+ * The callback argument specifies a function that returns a whitespace
+ * string or NULL before and after each element. If MXML_NO_CALLBACK
+ * is specified, whitespace will only be added before MXML_TEXT nodes
+ * with leading whitespace and before attribute names inside opening
+ * element tags.
  */
 
 char *					/* O - Allocated string or NULL */
@@ -200,10 +282,57 @@ mxmlSaveAllocString(mxml_node_t *node,	/* I - Node to write */
 
 
 /*
+ * 'mxmlSaveFd()' - Save an XML tree to a file descriptor.
+ *
+ * The callback argument specifies a function that returns a whitespace
+ * string or NULL before and after each element. If MXML_NO_CALLBACK
+ * is specified, whitespace will only be added before MXML_TEXT nodes
+ * with leading whitespace and before attribute names inside opening
+ * element tags.
+ */
+
+int					/* O - 0 on success, -1 on error. */
+mxmlSaveFd(mxml_node_t *node,		/* I - Node to write */
+           int         fd,		/* I - File descriptor to write to */
+	   const char  *(*cb)(mxml_node_t *node, int ws))
+					/* I - Whitespace callback or MXML_NO_CALLBACK */
+{
+  int		col;			/* Final column */
+  mxml_fdbuf_t	buf;			/* File descriptor buffer */
+
+
+ /*
+  * Initialize the file descriptor buffer...
+  */
+
+  buf.fd      = fd;
+  buf.current = buf.buffer;
+  buf.end     = buf.buffer + sizeof(buf.buffer) - 4;
+
+ /*
+  * Write the node...
+  */
+
+  if ((col = mxml_write_node(node, &buf, cb, 0, mxml_fd_putc)) < 0)
+    return (-1);
+
+  if (col > 0)
+    if (mxml_fd_putc('\n', &buf) < 0)
+      return (-1);
+
+ /*
+  * Flush and return...
+  */
+
+  return (mxml_fd_write(&buf));
+}
+
+
+/*
  * 'mxmlSaveFile()' - Save an XML tree to a file.
  *
  * The callback argument specifies a function that returns a whitespace
- * character or nul (0) before and after each element. If MXML_NO_CALLBACK
+ * string or NULL before and after each element. If MXML_NO_CALLBACK
  * is specified, whitespace will only be added before MXML_TEXT nodes
  * with leading whitespace and before attribute names inside opening
  * element tags.
@@ -243,6 +372,12 @@ mxmlSaveFile(mxml_node_t *node,		/* I - Node to write */
  * This function returns the total number of bytes that would be
  * required for the string but only copies (bufsize - 1) characters
  * into the specified buffer.
+ *
+ * The callback argument specifies a function that returns a whitespace
+ * string or NULL before and after each element. If MXML_NO_CALLBACK
+ * is specified, whitespace will only be added before MXML_TEXT nodes
+ * with leading whitespace and before attribute names inside opening
+ * element tags.
  */
 
 int					/* O - Size of string */
@@ -379,56 +514,402 @@ mxml_add_char(int  ch,			/* I  - Character to add */
 
 
 /*
- * 'mxml_get_entity()' - Get the character corresponding to an entity...
+ * 'mxml_fd_getc()' - Read a character from a file descriptor.
  */
 
-static int				/* O  - Character value or EOF on error */
-mxml_get_entity(mxml_node_t *parent,	/* I  - Parent node */
-		void        *p,		/* I  - Pointer to source */
-		int         *encoding,	/* IO - Character encoding */
-                int         (*getc_cb)(void *, int *))
-					/* I  - Get character function */
+static int				/* O  - Character or EOF */
+mxml_fd_getc(void *p,			/* I  - File descriptor buffer */
+             int  *encoding)		/* IO - Encoding */
 {
-  int	ch;				/* Current character */
-  char	entity[64],			/* Entity string */
-	*entptr;			/* Pointer into entity */
+  mxml_fdbuf_t	*buf;			/* File descriptor buffer */
+  int		ch,			/* Current character */
+		temp;			/* Temporary character */
 
 
-  entptr = entity;
+ /*
+  * Grab the next character in the buffer...
+  */
 
-  while ((ch = (*getc_cb)(p, encoding)) != EOF)
-    if (ch > 126 || (!isalnum(ch) && ch != '#'))
-      break;
-    else if (entptr < (entity + sizeof(entity) - 1))
-      *entptr++ = ch;
-    else
-    {
-      mxml_error("Entity name too long under parent <%s>!",
-	         parent ? parent->value.element.name : "null");
-      break;
-    }
+  buf = (mxml_fdbuf_t *)p;
 
-  *entptr = '\0';
+  if (buf->current >= buf->end)
+    if (mxml_fd_read(buf) < 0)
+      return (EOF);
 
-  if (ch != ';')
+  ch = *(buf->current)++;
+
+  switch (*encoding)
   {
-    mxml_error("Character entity \"%s\" not terminated under parent <%s>!",
-	       entity, parent ? parent->value.element.name : "null");
-    return (EOF);
-  }
+    case ENCODE_UTF8 :
+       /*
+	* Got a UTF-8 character; convert UTF-8 to Unicode and return...
+	*/
 
-  if (entity[1] == '#')
-  {
-    if (entity[2] == 'x')
-      ch = strtol(entity + 3, NULL, 16);
-    else
-      ch = strtol(entity + 2, NULL, 10);
+	if (!(ch & 0x80))
+	  return (ch);
+        else if (ch == 0xfe)
+	{
+	 /*
+	  * UTF-16 big-endian BOM?
+	  */
+
+	  if (buf->current >= buf->end)
+	    if (mxml_fd_read(buf) < 0)
+	      return (EOF);
+
+	  ch = *(buf->current)++;
+          
+	  if (ch != 0xff)
+	    return (EOF);
+
+	  *encoding = ENCODE_UTF16BE;
+
+	  return (mxml_fd_getc(p, encoding));
+	}
+	else if (ch == 0xff)
+	{
+	 /*
+	  * UTF-16 little-endian BOM?
+	  */
+
+	  if (buf->current >= buf->end)
+	    if (mxml_fd_read(buf) < 0)
+	      return (EOF);
+
+	  ch = *(buf->current)++;
+          
+	  if (ch != 0xfe)
+	    return (EOF);
+
+	  *encoding = ENCODE_UTF16LE;
+
+	  return (mxml_fd_getc(p, encoding));
+	}
+	else if ((ch & 0xe0) == 0xc0)
+	{
+	 /*
+	  * Two-byte value...
+	  */
+
+	  if (buf->current >= buf->end)
+	    if (mxml_fd_read(buf) < 0)
+	      return (EOF);
+
+	  temp = *(buf->current)++;
+
+	  if ((temp & 0xc0) != 0x80)
+	    return (EOF);
+
+	  ch = ((ch & 0x1f) << 6) | (temp & 0x3f);
+	}
+	else if ((ch & 0xf0) == 0xe0)
+	{
+	 /*
+	  * Three-byte value...
+	  */
+
+	  if (buf->current >= buf->end)
+	    if (mxml_fd_read(buf) < 0)
+	      return (EOF);
+
+	  temp = *(buf->current)++;
+
+	  if ((temp & 0xc0) != 0x80)
+	    return (EOF);
+
+	  ch = ((ch & 0x0f) << 6) | (temp & 0x3f);
+
+	  if (buf->current >= buf->end)
+	    if (mxml_fd_read(buf) < 0)
+	      return (EOF);
+
+	  temp = *(buf->current)++;
+
+	  if ((temp & 0xc0) != 0x80)
+	    return (EOF);
+
+	  ch = (ch << 6) | (temp & 0x3f);
+	}
+	else if ((ch & 0xf8) == 0xf0)
+	{
+	 /*
+	  * Four-byte value...
+	  */
+
+	  if (buf->current >= buf->end)
+	    if (mxml_fd_read(buf) < 0)
+	      return (EOF);
+
+	  temp = *(buf->current)++;
+
+	  if ((temp & 0xc0) != 0x80)
+	    return (EOF);
+
+	  ch = ((ch & 0x07) << 6) | (temp & 0x3f);
+
+	  if (buf->current >= buf->end)
+	    if (mxml_fd_read(buf) < 0)
+	      return (EOF);
+
+	  temp = *(buf->current)++;
+
+	  if ((temp & 0xc0) != 0x80)
+	    return (EOF);
+
+	  ch = (ch << 6) | (temp & 0x3f);
+
+	  if (buf->current >= buf->end)
+	    if (mxml_fd_read(buf) < 0)
+	      return (EOF);
+
+	  temp = *(buf->current)++;
+
+	  if ((temp & 0xc0) != 0x80)
+	    return (EOF);
+
+	  ch = (ch << 6) | (temp & 0x3f);
+	}
+	else
+	  return (EOF);
+	break;
+
+    case ENCODE_UTF16BE :
+       /*
+        * Read UTF-16 big-endian char...
+	*/
+
+	if (buf->current >= buf->end)
+	  if (mxml_fd_read(buf) < 0)
+	    return (EOF);
+
+	temp = *(buf->current)++;
+
+	ch = (ch << 8) | temp;
+
+        if (ch >= 0xd800 && ch <= 0xdbff)
+	{
+	 /*
+	  * Multi-word UTF-16 char...
+	  */
+
+          int lch;
+
+	  if (buf->current >= buf->end)
+	    if (mxml_fd_read(buf) < 0)
+	      return (EOF);
+
+	  lch = *(buf->current)++;
+
+	  if (buf->current >= buf->end)
+	    if (mxml_fd_read(buf) < 0)
+	      return (EOF);
+
+	  temp = *(buf->current)++;
+
+	  lch = (lch << 8) | temp;
+
+          if (lch < 0xdc00 || lch >= 0xdfff)
+	    return (EOF);
+
+          ch = (((ch & 0x3ff) << 10) | (lch & 0x3ff)) + 0x10000;
+	}
+	break;
+
+    case ENCODE_UTF16LE :
+       /*
+        * Read UTF-16 little-endian char...
+	*/
+
+	if (buf->current >= buf->end)
+	  if (mxml_fd_read(buf) < 0)
+	    return (EOF);
+
+	temp = *(buf->current)++;
+
+	ch |= (temp << 8);
+
+        if (ch >= 0xd800 && ch <= 0xdbff)
+	{
+	 /*
+	  * Multi-word UTF-16 char...
+	  */
+
+          int lch;
+
+	  if (buf->current >= buf->end)
+	    if (mxml_fd_read(buf) < 0)
+	      return (EOF);
+
+	  lch = *(buf->current)++;
+
+	  if (buf->current >= buf->end)
+	    if (mxml_fd_read(buf) < 0)
+	      return (EOF);
+
+	  temp = *(buf->current)++;
+
+	  lch |= (temp << 8);
+
+          if (lch < 0xdc00 || lch >= 0xdfff)
+	    return (EOF);
+
+          ch = (((ch & 0x3ff) << 10) | (lch & 0x3ff)) + 0x10000;
+	}
+	break;
   }
-  else if ((ch = mxmlEntityGetValue(entity)) < 0)
-    mxml_error("Entity name \"%s;\" not supported under parent <%s>!",
-	       entity, parent ? parent->value.element.name : "null");
 
   return (ch);
+}
+
+
+/*
+ * 'mxml_fd_putc()' - Write a character to a file descriptor.
+ */
+
+static int				/* O - 0 on success, -1 on error */
+mxml_fd_putc(int  ch,			/* I - Character */
+             void *p)			/* I - File descriptor buffer */
+{
+  mxml_fdbuf_t	*buf;			/* File descriptor buffer */
+
+
+ /*
+  * Flush the write buffer as needed - note above that "end" still leaves
+  * 4 characters at the end so that we can avoid a lot of extra tests...
+  */
+
+  buf = (mxml_fdbuf_t *)p;
+
+  if (buf->current >= buf->end)
+    if (mxml_fd_write(buf) < 0)
+      return (-1);
+
+  if (ch < 128)
+  {
+   /*
+    * Write ASCII character directly...
+    */
+
+    *(buf->current)++ = ch;
+  }
+  else if (ch < 2048)
+  {
+   /*
+    * Two-byte UTF-8 character...
+    */
+
+    *(buf->current)++ = 0xc0 | (ch >> 6);
+    *(buf->current)++ = 0x80 | (ch & 0x3f);
+  }
+  else if (ch < 65536)
+  {
+   /*
+    * Three-byte UTF-8 character...
+    */
+
+    *(buf->current)++ = 0xe0 | (ch >> 12);
+    *(buf->current)++ = 0x80 | ((ch >> 6) & 0x3f);
+    *(buf->current)++ = 0x80 | (ch & 0x3f);
+  }
+  else
+  {
+   /*
+    * Four-byte UTF-8 character...
+    */
+
+    *(buf->current)++ = 0xf0 | (ch >> 18);
+    *(buf->current)++ = 0x80 | ((ch >> 12) & 0x3f);
+    *(buf->current)++ = 0x80 | ((ch >> 6) & 0x3f);
+    *(buf->current)++ = 0x80 | (ch & 0x3f);
+  }
+
+ /*
+  * Return successfully...
+  */
+
+  return (0);
+}
+
+
+/*
+ * 'mxml_fd_read()' - Read a buffer of data from a file descriptor.
+ */
+
+static int				/* O - 0 on success, -1 on error */
+mxml_fd_read(mxml_fdbuf_t *buf)		/* I - File descriptor buffer */
+{
+  int	bytes;				/* Bytes read... */
+
+
+ /*
+  * Range check input...
+  */
+
+  if (!buf)
+    return (-1);
+
+ /*
+  * Read from the file descriptor...
+  */
+
+  while ((bytes = read(buf->fd, buf->buffer, sizeof(buf->buffer))) < 0)
+    if (errno != EAGAIN && errno != EINTR)
+      return (-1);
+
+  if (bytes == 0)
+    return (-1);
+
+ /*
+  * Update the pointers and return success...
+  */
+
+  buf->current = buf->buffer;
+  buf->end     = buf->buffer + bytes;
+
+  return (0);
+}
+
+
+/*
+ * 'mxml_fd_write()' - Write a buffer of data to a file descriptor.
+ */
+
+static int				/* O - 0 on success, -1 on error */
+mxml_fd_write(mxml_fdbuf_t *buf)	/* I - File descriptor buffer */
+{
+  int		bytes;			/* Bytes written */
+  unsigned char	*ptr;			/* Pointer into buffer */
+
+
+ /*
+  * Range check...
+  */
+
+  if (!buf)
+    return (-1);
+
+ /*
+  * Return 0 if there is nothing to write...
+  */
+
+  if (buf->current == buf->buffer)
+    return (0);
+
+ /*
+  * Loop until we have written everything...
+  */
+
+  for (ptr = buf->buffer; ptr < buf->current; ptr += bytes)
+    if ((bytes = write(buf->fd, ptr, buf->current - ptr)) < 0)
+      return (-1);
+
+ /*
+  * All done, reset pointers and return success...
+  */
+
+  buf->current = buf->buffer;
+
+  return (0);
 }
 
 
@@ -559,7 +1040,7 @@ mxml_file_getc(void *p,			/* I  - Pointer to file */
 
           int lch = (getc(fp) << 8) | getc(fp);
 
-          if (ch < 0xdc00 || ch >= 0xdfff)
+          if (lch < 0xdc00 || lch >= 0xdfff)
 	    return (EOF);
 
           ch = (((ch & 0x3ff) << 10) | (lch & 0x3ff)) + 0x10000;
@@ -581,7 +1062,7 @@ mxml_file_getc(void *p,			/* I  - Pointer to file */
 
           int lch = getc(fp) | (getc(fp) << 8);
 
-          if (ch < 0xdc00 || ch >= 0xdfff)
+          if (lch < 0xdc00 || lch >= 0xdfff)
 	    return (EOF);
 
           ch = (((ch & 0x3ff) << 10) | (lch & 0x3ff)) + 0x10000;
@@ -645,6 +1126,60 @@ mxml_file_putc(int  ch,			/* I - Character to write */
   buflen = bufptr - buffer;
 
   return (fwrite(buffer, 1, buflen, (FILE *)p) < buflen ? -1 : 0);
+}
+
+
+/*
+ * 'mxml_get_entity()' - Get the character corresponding to an entity...
+ */
+
+static int				/* O  - Character value or EOF on error */
+mxml_get_entity(mxml_node_t *parent,	/* I  - Parent node */
+		void        *p,		/* I  - Pointer to source */
+		int         *encoding,	/* IO - Character encoding */
+                int         (*getc_cb)(void *, int *))
+					/* I  - Get character function */
+{
+  int	ch;				/* Current character */
+  char	entity[64],			/* Entity string */
+	*entptr;			/* Pointer into entity */
+
+
+  entptr = entity;
+
+  while ((ch = (*getc_cb)(p, encoding)) != EOF)
+    if (ch > 126 || (!isalnum(ch) && ch != '#'))
+      break;
+    else if (entptr < (entity + sizeof(entity) - 1))
+      *entptr++ = ch;
+    else
+    {
+      mxml_error("Entity name too long under parent <%s>!",
+	         parent ? parent->value.element.name : "null");
+      break;
+    }
+
+  *entptr = '\0';
+
+  if (ch != ';')
+  {
+    mxml_error("Character entity \"%s\" not terminated under parent <%s>!",
+	       entity, parent ? parent->value.element.name : "null");
+    return (EOF);
+  }
+
+  if (entity[1] == '#')
+  {
+    if (entity[2] == 'x')
+      ch = strtol(entity + 3, NULL, 16);
+    else
+      ch = strtol(entity + 2, NULL, 10);
+  }
+  else if ((ch = mxmlEntityGetValue(entity)) < 0)
+    mxml_error("Entity name \"%s;\" not supported under parent <%s>!",
+	       entity, parent ? parent->value.element.name : "null");
+
+  return (ch);
 }
 
 
@@ -1419,7 +1954,7 @@ mxml_string_getc(void *p,		/* I  - Pointer to file */
             lch = ((*s[0] & 255) << 8) | (*s[1] & 255);
 	    (*s) += 2;
 
-            if (ch < 0xdc00 || ch >= 0xdfff)
+            if (lch < 0xdc00 || lch >= 0xdfff)
 	      return (EOF);
 
             ch = (((ch & 0x3ff) << 10) | (lch & 0x3ff)) + 0x10000;
@@ -1457,7 +1992,7 @@ mxml_string_getc(void *p,		/* I  - Pointer to file */
             lch = ((*s[1] & 255) << 8) | (*s[0] & 255);
 	    (*s) += 2;
 
-            if (ch < 0xdc00 || ch >= 0xdfff)
+            if (lch < 0xdc00 || lch >= 0xdfff)
 	      return (EOF);
 
             ch = (((ch & 0x3ff) << 10) | (lch & 0x3ff)) + 0x10000;
@@ -1636,7 +2171,6 @@ mxml_write_node(mxml_node_t *node,	/* I - Node to write */
 		width;			/* Width of attr + value */
   mxml_attr_t	*attr;			/* Current attribute */
   char		s[255];			/* Temporary string */
-  int		slen;			/* Length of temporary string */
 
 
   while (node != NULL)
@@ -1936,5 +2470,5 @@ mxml_write_ws(mxml_node_t *node,	/* I - Current node */
 
 
 /*
- * End of "$Id: mxml-file.c,v 1.33 2004/06/25 18:52:34 mike Exp $".
+ * End of "$Id: mxml-file.c,v 1.34 2004/07/11 13:14:07 mike Exp $".
  */

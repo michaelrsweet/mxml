@@ -1,5 +1,5 @@
 #
-# "$Id: Makefile.in,v 1.21 2004/05/16 05:25:38 mike Exp $"
+# "$Id: Makefile.in,v 1.22 2004/06/25 18:59:32 mike Exp $"
 #
 # Makefile for Mini-XML, a small XML-like file parsing library.
 #
@@ -74,7 +74,7 @@ MAN3EXT		=	@MAN3EXT@
 # Targets...
 #
 
-DOCFILES	=	doc/mxml.html doc/mxml.pdf doc/mxmldoc.xsd \
+DOCFILES	=	doc/mxml.html doc/mxmldoc.xsd \
 			README COPYING CHANGES
 PUBLIBOBJS	=	mxml-attr.o mxml-entity.o mxml-file.o mxml-index.o \
 			mxml-node.o mxml-search.o mxml-set.o
@@ -257,5 +257,5 @@ $(OBJS):	Makefile config.h
 
 
 #
-# End of "$Id: Makefile.in,v 1.21 2004/05/16 05:25:38 mike Exp $".
+# End of "$Id: Makefile.in,v 1.22 2004/06/25 18:59:32 mike Exp $".
 #

@@ -1,5 +1,5 @@
 #
-# "$Id: Makefile.in,v 1.9 2003/07/20 13:19:08 mike Exp $"
+# "$Id: Makefile.in,v 1.10 2003/07/20 13:41:17 mike Exp $"
 #
 # Makefile for mini-XML, a small XML-like file parsing library.
 #
@@ -75,7 +75,8 @@ MAN3EXT		=	@MAN3EXT@
 #
 
 DOCFILES	=	documentation.html README COPYING CHANGES
-LIBOBJS		=	mxml-attr.o mxml-file.o mxml-node.o mxml-search.o
+LIBOBJS		=	mxml-attr.o mxml-file.o mxml-node.o mxml-search.o \
+			mxml-string.o
 OBJS		=	mxmldoc.o testmxml.o $(LIBOBJS)
 TARGETS		=	libmxml.a mxmldoc mxml.$(CAT3EXT) mxmldoc.$(CAT1EXT) \
 			testmxml mxml.xml
@@ -213,9 +214,9 @@ mxml.xml:	mxmldoc mxml.h $(LIBOBJS:.o=.c)
 # All object files depend on the makefile...
 #
 
-$(OBJS):	Makefile
+$(OBJS):	Makefile config.h
 
 
 #
-# End of "$Id: Makefile.in,v 1.9 2003/07/20 13:19:08 mike Exp $".
+# End of "$Id: Makefile.in,v 1.10 2003/07/20 13:41:17 mike Exp $".
 #

@@ -1,5 +1,5 @@
 /*
- * "$Id: testmxml.c,v 1.9 2003/06/19 03:20:41 mike Exp $"
+ * "$Id: testmxml.c,v 1.10 2003/07/20 13:41:17 mike Exp $"
  *
  * Test program for mini-XML, a small XML-like file parsing library.
  *
@@ -28,6 +28,7 @@
  */
 
 #include "mxml.h"
+#include "config.h"
 
 
 /*
@@ -383,5 +384,5 @@ whitespace_cb(mxml_node_t *node,	/* I - Element node */
 
 
 /*
- * End of "$Id: testmxml.c,v 1.9 2003/06/19 03:20:41 mike Exp $".
+ * End of "$Id: testmxml.c,v 1.10 2003/07/20 13:41:17 mike Exp $".
  */

@@ -1,5 +1,5 @@
 /*
- * "$Id: mxmldoc.c,v 1.22 2003/12/04 04:55:57 mike Exp $"
+ * "$Id: mxmldoc.c,v 1.23 2003/12/19 02:56:11 mike Exp $"
  *
  * Documentation generator using mini-XML, a small XML-like file parsing
  * library.
@@ -419,7 +419,18 @@ scan_file(const char  *filename,	/* I - Filename */
 		else if (ch == '/')
 		  state = STATE_CXX_COMMENT;
 		else
+		{
 		  ungetc(ch, fp);
+
+		  if (type)
+		  {
+#ifdef DEBUG
+                    fputs("Identifier: <<<< / >>>\n", stderr);
+#endif /* DEBUG */
+                    ch = type->last_child->value.text.string[0];
+		    mxmlNewText(type, isalnum(ch) || ch == '_', "/");
+		  }
+		}
 		break;
 
 	    case '#' :			/* Preprocessor */
@@ -713,6 +724,28 @@ scan_file(const char  *filename,	/* I - Filename */
 #endif /* DEBUG */
                   ch = type->last_child->value.text.string[0];
 		  mxmlNewText(type, isalnum(ch) || ch == '_', "*");
+		}
+		break;
+
+	    case '+' :
+		if (type)
+		{
+#ifdef DEBUG
+                  fputs("Identifier: <<<< + >>>\n", stderr);
+#endif /* DEBUG */
+                  ch = type->last_child->value.text.string[0];
+		  mxmlNewText(type, isalnum(ch) || ch == '_', "+");
+		}
+		break;
+
+	    case '-' :
+		if (type)
+		{
+#ifdef DEBUG
+                  fputs("Identifier: <<<< - >>>\n", stderr);
+#endif /* DEBUG */
+                  ch = type->last_child->value.text.string[0];
+		  mxmlNewText(type, isalnum(ch) || ch == '_', "-");
 		}
 		break;
 
@@ -2163,5 +2196,5 @@ ws_cb(mxml_node_t *node,		/* I - Element node */
 
 
 /*
- * End of "$Id: mxmldoc.c,v 1.22 2003/12/04 04:55:57 mike Exp $".
+ * End of "$Id: mxmldoc.c,v 1.23 2003/12/19 02:56:11 mike Exp $".
  */

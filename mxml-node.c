@@ -1,5 +1,5 @@
 /*
- * "$Id: mxml-node.c,v 1.10 2003/12/03 03:59:04 mike Exp $"
+ * "$Id: mxml-node.c,v 1.11 2003/12/04 04:55:57 mike Exp $"
  *
  * Node support code for mini-XML, a small XML-like file parsing library.
  *
@@ -75,10 +75,13 @@ mxmlAdd(mxml_node_t *parent,		/* I - Parent node */
 
 #if DEBUG > 1
   fprintf(stderr, "    BEFORE: node->parent=%p\n", node->parent);
-  fprintf(stderr, "    BEFORE: parent->child=%p\n", parent->child);
-  fprintf(stderr, "    BEFORE: parent->last_child=%p\n", parent->last_child);
-  fprintf(stderr, "    BEFORE: parent->prev=%p\n", parent->prev);
-  fprintf(stderr, "    BEFORE: parent->next=%p\n", parent->next);
+  if (parent)
+  {
+    fprintf(stderr, "    BEFORE: parent->child=%p\n", parent->child);
+    fprintf(stderr, "    BEFORE: parent->last_child=%p\n", parent->last_child);
+    fprintf(stderr, "    BEFORE: parent->prev=%p\n", parent->prev);
+    fprintf(stderr, "    BEFORE: parent->next=%p\n", parent->next);
+  }
 #endif /* DEBUG > 1 */
 
  /*
@@ -168,10 +171,13 @@ mxmlAdd(mxml_node_t *parent,		/* I - Parent node */
 
 #if DEBUG > 1
   fprintf(stderr, "    AFTER: node->parent=%p\n", node->parent);
-  fprintf(stderr, "    AFTER: parent->child=%p\n", parent->child);
-  fprintf(stderr, "    AFTER: parent->last_child=%p\n", parent->last_child);
-  fprintf(stderr, "    AFTER: parent->prev=%p\n", parent->prev);
-  fprintf(stderr, "    AFTER: parent->next=%p\n", parent->next);
+  if (parent)
+  {
+    fprintf(stderr, "    AFTER: parent->child=%p\n", parent->child);
+    fprintf(stderr, "    AFTER: parent->last_child=%p\n", parent->last_child);
+    fprintf(stderr, "    AFTER: parent->prev=%p\n", parent->prev);
+    fprintf(stderr, "    AFTER: parent->next=%p\n", parent->next);
+  }
 #endif /* DEBUG > 1 */
 }
 
@@ -626,5 +632,5 @@ mxml_new(mxml_node_t *parent,		/* I - Parent node */
 
 
 /*
- * End of "$Id: mxml-node.c,v 1.10 2003/12/03 03:59:04 mike Exp $".
+ * End of "$Id: mxml-node.c,v 1.11 2003/12/04 04:55:57 mike Exp $".
  */

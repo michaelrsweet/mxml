@@ -1,4 +1,7 @@
 <?xml version="1.0"?>
+<function name="calloc"><returnvalue><description/><type>if((node</type></returnvalue>
+<description/><argument name="NULL"><type>sizeof(mxml_node_t)))</type></argument>
+</function>
 <function name="mxmlAdd"><description>Add a node to a tree.
 
 Adds the specified node to the parent. If the child argument is not
@@ -318,4 +321,10 @@ name="element"><type>mxml_element_t</type><description>Element</description></va
 <variable name="opaque"><type>char *</type><description>Opaque string</description></variable>
 <variable name="real"><type>double</type><description>Real number</description></variable>
 <variable name="text"><type>mxml_text_t</type><description>Text fragment</description></variable>
-</union>
+</union><variable name="newbuffer"><type>buffer</type></variable>
+<variable name="node"><type>mxml_node_t *</type><description>New node</description></variable>
+<function name="realloc"><returnvalue><description>Increase the size of the buffer...</description><type>if((newbuffer</type></returnvalue>
+<description>Current buffer size</description><argument name="NULL"><type>buffer,
+*bufsize))</type></argument>
+</function>
+<variable name="type"><type>node type</type><description>Add to the parent if present...</description></variable>

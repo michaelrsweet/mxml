@@ -1,104 +1,178 @@
 <?xml version="1.0"?>
-<function name="mxmlAdd"><description>Add a node to a tree.</description><argument
+<function name="mxmlAdd"><description>Add a node to a tree.
+
+Adds the specified node to the parent. If the child argument is not
+NULL, puts the new node before or after the specified child depending
+on the value of the where argument. If the child argument is NULL,
+puts the new node at the beginning of the child list (MXML_ADD_BEFORE)
+or at the end of the child list (MXML_ADD_AFTER). The constant
+MXML_ADD_TO_PARENT can be used to specify a NULL child pointer.</description><argument
 name="parent" direction="I"><type>mxml_node_t *</type><description>Parent node</description></argument>
-<argument name="where" direction="I"><type>int</type><description>Where to add</description></argument>
-<argument name="child" direction="I"><type>mxml_node_t *</type><description>Child node for where</description></argument>
+<argument name="where" direction="I"><type>int</type><description>Where to add, MXML_ADD_BEFORE or MXML_ADD_AFTER</description></argument>
+<argument name="child" direction="I"><type>mxml_node_t *</type><description>Child node for where or MXML_ADD_TO_PARENT</description></argument>
 <argument name="node" direction="I"><type>mxml_node_t *</type><description>Node to add</description></argument>
 </function>
-<function name="mxmlDelete"><description>Delete a node and all of its children.</description><argument
-name="node" direction="I"><type>mxml_node_t *</type><description>Node</description></argument>
+<function name="mxmlDelete"><description>Delete a node and all of its children.
+
+If the specified node has a parent, this function first removes the
+node from its parent using the mxmlRemove() function.</description><argument
+name="node" direction="I"><type>mxml_node_t *</type><description>Node to delete</description></argument>
 </function>
 <function name="mxmlElementGetAttr"><returnvalue><description>Attribute value or NULL</description><type>const
 char *</type></returnvalue>
-<description>Get an attribute.</description><argument name="node"
-direction="I"><type>mxml_node_t *</type><description>Element node</description></argument>
+<description>Get an attribute.
+
+This function returns NULL if the node is not an element or the
+named attribute does not exist.</description><argument
+name="node" direction="I"><type>mxml_node_t *</type><description>Element node</description></argument>
 <argument name="name" direction="I"><type>const char *</type><description>Name of attribute</description></argument>
 </function>
-<function name="mxmlElementSetAttr"><description>Set an attribute.</description><argument
+<function name="mxmlElementSetAttr"><description>Set an attribute.
+
+If the named attribute already exists, the value of the attribute
+is replaced by the new string value. The string value is copied
+into the element node. This function does nothing if the node is
+not an element.</description><argument
 name="node" direction="I"><type>mxml_node_t *</type><description>Element node</description></argument>
 <argument name="name" direction="I"><type>const char *</type><description>Name of attribute</description></argument>
 <argument name="value" direction="I"><type>const char *</type><description>Attribute value</description></argument>
 </function>
 <function name="mxmlFindElement"><returnvalue><description>Element node or NULL</description><type>mxml_node_t
 *</type></returnvalue>
-<description>Find the named element.</description><argument name="node"
-direction="I"><type>mxml_node_t *</type><description>Current node</description></argument>
+<description>Find the named element.
+
+The search is constrained by the name, attribute name, and value; any
+NULL names or values are treated as wildcards, so different kinds of
+searches can be implemented by looking for all elements of a given name
+or all elements with a specific attribute. The descend argument determines
+whether the search descends into child nodes; normally you will use
+MXML_DESCEND_FIRST for the initial search and MXML_NO_DESCEND to find
+additional direct descendents of the node. The top node argument
+constrains the search to a particular node's children.</description><argument
+name="node" direction="I"><type>mxml_node_t *</type><description>Current node</description></argument>
 <argument name="top" direction="I"><type>mxml_node_t *</type><description>Top node</description></argument>
 <argument name="name" direction="I"><type>const char *</type><description>Element name or NULL for any</description></argument>
 <argument name="attr" direction="I"><type>const char *</type><description>Attribute name, or NULL for none</description></argument>
 <argument name="value" direction="I"><type>const char *</type><description>Attribute value, or NULL for any</description></argument>
-<argument name="descend" direction="I"><type>int</type><description>Descend into tree?</description></argument>
+<argument name="descend" direction="I"><type>int</type><description>Descend into tree - MXML_DESCEND, MXML_NO_DESCEND, or MXML_DESCEND_FIRST</description></argument>
 </function>
-<function name="mxmlLoadFile"><returnvalue><description>First node</description><type>mxml_node_t
+<function name="mxmlLoadFile"><returnvalue><description>First node or NULL if the file could not be read.</description><type>mxml_node_t
 *</type></returnvalue>
-<description>Load a file into an XML node tree.</description><argument
+<description>Load a file into an XML node tree.
+
+The nodes in the specified file are added to the specified top node.
+If no top node is provided, the XML file MUST be well-formed with a
+single parent node like &lt;?xml&gt; for the entire file. The callback
+function returns the value type that should be used for child nodes.
+If MXML_NO_CALLBACK is specified then all child nodes will be either
+MXML_ELEMENT or MXML_TEXT nodes.</description><argument
 name="top" direction="I"><type>mxml_node_t *</type><description>Top node</description></argument>
 <argument name="fp" direction="I"><type>FILE *</type><description>File to read from</description></argument>
-<argument name="(*cb)(mxml_node_t *)" direction="I"><type>mxml_type_t</type><description>Callback function</description></argument>
+<argument name="(*cb)(mxml_node_t *)" direction="I"><type>mxml_type_t</type><description>Callback function or MXML_NO_CALLBACK</description></argument>
 </function>
 <function name="mxmlNewElement"><returnvalue><description>New node</description><type>mxml_node_t
 *</type></returnvalue>
-<description>Create a new element node.</description><argument
-name="parent" direction="I"><type>mxml_node_t *</type><description>Parent node</description></argument>
+<description>Create a new element node.
+
+The new element node is added to the end of the specified parent's child
+list. The constant MXML_NO_PARENT can be used to specify that the new
+element node has no parent.</description><argument
+name="parent" direction="I"><type>mxml_node_t *</type><description>Parent node or MXML_NO_PARENT</description></argument>
 <argument name="name" direction="I"><type>const char *</type><description>Name of element</description></argument>
 </function>
 <function name="mxmlNewInteger"><returnvalue><description>New node</description><type>mxml_node_t
 *</type></returnvalue>
-<description>Create a new integer node.</description><argument
-name="parent" direction="I"><type>mxml_node_t *</type><description>Parent node</description></argument>
+<description>Create a new integer node.
+
+The new integer node is added to the end of the specified parent's child
+list. The constant MXML_NO_PARENT can be used to specify that the new
+integer node has no parent.</description><argument
+name="parent" direction="I"><type>mxml_node_t *</type><description>Parent node or MXML_NO_PARENT</description></argument>
 <argument name="integer" direction="I"><type>int</type><description>Integer value</description></argument>
 </function>
 <function name="mxmlNewOpaque"><returnvalue><description>New node</description><type>mxml_node_t
 *</type></returnvalue>
-<description>Create a new opaque string.</description><argument
-name="parent" direction="I"><type>mxml_node_t *</type><description>Parent node</description></argument>
+<description>Create a new opaque string.
+
+The new opaque node is added to the end of the specified parent's child
+list. The constant MXML_NO_PARENT can be used to specify that the new
+opaque node has no parent. The opaque string must be nul-terminated and
+is copied into the new node.</description><argument
+name="parent" direction="I"><type>mxml_node_t *</type><description>Parent node or MXML_NO_PARENT</description></argument>
 <argument name="opaque" direction="I"><type>const char *</type><description>Opaque string</description></argument>
 </function>
 <function name="mxmlNewReal"><returnvalue><description>New node</description><type>mxml_node_t
 *</type></returnvalue>
-<description>Create a new real number node.</description><argument
-name="parent" direction="I"><type>mxml_node_t *</type><description>Parent node</description></argument>
+<description>Create a new real number node.
+
+The new real number node is added to the end of the specified parent's
+child list. The constant MXML_NO_PARENT can be used to specify that
+the new real number node has no parent.</description><argument
+name="parent" direction="I"><type>mxml_node_t *</type><description>Parent node or MXML_NO_PARENT</description></argument>
 <argument name="real" direction="I"><type>double</type><description>Real number value</description></argument>
 </function>
 <function name="mxmlNewText"><returnvalue><description>New node</description><type>mxml_node_t
 *</type></returnvalue>
-<description>Create a new text fragment node.</description><argument
-name="parent" direction="I"><type>mxml_node_t *</type><description>Parent node</description></argument>
-<argument name="whitespace" direction="I"><type>int</type><description>Leading whitespace?</description></argument>
+<description>Create a new text fragment node.
+
+The new text node is added to the end of the specified parent's child
+list. The constant MXML_NO_PARENT can be used to specify that the new
+text node has no parent. The whitespace parameter is used to specify
+whether leading whitespace is present before the node. The text
+string must be nul-terminated and is copied into the new node.</description><argument
+name="parent" direction="I"><type>mxml_node_t *</type><description>Parent node or MXML_NO_PARENT</description></argument>
+<argument name="whitespace" direction="I"><type>int</type><description>1 = leading whitespace, 0 = no whitespace</description></argument>
 <argument name="string" direction="I"><type>const char *</type><description>String</description></argument>
 </function>
-<function name="mxmlRemove"><description>Remove a node from its parent.</description><argument
+<function name="mxmlRemove"><description>Remove a node from its parent.
+
+Does not free memory used by the node - use mxmlDelete() for that.
+This function does nothing if the node has no parent.</description><argument
 name="node" direction="I"><type>mxml_node_t *</type><description>Node to remove</description></argument>
 </function>
-<function name="mxmlSaveFile"><returnvalue><description>0 on success, -1 on error</description><type>int</type></returnvalue>
-<description>Save an XML tree to a file.</description><argument
+<function name="mxmlSaveFile"><returnvalue><description>0 on success, -1 on error.</description><type>int</type></returnvalue>
+<description>Save an XML tree to a file.
+
+The callback argument specifies a function that returns a whitespace
+character or nul (0) before and after each element. If MXML_NO_CALLBACK
+is specified, whitespace will only be added before MXML_TEXT nodes
+with leading whitespace and before attribute names inside opening
+element tags.</description><argument
 name="node" direction="I"><type>mxml_node_t *</type><description>Node to write</description></argument>
 <argument name="fp" direction="I"><type>FILE *</type><description>File to write to</description></argument>
-<argument name="(*cb)(mxml_node_t *int)" direction="I"><type>int</type><description>Whitespace callback</description></argument>
+<argument name="(*cb)(mxml_node_t *int)" direction="I"><type>int</type><description>Whitespace callback or MXML_NO_CALLBACK</description></argument>
 </function>
 <function name="mxmlWalkNext"><returnvalue><description>Next node or NULL</description><type>mxml_node_t
 *</type></returnvalue>
-<description>Walk to the next logical node in the tree.</description><argument
+<description>Walk to the next logical node in the tree.
+
+The descend argument controls whether the first child is considered
+to be the next node. The top node argument constrains the walk to
+the node's children.</description><argument
 name="node" direction="I"><type>mxml_node_t *</type><description>Current node</description></argument>
 <argument name="top" direction="I"><type>mxml_node_t *</type><description>Top node</description></argument>
-<argument name="descend" direction="I"><type>int</type><description>Descend into tree?</description></argument>
+<argument name="descend" direction="I"><type>int</type><description>Descend into tree - MXML_DESCEND, MXML_NO_DESCEND, or MXML_DESCEND_FIRST</description></argument>
 </function>
 <function name="mxmlWalkPrev"><returnvalue><description>Previous node or NULL</description><type>mxml_node_t
 *</type></returnvalue>
-<description>Walk to the previous logical node in the tree.</description><argument
+<description>Walk to the previous logical node in the tree.
+
+The descend argument controls whether the previous node's last child
+is considered to be the previous node. The top node argument constrains
+the walk to the node's children.</description><argument
 name="node" direction="I"><type>mxml_node_t *</type><description>Current node</description></argument>
 <argument name="top" direction="I"><type>mxml_node_t *</type><description>Top node</description></argument>
-<argument name="descend" direction="I"><type>int</type><description>Descend into tree?</description></argument>
+<argument name="descend" direction="I"><type>int</type><description>Descend into tree - MXML_DESCEND, MXML_NO_DESCEND, or MXML_DESCEND_FIRST</description></argument>
 </function>
-<struct name="mxml_attr_s"><description>Attribute Value</description><variable
+<struct name="mxml_attr_s"><description>An XML element attribute value.</description><variable
 name="name"><type>char *</type><description>Attribute name</description></variable>
 <variable name="value"><type>char *</type><description>Attribute value</description></variable>
 </struct>
-<typedef name="mxml_attr_t"><description>Attribute Value</description><type>struct
+<typedef name="mxml_attr_t"><description>An XML element attribute value.</description><type>struct
 mxml_attr_s</type></typedef>
-<typedef name="mxml_element_t"><description>Element Value</description><type>struct
+<typedef name="mxml_element_t"><description>An XML element value.</description><type>struct
 mxml_value_s</type></typedef>
-<struct name="mxml_node_s"><description>Node</description><variable
+<struct name="mxml_node_s"><description>Data types...</description><variable
 name="child"><type>mxml_node_t *</type><description>First child node</description></variable>
 <variable name="last_child"><type>mxml_node_t *</type><description>Last child node</description></variable>
 <variable name="next"><type>mxml_node_t *</type><description>Next node under same parent</description></variable>
@@ -107,29 +181,30 @@ name="child"><type>mxml_node_t *</type><description>First child node</descriptio
 <variable name="type"><type>mxml_type_t</type><description>Node type</description></variable>
 <variable name="value"><type>mxml_value_t</type><description>Node value</description></variable>
 </struct>
-<struct name="mxml_text_s"><description>Text Value</description><variable
+<typedef name="mxml_node_t"><type>struct mxml_node_s</type><description>An XML node.</description><description>An XML node.</description></typedef>
+<struct name="mxml_text_s"><description>An XML text value.</description><variable
 name="string"><type>char *</type><description>Fragment string</description></variable>
 <variable name="whitespace"><type>int</type><description>Leading whitespace?</description></variable>
 </struct>
-<typedef name="mxml_text_t"><description>Text Value</description><type>struct
+<typedef name="mxml_text_t"><description>An XML text value.</description><type>struct
 mxml_text_s</type></typedef>
-<enumeration name="mxml_type_e"><description>Node Type</description><constant
+<enumeration name="mxml_type_e"><description>The XML node type.</description><constant
 name="MXML_ELEMENT"><description>XML element with attributes</description></constant>
 <constant name="MXML_INTEGER"><description>Integer value</description></constant>
 <constant name="MXML_OPAQUE"><description>Opaque string</description></constant>
 <constant name="MXML_REAL"><description>Real value</description></constant>
 <constant name="MXML_TEXT"><description>Text fragment</description></constant>
 </enumeration>
-<typedef name="mxml_type_t"><description>Node Type</description><type>enum
+<typedef name="mxml_type_t"><description>The XML node type.</description><type>enum
 mxml_type_e</type></typedef>
-<struct name="mxml_value_s"><description>Element Value</description><variable
+<struct name="mxml_value_s"><description>An XML element value.</description><variable
 name="attrs"><type>mxml_attr_t *</type><description>Attributes</description></variable>
 <variable name="name"><type>char *</type><description>Name of element</description></variable>
 <variable name="num_attrs"><type>int</type><description>Number of attributes</description></variable>
 </struct>
-<typedef name="mxml_value_t"><description>Node Value</description><type>union
+<typedef name="mxml_value_t"><description>An XML node value.</description><type>union
 mxml_value_u</type></typedef>
-<union name="mxml_value_u"><description>Node Value</description><variable
+<union name="mxml_value_u"><description>An XML node value.</description><variable
 name="element"><type>mxml_element_t</type><description>Element</description></variable>
 <variable name="integer"><type>int</type><description>Integer number</description></variable>
 <variable name="opaque"><type>char *</type><description>Opaque string</description></variable>

@@ -1,5 +1,5 @@
 /*
- * "$Id: mxml-attr.c,v 1.1 2003/06/03 19:46:30 mike Exp $"
+ * "$Id: mxml-attr.c,v 1.2 2003/06/14 23:56:47 mike Exp $"
  *
  * Attribute support code for mini-XML, a small XML-like file parsing library.
  *
@@ -30,6 +30,9 @@
 
 /*
  * 'mxmlElementGetAttr()' - Get an attribute.
+ *
+ * This function returns NULL if the node is not an element or the
+ * named attribute does not exist.
  */
 
 const char *				/* O - Attribute value or NULL */
@@ -67,6 +70,11 @@ mxmlElementGetAttr(mxml_node_t *node,	/* I - Element node */
 
 /*
  * 'mxmlElementSetAttr()' - Set an attribute.
+ *
+ * If the named attribute already exists, the value of the attribute
+ * is replaced by the new string value. The string value is copied
+ * into the element node. This function does nothing if the node is
+ * not an element.
  */
 
 void
@@ -147,5 +155,5 @@ mxmlElementSetAttr(mxml_node_t *node,	/* I - Element node */
 
 
 /*
- * End of "$Id: mxml-attr.c,v 1.1 2003/06/03 19:46:30 mike Exp $".
+ * End of "$Id: mxml-attr.c,v 1.2 2003/06/14 23:56:47 mike Exp $".
  */

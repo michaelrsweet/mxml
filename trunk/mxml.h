@@ -1,5 +1,5 @@
 /*
- * "$Id: mxml.h,v 1.8 2003/06/07 21:27:05 mike Exp $"
+ * "$Id: mxml.h,v 1.9 2003/06/14 23:56:47 mike Exp $"
  *
  * Header file for mini-XML, a small XML-like file parsing library.
  *
@@ -62,7 +62,7 @@
  * Data types...
  */
 
-typedef enum mxml_type_e		/**** Node Type ****/
+typedef enum mxml_type_e		/**** The XML node type. ****/
 {
   MXML_ELEMENT,				/* XML element with attributes */
   MXML_INTEGER,				/* Integer value */
@@ -71,26 +71,26 @@ typedef enum mxml_type_e		/**** Node Type ****/
   MXML_TEXT				/* Text fragment */
 } mxml_type_t;
 
-typedef struct mxml_attr_s		/**** Attribute Value ****/
+typedef struct mxml_attr_s		/**** An XML element attribute value. ****/
 {
   char	*name;				/* Attribute name */
   char	*value;				/* Attribute value */
 } mxml_attr_t;
 
-typedef struct mxml_value_s		/**** Element Value ****/
+typedef struct mxml_value_s		/**** An XML element value. ****/
 {
   char		*name;			/* Name of element */
   int		num_attrs;		/* Number of attributes */
   mxml_attr_t	*attrs;			/* Attributes */
 } mxml_element_t;
 
-typedef struct mxml_text_s		/**** Text Value ****/
+typedef struct mxml_text_s		/**** An XML text value. ****/
 {
   int		whitespace;		/* Leading whitespace? */
   char		*string;		/* Fragment string */
 } mxml_text_t;
 
-typedef union mxml_value_u		/**** Node Value ****/
+typedef union mxml_value_u		/**** An XML node value. ****/
 {
   mxml_element_t	element;	/* Element */
   int			integer;	/* Integer number */
@@ -99,9 +99,9 @@ typedef union mxml_value_u		/**** Node Value ****/
   mxml_text_t		text;		/* Text fragment */
 } mxml_value_t;
 
-typedef struct mxml_node_s mxml_node_t;
+typedef struct mxml_node_s mxml_node_t;	/**** An XML node. ****/
 
-struct mxml_node_s			/**** Node ****/
+struct mxml_node_s			/**** An XML node. ****/
 {
   mxml_type_t	type;			/* Node type */
   mxml_node_t	*next;			/* Next node under same parent */
@@ -162,5 +162,5 @@ extern mxml_node_t	*mxmlWalkPrev(mxml_node_t *node, mxml_node_t *top,
 
 
 /*
- * End of "$Id: mxml.h,v 1.8 2003/06/07 21:27:05 mike Exp $".
+ * End of "$Id: mxml.h,v 1.9 2003/06/14 23:56:47 mike Exp $".
  */

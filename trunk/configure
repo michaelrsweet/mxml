@@ -2616,7 +2616,7 @@ if test "$docdir" = "NONE"; then
 fi
 
 if test "$mandir" = "\${prefix}/man" -a "$prefix" = "/usr"; then
-	case "$uname" in
+	case "`uname`" in
         	*BSD* | Darwin* | Linux*)
         		# BSD, Darwin (MacOS X), and Linux
         		mandir="/usr/share/man"
@@ -2632,7 +2632,7 @@ if test "$mandir" = "\${prefix}/man" -a "$prefix" = "/usr"; then
 	esac
 fi
 
-case "$uname" in
+case "`uname`" in
         *BSD* | Darwin*)
         	# *BSD
         	CAT1EXT="0"

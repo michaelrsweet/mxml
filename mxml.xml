@@ -1,5 +1,5 @@
-<?xml version="1.0"?>
-<mxmldoc>
+<?xml
+version="1.0"><mxmldoc>
   <function name="mxmlAdd">
     <description>Add a node to a tree.
 
@@ -484,7 +484,7 @@ string must be nul-terminated and is formatted into the new node.</description>
       <description>Printf-style frmat string</description>
     </argument>
     <argument name="..." direction="I">
-      <type/>      <description>Additional args as needed</description>
+      <type />      <description>Additional args as needed</description>
     </argument>
   </function>
   <function name="mxmlRemove">
@@ -762,7 +762,7 @@ The node is not changed if it is not a text node.</description>
       <description>Printf-style format string</description>
     </argument>
     <argument name="..." direction="I">
-      <type/>      <description>Additional arguments as needed</description>
+      <type />      <description>Additional arguments as needed</description>
     </argument>
   </function>
   <function name="mxmlWalkNext">

@@ -1,5 +1,5 @@
 /*
- * "$Id: testmxml.c,v 1.18 2004/07/11 13:14:07 mike Exp $"
+ * "$Id$"
  *
  * Test program for Mini-XML, a small XML-like file parsing library.
  *
@@ -614,19 +614,9 @@ whitespace_cb(mxml_node_t *node,	/* I - Element node */
   {
     return (NULL);
   }
-  else if (!strcmp(name, "option"))
-  {
-    if (where == MXML_WS_AFTER_OPEN || where == MXML_WS_AFTER_CLOSE)
-      return ("\n");
-  }
-  else if (!strcmp(name, "choice"))
-  {
-    if (where == MXML_WS_BEFORE_OPEN || where == MXML_WS_BEFORE_CLOSE)
-      return ("\t");
-    else
-      return ("\n");
-  }
-  else if (where == MXML_WS_BEFORE_OPEN)
+  else if (where == MXML_WS_BEFORE_OPEN ||
+           ((!strcmp(name, "choice") || !strcmp(name, "option")) &&
+	    where == MXML_WS_BEFORE_CLOSE))
   {
     for (level = -1, parent = node->parent;
          parent;
@@ -634,10 +624,15 @@ whitespace_cb(mxml_node_t *node,	/* I - Element node */
 
     if (level > 8)
       level = 8;
+    else if (level < 0)
+      level = 0;
 
     return (tabs + 8 - level);
   }
-  else if (where == MXML_WS_AFTER_CLOSE)
+  else if (where == MXML_WS_AFTER_CLOSE ||
+           ((!strcmp(name, "group") || !strcmp(name, "option") ||
+	     !strcmp(name, "choice")) &&
+            where == MXML_WS_AFTER_OPEN))
     return ("\n");
   else if (!strcmp(name, "code") && where == MXML_WS_AFTER_OPEN && !node->child)
     return ("\n");
@@ -651,5 +646,5 @@ whitespace_cb(mxml_node_t *node,	/* I - Element node */
 
 
 /*
- * End of "$Id: testmxml.c,v 1.18 2004/07/11 13:14:07 mike Exp $".
+ * End of "$Id$".
  */

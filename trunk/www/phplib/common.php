@@ -1,6 +1,6 @@
 <?
 //
-// "$Id: common.php,v 1.9 2004/05/19 21:17:47 mike Exp $"
+// "$Id: common.php,v 1.10 2004/05/20 02:04:45 mike Exp $"
 //
 // Common utility functions for PHP pages...
 //
@@ -16,6 +16,7 @@
 //   sanitize_text()       - Sanitize text.
 //   select_is_published() - Do a <select> for the "is published" field...
 //   show_comments()       - Show comments for the given path...
+//   validate_email()      - Validate an email address...
 //
 
 
@@ -577,7 +578,7 @@ show_comments($url,			// I - URL for comment
               $parent_id = 0,		// I - Parent comment
 	      $heading = 3)		// I - Heading level
 {
-  global $_COOKIE;
+  global $_COOKIE, $LOGIN_LEVEL;
 
 
   $result = db_query("SELECT * FROM comment WHERE "
@@ -621,6 +622,13 @@ show_comments($url,			// I - URL for comment
 	   ."$contents\n");
 
       html_start_links();
+
+      if ($LOGIN_LEVEL >= AUTH_DEVEL)
+      {
+        html_link("Edit", "${path}comment.php?e$row[id]+p$safeurl");
+        html_link("Delete", "${path}comment.php?d$row[id]+p$safeurl");
+      }
+
       html_link("Reply", "${path}comment.php?r$row[id]+p$safeurl");
 
       if ($modpoints > 0)
@@ -648,6 +656,21 @@ show_comments($url,			// I - URL for comment
 
 
 //
-// End of "$Id: common.php,v 1.9 2004/05/19 21:17:47 mike Exp $".
+// 'validate_email()' - Validate an email address...
+//
+
+function				// O - TRUE if OK, FALSE otherwise
+validate_email($email)			// I - Email address
+{
+  // Check for both "name@domain.com" and "Full Name <name@domain.com>"
+  return (eregi("^[a-zA-Z0-9_\.+-]+@[a-zA-Z0-9\.-]+\.[a-zA-Z]{2,4}$",
+                $email) ||
+          eregi("^[^<]*<[a-zA-Z0-9_\.+-]+@[a-zA-Z0-9\.-]+\.[a-zA-Z]{2,4}>$",
+                $email));
+}
+
+
+//
+// End of "$Id: common.php,v 1.10 2004/05/20 02:04:45 mike Exp $".
 //
 ?>

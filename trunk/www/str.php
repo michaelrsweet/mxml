@@ -1,12 +1,12 @@
 <?php
 //
-// "$Id: str.php,v 1.10 2004/05/19 21:17:47 mike Exp $"
+// "$Id: str.php,v 1.11 2004/05/20 02:04:44 mike Exp $"
 //
 // Software Trouble Report page...
 //
 // Contents:
 //
-//   notify_creator() - Notify creator of a STR of changes...
+//   notify_users() - Notify users of STR changes...
 //
 
 //
@@ -77,13 +77,13 @@ db_free($result);
 
 
 //
-// 'notify_creator()' - Notify creator of a STR of changes...
+// 'notify_users()' - Notify users of STR changes...
 //
 
 function
-notify_creator($id,			// I - STR #
-               $what = "updated",	// I - Reason for notification
-	       $contents = "")		// I - Notification message
+notify_users($id,			// I - STR #
+             $what = "updated",		// I - Reason for notification
+	     $contents = "")		// I - Notification message
 {
   global $priority_long;
   global $scope_long;
@@ -110,9 +110,15 @@ notify_creator($id,			// I - STR #
     else
       $fix_version = "Unassigned";
 
+    if (eregi("[a-z0-9_.]+", $row['create_user']))
+      $email = auth_user_email($row['create_user']);
+    else
+      $email = $row['create_user'];
+
     if ($row['create_user'] != $row['modify_user'] &&
-        $row['create_user'] != $manager)
-      mail($row['create_user'], "$PROJECT_NAME STR #$id $what",
+        $row['create_user'] != $manager &&
+	$email != "")
+      mail($email, "$PROJECT_NAME STR #$id $what",
 	   "Your software trouble report #$id has been $what.  You can check\n"
 	  ."the status of the report and add additional comments and/or files\n"
 	  ."at the following URL:\n"
@@ -131,12 +137,12 @@ notify_creator($id,			// I - STR #
 	  ."Thank you for using the $PROJECT_NAME Software Trouble Report page!",
 	   "From: noreply@easysw.com\r\n");
 
-    $ccresult = db_query("SELECT email FROM strcc WHERE str_id = $id");
+    $ccresult = db_query("SELECT email FROM carboncopy WHERE url = 'str.php_L$id'");
     if ($ccresult)
     {
       while ($ccrow = db_next($ccresult))
       {
-	mail($ccrow->email, "$PROJECT_NAME STR #$id $what",
+	mail($ccrow['email'], "$PROJECT_NAME STR #$id $what",
 	     "Software trouble report #$id has been $what.  You can check\n"
 	    ."the status of the report and add additional comments and/or files\n"
 	    ."at the following URL:\n"
@@ -162,7 +168,7 @@ notify_creator($id,			// I - STR #
     if ($row['manager_email'] != "")
       $manager = $row['manager_email'];
     else
-      $manager = "$PROJECT_EMAIL";
+      $manager = $PROJECT_EMAIL;
 
     if ($row['modify_user'] != $manager)
       mail($manager, "$PROJECT_NAME STR #$id $what",
@@ -383,7 +389,7 @@ switch ($op)
               db_query("INSERT INTO strtext VALUES(NULL,$id,1,'$contents',"
 	              ."$time,'$modify_user')");
 
-	      notify_creator($id, "updated", $mailmsg);
+	      notify_users($id, "updated", $mailmsg);
 	    }
 	  }
 
@@ -966,9 +972,9 @@ switch ($op)
 	  $master_id     = (int)$_POST["MASTER_ID"];
 	  $summary       = db_escape($_POST["SUMMARY"]);
 	  $subsystem     = db_escape($_POST["SUBSYSTEM"]);
-          $create_user  = db_escape($_POST["CREATE_EMAIL"]);
+          $create_user   = db_escape($_POST["CREATE_EMAIL"]);
           $manager_email = db_escape($_POST["MANAGER_EMAIL"]);
-          $modify_user  = db_escape($_COOKIE["FROM"]);
+          $modify_user   = db_escape($_COOKIE["FROM"]);
           $contents      = db_escape(trim($_POST["CONTENTS"]));
 	  $message       = $_POST["MESSAGE"];
 
@@ -1007,7 +1013,7 @@ switch ($op)
 
 	  header("Location: $PHP_SELF?L$id$options");
 
-	  notify_creator($id, "updated", $contents);
+	  notify_users($id, "updated", $contents);
 	}
 	else if (array_key_exists("FILE_ID", $_POST))
 	{
@@ -1051,7 +1057,7 @@ switch ($op)
 
         $row = db_next($result);
 
-	$create_user  = htmlspecialchars($row['create_user']);
+	$create_user   = htmlspecialchars($row['create_user']);
 	$manager_email = htmlspecialchars($row['manager_email']);
 	$summary       = htmlspecialchars($row['summary'], ENT_QUOTES);
 
@@ -1292,10 +1298,13 @@ switch ($op)
       {
 	$contents = $_POST["CONTENTS"];
 
-	if (array_key_exists("EMAIL", $_POST))
+	if ($LOGIN_USER != "" && $LOGIN_LEVEL < AUTH_DEVEL)
+	  $email = $LOGIN_USER;
+	else if (array_key_exists("EMAIL", $_POST) &&
+	         validate_email($_POST["EMAIL"]))
 	{
 	  $email = $_POST["EMAIL"];
-	  setcookie("FROM", "$email", time() + 57600, $PHP_SELF, $SERVER_NAME);
+	  setcookie("FROM", "$email", time() + 90 * 86400, "/");
 	}
 	else if (array_key_exists("FROM", $_COOKIE))
           $email = $_COOKIE["FROM"];
@@ -1310,7 +1319,9 @@ switch ($op)
       }
       else
       {
-	if (array_key_exists("FROM", $_COOKIE))
+	if ($LOGIN_USER != "")
+	  $email = $LOGIN_USER;
+	else if (array_key_exists("FROM", $_COOKIE))
           $email = $_COOKIE["FROM"];
 	else
 	  $email = "";
@@ -1338,7 +1349,7 @@ switch ($op)
 
 	header("Location: $PHP_SELF?L$id$options");
 
-        notify_creator($id, "updated", "$contents\n\n");
+        notify_users($id, "updated", "$contents\n\n");
       }
       else
       {
@@ -1400,10 +1411,13 @@ switch ($op)
   case 'F' : // Post file for STR #
       if ($REQUEST_METHOD == "POST")
       {
-	if (array_key_exists("EMAIL", $_POST))
+        if ($LOGIN_USER != "" && $LOGIN_LEVEL < AUTH_DEVEL)
+	  $email = $LOGIN_USER;
+	else if (array_key_exists("EMAIL", $_POST) &&
+	         validate_email($_POST["EMAIL"]))
 	{
 	  $email = $_POST["EMAIL"];
-	  setcookie("FROM", "$email", time() + 57600, $PHP_SELF, $SERVER_NAME);
+	  setcookie("FROM", "$email", time() + 90 * 86400, "/");
 	}
 	else if (array_key_exists("FROM", $_COOKIE))
           $email = $_COOKIE["FROM"];
@@ -1427,7 +1441,9 @@ switch ($op)
       }
       else
       {
-	if (array_key_exists("FROM", $_COOKIE))
+	if ($LOGIN_USER != "")
+	  $email = $LOGIN_USER;
+	else if (array_key_exists("FROM", $_COOKIE))
           $email = $_COOKIE["FROM"];
 	else
 	  $email = "";
@@ -1484,7 +1500,7 @@ switch ($op)
 
 	header("Location: $PHP_SELF?L$id$options");
 
-        notify_creator($id, "updated", "Added file $name\n\n");
+        notify_users($id, "updated", "Added file $name\n\n");
       }
       else
       {
@@ -1558,7 +1574,8 @@ switch ($op)
 
 	if ($LOGIN_USER != "" && $LOGIN_LEVEL < AUTH_DEVEL)
 	  $email = $LOGIN_USER;
-	else if (array_key_exists("EMAIL", $_POST))
+	else if (array_key_exists("EMAIL", $_POST) &&
+	         validate_email($_POST["EMAIL"]))
 	{
 	  $email = $_POST["EMAIL"];
 	  setcookie("FROM", "$email", time() + 90 * 86400, "/");
@@ -1656,7 +1673,7 @@ switch ($op)
         }
 
 	header("Location: $PHP_SELF?L$id$options");
-        notify_creator($id, "created", "$contents\n\n");
+        notify_users($id, "created", "$contents\n\n");
       }
       else
       {
@@ -1814,20 +1831,21 @@ switch ($op)
       $notification = $_POST["NOTIFICATION"];
       $email        = $_POST["EMAIL"];
 
-      if (($notification != "ON" && $notification != "OFF") || $email == "")
+      if (($notification != "ON" && $notification != "OFF") || $email == "" ||
+          !validate_email($email))
       {
 	html_header("STR Error");
-	print("<p>Please press your browsers back button and enter an "
+	print("<p>Please press your browsers back button and enter a valid "
 	     ."EMail address and choose whether to receive notification "
 	     ."messages.</p>\n");
 	html_footer();
 	exit();
       }
 
-      setcookie("FROM", "$email", time() + 57600, $PHP_SELF, $SERVER_NAME);
+      setcookie("FROM", "$email", time() + 90 * 86400, "/");
 
       $result = db_query("SELECT * FROM carboncopy WHERE "
-                        ."url = 'str.php?L$id' AND email = '$email'");
+                        ."url = 'str.php_L$id' AND email = '$email'");
 
       html_header("STR #$id Notifications");
 
@@ -1872,6 +1890,6 @@ switch ($op)
 }
 
 //
-// End of "$Id: str.php,v 1.10 2004/05/19 21:17:47 mike Exp $".
+// End of "$Id: str.php,v 1.11 2004/05/20 02:04:44 mike Exp $".
 //
 ?>

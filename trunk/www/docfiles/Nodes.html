@@ -29,16 +29,16 @@ PRE { font-family: monospace }
 <HR NOSHADE>
 <H2><A NAME="3_2">Nodes</A></H2>
 <P>Every piece of information in an XML file (elements, text, numbers)
- is stored in memory in &quot;nodes&quot;. Nodes are defined by the <A href="reference.html#mxml_node_t">
-<TT>mxml_node_t</TT></A> structure. The <A href="reference.html#mxml_type_t">
+ is stored in memory in &quot;nodes&quot;. Nodes are defined by the <A href="mxmlnodet.html#mxml_node_t">
+<TT>mxml_node_t</TT></A> structure. The <A href="mxmltypet.html#mxml_type_t">
 <TT>type</TT></A> member defines the node type (element, integer,
  opaque, real, or text) which determines which value you want to look at
- in the <A href="reference.html#mxml_value_t"><TT>value</TT></A> union.</P>
-<P>New nodes can be created using the <A href="reference.html#mxmlNewElement">
-<TT>mxmlNewElement()</TT></A>, <A href="reference.html#mxmlNewInteger"><TT>
-mxmlNewInteger()</TT></A>, <A href="reference.html#mxmlNewOpaque"><TT>
-mxmlNewOpaque()</TT></A>, <A href="reference.html#mxmlNewReal"><TT>
-mxmlNewReal()</TT></A>, and <A href="reference.html#mxmlNewText"><TT>
+ in the <A href="mxmlvaluet.html#mxml_value_t"><TT>value</TT></A> union.</P>
+<P>New nodes can be created using the <A href="mxmlNewElement.html#mxmlNewElement">
+<TT>mxmlNewElement()</TT></A>, <A href="mxmlNewInteger.html#mxmlNewInteger">
+<TT>mxmlNewInteger()</TT></A>, <A href="mxmlNewOpaque.html#mxmlNewOpaque">
+<TT>mxmlNewOpaque()</TT></A>, <A href="mxmlNewReal.html#mxmlNewReal"><TT>
+mxmlNewReal()</TT></A>, and <A href="mxmlNewText.html#mxmlNewText"><TT>
 mxmlNewText()</TT></A> functions. Only elements can have child nodes,
  and the top node must be an element, usually &quot;?xml&quot;.</P>
 <P>Each node has pointers for the node above (<TT>parent</TT>), below (<TT>
@@ -77,7 +77,7 @@ child</TT>), to the left (<TT>prev</TT>), and to the right (<TT>next</TT>
 </PRE>
 <P>where &quot;-&quot; is a pointer to the next node and &quot;|&quot; is a pointer to the
  first child node.</P>
-<P>Once you are done with the XML data, use the <A href="reference.html#mxmlDelete">
+<P>Once you are done with the XML data, use the <A href="mxmlDelete.html#mxmlDelete">
 <TT>mxmlDelete()</TT></A> function to recursively free the memory that
  is used for a particular node or the entire tree:</P>
 <PRE>

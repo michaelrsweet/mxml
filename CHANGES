@@ -2,6 +2,12 @@ README - 06/05/2003
 -------------------
 
 
+CHANGES IN Mini-XML 0.94
+
+	- The mxmldoc program now handles function arguments
+	  properly.
+
+
 CHANGES IN Mini-XML 0.93
 
 	- New mxmldoc example program that is also used to

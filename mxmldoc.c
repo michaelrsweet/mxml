@@ -1,5 +1,5 @@
 /*
- * "$Id: mxmldoc.c,v 1.8 2003/06/05 13:49:14 mike Exp $"
+ * "$Id: mxmldoc.c,v 1.9 2003/06/06 03:09:31 mike Exp $"
  *
  * Documentation generator using mini-XML, a small XML-like file parsing
  * library.
@@ -94,6 +94,8 @@
  * Local functions...
  */
 
+static mxml_node_t	*add_variable(mxml_node_t *parent, const char *name,
+			              mxml_node_t *type);
 static int		scan_file(const char *filename, FILE *fp,
 			          mxml_node_t *doc);
 static void		sort_node(mxml_node_t *tree, mxml_node_t *func);
@@ -229,6 +231,67 @@ main(int  argc,				/* I - Number of command-line args */
 
 
 /*
+ * 'add_variable()' - Add a variable or argument.
+ */
+
+static mxml_node_t *			/* O - New variable/argument */
+add_variable(mxml_node_t *parent,	/* I - Parent node */
+             const char  *name,		/* I - "argument" or "variable" */
+             mxml_node_t *type)		/* I - Type nodes */
+{
+  mxml_node_t	*variable,		/* New variable */
+		*node,			/* Current node */
+		*next;			/* Next node */
+  char		buffer[16384],		/* String buffer */
+		*bufptr;		/* Pointer into buffer */
+
+
+  if (!type || !type->child)
+    return (NULL);
+
+  variable = mxmlNewElement(parent, name);
+
+  if (type->last_child->value.text.string[0] == ')')
+  {
+   /*
+    * Handle "type (*name)(args)"...
+    */
+
+    for (node = type->child; node; node = node->next)
+      if (node->value.text.string[0] == '(')
+	break;
+
+    for (bufptr = buffer; node; bufptr += strlen(bufptr))
+    {
+      if (node->value.text.whitespace)
+	*bufptr++ = ' ';
+
+      strcpy(bufptr, node->value.text.string);
+
+      next = node->next;
+      mxmlDelete(node);
+      node = next;
+    }
+  }
+  else
+  {
+   /*
+    * Handle "type name"...
+    */
+
+    strcpy(buffer, type->last_child->value.text.string);
+    mxmlDelete(type->last_child);
+  }
+
+  mxmlElementSetAttr(variable, "name", buffer);
+
+  mxmlAdd(variable, MXML_ADD_AFTER, MXML_ADD_TO_PARENT, type);
+
+  return (variable);
+}
+
+
+/*
  * Basic states for file parser...
  */
 
@@ -253,9 +316,9 @@ scan_file(const char  *filename,	/* I - Filename */
   int		state,			/* Current parser state */
 		braces,			/* Number of braces active */
 		parens;			/* Number of active parenthesis */
-  int		ch;
-  char		buffer[16384],
-		*bufptr;
+  int		ch;			/* Current character */
+  char		buffer[16384],		/* String buffer */
+		*bufptr;		/* Pointer into buffer */
   mxml_node_t	*comment,		/* <comment> node */
 		*function,		/* <function> node */
 		*parent,		/* <struct> or <class> node */
@@ -263,7 +326,7 @@ scan_file(const char  *filename,	/* I - Filename */
 		*returnvalue,		/* <returnvalue> node */
 		*type,			/* <type> node */
 		*description;		/* <description> node */
-#ifdef DEBUG
+#if DEBUG > 1
   int		oldstate,		/* Previous state */
 		oldch;			/* Old character */
   static const char *states[] =		/* State strings */
@@ -276,7 +339,7 @@ scan_file(const char  *filename,	/* I - Filename */
 		  "STATE_CHARACTER",
 		  "STATE_IDENTIFIER"
 		};
-#endif /* DEBUG */
+#endif /* DEBUG > 1 */
 
 
  /*
@@ -302,10 +365,10 @@ scan_file(const char  *filename,	/* I - Filename */
 
   while ((ch = getc(fp)) != EOF)
   {
-#ifdef DEBUG
+#if DEBUG > 1
     oldstate = state;
     oldch    = ch;
-#endif /* DEBUG */
+#endif /* DEBUG > 1 */
 
     switch (state)
     {
@@ -351,12 +414,34 @@ scan_file(const char  *filename,	/* I - Filename */
 		break;
 
             case '(' :
+		if (type)
+		{
+#ifdef DEBUG
+                  fputs("Identifier: <<< ( >>>\n", stderr);
+#endif /* DEBUG */
+		  mxmlNewText(type, 0, "(");
+		}
+
 	        parens ++;
 		break;
 
             case ')' :
 	        if (parens > 0)
 		  parens --;
+
+		if (type && parens)
+		{
+#ifdef DEBUG
+                  fputs("Identifier: <<< ) >>>\n", stderr);
+#endif /* DEBUG */
+		  mxmlNewText(type, 0, ")");
+		}
+
+                if (function && type && !parens)
+		{
+		  variable = add_variable(function, "argument", type);
+		  type     = NULL;
+		}
 		break;
 
 	    case ';' :
@@ -373,7 +458,8 @@ scan_file(const char  *filename,	/* I - Filename */
 #ifdef DEBUG
                   fputs("Identifier: <<< * >>>\n", stderr);
 #endif /* DEBUG */
-		  mxmlNewText(type, 1, "*");
+                  ch = type->last_child->value.text.string[0];
+		  mxmlNewText(type, isalnum(ch) || ch == '_', "*");
 		}
 		break;
 
@@ -499,7 +585,7 @@ scan_file(const char  *filename,	/* I - Filename */
               mxmlNewText(comment, 0, buffer);
 
 #ifdef DEBUG
-	    fprintf(stderr, "C++ comment: <<< %s >>>\n", buffer);*/
+	    fprintf(stderr, "C++ comment: <<< %s >>>\n", buffer);
 #endif /* DEBUG */
 	  }
 	  else if (ch == ' ' && bufptr == buffer)
@@ -534,10 +620,21 @@ scan_file(const char  *filename,	/* I - Filename */
 	    *bufptr = '\0';
 	    state   = STATE_NONE;
 
+#ifdef DEBUG
+            fprintf(stderr, "Identifier: <<< %s >>>\n", buffer);
+#endif /* DEBUG */
+
             if (!braces)
 	    {
 	      if (!type)
                 type = mxmlNewElement(MXML_NO_PARENT, "type");
+
+#ifdef DEBUG
+              fprintf(stderr, "function=%p (%s), ch='%c', parens=%d\n",
+	              function,
+		      function ? mxmlElementGetAttr(function, "name") : "null",
+	              ch, parens);
+#endif /* DEBUG */
 
               if (!function && ch == '(')
 	      {
@@ -591,17 +688,19 @@ scan_file(const char  *filename,	/* I - Filename */
 
 		type = NULL;
 	      }
-	      else if (function && (ch == ')' || ch == ','))
+	      else if (function && ((ch == ')' && parens == 1) || ch == ','))
 	      {
 	       /*
 	        * Argument definition...
 		*/
 
-	        variable = mxmlNewElement(function, "argument");
-		mxmlElementSetAttr(variable, "name", buffer);
+	        mxmlNewText(type, type->child != NULL &&
+		                  type->last_child->value.text.string[0] != '(' &&
+				  type->last_child->value.text.string[0] != '*',
+			    buffer);
 
-		mxmlAdd(variable, MXML_ADD_AFTER, MXML_ADD_TO_PARENT, type);
-		type = NULL;
+	        variable = add_variable(function, "argument", type);
+		type     = NULL;
 	      }
               else if (!function && (ch == ';' || ch == ','))
 	      {
@@ -609,13 +708,15 @@ scan_file(const char  *filename,	/* I - Filename */
 	        * Variable definition...
 		*/
 
-	        variable = mxmlNewElement(MXML_NO_PARENT, "variable");
-		mxmlElementSetAttr(variable, "name", buffer);
+	        mxmlNewText(type, type->child != NULL &&
+		                  type->last_child->value.text.string[0] != '(' &&
+				  type->last_child->value.text.string[0] != '*',
+			    buffer);
+
+	        variable = add_variable(MXML_NO_PARENT, "variable", type);
+		type     = NULL;
 
 		sort_node(parent, variable);
-
-		mxmlAdd(variable, MXML_ADD_AFTER, MXML_ADD_TO_PARENT, type);
-		type = NULL;
               }
 	      else if (ch == '{' && type->child &&
 	               (!strcmp(type->child->value.text.string, "class") ||
@@ -628,7 +729,10 @@ scan_file(const char  *filename,	/* I - Filename */
 		type = NULL;
 	      }
 	      else
-	        mxmlNewText(type, type->child != NULL, buffer);
+	        mxmlNewText(type, type->child != NULL &&
+		                  type->last_child->value.text.string[0] != '(' &&
+				  type->last_child->value.text.string[0] != '*',
+			    buffer);
 	    }
 	    else if (type)
 	    {
@@ -639,11 +743,11 @@ scan_file(const char  *filename,	/* I - Filename */
           break;
     }
 
-#ifdef DEBUG
+#if DEBUG > 1
     if (state != oldstate)
       fprintf(stderr, "changed states from %s to %s on receipt of character '%c'...\n",
               states[oldstate], states[state], oldch);
-#endif /* DEBUG */
+#endif /* DEBUG > 1 */
   }
 
   mxmlDelete(comment);
@@ -668,6 +772,13 @@ sort_node(mxml_node_t *tree,		/* I - Tree to sort into */
   const char	*tempname,		/* Name of current node */
 		*nodename;		/* Name of node */
 
+
+ /*
+  * Range check input...
+  */
+
+  if (!tree || !node)
+    return;
 
  /*
   * Get the node name...
@@ -802,7 +913,7 @@ write_documentation(mxml_node_t *doc)	/* I - XML documentation */
   puts("\t<style><!--");
   puts("\th1, h2, h3, p { font-family: sans-serif; text-align: justify; }");
   puts("\ttt, pre a:link, pre a:visited, tt a:link, tt a:visited { font-weight: bold; color: #7f0000; }");
-  puts("\tpre { font-weight: bold; color: #7f0000; margin-left: 5em; }");
+  puts("\tpre { font-weight: bold; color: #7f0000; margin-left: 2em; }");
   puts("\t--></style>");
   puts("</head>");
   puts("<body>");
@@ -1027,5 +1138,5 @@ ws_cb(mxml_node_t *node,		/* I - Element node */
 
 
 /*
- * End of "$Id: mxmldoc.c,v 1.8 2003/06/05 13:49:14 mike Exp $".
+ * End of "$Id: mxmldoc.c,v 1.9 2003/06/06 03:09:31 mike Exp $".
  */

@@ -1,5 +1,5 @@
 --
--- "$Id: mxml.sql,v 1.2 2004/05/17 20:28:52 mike Exp $"
+-- "$Id: mxml.sql,v 1.3 2004/05/17 21:00:42 mike Exp $"
 --
 -- Database schema for the Mini-XML web pages.
 --
@@ -123,7 +123,7 @@ CREATE TABLE strtext (
   id INTEGER PRIMARY KEY,		-- Text ID
   str_id INTEGER,			-- STR number
   is_published INTEGER,			-- 0 = private, 1 = public
-  contents TEXT				-- Text message
+  contents TEXT,			-- Text message
   create_date INTEGER,			-- Time/date of creation
   create_user VARCHAR(255)		-- User that posted the text
 );
@@ -155,5 +155,5 @@ INSERT INTO users VALUES(NULL, 1, 'mike', 'Michael Sweet <mike@easysw.com>',
 			 1084823565, 'mike', 1084823565, 'mike');
 
 --
--- End of "$Id: mxml.sql,v 1.2 2004/05/17 20:28:52 mike Exp $".
+-- End of "$Id: mxml.sql,v 1.3 2004/05/17 21:00:42 mike Exp $".
 --

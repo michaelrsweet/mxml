@@ -146,9 +146,9 @@ notify_creator($id,			// I - STR #
     else
       $fix_version = "Unassigned";
 
-    if ($row['create_email'] != $row['modify_email'] &&
-        $row['create_email'] != $manager)
-      mail($row['create_email'], "$STR_PROJECT STR #$id $what",
+    if ($row['create_user'] != $row['modify_user'] &&
+        $row['create_user'] != $manager)
+      mail($row['create_user'], "$STR_PROJECT STR #$id $what",
 	   "Your software trouble report #$id has been $what.  You can check\n"
 	  ."the status of the report and add additional comments and/or files\n"
 	  ."at the following URL:\n"
@@ -200,7 +200,7 @@ notify_creator($id,			// I - STR #
     else
       $manager = "$STR_EMAIL";
 
-    if ($row['modify_email'] != $manager)
+    if ($row['modify_user'] != $manager)
       mail($manager, "$STR_PROJECT STR #$id $what",
 	   "The software trouble report #$id assigned to you has been $what.\n"
 	  ."You can manage the report and add additional comments and/or files\n"
@@ -380,7 +380,7 @@ switch ($op)
       {
         $time          = time();
         $manager_email = db_escape($_POST["MANAGER_EMAIL"]);
-        $modify_email  = db_escape($managers[$LOGIN_USER]);
+        $modify_user  = db_escape($_COOKIE["FROM"]);
 	$message       = $_POST["MESSAGE"];
 
         if ($message != "")
@@ -394,7 +394,7 @@ switch ($op)
 	  $mailmsg  = "";
 	}
 
-        $query = "modify_date = $time, modify_email = '$modify_email'";
+        $query = "modify_date = $time, modify_user = '$modify_user'";
 
 	if ($_POST["STATUS"] != "")
 	  $query .= ", status = $_POST[STATUS]";
@@ -416,7 +416,7 @@ switch ($op)
             if ($contents != "")
 	    {
               db_query("INSERT INTO strtext VALUES(NULL,$id,1,'$contents',"
-	              ."$time,'$modify_email')");
+	              ."$time,'$modify_user')");
 
 	      notify_creator($id, "updated", $mailmsg);
 	    }
@@ -444,7 +444,7 @@ switch ($op)
         $row = db_next($result);
 
         html_start_links(1);
-	html_link("Return to STR List", "$PHP_SELF?L$options");
+	html_link("Return to Support", "$PHP_SELF?L$options");
 
         if ($row['status'] >= $STR_STATUS_ACTIVE)
 	{
@@ -457,7 +457,9 @@ switch ($op)
 
         html_end_links();
 
-	$create_email  = sanitize_email($row['create_email']);
+        print("<h1>STR #$id</h1>\n");
+
+	$create_user  = sanitize_email($row['create_user']);
 	$manager_email = sanitize_email($row['manager_email']);
 	$subsystem     = $row['subsystem'];
 	$summary       = htmlspecialchars($row['summary'], ENT_QUOTES);
@@ -494,13 +496,11 @@ switch ($op)
 	print("<tr><th align='right'>Subsystem:</th><td>$subsystem</td></tr>\n");
 	print("<tr><th align='right'>Summary:</th><td>$summary</td></tr>\n");
 	print("<tr><th align='right'>Version:</th><td>$str_version</td></tr>\n");
-	print("<tr><th align='right'>Created By:</th><td>$create_email</td></tr>\n");
+	print("<tr><th align='right'>Created By:</th><td>$create_user</td></tr>\n");
 	print("<tr><th align='right'>Assigned To:</th><td>$manager_email</td></tr>\n");
 	print("<tr><th align='right'>Fix Version:</th><td>$fix_version</td></tr>\n");
 
-	if ($LOGIN_USER)
-	  $email = htmlspecialchars($managers[$LOGIN_USER]);
-	else if (array_key_exists("FROM", $_COOKIE))
+	if (array_key_exists("FROM", $_COOKIE))
           $email = htmlspecialchars($_COOKIE["FROM"]);
 	else
 	  $email = "";
@@ -536,9 +536,9 @@ switch ($op)
 
 	  while ($row = db_next($result))
 	  {
-            $date     = date("M d, Y", $row['date']);
-            $time     = date("H:m", $row['date']);
-	    $email    = sanitize_email($row['email']);
+            $date     = date("M d, Y", $row['create_date']);
+            $time     = date("H:m", $row['create_date']);
+	    $email    = sanitize_email($row['create_user']);
 	    $filename = htmlspecialchars($row['filename']);
 
             html_start_row();
@@ -572,9 +572,9 @@ switch ($op)
 
 	  while ($row = db_next($result))
 	  {
-            $date     = date("M d, Y", $row['date']);
-            $time     = date("H:m", $row['date']);
-	    $email    = sanitize_email($row['email']);
+            $date     = date("M d, Y", $row['create_date']);
+            $time     = date("H:m", $row['create_date']);
+	    $email    = sanitize_email($row['create_user']);
 	    $contents = quote_text($row['contents']);
 
 	    html_start_row();
@@ -590,11 +590,13 @@ switch ($op)
       }
       else
       {
-        html_header("STR List");
+        html_header("Support");
 
         html_start_links(1);
 	html_link("Post New Software Trouble Report", "$PHP_SELF?N$options'");
 	html_end_links();
+
+        print("<h1>Support</h1>\n");
 
         print("<form method='POST' action='$PHP_SELF'><p align='center'>"
 	     ."Search&nbsp;Words: &nbsp;<input type='text' size='60' name='SEARCH' value='$search'>"
@@ -641,7 +643,7 @@ switch ($op)
 	}
         print("</select>\n");
 
-        if ($LOGIN_USER || array_key_exists("FROM", $_COOKIE))
+        if (array_key_exists("FROM", $_COOKIE))
 	{
 	  print("Show:&nbsp;<select name='FEMAIL'>");
           print("<option value='0'");
@@ -700,16 +702,19 @@ switch ($op)
 
         if ($femail)
 	{
+          if (array_key_exists("FROM", $_COOKIE))
+            $email = db_escape($_COOKIE["FROM"]);
+	  else
+	    $email = "";
+
 	  if ($LOGIN_USER)
 	  {
-	    $query .= "${prefix}(manager_email = '' OR "
-	             ." manager_email = '$managers[$LOGIN_USER]')";
+	    $query .= "${prefix}(manager_email = '' OR manager_email = '$email')";
 	    $prefix = " AND ";
 	  }
-	  else if (array_key_exists("FROM", $_COOKIE))
+	  else if ($email != "")
 	  {
-            $email = db_escape($_COOKIE["FROM"]);
-	    $query .= "${prefix}create_email = '$email'";
+	    $query .= "${prefix}create_user = '$email'";
 	    $prefix = " AND ";
 	  }
 	}
@@ -764,7 +769,7 @@ switch ($op)
 	                ." OR str_version LIKE \"%$keyword%\""
 	                ." OR fix_version LIKE \"%$keyword%\""
 	                ." OR manager_email LIKE \"%$keyword%\""
-	                ." OR create_email LIKE \"%$keyword%\")";
+	                ." OR create_user LIKE \"%$keyword%\")";
 	      $prefix = $next;
 	      $logic  = '';
 	    }
@@ -885,7 +890,7 @@ switch ($op)
 
               html_start_row();
 
-	      $email    = sanitize_email($textrow['email']);
+	      $email    = sanitize_email($textrow['create_user']);
 	      $contents = abbreviate(quote_text($textrow['contents']), 128);
 
 	      print("<td align='center' valign='top' colspan='2'>$email</td>"
@@ -971,7 +976,7 @@ switch ($op)
 	  print("</form>");
 
 	print("<p>"
-	     ."M/P = Machine/Printer, "
+	     ."M  = Machine, "
 	     ."OS = Operating System."
 	     ."</p>\n");
       }
@@ -988,9 +993,9 @@ switch ($op)
 	  $master_id     = (int)$_POST["MASTER_ID"];
 	  $summary       = db_escape($_POST["SUMMARY"]);
 	  $subsystem     = db_escape($_POST["SUBSYSTEM"]);
-          $create_email  = db_escape($_POST["CREATE_EMAIL"]);
+          $create_user  = db_escape($_POST["CREATE_EMAIL"]);
           $manager_email = db_escape($_POST["MANAGER_EMAIL"]);
-          $modify_email  = db_escape($managers[$LOGIN_USER]);
+          $modify_user  = db_escape($_COOKIE["FROM"]);
           $contents      = db_escape(trim($_POST["CONTENTS"]));
 	  $message       = $_POST["MESSAGE"];
 
@@ -1004,16 +1009,16 @@ switch ($op)
 	          ."subsystem = '$subsystem', "
 	          ."str_version = '$_POST[STR_VERSION]', "
 	          ."fix_version = '$_POST[FIX_VERSION]', "
-	          ."create_email = '$create_email', "
+	          ."create_user = '$create_user', "
 	          ."manager_email = '$manager_email', "
 	          ."modify_date = $time, "
-	          ."modify_email = '$modify_email' "
+	          ."modify_user = '$modify_user' "
 		  ."WHERE id = $id");
           
           if ($contents != "")
 	  {
             db_query("INSERT INTO strtext VALUES(NULL,$id,1,'$contents',"
-	            ."$time,'$modify_email')");
+	            ."$time,'$modify_user')");
             $contents = trim($_POST["CONTENTS"]) . "\n\n";
 	  }
 
@@ -1022,7 +1027,7 @@ switch ($op)
 	    $contents = db_escape($messages[$message]);
 
             db_query("INSERT INTO strtext VALUES(NULL,$id,1,'$contents',"
-	            ."$time,'$modify_email')");
+	            ."$time,'$modify_user')");
 
             $contents = $messages[$message] . "\n\n";
 	  }
@@ -1052,14 +1057,16 @@ switch ($op)
       }
       else
       {
-        html_header("STR #$id");
+        html_header("Modify STR #$id");
 
         html_start_links(1);
-	html_link("Return to STR List", "$PHP_SELF?L$options");
+	html_link("Return to Support", "$PHP_SELF?L$options");
 	html_link("Return to STR #$id", "$PHP_SELF?L$id$options");
 	html_link("Post Text", "$PHP_SELF?T$id$options");
 	html_link("Post File", "$PHP_SELF?F$id$options");
 	html_end_links();
+
+        print("<h1>Modify STR #$id</h1>\n");
 
         $result = db_query("SELECT * FROM str WHERE id = $id");
 	if (db_count($result) != 1)
@@ -1071,7 +1078,7 @@ switch ($op)
 
         $row = db_next($result);
 
-	$create_email  = htmlspecialchars($row['create_email']);
+	$create_user  = htmlspecialchars($row['create_user']);
 	$manager_email = htmlspecialchars($row['manager_email']);
 	$summary       = htmlspecialchars($row['summary'], ENT_QUOTES);
 
@@ -1154,7 +1161,7 @@ switch ($op)
 
 	print("<tr><th align='right'>Created By:</th>"
 	     ."<td><input type='text' name='CREATE_EMAIL' maxsize='128' "
-	     ."value='$create_email' size='40'></td></tr>\n");
+	     ."value='$create_user' size='40'></td></tr>\n");
 
 	print("<tr><th align='right'>Assigned To:</th>"
 	     ."<td><select name='MANAGER_EMAIL'>"
@@ -1226,9 +1233,9 @@ switch ($op)
           $line = 0;
 	  while ($row = db_next($result))
 	  {
-            $date     = date("M d, Y", $row['date']);
-            $time     = date("H:m", $row['date']);
-	    $email    = sanitize_email($row['email']);
+            $date     = date("M d, Y", $row['create_date']);
+            $time     = date("H:m", $row['create_date']);
+	    $email    = sanitize_email($row['create_user']);
 	    $filename = htmlspecialchars($row['filename']);
 
 	    print("<tr class='data$line'>"
@@ -1275,9 +1282,9 @@ switch ($op)
 
 	  while ($row = db_next($result))
 	  {
-            $date     = date("M d, Y", $row['date']);
-            $time     = date("H:m", $row['date']);
-	    $email    = sanitize_email($row['email']);
+            $date     = date("M d, Y", $row['create_date']);
+            $time     = date("H:m", $row['create_date']);
+	    $email    = sanitize_email($row['create_user']);
 	    $contents = quote_text($row['contents']);
 
 	    print("<tr class='data$line'>"
@@ -1317,8 +1324,6 @@ switch ($op)
 	  $email = $_POST["EMAIL"];
 	  setcookie("FROM", "$email", time() + 57600, $PHP_SELF, $SERVER_NAME);
 	}
-	else if ($LOGIN_USER)
-	  $email = $managers[$LOGIN_USER];
 	else if (array_key_exists("FROM", $_COOKIE))
           $email = $_COOKIE["FROM"];
 	else
@@ -1332,10 +1337,10 @@ switch ($op)
       }
       else
       {
-	if ($LOGIN_USER)
-	  $email = $managers[$LOGIN_USER];
+	if (array_key_exists("FROM", $_COOKIE))
+          $email = $_COOKIE["FROM"];
 	else
-	  $email = $_COOKIE["FROM"];
+	  $email = "";
 
 	$contents = "";
 
@@ -1352,7 +1357,7 @@ switch ($op)
         db_query("INSERT INTO strtext VALUES(NULL,$id,1,'$tcontents',"
 	        ."$time,'$temail')");
 
-        db_query("UPDATE str SET modify_date=$time, modify_email='$temail' "
+        db_query("UPDATE str SET modify_date=$time, modify_user='$temail' "
 	        ."WHERE id = $id");
         db_query("UPDATE str SET status=$STR_STATUS_PENDING WHERE "
 	        ."id = $id AND status >= $STR_STATUS_ACTIVE AND "
@@ -1369,6 +1374,8 @@ switch ($op)
         html_start_links(1);
 	html_link("Return to STR #$id", "$PHP_SELF?L$id$options");
 	html_end_links();
+
+        print("<h1>Post Text for STR #$id</h1>\n");
 
         if ($REQUEST_METHOD == "POST")
 	{
@@ -1425,8 +1432,6 @@ switch ($op)
 	  $email = $_POST["EMAIL"];
 	  setcookie("FROM", "$email", time() + 57600, $PHP_SELF, $SERVER_NAME);
 	}
-	else if ($LOGIN_USER)
-	  $email = $managers[$LOGIN_USER];
 	else if (array_key_exists("FROM", $_COOKIE))
           $email = $_COOKIE["FROM"];
 	else
@@ -1449,10 +1454,10 @@ switch ($op)
       }
       else
       {
-	if ($LOGIN_USER)
-	  $email = $managers[$LOGIN_USER];
+	if (array_key_exists("FROM", $_COOKIE))
+          $email = $_COOKIE["FROM"];
 	else
-	  $email = $_COOKIE["FROM"];
+	  $email = "";
 
 	$filename = "";
 
@@ -1498,7 +1503,7 @@ switch ($op)
         db_query("INSERT INTO strfile VALUES(NULL,$id,1,'$tname',"
 	        ."$time,'$temail')");
 
-        db_query("UPDATE str SET modify_date=$time, modify_email='$temail' "
+        db_query("UPDATE str SET modify_date=$time, modify_user='$temail' "
 	        ."WHERE id = $id");
         db_query("UPDATE str SET status=$STR_STATUS_PENDING WHERE "
 	        ."id = $id AND status >= $STR_STATUS_ACTIVE AND "
@@ -1515,6 +1520,8 @@ switch ($op)
         html_start_links(1);
 	html_link("Return to STR #$id", "$PHP_SELF?L$id$options");
 	html_end_links();
+
+        print("<h1>Post File For STR #$id</h1>\n");
 
         if ($REQUEST_METHOD == "POST")
 	{
@@ -1676,11 +1683,13 @@ switch ($op)
       }
       else
       {
-        html_header("New STR");
+        html_header("Post New Software Trouble Report");
 
         html_start_links(1);
-	html_link("Return to STR List", "$PHP_SELF?L$options");
+	html_link("Return to Support", "$PHP_SELF?L$options");
 	html_end_links();
+
+        print("<h1>Post New Software Trouble Report</h1>\n");
 
         if ($REQUEST_METHOD == "POST")
 	{
@@ -1845,6 +1854,12 @@ switch ($op)
 
       html_header("STR #$id Notifications");
 
+      html_start_links();
+      html_link("Return to STR #$id", "$PHP_SELF?L$id$options");
+      html_end_links();
+
+      print("<h1>STR #$id Notifications</h1>\n");
+
       if ($notification == "ON")
       {
         if ($result && db_count($result) > 0)
@@ -1874,10 +1889,6 @@ switch ($op)
 
       if ($result)
         db_free($result);
-
-      html_start_links();
-      html_link("Return to STR #$id", "$PHP_SELF?L$id$options");
-      html_end_links();
 
       html_footer();
       break;

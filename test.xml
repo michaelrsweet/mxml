@@ -24,4 +24,6 @@
 	<integer>123</integer>
 	<string>Now is the time for all good men to come to the aid of their
 country.</string>
+	<!-- this is a comment -->
+	<![CDATA[this is CDATA 0123456789ABCDEF]]>
 </group>

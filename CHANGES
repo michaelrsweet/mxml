@@ -1,4 +1,4 @@
-README - 04/29/2004
+README - 04/30/2004
 -------------------
 
 CHANGES IN Mini-XML 2.0
@@ -9,6 +9,8 @@ CHANGES IN Mini-XML 2.0
 	  between the destination path and install path.  This
 	  caused problems when building and installing with
 	  MingW.
+	- The mxmldoc utility is now capable of documenting C++
+	  structures and classes.
 
 
 CHANGES IN Mini-XML 1.3

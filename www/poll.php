@@ -1,6 +1,6 @@
 <?php
 //
-// "$Id: poll.php,v 1.1 2004/05/20 03:38:42 mike Exp $"
+// "$Id: poll.php,v 1.2 2004/05/20 12:31:54 mike Exp $"
 //
 // Poll page...
 //
@@ -194,7 +194,7 @@ switch ($op)
       if ($answers != "")
       {
 	if (!db_query("INSERT INTO vote VALUES('poll_${poll}_${REMOTE_ADDR}')")
-	    && $LOGIN_LEVEL < AUTH_DEVEL)
+	    && $LOGIN_LEVEL < AUTH_ADMIN)
 	{
 	  html_header("Poll Error");
 	  print("<h1>Poll Error</h1>\n");
@@ -383,6 +383,6 @@ switch ($op)
 db_close();
 
 //
-// End of "$Id: poll.php,v 1.1 2004/05/20 03:38:42 mike Exp $".
+// End of "$Id: poll.php,v 1.2 2004/05/20 12:31:54 mike Exp $".
 //
 ?>

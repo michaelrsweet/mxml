@@ -634,7 +634,7 @@ whitespace_cb(mxml_node_t *node,	/* I - Element node */
 	     !strcmp(name, "choice")) &&
             where == MXML_WS_AFTER_OPEN))
     return ("\n");
-  else if (!strcmp(name, "code") && where == MXML_WS_AFTER_OPEN && !node->child)
+  else if (where == MXML_WS_AFTER_OPEN && !node->child)
     return ("\n");
 
  /*

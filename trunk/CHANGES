@@ -3,6 +3,11 @@ CHANGES - 01/29/2005
 
 CHANGES IN Mini-XML 2.1.1
 
+	- mxmlLoad*() now returns an error when an XML stream
+	  contains illegal control characters (STR #10)
+	- mxmlLoad*() now returns an error when an element
+	  contains two attributes with the same name in
+	  conformance with the XML spec (STR #16)
 	- Added support for CDATA (STR #14, STR #15)
 	- Updated comment and processing instruction handling -
 	  no entity support per XML specification.

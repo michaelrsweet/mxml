@@ -67,6 +67,13 @@
 
 
 /*
+ * Macro to test for a bad XML character...
+ */
+
+#define mxml_bad_char(ch) ((ch) < ' ' && (ch) != '\n' && (ch) != '\r' && (ch) != '\t')
+
+
+/*
  * File descriptor buffer...
  */
 
@@ -578,8 +585,21 @@ mxml_fd_getc(void *p,			/* I  - File descriptor buffer */
 	*/
 
 	if (!(ch & 0x80))
+	{
+#if DEBUG > 1
+          printf("mxml_fd_getc: %c (0x%04x)\n", ch < ' ' ? '.' : ch, ch);
+#endif /* DEBUG > 1 */
+
+	  if (mxml_bad_char(ch))
+	  {
+	    mxml_error("Bad control character 0x%02x not allowed by XML standard!",
+        	       ch);
+	    return (EOF);
+	  }
+
 	  return (ch);
-        else if (ch == 0xfe)
+        }
+	else if (ch == 0xfe)
 	{
 	 /*
 	  * UTF-16 big-endian BOM?
@@ -727,7 +747,13 @@ mxml_fd_getc(void *p,			/* I  - File descriptor buffer */
 
 	ch = (ch << 8) | temp;
 
-        if (ch >= 0xd800 && ch <= 0xdbff)
+	if (mxml_bad_char(ch))
+	{
+	  mxml_error("Bad control character 0x%02x not allowed by XML standard!",
+        	     ch);
+	  return (EOF);
+	}
+        else if (ch >= 0xd800 && ch <= 0xdbff)
 	{
 	 /*
 	  * Multi-word UTF-16 char...
@@ -769,7 +795,13 @@ mxml_fd_getc(void *p,			/* I  - File descriptor buffer */
 
 	ch |= (temp << 8);
 
-        if (ch >= 0xd800 && ch <= 0xdbff)
+        if (mxml_bad_char(ch))
+	{
+	  mxml_error("Bad control character 0x%02x not allowed by XML standard!",
+        	     ch);
+	  return (EOF);
+	}
+        else if (ch >= 0xd800 && ch <= 0xdbff)
 	{
 	 /*
 	  * Multi-word UTF-16 char...
@@ -798,6 +830,10 @@ mxml_fd_getc(void *p,			/* I  - File descriptor buffer */
 	}
 	break;
   }
+
+#if DEBUG > 1
+  printf("mxml_fd_getc: %c (0x%04x)\n", ch < ' ' ? '.' : ch, ch);
+#endif /* DEBUG > 1 */
 
   return (ch);
 }
@@ -986,6 +1022,13 @@ mxml_file_getc(void *p,			/* I  - Pointer to file */
 
 	if (!(ch & 0x80))
 	{
+	  if (mxml_bad_char(ch))
+	  {
+	    mxml_error("Bad control character 0x%02x not allowed by XML standard!",
+        	       ch);
+	    return (EOF);
+	  }
+
 #if DEBUG > 1
           printf("mxml_file_getc: %c (0x%04x)\n", ch < ' ' ? '.' : ch, ch);
 #endif /* DEBUG > 1 */
@@ -1088,7 +1131,13 @@ mxml_file_getc(void *p,			/* I  - Pointer to file */
 
 	ch = (ch << 8) | getc(fp);
 
-        if (ch >= 0xd800 && ch <= 0xdbff)
+	if (mxml_bad_char(ch))
+	{
+	  mxml_error("Bad control character 0x%02x not allowed by XML standard!",
+        	     ch);
+	  return (EOF);
+	}
+        else if (ch >= 0xd800 && ch <= 0xdbff)
 	{
 	 /*
 	  * Multi-word UTF-16 char...
@@ -1110,7 +1159,13 @@ mxml_file_getc(void *p,			/* I  - Pointer to file */
 
 	ch |= (getc(fp) << 8);
 
-        if (ch >= 0xd800 && ch <= 0xdbff)
+        if (mxml_bad_char(ch))
+	{
+	  mxml_error("Bad control character 0x%02x not allowed by XML standard!",
+        	     ch);
+	  return (EOF);
+	}
+        else if (ch >= 0xd800 && ch <= 0xdbff)
 	{
 	 /*
 	  * Multi-word UTF-16 char...
@@ -1238,6 +1293,13 @@ mxml_get_entity(mxml_node_t *parent,	/* I  - Parent node */
   else if ((ch = mxmlEntityGetValue(entity)) < 0)
     mxml_error("Entity name \"%s;\" not supported under parent <%s>!",
 	       entity, parent ? parent->value.element.name : "null");
+
+  if (mxml_bad_char(ch))
+  {
+    mxml_error("Bad control character 0x%02x under parent <%s> not allowed by XML standard!",
+               ch, parent ? parent->value.element.name : "null");
+    return (EOF);
+  }
 
   return (ch);
 }
@@ -1856,6 +1918,9 @@ mxml_parse_element(mxml_node_t *node,	/* I  - Element node */
 
     *ptr = '\0';
 
+    if (mxmlElementGetAttr(node, name))
+      goto error;
+
     if (ch == '=')
     {
      /*
@@ -2011,8 +2076,15 @@ mxml_string_getc(void *p,		/* I  - Pointer to file */
             printf("mxml_string_getc: %c (0x%04x)\n", ch < ' ' ? '.' : ch, ch);
 #endif /* DEBUG > 1 */
 
+	    if (mxml_bad_char(ch))
+	    {
+	      mxml_error("Bad control character 0x%02x not allowed by XML standard!",
+        		 ch);
+	      return (EOF);
+	    }
+
 	    return (ch);
-	  }
+          }
 	  else if (ch == 0xfe)
 	  {
 	   /*
@@ -2122,7 +2194,13 @@ mxml_string_getc(void *p,		/* I  - Pointer to file */
 	  ch = (ch << 8) | ((*s)[0] & 255);
 	  (*s) ++;
 
-          if (ch >= 0xd800 && ch <= 0xdbff)
+          if (mxml_bad_char(ch))
+	  {
+	    mxml_error("Bad control character 0x%02x not allowed by XML standard!",
+        	       ch);
+	    return (EOF);
+	  }
+          else if (ch >= 0xd800 && ch <= 0xdbff)
 	  {
 	   /*
 	    * Multi-word UTF-16 char...
@@ -2164,7 +2242,13 @@ mxml_string_getc(void *p,		/* I  - Pointer to file */
 
 	  (*s) ++;
 
-          if (ch >= 0xd800 && ch <= 0xdbff)
+          if (mxml_bad_char(ch))
+	  {
+	    mxml_error("Bad control character 0x%02x not allowed by XML standard!",
+        	       ch);
+	    return (EOF);
+	  }
+          else if (ch >= 0xd800 && ch <= 0xdbff)
 	  {
 	   /*
 	    * Multi-word UTF-16 char...

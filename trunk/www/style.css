@@ -10,6 +10,10 @@ P, TD, TH {
   font-family: serif;
 }
 
+P.center {
+  text-align: center;
+}
+
 H1, H2, H3, H4, H5, H6 {
   color: #000000;
   font-family: sans-serif;
@@ -37,6 +41,10 @@ SUB, SUP {
 
 TR.header, TR.header TH, TH.header {
   background-color: #cccccc;
+}
+
+TR.page {
+  background-color: #f8f8f8;
 }
 
 TR.data0, TD.data0 {

@@ -1,6 +1,6 @@
 <?
 //
-// "$Id: common.php,v 1.1 2004/05/17 03:23:06 mike Exp $"
+// "$Id: common.php,v 1.2 2004/05/17 20:28:52 mike Exp $"
 //
 // Common utility functions for PHP pages...
 //
@@ -11,6 +11,66 @@
 //                      can't read...
 //   sanitize_text()  - Sanitize text.
 //
+
+
+//
+// 'abbreviate()' - Abbreviate long strings...
+//
+
+function				// O - Abbreviated string
+abbreviate($text,			// I - String
+           $maxlen = 32)		// I - Maximum length of string
+{
+  $newtext   = "";
+  $textlen   = strlen($text);
+  $inelement = 0;
+
+  for ($i = 0, $len = 0; $i < $textlen && $len < $maxlen; $i ++)
+    switch ($text[$i])
+    {
+      case '<' :
+          $inelement = 1;
+	  break;
+
+      case '>' :
+          if ($inelement)
+	    $inelement = 0;
+	  else
+	  {
+	    $newtext .= "&gt;";
+	    $len     ++;
+	  }
+	  break;
+
+      case '&' :
+          $len ++;
+
+	  while ($i < $textlen)
+	  {
+	    $newtext .= $text[$i];
+
+	    if ($text[$i] == ';')
+	      break;
+
+	    $i ++;
+	  }
+	  break;
+
+      default :
+          if (!$inelement)
+	  {
+	    $newtext .= $text[$i];
+	    $len ++;
+	  }
+	  break;
+    }
+	    
+  if ($i < $textlen)
+    return ($newtext . "...");
+  else
+    return ($newtext);
+}
+
 
 //
 // 'quote_text()' - Quote a string...
@@ -230,6 +290,6 @@ sanitize_text($text)			// I - Original text
 
 
 //
-// End of "$Id: common.php,v 1.1 2004/05/17 03:23:06 mike Exp $".
+// End of "$Id: common.php,v 1.2 2004/05/17 20:28:52 mike Exp $".
 //
 ?>

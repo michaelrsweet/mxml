@@ -1,6 +1,6 @@
 <?php
 //
-// "$Id: db.php,v 1.2 2004/05/17 03:23:06 mike Exp $"
+// "$Id: db.php,v 1.3 2004/05/17 20:28:52 mike Exp $"
 //
 // Common database include file for PHP web pages.  This file can be used
 // to abstract the specific database in use...
@@ -23,6 +23,7 @@
 //
 
 // Some static database access info.
+$DB_ADMIN    = "webmaster@easysw.com";
 $DB_HOST     = "";
 $DB_NAME     = "mxml";
 $DB_USER     = "";
@@ -37,63 +38,14 @@ if (!extension_loaded("sqlite"))
 
 
 // Open the SQLite database defined above...
-if ($DB_CONN = sqlite_open("data/$DB_NAME.db", 0666, $sqlerr))
-{
-  if (0) {
-    // Opened the database, create all tables...
-    sqlite_query($DB_CONN,
-		 "CREATE TABLE str ("
-		."id INTEGER PRIMARY KEY,"
-		."master_id INTEGER,"
-		."is_published INTEGER,"
-		."status INTEGER,"
-		."priority INTEGER,"
-		."scope INTEGER,"
-		."summary text,"
-		."subsystem VARCHAR(128),"
-		."str_version VARCHAR(16),"
-		."fix_version VARCHAR(16),"
-		."manager_email VARCHAR(128),"
-		."create_date INTEGER,"
-		."create_email VARCHAR(128),"
-		."modify_date INTEGER,"
-		."modify_email VARCHAR(128)"
-		.")");
+$DB_CONN = sqlite_open("data/$DB_NAME.db", 0666, $sqlerr);
 
-    sqlite_query($DB_CONN,
-		 "CREATE TABLE strcc ("
-		."id INTEGER PRIMARY KEY,"
-		."str_id INTEGER,"
-		."email VARCHAR(128)"
-		.")");
-
-    sqlite_query($DB_CONN,
-		 "CREATE TABLE strfile ("
-		."id INTEGER PRIMARY KEY,"
-		."str_id INTEGER,"
-		."is_published INTEGER,"
-		."date INTEGER,"
-		."email VARCHAR(128),"
-		."filename VARCHAR(128)"
-		.")");
-
-    sqlite_query($DB_CONN,
-		 "CREATE TABLE strtext ("
-		."id INTEGER PRIMARY KEY,"
-		."str_id INTEGER,"
-		."is_published INTEGER,"
-		."date INTEGER,"
-		."email VARCHAR(128),"
-		."contents TEXT"
-		.")");
-  }
-}
-else
+if (!$DB_CONN)
 {
   // Unable to open, display an error message...
   print("<p>Database error $sqlerr</p>\n");
-  print("<p>Please report the problem to <a href='mailto:webmaster@easysw.com'>"
-       ."webmaster@easysw.com</a>.</p>\n");
+  print("<p>Please report the problem to <a href='mailto:$DB_ADMIN'>"
+       ."$DB_ADMIN</a>.</p>\n");
   exit(1);
 }
 
@@ -207,6 +159,6 @@ db_seek($result,			// I - Result of query
 
 
 //
-// End of "$Id: db.php,v 1.2 2004/05/17 03:23:06 mike Exp $".
+// End of "$Id: db.php,v 1.3 2004/05/17 20:28:52 mike Exp $".
 //
 ?>

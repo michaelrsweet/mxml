@@ -1,4 +1,4 @@
-class foo_c			// Foo class
+class foo_c : public bar_c		// Foo class derived from bar
 {
   float	foo;				/* Real number */
   int	bar;				/* Integer */

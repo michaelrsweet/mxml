@@ -1,6 +1,6 @@
 <?php
 //
-// "$Id: db.php,v 1.5 2004/05/21 03:59:17 mike Exp $"
+// "$Id: db-sqlite.php,v 1.1 2004/05/21 03:59:17 mike Exp $"
 //
 // Common database include file for PHP web pages.  This file can be used
 // to abstract the specific database in use...
@@ -24,32 +24,44 @@
 
 // Some static database access info.
 $DB_ADMIN    = "webmaster@easysw.com";
-$DB_HOST     = "localhost";
+$DB_HOST     = "";
 $DB_NAME     = "mxml";
-$DB_USER     = "mike";
+$DB_USER     = "";
 $DB_PASSWORD = "";
 
-//
-// Connect to the MySQL server using DB_HOST, DB_USER, DB_PASSWORD
-// that are set above...
-//
 
-$DB_CONN = mysql_connect($DB_HOST, $DB_USER, $DB_PASSWORD);
-
-if ($DB_CONN)
+// Make sure that the module is loaded...
+if (!extension_loaded("sqlite"))
 {
-  // Connected to server; select the database...
-  mysql_select_db($DB_NAME, $DB_CONN);
+  dl("sqlite.so");
 }
-else
-{
-  // Unable to connect; display an error message...
-  $sqlerrno = mysql_errno();
-  $sqlerr   = mysql_error();
 
-  print("<p>Database error $sqlerrno: $sqlerr</p>\n");
-  print("<p>Please report the problem to <a href='mailto:webmaster@easysw.com'>"
-       ."webmaster@easysw.com</a>.</p>\n");
+
+// Open the SQLite database defined above...
+$DB_CONN = sqlite_open("data/$DB_NAME.db", 0666, $sqlerr);
+
+if (!$DB_CONN)
+{
+  // Unable to open, display an error message...
+  print("<p>Database error $sqlerr</p>\n");
+  print("<p>Please report the problem to <a href='mailto:$DB_ADMIN'>"
+       ."$DB_ADMIN</a>.</p>\n");
+  exit(1);
+}
+
+
+//
+// 'db_close()' - Close the database.
+//
+
+function
+db_close()
+{
+  global $DB_CONN;
+
+
+  sqlite_close($DB_CONN);
+  $DB_CONN = false;
 }
 
 
@@ -61,7 +73,7 @@ function				// O - Number of rows in result
 db_count($result)			// I - Result of query
 {
   if ($result)
-    return (mysql_num_rows($result));
+    return (sqlite_num_rows($result));
   else
     return (0);
 }
@@ -74,7 +86,7 @@ db_count($result)			// I - Result of query
 function				// O - Quoted string
 db_escape($str)				// I - String
 {
-  return (mysql_escape_string($str));
+  return (sqlite_escape_string($str));
 }
 
 
@@ -85,8 +97,7 @@ db_escape($str)				// I - String
 function
 db_free($result)			// I - Result of query
 {
-  if ($result)
-    mysql_free_result($result);
+  // Nothing to do, as SQLite doesn't free results...
 }
 
 
@@ -99,7 +110,7 @@ db_insert_id()
 {
   global $DB_CONN;
 
-  return (mysql_insert_id($DB_CONN));
+  return (sqlite_last_insert_rowid($DB_CONN));
 }
 
 
@@ -111,7 +122,7 @@ function				// O - Row object or NULL at end
 db_next($result)			// I - Result of query
 {
   if ($result)
-    return (mysql_fetch_array($result));
+    return (sqlite_fetch_array($result, SQLITE_ASSOC, TRUE));
   else
     return (NULL);
 }
@@ -124,17 +135,11 @@ db_next($result)			// I - Result of query
 function				// O - Result of query or NULL
 db_query($SQL_QUERY)			// I - SQL query string
 {
-  global $DB_NAME, $DB_CONN;
+  global $DB_CONN;
 
-  return (mysql_query($SQL_QUERY, $DB_CONN));
+//  print("<p>$SQL_QUERY</p>\n");
 
-//  print("<p>SQL_QUERY: $SQL_QUERY</p>\n");
-//
-//  $result = mysql_query($SQL_QUERY, $DB_CONN);
-//  $count  = db_count($result);
-//  print("<p>Result = $count rows...</p>\n");
-//
-//  return ($result);
+  return (sqlite_query($DB_CONN, $SQL_QUERY));
 }
 
 
@@ -147,13 +152,13 @@ db_seek($result,			// I - Result of query
         $index = 0)			// I - Row number (0 = first row)
 {
   if ($result)
-    return (mysql_data_seek($result, $index));
+    return (sqlite_seek($result, $index));
   else
     return (FALSE);
 }
 
 
 //
-// End of "$Id: db.php,v 1.5 2004/05/21 03:59:17 mike Exp $".
+// End of "$Id: db-sqlite.php,v 1.1 2004/05/21 03:59:17 mike Exp $".
 //
 ?>

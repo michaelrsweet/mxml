@@ -1,6 +1,6 @@
 <?php
 //
-// "$Id: globals.php,v 1.7 2004/05/20 12:31:54 mike Exp $"
+// "$Id: globals.php,v 1.8 2004/05/20 15:45:55 mike Exp $"
 //
 // Global PHP constants and variables...
 //
@@ -21,7 +21,7 @@ $PAGE_MAX = 10; 			// Max items per page
 // PHP transition stuff...
 //
 
-global $_COOKIE, $_FILES, $_GET, $_POST, $_SERVER;
+global $_COOKIE, $_FILES, $_POST, $_SERVER;
 
 $argc           = $_SERVER["argc"];
 $argv           = $_SERVER["argv"];
@@ -36,6 +36,6 @@ else
   $PHP_URL = "http://$_SERVER[SERVER_NAME]:$_SERVER[SERVER_PORT]$_SERVER[PHP_SELF]";
 
 //
-// End of "$Id: globals.php,v 1.7 2004/05/20 12:31:54 mike Exp $".
+// End of "$Id: globals.php,v 1.8 2004/05/20 15:45:55 mike Exp $".
 //
 ?>

@@ -1,6 +1,6 @@
 <?php
 //
-// "$Id: index.php,v 1.5 2004/05/20 03:38:42 mike Exp $"
+// "$Id: index.php,v 1.6 2004/05/20 15:45:55 mike Exp $"
 //
 // Mini-XML home page...
 //
@@ -15,16 +15,7 @@ print("<h1 align='center'>Mini-XML Home Page</h1>");
 
 print("<p><table width='100%' height='100%' border='0' cellpadding='0' "
      ."cellspacing='0'>\n"
-     ."<tr><td valign='top' width='33%'>");
-
-html_start_table(array("Current Poll [&nbsp;<a href='poll.php'>"
-                      ."Show&nbsp;All</a>&nbsp;]"));
-html_start_row();
-print("<td>");
-show_poll(get_recent_poll());
-print("</td>");
-html_end_row();
-html_end_table();
+     ."<tr><td valign='top' width='30%'>");
 
 html_start_table(array("Quick Info"), "100%", "100%");
 html_start_row();
@@ -56,13 +47,22 @@ print("<td>"
 html_end_row();
 html_end_table();
 
+html_start_table(array("Current Poll [&nbsp;<a href='poll.php'>"
+                      ."Show&nbsp;All</a>&nbsp;]"));
+html_start_row();
+print("<td>");
+show_poll(get_recent_poll());
+print("</td>");
+html_end_row();
+html_end_table();
+
 print("</td><td>&nbsp;&nbsp;&nbsp;&nbsp;</td>"
-     ."<td valign='top' width='67%'>"
+     ."<td valign='top' width='70%'>"
      ."<h2>Recent Articles [&nbsp;<a href='articles.php'>Show&nbsp;All</a>"
      ."&nbsp;]</h2>\n");
 
 $result = db_query("SELECT * FROM article WHERE is_published = 1 "
-	          ."ORDER BY modify_date DESC LIMIT 4");
+	          ."ORDER BY modify_date DESC LIMIT 8");
 $count  = db_count($result);
 
 if ($count == 0)
@@ -97,6 +97,6 @@ print("</td></tr>\n"
 html_footer();
 
 //
-// End of "$Id: index.php,v 1.5 2004/05/20 03:38:42 mike Exp $".
+// End of "$Id: index.php,v 1.6 2004/05/20 15:45:55 mike Exp $".
 //
 ?>

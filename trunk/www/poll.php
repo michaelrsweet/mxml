@@ -1,6 +1,6 @@
 <?php
 //
-// "$Id: poll.php,v 1.2 2004/05/20 12:31:54 mike Exp $"
+// "$Id: poll.php,v 1.3 2004/05/20 15:45:55 mike Exp $"
 //
 // Poll page...
 //
@@ -71,37 +71,44 @@ switch ($op)
 
       print("<h1>Polls</h1>\n");
 
-      html_start_table(array("ID", "Question::2"));
-
-      while ($row = db_next($result))
+      if (db_count($result) == 0)
       {
-        $id       = $row['id'];
-        $votes    = $row['votes'];
-	$question = htmlspecialchars($row['question']);
-        $ccount   = count_comments("poll.php_r$id");
-
-        if ($ccount == 1)
-	  $ccount .= " comment";
-	else
-	  $ccount .= " comments";
-
-        html_start_row();
-        print("<td align='center'>#$row[id]</td>"
-	     ."<td align='center' width='67%'>$question");
-	if (!$row['is_published'])
-	  print(" <img src='images/private.gif' width='16' height='16' "
-	       ."align='middle' alt='private'/>");
-	print("</td><td nowrap><a href='$PHP_SELF?c$id'>Vote</a> | "
-	     ."<a href='$PHP_SELF?r$id'>Results</a>");
-
-        if ($LOGIN_LEVEL > AUTH_USER)
-	  print(" | <a href='$PHP_SELF?e$id'>Edit</a>");
-
-	print(" ($votes total votes, $ccount)</td>");
-	html_end_row();
+        print("<p>No polls found.</p>\n");
       }
+      else
+      {
+	html_start_table(array("ID", "Question::2"));
 
-      html_end_table();
+	while ($row = db_next($result))
+	{
+          $id       = $row['id'];
+          $votes    = $row['votes'];
+	  $question = htmlspecialchars($row['question']);
+          $ccount   = count_comments("poll.php_r$id");
+
+          if ($ccount == 1)
+	    $ccount .= " comment";
+	  else
+	    $ccount .= " comments";
+
+          html_start_row();
+          print("<td align='center'>#$row[id]</td>"
+	       ."<td align='center' width='67%'>$question");
+	  if (!$row['is_published'])
+	    print(" <img src='images/private.gif' width='16' height='16' "
+		 ."align='middle' alt='private'/>");
+	  print("</td><td nowrap><a href='$PHP_SELF?c$id'>Vote</a> | "
+	       ."<a href='$PHP_SELF?r$id'>Results</a>");
+
+          if ($LOGIN_LEVEL > AUTH_USER)
+	    print(" | <a href='$PHP_SELF?e$id'>Edit</a>");
+
+	  print(" ($votes total votes, $ccount)</td>");
+	  html_end_row();
+	}
+
+	html_end_table();
+      }
 
       db_free($result);
 
@@ -383,6 +390,6 @@ switch ($op)
 db_close();
 
 //
-// End of "$Id: poll.php,v 1.2 2004/05/20 12:31:54 mike Exp $".
+// End of "$Id: poll.php,v 1.3 2004/05/20 15:45:55 mike Exp $".
 //
 ?>

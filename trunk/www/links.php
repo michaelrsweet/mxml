@@ -1,6 +1,6 @@
 <?
 //
-// "$Id: links.php,v 1.1 2004/05/20 12:31:54 mike Exp $"
+// "$Id: links.php,v 1.2 2004/05/20 15:45:55 mike Exp $"
 //
 // Hierarchical link interface.
 //
@@ -13,8 +13,8 @@
 // Include necessary headers...
 //
 
-include "data/html.php";
-include "data/common.php";
+include "phplib/html.php";
+include "phplib/common.php";
 
 
 //
@@ -127,28 +127,79 @@ else
   $op = 'L';
 }
 
-// Check command-line...
-$redirect = 0;
+// Get command-line options...
+//
+// Usage: links.php [operation] [options]
+//
+// Operations:
+//
+// LA        = List all links
+// LC        = List links by category
+// LU        = List unpublished links
+// R#        = Rate listing #
+// SH#       = Show homepage for listing #
+// SD#       = Show download for listing #
+// UC        = Add new category
+// UC#       = Modify category #
+// UL        = Add new listing
+// UL#       = Modify listing #
+// V#        = View listing #
+// X#        = Delete category or listing #
+//
+// Options:
+//
+// P#        = Set parent ID
+// Qtext     = Set search text
+
+$search   = "";
+$op       = "L";
+$listtype = "C";
 
 for ($i = 0; $i < $argc; $i ++)
 {
   switch ($argv[$i][0])
   {
-    case 'F' : // Form
-    case 'U' : // Update/add
+    case 'L' : // List or search
+        $op = 'L';
+
+	if (strlen($argv[$i]) > 1)
+	{
+	  $listtype = $argv[$i][1];
+
+	  if ($listtype == 'A')
+	    $parent_id = -1;
+	}
+	break;
+
+    case 'P' : // Parent
+	$parent_id = (int)substr($argv[$i], 1);
+	break;
+
+    case 'Q' : // Set search text
+        $search = $option;
+	$i ++;
+	while ($i < $argc)
+	{
+	  $search .= " $argv[$i]";
+	  $i ++;
+	}
+	break;
+
+    case 'R' : // Rate
+        $op = $argv[$i][0];
+	$id = (int)substr($argv[$i], 1);
+	break;
+
+    case 'S' : // Show web or download page
         $op   = $argv[$i][0];
 	$type = $argv[$i][1];
 	$id   = (int)substr($argv[$i], 2);
 	break;
 
-    case 'L' : // List or search
-        $op = 'L';
-	if (strlen($argv[$i]) > 1 && $argv[$i][1] == 'A')
-	  $parent_id = -1;
-	break;
-
-    case 'P' : // Parent
-	$parent_id = (int)substr($argv[$i], 1);
+    case 'U' : // Update/add
+        $op   = $argv[$i][0];
+	$type = $argv[$i][1];
+	$id   = (int)substr($argv[$i], 2);
 	break;
 
     case 'V' : // View
@@ -161,100 +212,315 @@ for ($i = 0; $i < $argc; $i ++)
 	$id = (int)substr($argv[$i], 1);
 	break;
 
-    case 'Z' : // List new entries
-        $op = 'Z';
-	break;
-
-    case 'r' : // Rate
-        $op       = $argv[$i][0];
-	$id       = (int)substr($argv[$i], 1);
-	$redirect = 1;
-	break;
-
-    case 'S' : // Show web or download page
-        if (strncmp($argv[$i], "SEARCH", 6))
-	{
-	  // Don't treat SEARCH as a show command...
-          $op       = $argv[$i][0];
-	  $type     = $argv[$i][1];
-	  $id       = (int)substr($argv[$i], 2);
-	  $redirect = 1;
-	}
-	break;
-
     default :
         header("Location: $PHP_SELF");
 	exit();
   }
 }
 
-// Check for form search data...
-if (array_key_exists("SEARCH", $_GET))
-  $SEARCH = $_GET["SEARCH"];
-else if (array_key_exists("SEARCH", $_POST))
-  $SEARCH = $_POST["SEARCH"];
-else
-  $SEARCH = "";
+if (array_key_exists("SEARCH", $_POST))
+  $search = $_POST["SEARCH"];
 
-if (!$redirect)
-{
-  html_header("Links");
-  print("<h1>Links</h1>\n");
-  print("<form method='GET' action='$PHP_SELF'>\n"
-       ."<center>"
-       ."<input type='text' name='SEARCH' size='40' value='$SEARCH'/>"
-       ."<input type='submit' value='Search'/>"
-       ."</center>\n"
-       ."</form>\n"
-       ."<hr noshade/>\n");
-}
+// Encode the search parameters so they can be propagated...
+$options = "+Q" . urlencode($search);
 
-if ($SEARCH)
-{
-  // Yes, construct a query...
-  $op            = 'L';
-  $search_string = $SEARCH;
-  $search_string = str_replace("'", " ", $search_string);
-  $search_string = str_replace("\"", " ", $search_string);
-  $search_string = str_replace("\\", " ", $search_string);
-  $search_string = str_replace("%20", " ", $search_string);
-  $search_string = str_replace("%27", " ", $search_string);
-  $search_string = str_replace("  ", " ", $search_string);
-  $search_words  = explode(' ', $search_string);
-
-  // Loop through the array of words, adding them to the 
-  $prefix = "";
-  $next   = "OR";
-
-  reset($search_words);
-  while ($keyword = current($search_words))
-  {
-    next($search_words);
-    $keyword = ltrim(rtrim($keyword));
-
-    if (strcasecmp($keyword, 'or') == 0)
-    {
-      $next = 'OR';
-      if ($prefix != '')
-        $prefix = 'OR';
-    }
-    else if (strcasecmp($keyword, 'and') == 0)
-    {
-      $next = 'AND';
-      if ($prefix != '')
-        $prefix = 'AND';
-    }
-    else
-    {
-      $query  = "$query $prefix name LIKE '%$keyword%'";
-      $prefix = $next;
-    }
-  }
-}
-
+// Now do operation..
 switch ($op)
 {
-  case 'F' : // Form...
+  case 'L' : // List...
+      html_header("Links");
+
+      html_start_links(1);
+      html_link("Show All Listings", "$PHP_SELF?LA$options");
+      html_link("Show Listings By Category", "$PHP_SELF?LC$options");
+      if ($LOGIN_LEVEL >= AUTH_DEVEL)
+        html_link("Show Unpublished Listings", "$PHP_SELF?LU$options");
+      html_end_links();
+
+      print("<h1>Links</h1>\n");
+      print("<form method='POST' action='$PHP_SELF'>\n"
+	   ."<center>"
+	   ."<input type='text' name='SEARCH' size='40' value='$search'/>"
+	   ."<input type='submit' value='Search'/>"
+	   ."</center>\n"
+	   ."</form>\n"
+	   ."<hr noshade/>\n");
+
+      if ($search != "")
+      {
+	// Construct a query...
+
+	$search_string = $search;
+	$search_string = str_replace("'", " ", $search_string);
+	$search_string = str_replace("\"", " ", $search_string);
+	$search_string = str_replace("\\", " ", $search_string);
+	$search_string = str_replace("%20", " ", $search_string);
+	$search_string = str_replace("%27", " ", $search_string);
+	$search_string = str_replace("  ", " ", $search_string);
+	$search_words  = explode(' ', $search_string);
+
+	// Loop through the array of words, adding them to the 
+	$prefix = "";
+	$next   = "OR";
+
+	reset($search_words);
+	while ($keyword = current($search_words))
+	{
+	  next($search_words);
+	  $keyword = ltrim(rtrim($keyword));
+
+	  if (strcasecmp($keyword, 'or') == 0)
+	  {
+	    $next = 'OR';
+	    if ($prefix != '')
+              $prefix = 'OR';
+	  }
+	  else if (strcasecmp($keyword, 'and') == 0)
+	  {
+	    $next = 'AND';
+	    if ($prefix != '')
+              $prefix = 'AND';
+	  }
+	  else
+	  {
+	    $query  = "$query $prefix name LIKE '%$keyword%'";
+	    $prefix = $next;
+	  }
+	}
+      }
+
+      if ($search == "")
+        $category = get_category($parent_id);
+      else
+        $category = "Search";
+
+      if ($listtype == 'U')
+        $is_published = "is_published = 0 AND ";
+      else if ($LOGIN_LEVEL >= AUTH_DEVEL)
+        $is_published = "";
+      else
+        $is_published = "is_published = 1 AND ";
+
+      // Show the categories...
+      if ($query != "")
+        $result = db_query("SELECT * FROM link "
+                          ."WHERE ${ispublished}is_category = 1 AND "
+			  ."($query) "
+			  ."ORDER BY name");
+      else if ($parent_id >= 0)
+        $result = db_query("SELECT * FROM link "
+                          ."WHERE ${ispublished}is_category = 1 AND "
+			  ."parent_id = $parent_id "
+			  ."ORDER BY name");
+      else
+        $result = db_query("SELECT * FROM link "
+                          ."WHERE ${ispublished}is_category = 1 "
+			  ."ORDER BY name");
+
+      if ($parent_id < 0)
+	print("<h2>All Categories</h2>\n");
+      else
+	print("<h2>Categories in $category</h2>\n");
+
+      print("<ul>\n");
+
+      while ($row = db_next($result))
+      {
+        $id   = $row["id"];
+	$name = htmlspecialchars($row["name"]);
+
+        print("<li><a href='$PHP_SELF?L+P$id$options'>$name</a>");
+
+        if ($LOGIN_LEVEL >= AUTH_DEVEL || $LOGIN_USER == $row["create_user"])
+	{
+	  print(" [&nbsp;<a href='$PHP_SELF?FC$id+P$parent_id$options'>Edit</a> |"
+	       ." <a href='$PHP_SELF?X$id+P$parent_id$options'>Delete</a>&nbsp;]");
+	}
+
+	print("</li>\n");
+      }
+
+      print("</ul>\n");
+
+      html_start_links();
+      html_link("Submit New Category", "$PHP_SELF?FC+P$parent_id$options");
+      html_end_links();
+
+      db_free($result);
+
+      // Then show the listings...
+      if ($query != "")
+        $result = db_query("SELECT * FROM link "
+                          ."WHERE ${ispublished}is_category = 0 AND "
+			  ."($query) "
+			  ."ORDER BY name");
+      else if ($parent_id >= 0)
+        $result = db_query("SELECT * FROM link "
+                          ."WHERE ${ispublished}is_category = 0 AND "
+			  ."parent_id = $parent_id "
+			  ."ORDER BY name");
+      else
+        $result = db_query("SELECT * FROM link "
+                          ."WHERE ${ispublished}is_category = 0 "
+			  ."ORDER BY name");
+
+      if ($parent_id < 0)
+	print("<h2>All Listings</h2>\n");
+      else
+	print("<h2>Listings in $category</h2>\n");
+
+      print("<ul>\n");
+
+      while ($row = db_next($result))
+      {
+        $id          = $row["id"];
+	$name        = htmlspecialchars($row["name"]);
+	$description = format_text($row["description"]);
+	$version     = htmlspecialchars($row["version"]);
+        $age         = (int)((time() - $row['modify_date']) / 86400);
+
+        print("<li><b><a href='$PHP_SELF?V$id$options'>$name $version</a></b>");
+
+	if ($search != "")
+	{
+	  $category = get_category($row['parent_id'], 1);
+	  print(" in $category");
+	}
+
+        if ($age == 1)
+          print(", <i>Updated 1 day ago</i>");
+	else if ($age < 30)
+          print(", <i>Updated $age days ago</i>");
+
+        if ($LOGIN_LEVEL >= AUTH_DEVEL || $LOGIN_USER == $row["create_user"])
+	{
+	  print(" [&nbsp;<a href='$PHP_SELF?UL$id+P$parent_id$options'>Edit</a>"
+	       ." | <a href='$PHP_SELF?X$id+P$parent_id$options'>Delete</a>&nbsp;]\n");
+	}
+
+        print("$description<br />&nbsp;</li>\n");
+      }
+
+      print("</ul>\n");
+
+      html_start_links();
+      html_link("Submit New Listing", "$PHP_SELF?UL+P$parent_id$options");
+      html_end_links();
+
+      db_free($result);
+
+      html_footer();
+      break;
+
+  case 'U' : // Add or update category or listing...
+      if ($id > 0)
+      {
+        // Get current link data from database...
+        $result = db_query("SELECT * FROM link WHERE id = $id");
+	if (db_count($result) != 1)
+	{
+	  // Link doesn't exist!
+          db_free($result);
+	  header("Location: $PHP_SELF");
+	  exit();
+	}
+
+	$row = db_next($result);
+
+        if ($LOGIN_LEVEL < AUTH_DEVEL && $LOGIN_USER != $row["create_user"])
+	{
+	  // No permission!
+          db_free($result);
+	  header("Location: $PHP_SELF");
+	  exit();
+	}
+
+	$is_category  = $row['is_category'];
+	$is_published = $row['is_published'];
+	$name         = $row['name'];
+	$version      = $row['version'];
+	$license      = $row['license'];
+	$author       = $row['author'];
+	$email        = $row['email'];
+	$homepage_url = $row['homepage_url'];
+	$download_url = $row['download_url'];
+	$description  = $row['description'];
+
+        db_free($result);
+      }
+      else
+      {
+        // Use default information for type...
+        if ($type == 'C')
+	  $is_category = 1;
+	else
+	  $is_category = 0;
+
+        if ($LOGIN_LEVEL >= AUTH_DEVEL)
+	  $is_published = 1;
+	else
+	  $is_published = 0;
+
+	$name         = "";
+	$version      = "";
+	$license      = "";
+	$author       = "";
+	$email        = "";
+	$homepage_url = "http://";
+	$download_url = "ftp://";
+	$description  = "";
+      }
+
+      $announcement = "";
+
+      if ($REQUEST_METHOD == "POST")
+      {
+        if (array_key_exists("PARENT_ID", $_POST))
+	  $parent_id = (int)$_POST["PARENT_ID"];
+
+        if ($LOGIN_LEVEL >= AUTH_DEVEL &&
+	    array_key_exists("IS_PUBLISHED", $_POST))
+	  $is_published = (int)$_POST["IS_PUBLISHED"];
+
+        if (array_key_exists("NAME", $_POST))
+	  $name = $_POST["NAME"];
+
+        if (array_key_exists("VERSION", $_POST))
+	  $version = $_POST["VERSION"];
+
+        if (array_key_exists("LICENSE", $_POST))
+	  $license = $_POST["LICENSE"];
+
+        if (array_key_exists("AUTHOR", $_POST))
+	  $author = $_POST["AUTHOR"];
+
+        if (array_key_exists("EMAIL", $_POST))
+	  $email = $_POST["EMAIL"];
+
+        if (array_key_exists("HOMEPAGE_URL", $_POST))
+	  $homepage_url = $_POST["HOMEPAGE_URL"];
+
+        if (array_key_exists("DOWNLOAD_URL", $_POST))
+	  $download_url = $_POST["DOWNLOAD_URL"];
+
+        if (array_key_exists("DESCRIPTION", $_POST))
+	  $description = $_POST["DESCRIPTION"];
+
+        if (array_key_exists("ANNOUNCEMENT", $_POST))
+	  $announcement = $_POST["ANNOUNCEMENT"];
+
+        if ($name != "" &&
+	    ($is_category ||
+	     ($version != "" && $license != "" &&
+	      $author != "" && $description != "" &&
+	      $homepage_url != "http://" && $download_url != "ftp://")))
+	  $havedata = 1;
+	else
+	  $havedata = 0;
+      }
+      else
+        $havedata = 0;
+
       if ($type == 'C')
         $typename = 'Category';
       else
@@ -263,445 +529,271 @@ switch ($op)
       if ($id > 0)
         $opname = 'Update';
       else
-        $opname = 'Add';
+        $opname = 'Create';
 
-      print("<h2>$opname $typename</h2>\n");
+      $heading = htmlspecialchars("$opname $typename $name");
+      html_header($heading);
 
-      if ($id > 0)
-      {
-        $result = db_query("SELECT * FROM link WHERE id = $id");
-	$row    = db_next($result);
-
-        $parent_id      = $row['parent_id'];
-	$is_category    = $row['is_category'];
-	$is_published   = $row['is_published'];
-	$name           = htmlspecialchars($row['name'], ENT_QUOTES);
-	$version        = htmlspecialchars($row['version'], ENT_QUOTES);
-	$license        = htmlspecialchars($row['license'], ENT_QUOTES);
-	$author         = htmlspecialchars($row['author'], ENT_QUOTES);
-	$email          = htmlspecialchars($row['email'], ENT_QUOTES);
-	$homepage       = htmlspecialchars($row['homepage'], ENT_QUOTES);
-	$download       = htmlspecialchars($row['download'], ENT_QUOTES);
-	$description    = htmlspecialchars($row['description'], ENT_QUOTES);
-	$create_date    = $row['create_date'];
-	$modify_date    = $row['modify_date'];
-
-        db_free($result);
-      }
-      else
-      {
-        if ($type == 'C')
-	  $is_category = 1;
-	else
-	  $is_category = 0;
-
-	$is_published   = 0;
-	$name           = "";
-	$version        = "";
-	$license        = "";
-	$author         = "";
-	$owner_email    = "";
-	$owner_password = "";
-	$email          = "";
-	$homepage       = "http://";
-	$download       = "ftp://";
-	$description    = "";
-	$create_date    = time();
-	$modify_date    = time();
-      }
-
-      print("<form method='POST' action='$PHP_SELF?U$type$id+P$parent_id'>\n"
-           ."<center><table border='0'>\n");
-
+      html_start_links(1);
+      html_link("Show All Listings", "$PHP_SELF?LA$options");
+      html_link("Show Listings By Category", "$PHP_SELF?LC$options");
       if ($LOGIN_LEVEL >= AUTH_DEVEL)
+        html_link("Show Unpublished Listings", "$PHP_SELF?LU$options");
+      html_end_links();
+
+      print("<h1>$heading</h1>\n");
+
+      if ($havedata)
       {
-	print("<tr><th align='right'>Published:</th><td>");
-	select_is_published($is_published);
+        $name         = db_escape($name);
+	$version      = db_escape($version);
+	$license      = db_escape($license);
+	$author       = db_escape($author);
+	$email        = db_escape($email);
+	$homepage_url = db_escape($homepage_url);
+	$download_url = db_escape($download_url);
+	$user         = db_escape($LOGIN_USER);
+	$date         = time();
+
+	if ($id == 0)
+	{
+          // Insert a new record...
+	  db_query("INSERT INTO link VALUES(NULL,$parent_id,"
+	          ."$is_category,$is_published,"
+		  ."'$name','$version','$license',"
+		  ."'$author','$email','$homepage_url','$download_url',"
+		  ."'$description',5,1,0,0,$date,'$user',$date,'$user')");
+
+          $id = db_insert_id();
+	}
+	else
+	{
+          // Modify the existing record...
+	  db_query("UPDATE link SET is_published=$is_published,"
+	          ."parent_id=$parent_id,"
+		  ."name='$name',version='$version',license='$license',"
+		  ."author='$author',email='$email',"
+		  ."homepage_url='$homepage_url',download_url='$download_url',"
+		  ."description='$description',modify_date=$date,"
+		  ."modify_user='$user' "
+		  ."WHERE id=$id");
+	}
+
+	if ($announcement != "")
+	{
+	  $abstract     = db_escape(abbreviate($announcement, 80));
+          $announcement = db_escape("<p>[&nbsp;<a href='links.php?V$id'>"
+	                           ."More&nbsp;Info</a>&nbsp;]</p>\n"
+				   . $announcement);
+
+	  db_query("INSERT INTO article VALUES(NULL,$is_published,"
+	          ."'$name $version','$abstract','$announcement',$date,"
+		  ."'$user',$date,'$user')");
+
+          $article_id = db_insert_id();
+
+          // 
+	  mail($PROJECT_EMAIL, "$PROJECT_NAME Article #$id $what",
+	       wordwrap("$row[create_user] has $what an article titled, "
+	               ."'$row[title]' with the following abstract:\n\n"
+		       ."    $row[abstract]\n\n"
+		       ."Please approve or delete this article via the following "
+		       ."page:\n\n"
+		       ."    $PHP_URL?L$id\n"),
+	       "From: noreply@easysw.com\r\n");
+	}
+
+	print("<h2>$typename '$NAME' $opname</h2>\n");
+
+	if ($is_published == 0)
+	{
+          // Send email to moderators...
+	  $what    = strtolower("${opname}d");
+	  $message = wordwrap("'$name' has been $what on the $PROJECT_NAME "
+	                     ."links page and requires your approval before "
+			     ."it will be made visible on the $PROJECT_NAME "
+	                     ."site.  Please go to the following link to "
+			     ."process the submission:\n\n"
+			     ."    $PHP_URL?U$type$id\n");
+
+	  mail($PROJECT_EMAIL, "$PROJECT_NAME $typename $opname",
+	       $message, "From: noreply@easysw.com\r\n");
+
+          // Let the user know that the moderator must approve it...
+          print("<p>Your submission will be made visible as soon as one of "
+               ."moderators approves it.</p>\n");
+	}
+	else
+	  print("<p>Thank you, your submission is now visible on the site.</p>\n");
+
+	html_start_links();
+	html_link("Return to Listing", "$PHP_SELF?L+P$parent_id");
+	html_end_links();
+      }
+      else
+      {
+	if ($REQUEST_METHOD == "POST")
+	{
+	  $what = strtolower($typename);
+
+	  print("<p><b>Error:</b> Please fill in the fields marked in "
+	       ."<b><font color='red'>bold red</font></b> below and resubmit "
+	       ."your $what.</p><hr noshade/>\n");
+
+	  $hstart = "<font color='red'>";
+	  $hend   = "</font>";
+	}
+	else
+	{
+	  $hstart = "";
+	  $hend   = "";
+	}
+
+        $name         = htmlspecialchars($name, ENT_QUOTES);
+	$version      = htmlspecialchars($version, ENT_QUOTES);
+	$license      = htmlspecialchars($license, ENT_QUOTES);
+	$author       = htmlspecialchars($author, ENT_QUOTES);
+	$email        = htmlspecialchars($email, ENT_QUOTES);
+	$homepage_url = htmlspecialchars($homepage_url, ENT_QUOTES);
+	$download_url = htmlspecialchars($download_url, ENT_QUOTES);
+	$abstract     = htmlspecialchars($announcement, ENT_QUOTES);
+
+	print("<form method='POST' action='$PHP_SELF?U$type$id+P$parent_id'>\n"
+             ."<center><table border='0'>\n");
+
+	if ($LOGIN_LEVEL >= AUTH_DEVEL)
+	{
+	  print("<tr><th align='right'>Published:</th><td>");
+	  select_is_published($is_published);
+	  print("</td></tr>\n");
+	}
+	else
+	{
+          print("<input type='hidden' name='IS_PUBLISHED' "
+	       ."value='$is_published'>\n");
+	}
+
+        if ($name == "")
+	  print("<tr><th align='right'>${hstart}Name:${hend}</th>");
+	else
+	  print("<tr><th align='right'>Name:</th>");
+	print("<td><input type='text' name='NAME' value='$name' size='40'></td>"
+	     ."</tr>\n");
+
+	print("<tr><th align='right'>Category:</th><td>");
+	select_category($parent_id, $is_category);
 	print("</td></tr>\n");
-      }
-      else
-      {
-        print("<input type='hidden' name='IS_PUBLISHED' "
-	     ."value='$is_published'>\n");
-      }
 
-      print("<tr>"
-           ."<th align='right'>Name:</th>"
-	   ."<td><input type='text' name='NAME' value='$name' size='40'></td>"
-	   ."</tr>\n");
-
-      print("<tr><th align='right'>Category:</th><td>");
-      select_category($parent_id, $is_category);
-      print("</td></tr>\n");
-
-      if (!$is_category)
-      {
-	print("<tr>"
-             ."<th align='right'>Version:</th>"
-	     ."<td><input type='text' name='VERSION' value='$version' "
-	     ."size='32'></td>"
-	     ."</tr>\n");
-
-	print("<tr>"
-             ."<th align='right'>License:</th>"
-	     ."<td><input type='text' name='LICENSE' value='$license' "
-	     ."size='32'></td>"
-	     ."</tr>\n");
-
-	print("<tr>"
-             ."<th align='right'>Author:</th>"
-	     ."<td><input type='text' name='AUTHOR' value='$author' "
-	     ."size='32'></td>"
-	     ."</tr>\n");
-
-	print("<tr>"
-             ."<th align='right'>EMail:</th>"
-	     ."<td><input type='text' name='EMAIL' value='$email' "
-	     ."size='40'></td>"
-	     ."</tr>\n");
-
-	print("<tr>"
-             ."<th align='right'>Home Page URL:</th>"
-	     ."<td><input type='text' name='HOMEPAGE' value='$homepage' "
-	     ."size='40'></td>"
-	     ."</tr>\n");
-
-	print("<tr>"
-             ."<th align='right'>Download URL:</th>"
-	     ."<td><input type='text' name='DOWNLOAD' value='$download' "
-	     ."size='40'></td>"
-	     ."</tr>\n");
-
-	print("<tr>"
-             ."<th align='right' valign='top'>Description:</th>"
-	     ."<td><textarea name='DESCRIPTION' wrap='virtual' cols='60' rows='10'>"
-	     ."$description</textarea></td>"
-	     ."</tr>\n");
-      }
-
-      print("<tr>"
-           ."<th align='right' valign='top'>Announcment:</th>"
-           ."<td><textarea name='NEWS' wrap='virtual' cols='60' rows='10'>"
-	   ."</textarea></td>"
-	   ."</tr>\n");
-      print("<tr>"
-           ."<th></th>"
-	   ."<td><input type='submit' value='$opname $typename'></td>"
-	   ."</tr>\n");
-
-      print("</table></center>\n");
-      print("</form>");
-      break;
-
-  case 'L' : // List...
-      print("<p>[&nbsp;<a href='$PHP_SELF?LA'>Show&nbsp;All&nbsp;Listings</a> | "
-	   ."<a href='$PHP_SELF?LC'>Show&nbsp;Listings&nbsp;by&nbsp;"
-	   ."Category</a>&nbsp;]</p>\n");
-
-      if ($SEARCH == "")
-        $category = get_category($parent_id);
-      else
-        $category = "Search";
-
-      // Show the categories...
-      if ($query != "")
-        $result = db_query("SELECT * FROM link "
-                             ."WHERE is_published = 1 AND is_category = 1 AND "
-			     ."($query) "
-			     ."ORDER BY name");
-      else if ($parent_id >= 0)
-        $result = db_query("SELECT * FROM link "
-                             ."WHERE is_published = 1 AND is_category = 1 AND "
-			     ."parent_id = $parent_id "
-			     ."ORDER BY name");
-      else
-        $result = db_query("SELECT * FROM link "
-                             ."WHERE is_published = 1 AND is_category = 1 "
-			     ."ORDER BY name");
-
-      if ($parent_id < 0)
-      {
-	print("<h2>All Categories</h2><ul>\n");
-      }
-      else
-      {
-	print("<h2>Categories in $category</h2><ul>\n");
-      }
-
-      while ($row = db_next($result))
-      {
-        print("<li><a href='$PHP_SELF?L+P$row['id'>$row['name</a>");
-
-        if ($LOGIN_USER)
+	if (!$is_category)
 	{
-	  print(" [&nbsp;<a href='$PHP_SELF?FC$row['id+P$parent_id'>Edit</a> |"
-	       ." <a href='$PHP_SELF?X$row['id+P$parent_id'>Delete</a>&nbsp;]");
+	  if ($version == "")
+	    print("<tr><th align='right'>${hstart}Version:${hend}</th>");
+	  else
+	    print("<tr><th align='right'>Version:</th>");
+	  print("<td><input type='text' name='VERSION' value='$version' "
+	       ."size='32'></td></tr>\n");
+
+          if ($license == "")
+	    print("<tr><th align='right'>${hstart}License:${hend}</th>");
+	  else
+	    print("<tr><th align='right'>License:</th>");
+	  print("<td><input type='text' name='LICENSE' value='$license' "
+	       ."size='32'></td></tr>\n");
+
+          if ($author == "")
+	    print("<tr><th align='right'>${hstart}Author:${hend}</th>");
+	  else
+	    print("<tr><th align='right'>Author:</th>");
+	  print("<td><input type='text' name='AUTHOR' value='$author' "
+	       ."size='32'></td></tr>\n");
+
+          if (!validate_email($email) && $email != "")
+	    print("<tr><th align='right'>${hstart}EMail:${hend}</th>");
+	  else
+	    print("<tr><th align='right'>EMail:</th>");
+	  print("<td><input type='text' name='EMAIL' value='$email' "
+	       ."size='40'></td></tr>\n");
+
+          if ($homepage_url == "http://")
+	    print("<tr><th align='right'>${hstart}Home Page URL:${hend}</th>");
+	  else
+	    print("<tr><th align='right'>Home Page URL:</th>");
+	  print("<td><input type='text' name='HOMEPAGE_URL' "
+	       ."value='$homepage_url' size='40'></td></tr>\n");
+
+          if ($download_url == "ftp://")
+	    print("<tr><th align='right'>${hstart}Download URL:${hend}</th>");
+	  else
+	    print("<tr><th align='right'>Download URL:</th>");
+	  print("<td><input type='text' name='DOWNLOAD_URL' "
+	       ."value='$download' size='40'></td></tr>\n");
+
+          if ($description == "")
+	    print("<tr><th align='right' valign='top'>${hstart}Description:${hend}</th>");
+	  else
+	    print("<tr><th align='right' valign='top'>Description:</th>");
+	  print("<td><textarea name='DESCRIPTION' wrap='virtual' cols='60' "
+	       ."rows='10'>$description</textarea></td></tr>\n");
 	}
 
-	print("</li>\n");
+	print("<tr><th align='right' valign='top'>Announcment:</th>");
+        print("<td><textarea name='NEWS' wrap='virtual' cols='60' rows='10'>"
+	     ."$announcement</textarea></td></tr>\n");
+	print("<tr><th></th>"
+	     ."<td><input type='submit' value='$opname $typename'/></td>"
+	     ."</tr>\n");
+	print("</table></center>\n");
+	print("</form>");
       }
 
-      print("<p>[ <a href='$PHP_SELF?FC+P$parent_id'>Add New Category</a> ]</p>\n");
-
-      print("</ul>\n");
-
-      db_free($result);
-
-      // Then show the listings...
-      if ($query != "")
-        $result = db_query("SELECT * FROM link "
-                             ."WHERE is_published = 1 AND is_category = 0 AND "
-			     ."($query) "
-			     ."ORDER BY name");
-      else if ($parent_id >= 0)
-        $result = db_query("SELECT * FROM link "
-                             ."WHERE is_published = 1 AND is_category = 0 AND "
-			     ."parent_id = $parent_id "
-			     ."ORDER BY name");
-      else
-        $result = db_query("SELECT * FROM link "
-                             ."WHERE is_published = 1 AND is_category = 0 "
-			     ."ORDER BY name");
-
-      if ($parent_id < 0)
-      {
-	print("<h2>All Listings</h2><ul>\n");
-      }
-      else
-      {
-	print("<h2>Listings in $category</h2><ul>\n");
-      }
-
-      while ($row = db_next($result))
-      {
-        if ($row['is_category)
-	  continue;
-
-        $age = (int)((time() - $row['modify_date) / 86400);
-
-        print("<li><b><a href='$PHP_SELF?V$row['id'>$row['name $row['version</a></b>");
-
-	if ($SEARCH != "")
-	{
-	  $category = get_category($row['parent_id, 1);
-	  print(" in $category");
-	}
-
-        if ($LOGIN_USER)
-	{
-	  print(" [&nbsp;<a href='$PHP_SELF?FL$row['id+P$parent_id'>Edit</a>"
-	       ." | <a href='$PHP_SELF?X$row['id+P$parent_id'>Delete</a>&nbsp;]\n");
-	}
-
-        if ($age < 30)
-          print(" <I>[Updated $age day(s) ago]</I>");
-
-        print("<br />$row['description<br />&nbsp;</li>\n");
-      }
-
-      print("<p>[&nbsp;<a href='$PHP_SELF?FL+P$parent_id'>Add&nbsp;New&nbsp;"
-           ."Listing</a>&nbsp;]</p>\n");
-
-      print("</ul>\n");
-
-      db_free($result);
-      break;
-
-  case 'U' : // Add or update category or listing...
-      global $IS_PUBLISHED;
-      global $PARENT_ID;
-      global $NAME;
-      global $OWNER_EMAIL;
-      global $OWNER_PASSWORD;
-      global $NEW_PASSWORD;
-      global $NEW_PASSWORD2;
-      global $VERSION;
-      global $LICENSE;
-      global $EMAIL;
-      global $HOMEPAGE;
-      global $DOWNLOAD;
-      global $DESCRIPTION;
-      global $NEWS;
-      global $AUTHOR;
-
-      $parent_id   = (int)$PARENT_ID;
-      $name        = mysql_escape_string($NAME);
-      $version     = mysql_escape_string($VERSION);
-      $license     = mysql_escape_string($LICENSE);
-      $author      = mysql_escape_string($AUTHOR);
-      $owner_email = mysql_escape_string($OWNER_EMAIL);
-      $email       = mysql_escape_string($EMAIL);
-      $homepage    = mysql_escape_string($HOMEPAGE);
-      $download    = mysql_escape_string($DOWNLOAD);
-      $description = mysql_escape_string($DESCRIPTION);
-      $date        = time();
-
-      if ($type == 'C')
-        $typename = 'Category';
-      else
-        $typename = 'Listing';
-
-      if ($id > 0)
-        $opname = 'Updated';
-      else
-        $opname = 'Added';
-
-      if ($id > 0)
-      {
-        $result = db_query("SELECT * FROM link WHERE id = $id");
-	$row    = db_next($result);
-
-	$is_category    = $row['is_category;
-	$owner_password = $row['owner_password;
-
-        db_free($result);
-      }
-      else
-      {
-        if ($type == 'C')
-	  $is_category = 1;
-	else
-	  $is_category = 0;
-
-	$owner_password = "";
-      }
-
-      if ($owner_email == "")
-      {
-        print("<h2>$typename '$NAME' Not $opname</h2>\n");
-	print("<p>The owner email address cannot be empty!</p>\n");
-	break;
-      }
-
-      if ($owner_password != "" && $owner_password != $OWNER_PASSWORD &&
-	  !$LOGIN_USER)
-      {
-        print("<h2>$typename '$NAME' Not $opname</h2>\n");
-	print("<p>The password you supplied does not match the "
-	     ."current password!</p>\n");
-	break;
-      }
-
-      if ($NEW_PASSWORD != "" && $NEW_PASSWORD != $NEW_PASSWORD2)
-      {
-        print("<h2>$typename '$NAME' Not $opname</h2>\n");
-	print("<p>The passwords you supplied do not match!</p>\n");
-	break;
-      }
-
-      if ($NEW_PASSWORD == "" && $owner_password == "")
-      {
-        print("<h2>$typename '$NAME' Not $opname</h2>\n");
-	print("<p>You must supply a password!</p>\n");
-	break;
-      }
-
-      if ($NEW_PASSWORD != "")
-      {
-        $owner_password = $NEW_PASSWORD;
-      }
-
-      if ($id == 0)
-      {
-        // Insert a new record...
-	db_query("INSERT INTO link VALUES(0,$parent_id,"
-	           ."$is_category,$IS_PUBLISHED,"
-		   ."'$name','$version','$license',"
-		   ."'$author','$owner_email','$owner_password',"
-		   ."'$email','$homepage','$download',"
-		   ."'$description',$date,$date,5,1,0,0)");
-
-        $id = db_insertID();
-      }
-      else
-      {
-        // Modify the existing record...
-	db_query("UPDATE link SET is_published=$IS_PUBLISHED,"
-	           ."parent_id=$parent_id,"
-		   ."name='$name',version='$version',license='$license',"
-		   ."author='$author',owner_email='$owner_email',"
-		   ."owner_password='$owner_password',email='$email',"
-		   ."homepage='$homepage',download='$download',"
-		   ."description='$description',modify_date=$date "
-		   ."WHERE id=$id");
-      }
-
-      if ($NEWS != "")
-      {
-        $news = mysql_escape_string($NEWS);
-
-        if ($homepage)
-	  $nhp = "links.php?SH$id";
-	else
-	  $nhp = "";
-
-        if ($download)
-	  $ndl = "links.php?SD$id";
-	else
-	  $ndl = "";
-
-	db_query("INSERT INTO news VALUES(0,$id,'$name $version',$date,"
-                   ."'$author','$news','$nhp','$ndl',$date,'$email',"
-                   ."0,'','PENDING')");
-      }
-
-      print("<h2>$typename '$NAME' $opname</h2>\n");
-
-      if ($opname == "Added")
-      {
-        // Send email to moderators...
-	mail("cups-link", "New $typename Added to CUPS Links",
-	     "'$name' has been added to the CUPS links page\n"
-	    ."and requires your approval before it will be made visible on\n"
-	    ."the CUPS site.\n"
-	    ."\n"
-	    ."    http://www.cups.org/private/links.php\n");
-
-        // Let the user know that the moderator must approve it...
-        print("<p>Your addition will be made visible as soon as one of "
-             ."moderators approves it.</p>\n");
-      }
-
-      if ($NEWS != "")
-      {
-        // Send email to moderators...
-	mail("cups-link", "$name $version Posted to CUPS News",
-	     "An announcement for '$name $version' has been posted\n"
-            ."from the CUPS links page and requires your approval before it\n"
-	    ."will be made visible on the CUPS site.\n"
-	    ."\n"
-	    ."    http://www.cups.org/private/news.php\n");
-
-        // Let the user know that the moderator must approve it...
-        print("<p>Your news announcement will be made visible as soon as one of "
-             ."moderators approves it.</p>\n");
-      }
-
-      print("<p><a href='$PHP_SELF?L+P$parent_id'>Return to listing.</a></p>\n");
+      html_footer();
       break;
 
   case 'V' : // View a listing...
       $result = db_query("SELECT * FROM link WHERE id = $id");
-      $row    = db_next($result);
+      if (db_count($result) != 1)
+      {
+        db_free($result);
+	header("Location: $PHP_SELF");
+	exit();
+      }
 
-      $create_date = date("M d, Y", $row['create_date);
-      $modify_date = date("M d, Y", $row['modify_date);
-      $category    = get_category($row['parent_id);
-      $rating      = (int)(100 * $row['rating_total / $row['rating_count) * 0.01;
-      $email       = sanitize_email($row['email);
+      $row = db_next($result);
 
-      if (($row['homepage_visits + $row['download_visits) > 0)
+      if ($row["is_published"] == 0 && $LOGIN_LEVEL < AUTH_DEVEL &&
+          $LOGIN_USER != $row["create_user"])
+      {
+	// No permission!
+        db_free($result);
+	header("Location: $PHP_SELF");
+	exit();
+      }
+
+      $name         = htmlspecialchars($row['name'], ENT_QUOTES);
+      $version      = htmlspecialchars($row['version'], ENT_QUOTES);
+      $license      = htmlspecialchars($row['license'], ENT_QUOTES);
+      $author       = htmlspecialchars($row['author'], ENT_QUOTES);
+      $email        = htmlspecialchars($row['email'], ENT_QUOTES);
+      $homepage_url = htmlspecialchars($row['homepage_url'], ENT_QUOTES);
+      $download_url = htmlspecialchars($row['download_url'], ENT_QUOTES);
+      $description  = format_text($row['description']);
+      $create_date  = date("M d, Y", $row['create_date']);
+      $modify_date  = date("M d, Y", $row['modify_date']);
+      $category     = get_category($row['parent_id']);
+      $rating       = (int)(100 * $row['rating_total'] /
+                                  $row['rating_count']) * 0.01;
+      $email        = sanitize_email($row['email']);
+
+      if (($row['homepage_visits'] + $row['download_visits']) > 0)
       {
         $visits     = db_query("SELECT MAX(homepage_visits), "
-	                         ."MAX(download_visits) FROM link");
+	                      ."MAX(download_visits) FROM link");
 	$visrow     = db_next($visits);
 
-        $maxhpv     = "MAX(homepage_visits)";
-        $maxdlv     = "MAX(download_visits)";
-
-        $popularity = (int)(100 *
-	                    ($row['homepage_visits + $row['download_visits) /
-	                    ($visrow->$maxhpv + $visrow->$maxdlv));
+        $popularity = (int)(100 * ($row['homepage_visits'] +
+			           $row['download_visits']) /
+	                          ($visrow['MAX(homepage_visits)'] +
+				   $visrow['MAX(download_visits)']));
 
         if ($popularity < 0)
 	  $popularity = 0;
@@ -713,22 +805,26 @@ switch ($op)
         $popularity = "???";
       }
 
+      html_header("$name $version");
 
-      print("<P align='CENTER'>[&nbsp;"
-           ."<a href='$PHP_SELF?P$row['parent_id'>Return to Listings</a>"
-	   ." | "
-           ."<a href='#_USER_COMMENTS'>Comments</a>"
-	   ." | "
-	   ."<a href='$PHP_SELF?FL$row['id+P$row['parent_id'>Edit&nbsp;This&nbsp;Listing</a>"
-	   ." | "
-	   ."<a href='$PHP_SELF?X$row['id+P$row['parent_id'>Delete&nbsp;This&nbsp;Listing</a>&nbsp;]</p>\n");
+      html_start_links(1);
+      html_link("Back To Listings", "$PHP_SELF?L+P$parent_id$options");
+      html_link("Show Comments", "#_USER_COMMENTS");
+      if ($LOGIN_LEVEL >= AUTH_DEVEL || $LOGIN_USER == $row["create_user"])
+      {
+        html_link("Delete Listing", "$PHP_SELF?X$id$options");
+        html_link("Edit Listing", "$PHP_SELF?UL$id$options");
+      }
+      html_end_links();
+
+      print("<h1>$name $version</h1>\n");
 
       print("<table width='100%' border='0'>\n");
       print("<tr>"
            ."<th align='right'>Category:</th>"
 	   ."<td>$category</td>"
            ."<th align='right'>Rating:</th>"
-	   ."<td><form method='POST' action='$PHP_SELF?r$id'>$rating&nbsp;"
+	   ."<td><form method='POST' action='$PHP_SELF?R$id$options'>$rating&nbsp;"
 	   ."<select name='RATING'>"
 	   ."<option value='0'>0 - Worst</option>"
 	   ."<option value='1'>1</option>"
@@ -747,49 +843,52 @@ switch ($op)
 	   ."</tr>\n");
       print("<tr>"
            ."<th align='right'>Name:</th>"
-	   ."<td>$row['name</td>"
+	   ."<td>$name</td>"
            ."<th align='right'>Popularity:</th>"
 	   ."<td>$popularity%</td>"
 	   ."</tr>\n");
       print("<tr>"
            ."<th align='right'>Version:</th>"
-	   ."<td>$row['version</td>"
+	   ."<td>$version</td>"
            ."<th align='right'>License:</th>"
-	   ."<td>$row['license</td>"
+	   ."<td>$license</td>"
 	   ."</tr>\n");
       print("<tr>"
            ."<th align='right'>Author:</th>"
-	   ."<td>$row['author</td>"
+	   ."<td>$author</td>"
            ."<th align='right'>EMail:</th>"
 	   ."<td>$email</td>"
 	   ."</tr>\n");
       print("<tr>"
            ."<th align='right'>Home Page:</th>"
-	   ."<td colspan='3'><a href='$PHP_SELF?SH$id'>$row['homepage</a> ($row['homepage_visits visits)</td>"
+	   ."<td colspan='3'><a href='$PHP_SELF?SH$id'>$homepage_url</a> "
+	   ."($row[homepage_visits] visits)</td>"
 	   ."</tr>\n");
       print("<tr>"
            ."<th align='right'>Download:</th>"
-	   ."<td colspan='3'><a href='$PHP_SELF?SD$id'>$row['download</a> ($row['download_visits visits)</td>"
+	   ."<td colspan='3'><a href='$PHP_SELF?SD$id'>$download_url</a> "
+	   ."($row[download_visits] visits)</td>"
 	   ."</tr>\n");
       print("<tr>"
            ."<th align='right' valign='top'>Description:</th>"
-	   ."<td colspan='3'>$row['description</td>"
+	   ."<td colspan='3'>$description</td>"
 	   ."</tr>\n");
       print("</table>\n");
 
       db_free($result);
 
       print("<hr noshade/>\n"
-           ."<H2><A NAME='_USER_COMMENTS'>User Comments</a>"
-	   ." [&nbsp;<a href='comment.php?r0+plinks.php_V$id'>Add&nbsp;Comment</a>&nbsp;]</H2>\n");
+           ."<h2><a name='_USER_COMMENTS'>User Comments</a></h2>\n");
+      html_start_links();
+      html_link("Submit Comment", "comment.php?r0+plinks.php_V$id");
+      html_end_links();
 
       show_comments("links.php_V$id");
+      html_footer();
       break;
 
   case 'X' : // Delete listing...
-      global $OWNER_EMAIL;
-      global $OWNER_PASSWORD;
-
+/*
       if ($id <= 0)
       {
         print("<h2>Error</h2>\n"
@@ -862,95 +961,55 @@ switch ($op)
 
       print("<h2>Deleted $name</h2>\n");
       print("<p><a href='$PHP_SELF?P$parent_id'>Return to listing.</a></p>\n");
+*/
       break;
 
-  case 'Z' : // List new...
-      print("<p><a href='$PHP_SELF?L+P$parent_id'>[&nbsp;Show&nbsp;Listings&nbsp;]</a></p>\n");
-
-      // Show the categories...
-      $result = db_query("SELECT * FROM link "
-                           ."WHERE is_published = 0 AND is_category = 1 "
-			   ."ORDER BY name");
-
-      print("<h2>New Categories</h2><ul>\n");
-
-      while ($row = db_next($result))
+  case 'R' : // Rate this entry...
+      if (array_key_exists("RATING", $_POST))
       {
-        $create_date = date("M d, Y", $row['create_date);
-        $category    = get_category($row['parent_id, 1);
+        $rating = (int)$_POST("RATING");
 
-        print("<li><a href='$PHP_SELF?V$row['id'>$row['name</a>"
-             ." in $category"
-	     ."<br />(Created $create_date)"
-	     ." [&nbsp;<a href='$PHP_SELF?FC$row['id'>Edit</a>"
-	     ." | <a href='$PHP_SELF?X$row['id'>Delete</a>"
-	     ."&nbsp;]</li>\n");
-      }
+	if ($rating < 0)
+	  $rating = 0;
+	else if ($rating > 10)
+	  $rating = 10;
 
-      print("</ul>\n");
-
-      db_free($result);
-
-      // Then show the listings...
-      $result = db_query("SELECT * FROM link "
-                	."WHERE is_published = 0 AND is_category = 0 "
-			."ORDER BY name");
-
-      print("<h2>New Listings</h2>\n"
-           ."<ul>\n");
-
-      while ($row = db_next($result))
-      {
-        if ($row['is_category)
-	  continue;
-
-        $create_date = date("M d, Y", $row['create_date);
-        $category    = get_category($row['parent_id, 1);
-
-        print("<li><b><a href='$PHP_SELF?V$row['id'>$row['name</a></b>"
-             ." in $category"
-	     ."<br />(Created $create_date)"
-	     ." [&nbsp;<a href='$PHP_SELF?FL$row['id'>Edit</a>"
-	     ." | <a href='$PHP_SELF?X$row['id'>Delete</a>"
-	     ."&nbsp;]</li>\n");
-      }
-
-      print("</ul>\n");
-
-      db_free($result);
-      break;
-
-  case 'r' : // Rate this entry...
-      global $RATING;
-
-      if ($RATING != "")
 	if (db_query("INSERT INTO vote VALUES('link_${id}_${REMOTE_ADDR}')"))
           db_query("UPDATE link SET rating_count = rating_count + 1, "
-	          ."rating_total = rating_total + $RATING WHERE id = $id");
+	          ."rating_total = rating_total + $rating WHERE id = $id");
+      }
 
-      header("Location: $PHP_SELF?V$id");
+      header("Location: $PHP_SELF?V$id$options");
       break;
         
   case 'S' : // Show home or download page...
       $result = db_query("SELECT * FROM link WHERE id = $id");
-      $row    = db_next($result);
 
-      if ($type == 'H')
+      if (db_count($result) != 1)
+      {
+        db_free($result);
+        header("Location: $PHP_SELF?L$options");
+	exit();
+      }
+	
+      $row = db_next($result);
+
+      if ($type == 'H' && $row["homepage_url"] != "")
       {
 	db_query("UPDATE link SET homepage_visits = homepage_visits + 1 "
 	        ."WHERE id = $id");
 
-        header("Location: $row[homepage]");
+        header("Location: $row[homepage_url]");
       }
-      else if ($type == 'D')
+      else if ($type == 'D' && $row["download_url"] != "")
       {
 	db_query("UPDATE link SET download_visits = download_visits + 1 "
 	        ."WHERE id = $id");
 
-        header("Location: $row[download]");
+        header("Location: $row[download_url]");
       }
       else
-        header("Location: $PHP_SELF?V$id");
+        header("Location: $PHP_SELF?V$id$options");
 
       db_free($result);
       break;
@@ -958,6 +1017,8 @@ switch ($op)
 
 db_close();
 
-if (!$redirect)
-  html_footer();
+
+//
+// End of "$Id: links.php,v 1.2 2004/05/20 15:45:55 mike Exp $".
+//
 ?>

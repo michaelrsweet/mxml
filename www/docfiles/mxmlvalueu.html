@@ -1,0 +1,64 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML>
+<HEAD>
+<TITLE>Mini-XML Programmers Manual, Version 2.0</TITLE>
+<META NAME="author" CONTENT="Michael Sweet">
+<META NAME="copyright" CONTENT="Copyright 2003-2004">
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; CHARSET=iso-iso-8859-1">
+<LINK REL="Start" HREF="index.html">
+<LINK REL="Contents" HREF="toc.html">
+<LINK REL="Prev" HREF="Unions.html">
+<LINK REL="Next" HREF="Variables.html">
+<STYLE TYPE="text/css"><!--
+BODY { font-family: serif }
+H1 { font-family: sans-serif }
+H2 { font-family: sans-serif }
+H3 { font-family: sans-serif }
+H4 { font-family: sans-serif }
+H5 { font-family: sans-serif }
+H6 { font-family: sans-serif }
+SUB { font-size: smaller }
+SUP { font-size: smaller }
+PRE { font-family: monospace }
+--></STYLE>
+</HEAD>
+<BODY>
+<A HREF="toc.html">Contents</A>
+<A HREF="Unions.html">Previous</A>
+<A HREF="Variables.html">Next</A>
+<HR NOSHADE>
+<H3><A name="mxml_value_u">mxml_value_u</A></H3>
+<HR noshade/>
+<H4>Description</H4>
+<P>An XML node value.</P>
+<H4>Definition</H4>
+<PRE>
+union mxml_value_u
+{
+  <A href="mxmlelementt.html#mxml_element_t">mxml_element_t</A> element;
+  int integer;
+  char * opaque;
+  double real;
+  <A href="mxmltextt.html#mxml_text_t">mxml_text_t</A> text;
+};
+</PRE>
+<H4>Members</H4>
+<P class="table"></P>
+<TABLE align="center" border="1" cellpadding="5" cellspacing="0" width="80%">
+<THEAD></THEAD>
+<TR bgcolor="#cccccc"><TH>Name</TH><TH>Description</TH></TR>
+<TBODY></TBODY>
+<TR><TD><TT>element</TT></TD><TD>Element</TD></TR>
+<TR><TD><TT>integer</TT></TD><TD>Integer number</TD></TR>
+<TR><TD><TT>opaque</TT></TD><TD>Opaque string</TD></TR>
+<TR><TD><TT>real</TT></TD><TD>Real number</TD></TR>
+<TR><TD><TT>text</TT></TD><TD>Text fragment</TD></TR>
+</TABLE>
+
+<!-- NEW PAGE -->
+<HR NOSHADE>
+<A HREF="toc.html">Contents</A>
+<A HREF="Unions.html">Previous</A>
+<A HREF="Variables.html">Next</A>
+</BODY>
+</HTML>

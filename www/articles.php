@@ -1,6 +1,6 @@
 <?php
 //
-// "$Id: articles.php,v 1.8 2004/05/19 14:02:38 mike Exp $"
+// "$Id: articles.php,v 1.9 2004/05/19 16:34:54 mike Exp $"
 //
 // Web form for the article table...
 //
@@ -206,17 +206,21 @@ switch ($op)
   case 'L' : // List (all) Article(s)
       if ($id)
       {
-        html_header("Article #$id");
-
         $result = db_query("SELECT * FROM article WHERE id = $id");
 	if (db_count($result) != 1)
 	{
+          html_header("Article Error");
 	  print("<p><b>Error:</b> Article #$id was not found!</p>\n");
 	  html_footer();
 	  exit();
 	}
 
-        $row = db_next($result);
+        $row      = db_next($result);
+        $title    = htmlspecialchars($row['title']);
+	$contents = format_text($row['contents']);
+        $date     = date("H:i M d, Y", $row['modify_date']);
+
+        html_header("Article #$id: $title");
 
 	html_start_links(1);
 	html_link("Return to Articles", "$PHP_SELF?L$options");
@@ -224,28 +228,17 @@ switch ($op)
 	if ($LOGIN_LEVEL >= AUTH_DEVEL)
 	{
 	  html_link("Modify Article</A>", "$PHP_SELF?M$id$options");
-	  html_link("Delete Article #$id</A>", "$PHP_SELF?D$id$options");
+	  html_link("Delete Article</A>", "$PHP_SELF?D$id$options");
 	}
 	html_end_links();
 
-        print("<h1>Article #$id</h1>\n");
-        print("<p><table width='100%' cellpadding='5' cellspacing='0' "
-	     ."border='0'>\n");
-
         if (!$row['is_published'])
-	  print("<tr><th align='center' colspan='2'>This Article is "
-	       ."currently hidden from public view.</td></tr>\n");
+	  print("<p align='center'>This Article is currently hidden from "
+	       ."public view.</p>\n");
 
-        $temp = htmlspecialchars($row['title']);
-        print("<tr><th align='right' valign='top'>Title:</th><td class='left'>$temp</td></tr>\n");
-
-        $temp = htmlspecialchars($row['abstract']);
-        print("<tr><th align='right' valign='top'>Abstract:</th><td class='left'>$temp</td></tr>\n");
-
-        $temp = format_text($row['contents']);
-        print("<tr><th align='right' valign='top'>Contents:</th><td class='left'>$temp</td></tr>\n");
-
-        print("</table></p>\n");
+        print("<h1>Article #$id: $title</h1>\n"
+	     ."<p><i>$date</i></p>\n"
+	     ."$contents\n");
 
         db_free($result);
 
@@ -738,6 +731,6 @@ switch ($op)
 
 
 //
-// End of "$Id: articles.php,v 1.8 2004/05/19 14:02:38 mike Exp $".
+// End of "$Id: articles.php,v 1.9 2004/05/19 16:34:54 mike Exp $".
 //
 ?>

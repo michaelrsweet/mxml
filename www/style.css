@@ -52,30 +52,28 @@ INPUT[TYPE="TEXT"], TEXTAREA {
 
 A:link {
   font-family: sans-serif;
-  font-weight: bold;
   text-decoration: none;
   color: #00007f;
 }
 
 A:visited {
   font-family: sans-serif;
-  font-weight: bold;
   text-decoration: none;
   color: #0000ff;
 }
 
 A:hover {
   font-family: sans-serif;
-  font-weight: bold;
   text-decoration: none;
   color: #7f0000;
 }
 
 A:active {
   font-family: sans-serif;
-  font-weight: bold;
   text-decoration: underline;
   color: #ff0000;
 }
 
-
+TR.header TD A {
+  font-weight: bold;
+}

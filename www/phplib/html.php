@@ -1,6 +1,6 @@
 <?php
 //
-// "$Id: html.php,v 1.8 2004/05/19 01:39:04 mike Exp $"
+// "$Id: html.php,v 1.9 2004/05/19 16:34:55 mike Exp $"
 //
 // PHP functions for standardized HTML output...
 //
@@ -56,7 +56,8 @@ $html_keywords = array(
 //
 
 function				// O - User information
-html_header($title = "")		// I - Additional document title
+html_header($title = "",		// I - Additional document title
+            $path = "")			// I - Relative path to root
 {
   global $html_keywords, $argc, $argv, $PHP_SELF, $LOGIN_USER;
 
@@ -84,7 +85,7 @@ html_header($title = "")		// I - Additional document title
        ."  <meta http-equiv='Pragma' content='no-cache'/>\n"
        ."  <meta http-equiv='Content-Type' content='text/html; "
        ."charset=iso-8859-1'/>\n"
-       ."  <link rel='stylesheet' type='text/css' href='style.css'/>\n");
+       ."  <link rel='stylesheet' type='text/css' href='${path}style.css'/>\n");
 
   // Search engine keywords...
   reset($html_keywords);
@@ -104,26 +105,26 @@ html_header($title = "")		// I - Additional document title
   print("<p><table width='100%' height='100%' border='0' cellspacing='0' "
        ."cellpadding='0'>\n"
        ."<tr class='header' height='40'>"
-       ."<td valign='top'><img src='images/top-left.gif' width='15' height='15' "
-       ."alt=''/></td>"
-       ."<td><img src='images/logo.gif' width='39' height='32' "
+       ."<td valign='top'><img src='${path}images/top-left.gif' width='15' "
+       ."height='15' alt=''/></td>"
+       ."<td><img src='${path}images/logo.gif' width='39' height='32' "
        ."alt='Mini-XML' align='middle'/>&nbsp;&nbsp;&nbsp;</td>"
-       ."<td width='100%'>[&nbsp;<a href='index.php'>Home</a> | "
-       ."<a href='articles.php'>Articles</a> | "
-       ."<a href='documentation.php'>Documentation</a> | "
-       ."<a href='software.php'>Download</a> | "
-       ."<a href='str.php'>Support</a>&nbsp;]</td>"
+       ."<td width='100%'>[&nbsp;<a href='${path}index.php'>Home</a> | "
+       ."<a href='${path}articles.php'>Articles</a> | "
+       ."<a href='${path}documentation.php'>Documentation</a> | "
+       ."<a href='${path}software.php'>Download</a> | "
+       ."<a href='${path}str.php'>Support</a>&nbsp;]</td>"
        ."<td align='right'>[&nbsp;");
 
 
   if ($LOGIN_USER)
-    print("<a href='account.php'>$LOGIN_USER</a>");
+    print("<a href='${path}account.php'>$LOGIN_USER</a>");
   else
-    print("<a href='login.php'>Login</a>");
+    print("<a href='${path}login.php'>Login</a>");
 
   print("&nbsp;]</td>"
-       ."<td valign='top'><img src='images/top-right.gif' width='15' height='15' "
-       ."alt=''/></td>"
+       ."<td valign='top'><img src='${path}images/top-right.gif' width='15' "
+       ."height='15' alt=''/></td>"
        ."</tr>\n");
 
   print("<tr class='page' height='100%'><td></td>"
@@ -138,13 +139,13 @@ html_header($title = "")		// I - Additional document title
 //
 
 function
-html_footer()
+html_footer($path = "")			// I - Relative path to root
 {
   print("</td></tr></table></td><td></td></tr>\n");
   print("<tr class='page'><td colspan='5'>&nbsp;</td></tr>\n");
   print("<tr class='header'>"
-       ."<td valign='bottom'><img src='images/bottom-left.gif' width='15' "
-       ."height='15' alt=''/></td>"
+       ."<td valign='bottom'><img src='${path}images/bottom-left.gif' "
+       ."width='15' height='15' alt=''/></td>"
        ."<td colspan='3'><small> <br />"
        ."Copyright 2003-2004 by Michael Sweet. This library is free "
        ."software; you can redistribute it and/or modify it "
@@ -152,8 +153,8 @@ html_footer()
        ."License as published by the Free Software Foundation; "
        ."either version 2 of the License, or (at your option) "
        ."any later version.<br />&nbsp;</small></td>"
-       ."<td valign='bottom'><img src='images/bottom-right.gif' width='15' "
-       ."height='15' alt=''/></td>"
+       ."<td valign='bottom'><img src='${path}images/bottom-right.gif' "
+       ."width='15' height='15' alt=''/></td>"
        ."</tr>\n");
   print("</table></p>\n");
   print("</body>\n"

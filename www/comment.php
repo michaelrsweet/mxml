@@ -1,6 +1,6 @@
 <?php
 //
-// "$Id: comment.php,v 1.5 2004/05/19 14:02:38 mike Exp $"
+// "$Id: comment.php,v 1.6 2004/05/19 16:34:54 mike Exp $"
 //
 // Comment and moderation interface for PHP pages...
 //
@@ -162,7 +162,7 @@ else
           if ($id)
 	  {
 	    // Update existing record.
-	    db_query("UPDATE comment SET create_user='$create_user',file='$file',"
+	    db_query("UPDATE comment SET create_user='$create_user',url='$file',"
 	            ."status=$status,contents='$contents' WHERE id = $id");
 	  }
 	  else
@@ -225,15 +225,22 @@ else
 	  if ($contents == "")
 	    print("<tr><th align='right' valign='top'>${hstart}Message:${hend}</th>"
 	         ."<td><textarea name='MESSAGE' cols='70' rows='8' "
-		 ."wrap='virtual'>$contents</textarea></td></tr>\n");
+		 ."wrap='virtual'>$contents</textarea>");
 	  else
 	    print("<tr><th align='right' valign='top'>Message:</th>"
 	         ."<td><textarea name='MESSAGE' cols='70' rows='8' "
-		 ."wrap='virtual'>$contents</textarea></td></tr>\n");
+		 ."wrap='virtual'>$contents</textarea>");
+
+	  print("<p>Comments may contain the following "
+	       ."HTML elements: <tt>A</tt>, <tt>B</tt>, <tt>BLOCKQUOTE</tt>, "
+	       ."<tt>CODE</tt>, <tt>EM</tt>, <tt>H1</tt>, <tt>H2</tt>, "
+	       ."<tt>H3</tt>, <tt>H4</tt>, <tt>H5</tt>, <tt>H6</tt>, <tt>I</tt>, "
+	       ."<tt>IMG</tt>, <tt>LI</tt>, <tt>OL</tt>, <tt>P</tt>, <tt>PRE</tt>, "
+	       ."<tt>TT</tt>, <tt>U</tt>, <tt>UL</tt></p></td></tr>\n");
 
           if ($LOGIN_LEVEL >= AUTH_DEVEL)
 	  {
-	    print("<tr><th align='right'>File Path:</th>"
+	    print("<tr><th align='right' nowrap>File Path:</th>"
 		 ."<td><input type='text' name='FILE' value='$path' "
 		 ."size='40'/></td></tr>\n");
 	    print("<tr><th align='right'>Score:</th>"
@@ -360,6 +367,6 @@ else
 }
 
 //
-// End of "$Id: comment.php,v 1.5 2004/05/19 14:02:38 mike Exp $".
+// End of "$Id: comment.php,v 1.6 2004/05/19 16:34:54 mike Exp $".
 //
 ?>

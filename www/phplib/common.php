@@ -1,6 +1,6 @@
 <?
 //
-// "$Id: common.php,v 1.7 2004/05/19 03:26:36 mike Exp $"
+// "$Id: common.php,v 1.8 2004/05/19 16:34:54 mike Exp $"
 //
 // Common utility functions for PHP pages...
 //
@@ -603,11 +603,11 @@ show_comments($url,			// I - URL for comment
 
     $create_date = date("H:i M d, Y", $row['create_date']);
     $create_user = sanitize_email($row['create_user']);
-    $contents    = sanitize_text($row['contents']);
+    $contents    = format_text($row['contents']);
 
     print("<h$heading><a name='_USER_COMMENT_$row[id]'>From</a> "
          ."$create_user, $create_date (score=$row[status])</h$heading>\n"
-	 ."<p><tt>$contents</tt></p>\n");
+	 ."$contents\n");
 
     html_start_links();
     html_link("Reply", "${path}comment.php?r$row[id]+p$safeurl");
@@ -636,6 +636,6 @@ show_comments($url,			// I - URL for comment
 
 
 //
-// End of "$Id: common.php,v 1.7 2004/05/19 03:26:36 mike Exp $".
+// End of "$Id: common.php,v 1.8 2004/05/19 16:34:54 mike Exp $".
 //
 ?>

@@ -137,6 +137,7 @@ node. If you have an XML file like the following:</p>
 
 <pre>
     &lt;?xml version="1.0"?>
+    &lt;data>
         &lt;node>val1&lt;/node>
         &lt;node>val2&lt;/node>
         &lt;node>val3&lt;/node>
@@ -148,6 +149,7 @@ node. If you have an XML file like the following:</p>
         &lt;node>val7&lt;/node>
         &lt;node>val8&lt;/node>
         &lt;node>val9&lt;/node>
+    &lt;/data>
 </pre>
 
 <p>the node tree returned by <tt>mxmlLoadFile()</tt> would look
@@ -155,6 +157,8 @@ like the following in memory:</p>
 
 <pre>
     ?xml
+      |
+    data
       |
     node - node - node - group - node - node - node
       |      |      |      |       |      |      |
@@ -337,6 +341,7 @@ for (node = mxmlFindElement(tree, tree, "name", NULL, NULL, MXML_DESCEND);
 
 <pre>
     ?xml
+    data
     node
     val1
     node

@@ -1,5 +1,5 @@
 /*
- * "$Id: mxml.h,v 1.22 2004/07/11 13:14:07 mike Exp $"
+ * "$Id: mxml.h,v 1.23 2004/10/28 02:58:00 mike Exp $"
  *
  * Header file for Mini-XML, a small XML-like file parsing library.
  *
@@ -76,7 +76,8 @@ typedef enum mxml_type_e		/**** The XML node type. ****/
   MXML_INTEGER,				/* Integer value */
   MXML_OPAQUE,				/* Opaque string */
   MXML_REAL,				/* Real value */
-  MXML_TEXT				/* Text fragment */
+  MXML_TEXT,				/* Text fragment */
+  MXML_CUSTOM				/* Custom data */
 } mxml_type_t;
 
 typedef struct mxml_attr_s		/**** An XML element attribute value. ****/
@@ -98,6 +99,13 @@ typedef struct mxml_text_s		/**** An XML text value. ****/
   char			*string;	/* Fragment string */
 } mxml_text_t;
 
+typedef struct mxml_custom_s		/**** An XML custom value. ****/
+{
+  void			*data;		/* Pointer to (allocated) custom data */
+  void			(*destroy)(void *);
+					/* Pointer to destructor function */
+} mxml_custom_t;
+
 typedef union mxml_value_u		/**** An XML node value. ****/
 {
   mxml_element_t	element;	/* Element */
@@ -105,6 +113,7 @@ typedef union mxml_value_u		/**** An XML node value. ****/
   char			*opaque;	/* Opaque string */
   double		real;		/* Real number */
   mxml_text_t		text;		/* Text fragment */
+  mxml_custom_t		custom;		/* Custom data */
 } mxml_value_t;
 
 typedef struct mxml_node_s		/**** An XML node. ****/
@@ -126,6 +135,12 @@ typedef struct mxml_index_s		/**** An XML node index. ****/
   int			cur_node;	/* Current node */
   mxml_node_t		**nodes;	/* Node array */
 } mxml_index_t;
+
+typedef int (*mxml_custom_load_cb_t)(mxml_node_t *, const char *);
+					/**** Custom data load callback function ****/
+
+typedef const char *(*mxml_custom_save_cb_t)(mxml_node_t *);  
+					/**** Custom data save callback function ****/
 
 
 /*
@@ -167,6 +182,8 @@ extern mxml_node_t	*mxmlLoadFile(mxml_node_t *top, FILE *fp,
 			              mxml_type_t (*cb)(mxml_node_t *));
 extern mxml_node_t	*mxmlLoadString(mxml_node_t *top, const char *s,
 			                mxml_type_t (*cb)(mxml_node_t *));
+extern mxml_node_t	*mxmlNewCustom(mxml_node_t *parent, void *data,
+			               void (*destroy)(void *));
 extern mxml_node_t	*mxmlNewElement(mxml_node_t *parent, const char *name);
 extern mxml_node_t	*mxmlNewInteger(mxml_node_t *parent, int integer);
 extern mxml_node_t	*mxmlNewOpaque(mxml_node_t *parent, const char *opaque);
@@ -189,6 +206,10 @@ extern int		mxmlSaveFile(mxml_node_t *node, FILE *fp,
 extern int		mxmlSaveString(mxml_node_t *node, char *buffer,
 			               int bufsize,
 			               const char *(*cb)(mxml_node_t *, int));
+extern int		mxmlSetCustom(mxml_node_t *node, void *data,
+			              void (*destroy)(void *));
+extern void		mxmlSetCustomHandlers(mxml_custom_load_cb_t load,
+			                      mxml_custom_save_cb_t save);
 extern int		mxmlSetElement(mxml_node_t *node, const char *name);
 extern void		mxmlSetErrorCallback(void (*cb)(const char *));
 extern int		mxmlSetInteger(mxml_node_t *node, int integer);
@@ -229,5 +250,5 @@ extern mxml_type_t	mxml_real_cb(mxml_node_t *node);
 
 
 /*
- * End of "$Id: mxml.h,v 1.22 2004/07/11 13:14:07 mike Exp $".
+ * End of "$Id: mxml.h,v 1.23 2004/10/28 02:58:00 mike Exp $".
  */

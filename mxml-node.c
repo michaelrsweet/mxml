@@ -1,5 +1,5 @@
 /*
- * "$Id: mxml-node.c,v 1.13 2004/05/02 16:04:40 mike Exp $"
+ * "$Id: mxml-node.c,v 1.14 2004/10/28 02:58:00 mike Exp $"
  *
  * Node support code for Mini-XML, a small XML-like file parsing library.
  *
@@ -256,6 +256,11 @@ mxmlDelete(mxml_node_t *node)		/* I - Node to delete */
         if (node->value.text.string)
 	  free(node->value.text.string);
         break;
+    case MXML_CUSTOM :
+        if (node->value.custom.data &&
+	    node->value.custom.destroy)
+	  (*(node->value.custom.destroy))(node->value.custom.data);
+	break;
   }
 
  /*
@@ -263,6 +268,43 @@ mxmlDelete(mxml_node_t *node)		/* I - Node to delete */
   */
 
   free(node);
+}
+
+
+/*
+ * 'mxmlNewCustom()' - Create a new custom data node.
+ *
+ * The new custom node is added to the end of the specified parent's child
+ * list. The constant MXML_NO_PARENT can be used to specify that the new
+ * element node has no parent. NULL can be passed when the data in the
+ * node is not dynamically allocated or is separately managed.
+ */
+
+mxml_node_t *				/* O - New node */
+mxmlNewCustom(mxml_node_t *parent,	/* I - Parent node or MXML_NO_PARENT */
+              void        *data,	/* I - Pointer to data */
+	      void        (*destroy)(void *))
+					/* I - Function to destroy data */
+{
+  mxml_node_t	*node;			/* New node */
+
+
+#ifdef DEBUG
+  fprintf(stderr, "mxmlNewCustom(parent=%p, data=%p, destroy=%p)\n", parent,
+          data, destroy);
+#endif /* DEBUG */
+
+ /*
+  * Create the node and set the value...
+  */
+
+  if ((node = mxml_new(parent, MXML_CUSTOM)) != NULL)
+  {
+    node->value.custom.data    = data;
+    node->value.custom.destroy = destroy;
+  }
+
+  return (node);
 }
 
 
@@ -632,5 +674,5 @@ mxml_new(mxml_node_t *parent,		/* I - Parent node */
 
 
 /*
- * End of "$Id: mxml-node.c,v 1.13 2004/05/02 16:04:40 mike Exp $".
+ * End of "$Id: mxml-node.c,v 1.14 2004/10/28 02:58:00 mike Exp $".
  */

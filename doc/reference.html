@@ -33,6 +33,7 @@
 <p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
 <thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
 <tbody>
+<tr><td><tt>MXML_CUSTOM</tt></td><td>Custom data</td></tr>
 <tr><td><tt>MXML_ELEMENT</tt></td><td>XML element with attributes</td></tr>
 <tr><td><tt>MXML_INTEGER</tt></td><td>Integer value</td></tr>
 <tr><td><tt>MXML_OPAQUE</tt></td><td>Opaque string</td></tr>
@@ -59,6 +60,7 @@
 	<li><a href='#mxmlLoadFd'><tt>mxmlLoadFd()</tt></a></li>
 	<li><a href='#mxmlLoadFile'><tt>mxmlLoadFile()</tt></a></li>
 	<li><a href='#mxmlLoadString'><tt>mxmlLoadString()</tt></a></li>
+	<li><a href='#mxmlNewCustom'><tt>mxmlNewCustom()</tt></a></li>
 	<li><a href='#mxmlNewElement'><tt>mxmlNewElement()</tt></a></li>
 	<li><a href='#mxmlNewInteger'><tt>mxmlNewInteger()</tt></a></li>
 	<li><a href='#mxmlNewOpaque'><tt>mxmlNewOpaque()</tt></a></li>
@@ -70,6 +72,8 @@
 	<li><a href='#mxmlSaveFd'><tt>mxmlSaveFd()</tt></a></li>
 	<li><a href='#mxmlSaveFile'><tt>mxmlSaveFile()</tt></a></li>
 	<li><a href='#mxmlSaveString'><tt>mxmlSaveString()</tt></a></li>
+	<li><a href='#mxmlSetCustom'><tt>mxmlSetCustom()</tt></a></li>
+	<li><a href='#mxmlSetCustomHandlers'><tt>mxmlSetCustomHandlers()</tt></a></li>
 	<li><a href='#mxmlSetElement'><tt>mxmlSetElement()</tt></a></li>
 	<li><a href='#mxmlSetErrorCallback'><tt>mxmlSetErrorCallback()</tt></a></li>
 	<li><a href='#mxmlSetInteger'><tt>mxmlSetInteger()</tt></a></li>
@@ -528,6 +532,34 @@ mxmlLoadString(
 <h4>Returns</h4>
 <p>First node or NULL if the string has errors.</p>
 <!-- NEW PAGE -->
+<h3><a name='mxmlNewCustom'>mxmlNewCustom()</a></h3>
+<hr noshade/>
+<h4>Description</h4>
+<p>Create a new custom data node.
+
+The new custom node is added to the end of the specified parent's child
+list. The constant MXML_NO_PARENT can be used to specify that the new
+element node has no parent. NULL can be passed when the data in the
+node is not dynamically allocated or is separately managed.</p>
+<h4>Syntax</h4>
+<pre>
+<a href='#mxml_node_t'>mxml_node_t</a> *
+mxmlNewCustom(
+    <a href='#mxml_node_t'>mxml_node_t</a> * parent,
+    void * data,
+    void (*destroy)(void *));
+</pre>
+<h4>Arguments</h4>
+<p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
+<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><tt>parent</tt></td><td>Parent node or MXML_NO_PARENT</td></tr>
+<tr><td><tt>data</tt></td><td>Pointer to data</td></tr>
+<tr><td><tt>(*destroy)(void *)</tt></td><td>Function to destroy data</td></tr>
+</tbody></table></p>
+<h4>Returns</h4>
+<p>New node</p>
+<!-- NEW PAGE -->
 <h3><a name='mxmlNewElement'>mxmlNewElement()</a></h3>
 <hr noshade/>
 <h4>Description</h4>
@@ -837,6 +869,58 @@ mxmlSaveString(
 <h4>Returns</h4>
 <p>Size of string</p>
 <!-- NEW PAGE -->
+<h3><a name='mxmlSetCustom'>mxmlSetCustom()</a></h3>
+<hr noshade/>
+<h4>Description</h4>
+<p>Set the data and destructor of a custom data node.
+
+The node is not changed if it is not a custom node.</p>
+<h4>Syntax</h4>
+<pre>
+int
+mxmlSetCustom(
+    <a href='#mxml_node_t'>mxml_node_t</a> * node,
+    void * data,
+    void (*destroy)(void *));
+</pre>
+<h4>Arguments</h4>
+<p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
+<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><tt>node</tt></td><td>Node to set</td></tr>
+<tr><td><tt>data</tt></td><td>New data pointer</td></tr>
+<tr><td><tt>(*destroy)(void *)</tt></td><td>New destructor function</td></tr>
+</tbody></table></p>
+<h4>Returns</h4>
+<p>0 on success, -1 on failure</p>
+<!-- NEW PAGE -->
+<h3><a name='mxmlSetCustomHandlers'>mxmlSetCustomHandlers()</a></h3>
+<hr noshade/>
+<h4>Description</h4>
+<p>Set the handling functions for custom data.
+
+The load function accepts a node pointer and a data string and must
+return 0 on success and non-zero on error.
+
+The save function accepts a node pointer and must return a malloc'd
+string on success and NULL on error.</p>
+<h4>Syntax</h4>
+<pre>
+void
+mxmlSetCustomHandlers(
+    mxml_custom_load_cb_t load,
+    mxml_custom_save_cb_t save);
+</pre>
+<h4>Arguments</h4>
+<p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
+<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><tt>load</tt></td><td>Load function</td></tr>
+<tr><td><tt>save</tt></td><td>Save function</td></tr>
+</tbody></table></p>
+<h4>Returns</h4>
+<p>Nothing.</p>
+<!-- NEW PAGE -->
 <h3><a name='mxmlSetElement'>mxmlSetElement()</a></h3>
 <hr noshade/>
 <h4>Description</h4>
@@ -1057,6 +1141,7 @@ mxmlWalkPrev(
 <h2><a name='_structures'>Structures</a></h2>
 <ul>
 	<li><a href='#mxml_attr_s'><tt>mxml_attr_s</tt></a></li>
+	<li><a href='#mxml_custom_s'><tt>mxml_custom_s</tt></a></li>
 	<li><a href='#mxml_fdbuf_s'><tt>mxml_fdbuf_s</tt></a></li>
 	<li><a href='#mxml_index_s'><tt>mxml_index_s</tt></a></li>
 	<li><a href='#mxml_node_s'><tt>mxml_node_s</tt></a></li>
@@ -1082,6 +1167,24 @@ struct mxml_attr_s
 <tbody>
 <tr><td><tt>name</tt></td><td>Attribute name</td></tr>
 <tr><td><tt>value</tt></td><td>Attribute value</td></tr>
+</tbody></table></p>
+<!-- NEW PAGE -->
+<h3><a name='mxml_custom_s'>mxml_custom_s</a></h3>
+<hr noshade/>
+<h4>Description</h4>
+<p>An XML custom value.</p>
+<h4>Definition</h4>
+<pre>
+struct mxml_custom_s
+{
+  void * data;
+};
+</pre>
+<h4>Members</h4>
+<p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
+<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><tt>data</tt></td><td>Pointer to (allocated) custom data</td></tr>
 </tbody></table></p>
 <!-- NEW PAGE -->
 <h3><a name='mxml_fdbuf_s'>mxml_fdbuf_s</a></h3>
@@ -1207,6 +1310,7 @@ struct mxml_value_s
 <h2><a name='_types'>Types</a></h2>
 <ul>
 	<li><a href='#mxml_attr_t'><tt>mxml_attr_t</tt></a></li>
+	<li><a href='#mxml_custom_t'><tt>mxml_custom_t</tt></a></li>
 	<li><a href='#mxml_element_t'><tt>mxml_element_t</tt></a></li>
 	<li><a href='#mxml_fdbuf_t'><tt>mxml_fdbuf_t</tt></a></li>
 	<li><a href='#mxml_index_t'><tt>mxml_index_t</tt></a></li>
@@ -1223,6 +1327,15 @@ struct mxml_value_s
 <h4>Definition</h4>
 <pre>
 typedef struct <a href='#mxml_attr_s'>mxml_attr_s</a> mxml_attr_t;
+</pre>
+<!-- NEW PAGE -->
+<h3><a name='mxml_custom_t'>mxml_custom_t</a></h3>
+<hr noshade/>
+<h4>Description</h4>
+<p>An XML custom value.</p>
+<h4>Definition</h4>
+<pre>
+typedef struct <a href='#mxml_custom_s'>mxml_custom_s</a> mxml_custom_t;
 </pre>
 <!-- NEW PAGE -->
 <h3><a name='mxml_element_t'>mxml_element_t</a></h3>
@@ -1301,6 +1414,7 @@ typedef union <a href='#mxml_value_u'>mxml_value_u</a> mxml_value_t;
 <pre>
 union mxml_value_u
 {
+  <a href='#mxml_custom_t'>mxml_custom_t</a> custom;
   <a href='#mxml_element_t'>mxml_element_t</a> element;
   int integer;
   char * opaque;
@@ -1312,6 +1426,7 @@ union mxml_value_u
 <p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
 <thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
 <tbody>
+<tr><td><tt>custom</tt></td><td>Custom data</td></tr>
 <tr><td><tt>element</tt></td><td>Element</td></tr>
 <tr><td><tt>integer</tt></td><td>Integer number</td></tr>
 <tr><td><tt>opaque</tt></td><td>Opaque string</td></tr>
@@ -1321,8 +1436,24 @@ union mxml_value_u
 <!-- NEW PAGE -->
 <h2><a name='_variables'>Variables</a></h2>
 <ul>
+	<li><a href='#mxml_custom_load_cb'><tt>mxml_custom_load_cb</tt></a></li>
+	<li><a href='#mxml_custom_save_cb'><tt>mxml_custom_save_cb</tt></a></li>
 	<li><a href='#num_callbacks'><tt>num_callbacks</tt></a></li>
 </ul>
+<!-- NEW PAGE -->
+<h3><a name='mxml_custom_load_cb'>mxml_custom_load_cb</a></h3>
+<hr noshade/><h4>Definition</h4>
+<pre>
+static mxml_custom_load_cb_t mxml_custom_load_cb = NULL;
+</pre>
+<!-- NEW PAGE -->
+<h3><a name='mxml_custom_save_cb'>mxml_custom_save_cb</a></h3>
+<hr noshade/><h4>Description</h4>
+<p>Local functions...</p>
+<h4>Definition</h4>
+<pre>
+static mxml_custom_save_cb_t mxml_custom_save_cb = NULL;
+</pre>
 <!-- NEW PAGE -->
 <h3><a name='num_callbacks'>num_callbacks</a></h3>
 <hr noshade/><h4>Definition</h4>

@@ -1,5 +1,5 @@
 /*
- * "$Id: mxml-set.c,v 1.3 2004/05/02 16:04:40 mike Exp $"
+ * "$Id: mxml-set.c,v 1.4 2004/10/28 02:58:00 mike Exp $"
  *
  * Node set functions for Mini-XML, a small XML-like file parsing library.
  *
@@ -31,6 +31,39 @@
 
 #include "config.h"
 #include "mxml.h"
+
+
+/*
+ * 'mxmlSetCustom()' - Set the data and destructor of a custom data node.
+ *
+ * The node is not changed if it is not a custom node.
+ */
+
+int					/* O - 0 on success, -1 on failure */
+mxmlSetCustom(mxml_node_t *node,	/* I - Node to set */
+              void        *data,	/* I - New data pointer */
+	      void        (*destroy)(void *))
+					/* I - New destructor function */
+{
+ /*
+  * Range check input...
+  */
+
+  if (!node || node->type != MXML_CUSTOM)
+    return (-1);
+
+ /*
+  * Free any old element value and set the new value...
+  */
+
+  if (node->value.custom.data && node->value.custom.destroy)
+    (*(node->value.custom.destroy))(node->value.custom.data);
+
+  node->value.custom.data    = data;
+  node->value.custom.destroy = destroy;
+
+  return (0);
+}
 
 
 /*
@@ -220,5 +253,5 @@ mxmlSetTextf(mxml_node_t *node,		/* I - Node to set */
 
 
 /*
- * End of "$Id: mxml-set.c,v 1.3 2004/05/02 16:04:40 mike Exp $".
+ * End of "$Id: mxml-set.c,v 1.4 2004/10/28 02:58:00 mike Exp $".
  */

@@ -2,6 +2,11 @@ README - 06/03/2003
 -------------------
 
 
+CHANGES IN Mini-XML 0.92
+
+	- mxmlSaveFile() didn't return a value on success.
+
+
 CHANGES IN Mini-XML 0.91
 
 	- mxmlWalkNext() would go into an infinite loop.

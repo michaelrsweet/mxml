@@ -10,10 +10,6 @@ P, TD, TH {
   font-family: serif;
 }
 
-P.center {
-  text-align: center;
-}
-
 H1, H2, H3, H4, H5, H6 {
   color: #000000;
   font-family: sans-serif;

@@ -1,6 +1,6 @@
 <?php
 //
-// "$Id: login.php,v 1.1 2004/05/17 20:28:52 mike Exp $"
+// "$Id: login.php,v 1.2 2004/05/19 01:39:04 mike Exp $"
 //
 //
 
@@ -23,6 +23,10 @@ else
   html_header("Login");
 
   print("<h1>Login</h1>\n"
+       ."<p>Logins are currently only available to Mini-XML developers. "
+       ."If you are not a Mini-XML developer, please return to the "
+       ."<a href='index.php'>home page</a> and choose a different "
+       ."link.</p>\n"
        ."<form method='POST' action='$PHP_SELF'>"
        ."<p><table width='100%'>\n"
        ."<tr><th align='right'>Username:</th>"
@@ -43,6 +47,6 @@ else
 
 
 //
-// End of "$Id: login.php,v 1.1 2004/05/17 20:28:52 mike Exp $".
+// End of "$Id: login.php,v 1.2 2004/05/19 01:39:04 mike Exp $".
 //
 ?>

@@ -7,6 +7,8 @@ CHANGES IN Mini-XML 1.2
 	- Added new formatted text methods mxmlNewTextf() and
 	  mxmlSetTextf() to create/set a text node value using
 	  printf-style formats.
+	- Added new standard callbacks for use with the mxmlLoad
+	  functions.
 	- Updated the HTML documentation to include examples of
 	  the walk and load function output.
 	- Added --with/without-ansi configure option to control

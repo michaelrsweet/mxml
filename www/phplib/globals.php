@@ -1,6 +1,6 @@
 <?php
 //
-// "$Id: globals.php,v 1.8 2004/05/20 15:45:55 mike Exp $"
+// "$Id: globals.php,v 1.9 2004/05/20 21:37:57 mike Exp $"
 //
 // Global PHP constants and variables...
 //
@@ -13,6 +13,8 @@
 
 $PROJECT_NAME = "Mini-XML";		// Title of project
 $PROJECT_EMAIL = "mxml@easysw.com";	// Default notification address
+$PROJECT_REGISTER = "mxml-register@easysw.com";
+					// User registration email
 $PROJECT_MODULE = "mxml";		// CVS module
 $PAGE_MAX = 10; 			// Max items per page
 
@@ -36,6 +38,6 @@ else
   $PHP_URL = "http://$_SERVER[SERVER_NAME]:$_SERVER[SERVER_PORT]$_SERVER[PHP_SELF]";
 
 //
-// End of "$Id: globals.php,v 1.8 2004/05/20 15:45:55 mike Exp $".
+// End of "$Id: globals.php,v 1.9 2004/05/20 21:37:57 mike Exp $".
 //
 ?>

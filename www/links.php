@@ -1,6 +1,6 @@
 <?
 //
-// "$Id: links.php,v 1.2 2004/05/20 15:45:55 mike Exp $"
+// "$Id: links.php,v 1.3 2004/05/20 21:37:57 mike Exp $"
 //
 // Hierarchical link interface.
 //
@@ -166,7 +166,7 @@ for ($i = 0; $i < $argc; $i ++)
 	{
 	  $listtype = $argv[$i][1];
 
-	  if ($listtype == 'A')
+	  if ($listtype != 'C')
 	    $parent_id = -1;
 	}
 	break;
@@ -238,7 +238,7 @@ switch ($op)
       html_end_links();
 
       print("<h1>Links</h1>\n");
-      print("<form method='POST' action='$PHP_SELF'>\n"
+      print("<form method='POST' action='$PHP_SELF?L$listtype'>\n"
 	   ."<center>"
 	   ."<input type='text' name='SEARCH' size='40' value='$search'/>"
 	   ."<input type='submit' value='Search'/>"
@@ -304,17 +304,17 @@ switch ($op)
       // Show the categories...
       if ($query != "")
         $result = db_query("SELECT * FROM link "
-                          ."WHERE ${ispublished}is_category = 1 AND "
+                          ."WHERE ${is_published}is_category = 1 AND "
 			  ."($query) "
 			  ."ORDER BY name");
       else if ($parent_id >= 0)
         $result = db_query("SELECT * FROM link "
-                          ."WHERE ${ispublished}is_category = 1 AND "
+                          ."WHERE ${is_published}is_category = 1 AND "
 			  ."parent_id = $parent_id "
 			  ."ORDER BY name");
       else
         $result = db_query("SELECT * FROM link "
-                          ."WHERE ${ispublished}is_category = 1 "
+                          ."WHERE ${is_published}is_category = 1 "
 			  ."ORDER BY name");
 
       if ($parent_id < 0)
@@ -329,11 +329,15 @@ switch ($op)
         $id   = $row["id"];
 	$name = htmlspecialchars($row["name"]);
 
-        print("<li><a href='$PHP_SELF?L+P$id$options'>$name</a>");
+        print("<li><a href='$PHP_SELF?L$listtype+P$id$options'>$name</a>");
+
+        if (!$row["is_published"])
+	  print(" <img src='images/private.gif' width='16' height='16' "
+	       ."align='middle' alt='private'/>");
 
         if ($LOGIN_LEVEL >= AUTH_DEVEL || $LOGIN_USER == $row["create_user"])
 	{
-	  print(" [&nbsp;<a href='$PHP_SELF?FC$id+P$parent_id$options'>Edit</a> |"
+	  print(" [&nbsp;<a href='$PHP_SELF?UC$id+P$parent_id$options'>Edit</a> |"
 	       ." <a href='$PHP_SELF?X$id+P$parent_id$options'>Delete</a>&nbsp;]");
 	}
 
@@ -343,7 +347,7 @@ switch ($op)
       print("</ul>\n");
 
       html_start_links();
-      html_link("Submit New Category", "$PHP_SELF?FC+P$parent_id$options");
+      html_link("Submit New Category", "$PHP_SELF?UC+P$parent_id$options");
       html_end_links();
 
       db_free($result);
@@ -351,17 +355,17 @@ switch ($op)
       // Then show the listings...
       if ($query != "")
         $result = db_query("SELECT * FROM link "
-                          ."WHERE ${ispublished}is_category = 0 AND "
+                          ."WHERE ${is_published}is_category = 0 AND "
 			  ."($query) "
 			  ."ORDER BY name");
       else if ($parent_id >= 0)
         $result = db_query("SELECT * FROM link "
-                          ."WHERE ${ispublished}is_category = 0 AND "
+                          ."WHERE ${is_published}is_category = 0 AND "
 			  ."parent_id = $parent_id "
 			  ."ORDER BY name");
       else
         $result = db_query("SELECT * FROM link "
-                          ."WHERE ${ispublished}is_category = 0 "
+                          ."WHERE ${is_published}is_category = 0 "
 			  ."ORDER BY name");
 
       if ($parent_id < 0)
@@ -386,6 +390,10 @@ switch ($op)
 	  $category = get_category($row['parent_id'], 1);
 	  print(" in $category");
 	}
+
+        if (!$row["is_published"])
+	  print(" <img src='images/private.gif' width='16' height='16' "
+	       ."align='middle' alt='private'/>");
 
         if ($age == 1)
           print(", <i>Updated 1 day ago</i>");
@@ -506,7 +514,7 @@ switch ($op)
         if (array_key_exists("DESCRIPTION", $_POST))
 	  $description = $_POST["DESCRIPTION"];
 
-        if (array_key_exists("ANNOUNCEMENT", $_POST))
+        if (array_key_exists("ANNOUNCEMENT", $_POST) && $type == 'L')
 	  $announcement = $_POST["ANNOUNCEMENT"];
 
         if ($name != "" &&
@@ -531,7 +539,11 @@ switch ($op)
       else
         $opname = 'Create';
 
-      $heading = htmlspecialchars("$opname $typename $name");
+      if ($havedata)
+	$heading = htmlspecialchars("${opname}d $typename $name");
+      else
+	$heading = htmlspecialchars("$opname $typename $name");
+
       html_header($heading);
 
       html_start_links(1);
@@ -554,6 +566,7 @@ switch ($op)
 	$download_url = db_escape($download_url);
 	$user         = db_escape($LOGIN_USER);
 	$date         = time();
+        $what         = strtolower("${opname}d");
 
 	if ($id == 0)
 	{
@@ -581,34 +594,36 @@ switch ($op)
 
 	if ($announcement != "")
 	{
+	  $links = "<p>[ <a href='links.php?V$id'>More Info</a>";
+	  if ($homepage_url != "")
+	    $links .= " | <a href='links.php?SH$id'>Home Page</a>";
+	  if ($download_url != "")
+	    $links .= " | <a href='links.php?SD$id'>Download</a>";
+          $links .= " ]</p>\n";
+				   
 	  $abstract     = db_escape(abbreviate($announcement, 80));
-          $announcement = db_escape("<p>[&nbsp;<a href='links.php?V$id'>"
-	                           ."More&nbsp;Info</a>&nbsp;]</p>\n"
-				   . $announcement);
+          $announcement = db_escape($links . $announcement);
 
-	  db_query("INSERT INTO article VALUES(NULL,$is_published,"
+	  db_query("INSERT INTO article VALUES(NULL,0,"
 	          ."'$name $version','$abstract','$announcement',$date,"
 		  ."'$user',$date,'$user')");
 
           $article_id = db_insert_id();
 
-          // 
-	  mail($PROJECT_EMAIL, "$PROJECT_NAME Article #$id $what",
-	       wordwrap("$row[create_user] has $what an article titled, "
-	               ."'$row[title]' with the following abstract:\n\n"
-		       ."    $row[abstract]\n\n"
+          // Notify the admin about the new article...
+	  mail($PROJECT_EMAIL, "$PROJECT_NAME Article #$article_id created",
+	       wordwrap("$user has created an article titled, "
+	               ."'$name $version' with the following abstract:\n\n"
+		       ."    $abstract\n\n"
 		       ."Please approve or delete this article via the following "
 		       ."page:\n\n"
-		       ."    $PHP_URL?L$id\n"),
-	       "From: noreply@easysw.com\r\n");
+		       ."    $PHP_URL?L$article_id\n"),
+	       "From: $PROJECT_EMAIL\r\n");
 	}
-
-	print("<h2>$typename '$NAME' $opname</h2>\n");
 
 	if ($is_published == 0)
 	{
           // Send email to moderators...
-	  $what    = strtolower("${opname}d");
 	  $message = wordwrap("'$name' has been $what on the $PROJECT_NAME "
 	                     ."links page and requires your approval before "
 			     ."it will be made visible on the $PROJECT_NAME "
@@ -616,15 +631,21 @@ switch ($op)
 			     ."process the submission:\n\n"
 			     ."    $PHP_URL?U$type$id\n");
 
-	  mail($PROJECT_EMAIL, "$PROJECT_NAME $typename $opname",
-	       $message, "From: noreply@easysw.com\r\n");
+	  mail($PROJECT_EMAIL, "$PROJECT_NAME $typename ${opname}d",
+	       $message, "From: $PROJECT_EMAIL\r\n");
 
           // Let the user know that the moderator must approve it...
           print("<p>Your submission will be made visible as soon as one of "
                ."moderators approves it.</p>\n");
 	}
 	else
+	{
 	  print("<p>Thank you, your submission is now visible on the site.</p>\n");
+
+	  if ($announcement != "")
+	    print("<p>Your news announcement will be made visible as soon as "
+	         ."one of moderators approves it.</p>\n");
+        }
 
 	html_start_links();
 	html_link("Return to Listing", "$PHP_SELF?L+P$parent_id");
@@ -732,13 +753,26 @@ switch ($op)
 	    print("<tr><th align='right' valign='top'>${hstart}Description:${hend}</th>");
 	  else
 	    print("<tr><th align='right' valign='top'>Description:</th>");
-	  print("<td><textarea name='DESCRIPTION' wrap='virtual' cols='60' "
-	       ."rows='10'>$description</textarea></td></tr>\n");
+	  print("<td><textarea name='DESCRIPTION' wrap='virtual' cols='72' "
+	       ."rows='12'>$description</textarea>"
+	       ."<p>The description may contain the following "
+	       ."HTML elements: <tt>A</tt>, <tt>B</tt>, <tt>BLOCKQUOTE</tt>, "
+	       ."<tt>CODE</tt>, <tt>EM</tt>, <tt>H1</tt>, <tt>H2</tt>, "
+	       ."<tt>H3</tt>, <tt>H4</tt>, <tt>H5</tt>, <tt>H6</tt>, <tt>I</tt>, "
+	       ."<tt>IMG</tt>, <tt>LI</tt>, <tt>OL</tt>, <tt>P</tt>, <tt>PRE</tt>, "
+	       ."<tt>TT</tt>, <tt>U</tt>, <tt>UL</tt></p></td></tr>\n");
+
+	  print("<tr><th align='right' valign='top'>Announcment:</th>");
+          print("<td><textarea name='ANNOUNCEMENT' wrap='virtual' cols='72' "
+	       ."rows='12'>$announcement</textarea>"
+	       ."<p>The announcement may contain the following "
+	       ."HTML elements: <tt>A</tt>, <tt>B</tt>, <tt>BLOCKQUOTE</tt>, "
+	       ."<tt>CODE</tt>, <tt>EM</tt>, <tt>H1</tt>, <tt>H2</tt>, "
+	       ."<tt>H3</tt>, <tt>H4</tt>, <tt>H5</tt>, <tt>H6</tt>, <tt>I</tt>, "
+	       ."<tt>IMG</tt>, <tt>LI</tt>, <tt>OL</tt>, <tt>P</tt>, <tt>PRE</tt>, "
+	       ."<tt>TT</tt>, <tt>U</tt>, <tt>UL</tt></p></td></tr>\n");
 	}
 
-	print("<tr><th align='right' valign='top'>Announcment:</th>");
-        print("<td><textarea name='NEWS' wrap='virtual' cols='60' rows='10'>"
-	     ."$announcement</textarea></td></tr>\n");
 	print("<tr><th></th>"
 	     ."<td><input type='submit' value='$opname $typename'/></td>"
 	     ."</tr>\n");
@@ -810,6 +844,7 @@ switch ($op)
       html_start_links(1);
       html_link("Back To Listings", "$PHP_SELF?L+P$parent_id$options");
       html_link("Show Comments", "#_USER_COMMENTS");
+      html_link("Submit Comment", "comment.php?r0+plinks.php_V$id");
       if ($LOGIN_LEVEL >= AUTH_DEVEL || $LOGIN_USER == $row["create_user"])
       {
         html_link("Delete Listing", "$PHP_SELF?X$id$options");
@@ -878,7 +913,7 @@ switch ($op)
       db_free($result);
 
       print("<hr noshade/>\n"
-           ."<h2><a name='_USER_COMMENTS'>User Comments</a></h2>\n");
+           ."<h2><a name='_USER_COMMENTS'>Comments</a></h2>\n");
       html_start_links();
       html_link("Submit Comment", "comment.php?r0+plinks.php_V$id");
       html_end_links();
@@ -888,86 +923,67 @@ switch ($op)
       break;
 
   case 'X' : // Delete listing...
-/*
-      if ($id <= 0)
-      {
-        print("<h2>Error</h2>\n"
-	     ."<p>No link ID provided...</p>\n");
-	break;
-      }
-
       $result = db_query("SELECT * FROM link WHERE id = $id");
-
-      if (!$result)
+      if (db_count($result) != 1)
       {
-        print("<h2>Error</h2>\n"
-	     ."<p>Link $id does not exist.</p>\n");
-	break;
+        db_free($result);
+        header("Location: $PHP_SELF?L$options");
+	exit();
       }
 
       $row = db_next($result);
 
-      if (!$row)
+      if ($LOGIN_LEVEL < AUTH_DEVEL && $LOGIN_USER != $row["create_user"])
       {
-        print("<h2>Error</h2>\n"
-	     ."<p>Link $id does not exist.</p>\n");
-	break;
+        db_free($result);
+        header("Location: $PHP_SELF?L$options");
+	exit();
       }
 
-      $name           = $row['name;
-      $owner_email    = $row['owner_email;
-      $owner_password = $row['owner_password;
+      $name = htmlspecialchars($row["name"], ENT_QUOTES);
 
       db_free($result);
 
-      if (!$LOGIN_USER && !($OWNER_EMAIL && $OWNER_PASSWORD))
+      if ($REQUEST_METHOD == "POST")
       {
-        print("<h2>Delete $name</h2>\n");
+        // Already confirmed it...
+        db_query("DELETE FROM link WHERE id = $id");
+	html_header("$name Deleted");
 
-	print("<form method='POST' action='$PHP_SELF?X$id+P$parent_id'>\n"
-             ."<center><table border='0'>\n");
+	html_start_links(1);
+	html_link("Return To Listings", "$PHP_SELF?L+P$parent_id$options");
+	html_end_links();
 
-	print("<tr>"
-             ."<th align='right'>Owner Email:</th>"
-	     ."<td><input type='text' name='OWNER_EMAIL' value='$owner_email' "
-	     ."size='40' maxlength='128'></td>"
-	     ."</tr>\n");
+        print("<h1>$name Deleted</h1>\n");
 
-	print("<tr>"
-             ."<th align='right'>Owner Password:</th>"
-	     ."<td><input type='password' name='OWNER_PASSWORD' "
-	     ."size='32' maxlength='32'></td>"
-	     ."</tr>\n");
+	print("<p>The listing for '$name' has been deleted.</p>\n");
 
-	print("<tr>"
-             ."<th></th>"
-	     ."<td><input type='submit' value='Delete'></td>"
-	     ."</tr>\n");
-
-	print("</table></center>\n");
-	print("</form>");
-	break;
+        html_footer();
       }
-      else if (!$LOGIN_USER &&
-               ($OWNER_EMAIL != $owner_email ||
-	        $OWNER_PASSWORD != $owner_password))
+      else
       {
-        print("<h2>Error</h2>\n"
-	     ."<p>Owner email or password doesn't match!</p>\n");
-	break;
+        // Confirm deletion...
+	html_header("Delete $name");
+
+	html_start_links(1);
+	html_link("Return To $name", "$PHP_SELF?V$id+P$parent_id$options");
+	html_link("Return To Listings", "$PHP_SELF?L+P$parent_id$options");
+	html_end_links();
+
+        print("<h1>Delete $name</h1>\n");
+
+	print("<form method='POST' action='$PHP_SELF?X$id+P$parent_id$options'>\n"
+             ."<center><input type='submit' value='Confirm Delete $name'></center>"
+	     ."</form>\n");
+
+        html_footer();
       }
-
-      db_query("DELETE FROM link WHERE id=$id");
-
-      print("<h2>Deleted $name</h2>\n");
-      print("<p><a href='$PHP_SELF?P$parent_id'>Return to listing.</a></p>\n");
-*/
       break;
 
   case 'R' : // Rate this entry...
       if (array_key_exists("RATING", $_POST))
       {
-        $rating = (int)$_POST("RATING");
+        $rating = (int)$_POST["RATING"];
 
 	if ($rating < 0)
 	  $rating = 0;
@@ -1019,6 +1035,6 @@ db_close();
 
 
 //
-// End of "$Id: links.php,v 1.2 2004/05/20 15:45:55 mike Exp $".
+// End of "$Id: links.php,v 1.3 2004/05/20 21:37:57 mike Exp $".
 //
 ?>

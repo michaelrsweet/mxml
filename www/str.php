@@ -1,6 +1,6 @@
 <?php
 //
-// "$Id: str.php,v 1.11 2004/05/20 02:04:44 mike Exp $"
+// "$Id: str.php,v 1.12 2004/05/20 21:37:57 mike Exp $"
 //
 // Software Trouble Report page...
 //
@@ -135,7 +135,7 @@ notify_users($id,			// I - STR #
 	  ."\n$contents"
 	  ."________________________________________________________________\n"
 	  ."Thank you for using the $PROJECT_NAME Software Trouble Report page!",
-	   "From: noreply@easysw.com\r\n");
+	   "From: $PROJECT_EMAIL\r\n");
 
     $ccresult = db_query("SELECT email FROM carboncopy WHERE url = 'str.php_L$id'");
     if ($ccresult)
@@ -159,7 +159,7 @@ notify_users($id,			// I - STR #
 	    ."\n$contents"
 	    ."________________________________________________________________\n"
 	    ."Thank you for using the $PROJECT_NAME Software Trouble Report page!",
-	     "From: noreply@easysw.com\r\n");
+	     "From: $PROJECT_EMAIL\r\n");
       }
 
       db_free($ccresult);
@@ -186,7 +186,7 @@ notify_users($id,			// I - STR #
 	  ."  Subsystem: $subsystem\n"
 	  ."Fix Version: $fix_version\n"
 	  ."\n$contents",
-	   "From: noreply@easysw.com\r\n");
+	   "From: $PROJECT_EMAIL\r\n");
 
     db_free($result);
   }
@@ -1187,11 +1187,11 @@ switch ($op)
 	}
         print("</select><br />\n");
 
-	print("<textarea name='CONTENTS' COLS='72' ROWS='12' WRAP='VIRTUAL'>"
+	print("<textarea name='CONTENTS' cols='72' rows='12' wrap='virtual'>"
              ."</textarea></td></tr>\n");
 
-        print("<tr><TH ALIGN='CENTER' COLSPAN='2'>"
-	     ."<INPUT type='SUBMIT' value='Update Trouble Report'></th></tr>\n");
+        print("<tr><th align='center' colspan='2'>"
+	     ."<input type='submit' value='Update Trouble Report'/></th></tr>\n");
         print("</table></p></form>\n");
 
 	print("<hr noshade/><p><b>Trouble Report Files:</b> "
@@ -1890,6 +1890,6 @@ switch ($op)
 }
 
 //
-// End of "$Id: str.php,v 1.11 2004/05/20 02:04:44 mike Exp $".
+// End of "$Id: str.php,v 1.12 2004/05/20 21:37:57 mike Exp $".
 //
 ?>

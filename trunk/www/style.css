@@ -35,15 +35,15 @@ TR.header, TR.header TH, TH.header {
 }
 
 TR.page {
-  background-color: #f8f8f8;
+  background-color: #f4f4f4;
 }
 
 TR.data0, TD.data0 {
-  background-color: #eeeeee;
+  background-color: #e8e8e8;
 }
 
 TR.data1, TD.data1 {
-  background-color: #dddddd;
+  background-color: #e0e0e0;
 }
 
 INPUT[TYPE="TEXT"], TEXTAREA {

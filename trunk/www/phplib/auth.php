@@ -1,6 +1,6 @@
 <?
 //
-// "$Id: auth.php,v 1.6 2004/05/19 14:02:38 mike Exp $"
+// "$Id: auth.php,v 1.7 2004/05/19 21:17:47 mike Exp $"
 //
 // Authentication functions for PHP pages...
 //
@@ -33,6 +33,7 @@ define("AUTH_ADMIN", 100);
 
 $LOGIN_LEVEL = 0;
 $LOGIN_USER  = "";
+$LOGIN_EMAIL = "";
 
 auth_current();
 
@@ -44,7 +45,7 @@ auth_current();
 function				// O - Current username or ""
 auth_current()
 {
-  global $_COOKIE, $_SERVER, $LOGIN_LEVEL, $LOGIN_USER;
+  global $_COOKIE, $_SERVER, $LOGIN_EMAIL, $LOGIN_LEVEL, $LOGIN_USER;
 
 
   // See if the SID cookie is set; if not, the user is not logged in...
@@ -77,6 +78,7 @@ auth_current()
       // Set globals...
       $LOGIN_USER      = $cookie[0];
       $LOGIN_LEVEL     = $row["level"];
+      $LOGIN_EMAIL     = $row["email"];
       $_COOKIE["FROM"] = $row["email"];
 
       // Return the current user...
@@ -96,7 +98,7 @@ function				// O - Current username or ""
 auth_login($name,			// I - Username
            $password)			// I - Password
 {
-  global $_COOKIE, $_SERVER, $LOGIN_USER;
+  global $_COOKIE, $_SERVER, $LOGIN_EMAIL, $LOGIN_LEVEL, $LOGIN_USER;
 
 
   // Reset the user...
@@ -117,6 +119,7 @@ auth_login($name,			// I - Username
       // Update the username and email...
       $LOGIN_USER      = $name;
       $LOGIN_LEVEL     = $row["level"];
+      $LOGIN_EMAIL     = $row["email"];
       $_COOKIE["FROM"] = $row["email"];
 
       // Compute the session ID...
@@ -139,10 +142,11 @@ auth_login($name,			// I - Username
 function
 auth_logout()
 {
-  global $LOGIN_USER;
+  global $LOGIN_EMAIL, $LOGIN_LEVEL, $LOGIN_USER;
 
 
   $LOGIN_USER  = "";
+  $LOGIN_EMAIL = "";
   $LOGIN_LEVEL = 0;
 
   setcookie("SID", "", time() + 90 * 86400, "/");
@@ -150,6 +154,6 @@ auth_logout()
 
 
 //
-// End of "$Id: auth.php,v 1.6 2004/05/19 14:02:38 mike Exp $".
+// End of "$Id: auth.php,v 1.7 2004/05/19 21:17:47 mike Exp $".
 //
 ?>

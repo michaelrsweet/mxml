@@ -1,5 +1,15 @@
-README - 07/20/2003
+README - 07/21/2003
 -------------------
+
+CHANGES IN Mini-XML 1.1.1
+
+	- The private mxml_add_ch() function did not update the
+	  start-of-buffer pointer which could cause a crash when
+	  using mxmlSaveString().
+	- The private mxml_write_ws() function called putc()
+	  instead of using the proper callback which could cause
+	  a crash when using mxmlSaveString().
+
 
 CHANGES IN Mini-XML 1.1
 

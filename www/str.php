@@ -1,6 +1,6 @@
 <?php
 //
-// "$Id: str.php,v 1.16 2004/11/13 18:26:33 mike Exp $"
+// "$Id$"
 //
 // Software Trouble Report page...
 //
@@ -23,9 +23,8 @@ include_once "phplib/str.php";
 //
 
 $messages = array(
-  "Fixed in CVS" =>
-      "Fixed in CVS - the anonymous CVS repository will be updated at "
-     ."midnight EST.",
+  "Fixed in Repo" =>
+      "Fixed in Subversion repository.",
   "Old STR" =>
       "This STR has not been updated by the submitter for two or more weeks "
      ."and has been closed as required by the Mini-XML Configuration Management "
@@ -51,6 +50,7 @@ $subsystems = array(
 $versions = array(
   "CVS",
   "+2.2",
+  "+2.1.1",
   "2.1",
   "2.0",
   "2.0rc1",
@@ -234,7 +234,7 @@ if ($argc)
   if ($op != 'L' && $op != 'M' && $op != 'T' && $op != 'F' &&
       $op != 'N' && $op != 'U' && $op != 'B')
   {
-    html_header("STR Error");
+    html_header("Bugs &amp; Features Error");
     print("<p>Bad command '$op'!</p>\n");
     html_footer();
     exit();
@@ -242,7 +242,7 @@ if ($argc)
 
   if (($op == 'M' || $op == 'B') && $LOGIN_LEVEL < AUTH_DEVEL)
   {
-    html_header("STR Error");
+    html_header("Bugs &amp; Features Error");
     print("<p>The '$op' command is not available to you!</p>\n");
     html_footer();
     exit();
@@ -250,7 +250,7 @@ if ($argc)
 
   if (($op == 'M' || $op == 'T' || $op == 'F') && !$id)
   {
-    html_header("STR Error");
+    html_header("Bugs &amp; Features Error");
     print("<p>Command '$op' requires an STR number!</p>\n");
     html_footer();
     exit();
@@ -258,7 +258,7 @@ if ($argc)
 
   if ($op == 'N' && $id)
   {
-    html_header("STR Error");
+    html_header("Bugs &amp; Features Error");
     print("<p>Command '$op' cannot have an STR number!</p>\n");
     html_footer();
     exit();
@@ -297,7 +297,7 @@ if ($argc)
           $femail = (int)$option;
 	  break;
       default :
-	  html_header("STR Error");
+	  html_header("Bugs &amp; Features Error");
 	  print("<p>Bad option '$argv[$i]'!</p>\n");
 	  html_footer();
 	  exit();
@@ -417,7 +417,7 @@ switch ($op)
         $row = db_next($result);
 
         html_start_links(1);
-	html_link("Return to Support", "$PHP_SELF?L$options");
+	html_link("Return to Bugs &amp; Features", "$PHP_SELF?L$options");
 
         if ($row['status'] >= $STR_STATUS_ACTIVE)
 	{
@@ -563,13 +563,13 @@ switch ($op)
       }
       else
       {
-        html_header("Support");
+        html_header("Bugs &amp; Features");
 
         html_start_links(1);
-	html_link("Submit Support Request", "$PHP_SELF?N$options'");
+	html_link("Submit Bug or Feature Request", "$PHP_SELF?N$options'");
 	html_end_links();
 
-        print("<h1>Support</h1>\n");
+        print("<h1>Bugs &amp; Features</h1>\n");
 
         print("<form method='POST' action='$PHP_SELF'><p align='center'>"
 	     ."Search&nbsp;Words: &nbsp;<input type='text' size='60' name='SEARCH' value='$search'>"
@@ -1041,7 +1041,7 @@ switch ($op)
         html_header("Modify STR #$id");
 
         html_start_links(1);
-	html_link("Return to Support", "$PHP_SELF?L$options");
+	html_link("Return to Bugs &amp; Features", "$PHP_SELF?L$options");
 	html_link("Return to STR #$id", "$PHP_SELF?L$id$options");
 	html_link("Post Text", "$PHP_SELF?T$id$options");
 	html_link("Post File", "$PHP_SELF?F$id$options");
@@ -1682,13 +1682,13 @@ switch ($op)
       }
       else
       {
-        html_header("Submit Support Request");
+        html_header("Submit Bug or Feature Request");
 
         html_start_links(1);
-	html_link("Return to Support", "$PHP_SELF?L$options");
+	html_link("Return to Bugs &amp; Features", "$PHP_SELF?L$options");
 	html_end_links();
 
-        print("<h1>Submit Support Request</h1>\n");
+        print("<h1>Submit Bug or Feature Request</h1>\n");
 
         if ($REQUEST_METHOD == "POST")
 	{
@@ -1818,7 +1818,7 @@ switch ($op)
         print("<input name='STRFILE' type='FILE'></td></tr>\n");
 
         print("<tr><th align='center' colspan='2'>"
-	     ."<input type='submit' value='Submit Support Request'></th></tr>\n");
+	     ."<input type='submit' value='Submit Bug or Feature Request'></th></tr>\n");
         print("</table></p></form>\n");
         html_footer();
       }
@@ -1830,7 +1830,7 @@ switch ($op)
 
       if ($REQUEST_METHOD != "POST")
       {
-	html_header("STR Error");
+	html_header("Bugs &amp; Features Error");
 	print("<p>The '$op' command requires a POST request!\n");
 	html_footer();
 	exit();
@@ -1842,7 +1842,7 @@ switch ($op)
       if (($notification != "ON" && $notification != "OFF") || $email == "" ||
           !validate_email($email))
       {
-	html_header("STR Error");
+	html_header("Bugs &amp; Features Error");
 	print("<p>Please press your browsers back button and enter a valid "
 	     ."EMail address and choose whether to receive notification "
 	     ."messages.</p>\n");
@@ -1898,6 +1898,6 @@ switch ($op)
 }
 
 //
-// End of "$Id: str.php,v 1.16 2004/11/13 18:26:33 mike Exp $".
+// End of "$Id$".
 //
 ?>

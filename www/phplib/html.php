@@ -1,6 +1,6 @@
 <?php
 //
-// "$Id: html.php,v 1.13 2004/06/10 02:40:05 mike Exp $"
+// "$Id$"
 //
 // PHP functions for standardized HTML output...
 //
@@ -57,7 +57,8 @@ $html_keywords = array(
 
 function				// O - User information
 html_header($title = "",		// I - Additional document title
-            $path = "")			// I - Relative path to root
+            $path = "",			// I - Relative path to root
+	    $refresh = "")		// I - Refresh URL
 {
   global $html_keywords, $argc, $argv, $PHP_SELF, $LOGIN_USER;
 
@@ -87,6 +88,10 @@ html_header($title = "",		// I - Additional document title
        ."charset=iso-8859-1'/>\n"
        ."  <link rel='stylesheet' type='text/css' href='${path}style.css'/>\n");
 
+  // If refresh URL is specified, add the META tag...
+  if ($refresh != "")
+    print("  <meta http-equiv='refresh' content='3; $refresh'/>\n");
+
   // Search engine keywords...
   reset($html_keywords);
 
@@ -111,12 +116,10 @@ html_header($title = "",		// I - Additional document title
        ."alt='Mini-XML' align='middle'/>&nbsp;&nbsp;&nbsp;</td>"
        ."<td width='100%'>[&nbsp;<a href='${path}index.php'>Home</a> | "
        ."<a href='${path}articles.php'>Articles</a> | "
+       ."<a href='${path}str.php'>Bugs &amp; Features</a> | "
        ."<a href='${path}documentation.php'>Documentation</a> | "
        ."<a href='${path}software.php'>Download</a> | "
-       ."<a href='${path}links.php'>Links</a> | "
-       ."<a href='${path}newsgroups.php'>Newsgroups</a> | "
-       ."<a href='${path}poll.php'>Polls</a> | "
-       ."<a href='${path}str.php'>Support</a>&nbsp;]</td>"
+       ."<a href='${path}links.php'>Links</a>&nbsp;]</td>"
        ."<td align='right'>[&nbsp;");
 
 

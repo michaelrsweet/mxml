@@ -1,6 +1,6 @@
 <?php
 //
-// "$Id: comment.php,v 1.7 2004/05/20 02:04:44 mike Exp $"
+// "$Id$"
 //
 // Comment and moderation interface for PHP pages...
 //
@@ -315,7 +315,7 @@ else
 
           while ($row = db_next($result))
 	  {
-	    $create_date  = date("M d, Y", $row['date']);
+	    $create_date  = date("M d, Y", $row['create_date']);
 	    $create_user  = sanitize_email($row['create_user']);
 	    $contents     = sanitize_text($row['contents']);
             $location     = str_replace("_", "?", $row['url']);
@@ -373,6 +373,6 @@ else
 }
 
 //
-// End of "$Id: comment.php,v 1.7 2004/05/20 02:04:44 mike Exp $".
+// End of "$Id$".
 //
 ?>

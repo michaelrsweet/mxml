@@ -1,6 +1,6 @@
 <?php
 //
-// "$Id: html.php,v 1.9 2004/05/19 16:34:55 mike Exp $"
+// "$Id: html.php,v 1.10 2004/05/19 22:45:23 mike Exp $"
 //
 // PHP functions for standardized HTML output...
 //
@@ -243,7 +243,7 @@ html_start_table($headings,		// I - Array of heading strings
     print(" height='$height'");
   print(" border='0' cellpadding='0' cellspacing='0'>"
        ."<tr class='header'><th align='left' valign='top'>"
-       ."<img src='images/top-left.gif' width='16' height='16' "
+       ."<img src='images/hdr-top-left.gif' width='16' height='16' "
        ."alt=''/></th>");
 
   $add_html_cols = 0;   //  Add to html_cols after display if colspan is used.
@@ -315,7 +315,7 @@ html_start_table($headings,		// I - Array of heading strings
   $html_cols += $add_html_cols;
 
   print("<th align='right' valign='top'>"
-       ."<img src='images/top-right.gif' "
+       ."<img src='images/hdr-top-right.gif' "
        ."width='16' height='16' alt=''/></th></tr>\n");
 }
 
@@ -330,10 +330,10 @@ html_end_table()
   global $html_cols;
 
   print("<tr class='header'><th align='left' valign='bottom'>"
-       ."<img src='images/bottom-left.gif' width='16' height='16' "
+       ."<img src='images/hdr-bottom-left.gif' width='16' height='16' "
        ."alt=''/></th>"
        ."<th colspan='$html_cols'>&nbsp;</th>"
-       ."<th align='right' valign='bottom'><img src='images/bottom-right.gif' "
+       ."<th align='right' valign='bottom'><img src='images/hdr-bottom-right.gif' "
        ."width='16' height='16' alt=''/></th></tr>\n"
        ."</table></p>\n");
 }

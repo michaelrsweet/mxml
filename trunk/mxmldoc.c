@@ -1,5 +1,6 @@
+//#define DEBUG 1
 /*
- * "$Id: mxmldoc.c,v 1.18 2003/12/03 03:59:04 mike Exp $"
+ * "$Id: mxmldoc.c,v 1.19 2003/12/03 04:26:30 mike Exp $"
  *
  * Documentation generator using mini-XML, a small XML-like file parsing
  * library.
@@ -423,6 +424,9 @@ scan_file(const char  *filename,	/* I - Filename */
 		break;
 
 	    case '#' :			/* Preprocessor */
+#ifdef DEBUG
+	        fputs("    #preprocessor...\n", stderr);
+#endif /* DEBUG */
 	        state = STATE_PREPROCESSOR;
 		break;
 
@@ -436,7 +440,11 @@ scan_file(const char  *filename,	/* I - Filename */
 
             case '{' :
 #ifdef DEBUG
-	        fputs("    open brace...\n", stderr);
+	        fprintf(stderr, "    open brace, function=%p, type=%p...\n",
+		        function, type);
+                if (type)
+                  fprintf(stderr, "    type->child=\"%s\"...\n",
+		          type->child->value.text.string);
 #endif /* DEBUG */
 
 	        if (function)
@@ -604,6 +612,7 @@ scan_file(const char  *filename,	/* I - Filename */
 		{
 		  mxmlDelete(type);
 		  type = NULL;
+		  braces --;
 		}
 
 	        braces ++;
@@ -661,6 +670,11 @@ scan_file(const char  *filename,	/* I - Filename */
 		break;
 
 	    case ';' :
+#ifdef DEBUG
+                fputs("Identifier: <<<< ; >>>\n", stderr);
+		fprintf(stderr, "    function=%p, type=%p\n", function, type);
+#endif /* DEBUG */
+
 	        if (function)
 		{
 		  mxmlDelete(function);
@@ -2127,5 +2141,5 @@ ws_cb(mxml_node_t *node,		/* I - Element node */
 
 
 /*
- * End of "$Id: mxmldoc.c,v 1.18 2003/12/03 03:59:04 mike Exp $".
+ * End of "$Id: mxmldoc.c,v 1.19 2003/12/03 04:26:30 mike Exp $".
  */

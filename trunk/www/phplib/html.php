@@ -1,6 +1,6 @@
 <?php
 //
-// "$Id: html.php,v 1.2 2004/05/17 03:23:06 mike Exp $"
+// "$Id: html.php,v 1.3 2004/05/17 03:39:24 mike Exp $"
 //
 // PHP functions for standardized HTML output...
 //
@@ -92,13 +92,13 @@ html_header($title = "")		// I - Additional document title
   print("<p><table width='100%' height='100%' border='1' cellspacing='0' "
        ."cellpadding='5'>\n"
        ."<tr class='header'>"
-       ."<td>[ "
-       ."<a href='index.php'>Home</a> | "
+       ."<td><img src='images/logo.gif' width='39' height='32' alt='Mini-XML' "
+       ."align='middle'/> "
+       ."[ <a href='index.php'>Home</a> | "
        ."<a href='documentation.php'>Documentation</a> | "
        ."<a href='software.php'>Download</a> | "
        ."<a href='faq.php'>FAQ</a> | "
-       ."<a href='str.php'>Support</a>"
-       ." ]</td>"
+       ."<a href='str.php'>Support</a> ]</td>"
        ."</tr>\n");
 
   print("<tr height='100%'>"

@@ -1,10 +1,11 @@
-README - 11/13/2004
+README - 01/29/2005
 -------------------
 
 
 INTRODUCTION
 
-    This README file describes the Mini-XML library version 2.1.
+    This README file describes the Mini-XML library version
+    2.1.1.
 
     Mini-XML is a small XML parsing library that you can use to
     read XML and XML-like data files in your application without
@@ -183,7 +184,7 @@ GETTING HELP AND REPORTING PROBLEMS
 
 LEGAL STUFF
 
-    The Mini-XML library is Copyright 2003-2004 by Michael Sweet.
+    The Mini-XML library is Copyright 2003-2005 by Michael Sweet.
 
     This library is free software; you can redistribute it
     and/or modify it under the terms of the GNU Library General

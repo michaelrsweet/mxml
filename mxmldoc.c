@@ -1,10 +1,10 @@
 /*
- * "$Id: mxmldoc.c,v 1.39 2004/10/31 15:32:14 mike Exp $"
+ * "$Id$"
  *
  * Documentation generator using Mini-XML, a small XML-like file parsing
  * library.
  *
- * Copyright 2003-2004 by Michael Sweet.
+ * Copyright 2003-2005 by Michael Sweet.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -2745,5 +2745,5 @@ ws_cb(mxml_node_t *node,		/* I - Element node */
 
 
 /*
- * End of "$Id: mxmldoc.c,v 1.39 2004/10/31 15:32:14 mike Exp $".
+ * End of "$Id$".
  */

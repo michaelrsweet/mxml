@@ -16,7 +16,6 @@
 	<li><a href="#_structures">Structures</a></li>
 	<li><a href="#_types">Types</a></li>
 	<li><a href="#_unions">Unions</a></li>
-	<li><a href="#_variables">Variables</a></li>
 </ul>
 <hr noshade/>
 <h1><a name="_enumerations">Enumerations</a></h1>
@@ -38,7 +37,6 @@
 <hr noshade/>
 <h1><a name="_functions">Functions</a></h1>
 <ul>
-	<li><a href="#calloc"><tt>calloc()</tt></a></li>
 	<li><a href="#mxmlAdd"><tt>mxmlAdd()</tt></a></li>
 	<li><a href="#mxmlDelete"><tt>mxmlDelete()</tt></a></li>
 	<li><a href="#mxmlElementGetAttr"><tt>mxmlElementGetAttr()</tt></a></li>
@@ -65,24 +63,7 @@
 	<li><a href="#mxmlSetTextf"><tt>mxmlSetTextf()</tt></a></li>
 	<li><a href="#mxmlWalkNext"><tt>mxmlWalkNext()</tt></a></li>
 	<li><a href="#mxmlWalkPrev"><tt>mxmlWalkPrev()</tt></a></li>
-	<li><a href="#realloc"><tt>realloc()</tt></a></li>
 </ul>
-<h2><a name="calloc">calloc()</a></h2>
-<p></p>
-<h3>Syntax</h3>
-<pre>
-if((node
-calloc(
-    sizeof(<a href="#mxml_node_t">mxml_node_t</a>))) NULL);
-</pre>
-<h3>Arguments</h3>
-<p class="table"><table align="center" border="1" width="80%">
-<thead><tr><th>Name</th><th>Description</th></tr></thead>
-<tbody>
-<tr><td><tt>NULL</tt></td><td></td></tr>
-</tbody></table></p>
-<h3>Returns</h3>
-<p></p>
 <h2><a name="mxmlAdd">mxmlAdd()</a></h2>
 <p>Add a node to a tree.
 
@@ -702,22 +683,6 @@ mxmlWalkPrev(
 </tbody></table></p>
 <h3>Returns</h3>
 <p>Previous node or NULL</p>
-<h2><a name="realloc">realloc()</a></h2>
-<p>Current buffer size</p>
-<h3>Syntax</h3>
-<pre>
-if((newbuffer
-realloc(
-    buffer, *bufsize)) NULL);
-</pre>
-<h3>Arguments</h3>
-<p class="table"><table align="center" border="1" width="80%">
-<thead><tr><th>Name</th><th>Description</th></tr></thead>
-<tbody>
-<tr><td><tt>NULL</tt></td><td></td></tr>
-</tbody></table></p>
-<h3>Returns</h3>
-<p>Increase the size of the buffer...</p>
 <hr noshade/>
 <h1><a name="_structures">Structures</a></h1>
 <ul>
@@ -880,29 +845,5 @@ struct mxml_value_u
 <tr><td><tt>real</tt></td><td>Real number</td></tr>
 <tr><td><tt>text</tt></td><td>Text fragment</td></tr>
 </tbody></table></p>
-<hr noshade/>
-<h1><a name="_variables">Variables</a></h1>
-<ul>
-	<li><a href="#newbuffer"><tt>newbuffer</tt></a></li>
-	<li><a href="#node"><tt>node</tt></a></li>
-	<li><a href="#type"><tt>type</tt></a></li>
-</ul>
-<h2><a name="newbuffer">newbuffer</a></h2>
-<h3>Definition</h3>
-<pre>
-buffer newbuffer;
-</pre>
-<h2><a name="node">node</a></h2>
-<p>New node</p>
-<h3>Definition</h3>
-<pre>
-<a href="#mxml_node_t">mxml_node_t</a> * node;
-</pre>
-<h2><a name="type">type</a></h2>
-<p>Add to the parent if present...</p>
-<h3>Definition</h3>
-<pre>
-node type type;
-</pre>
 </body>
 </html>

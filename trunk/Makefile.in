@@ -1,5 +1,5 @@
 #
-# "$Id: Makefile.in,v 1.13 2003/09/28 21:09:03 mike Exp $"
+# "$Id: Makefile.in,v 1.14 2003/12/03 22:17:57 mike Exp $"
 #
 # Makefile for mini-XML, a small XML-like file parsing library.
 #
@@ -230,6 +230,11 @@ mxml.xml:	mxmldoc mxml.h $(PUBLIBOBJS:.o=.c)
 	$(RM) mxml.xml
 	./mxmldoc mxml.xml mxml.h $(PUBLIBOBJS:.o=.c) >documentation.html
 
+valgrind:	mxmldoc
+	$(RM) valgrind.xml
+	valgrind --leak-check=yes ./mxmldoc valgrind.xml mxml.h \
+		$(PUBLIBOBJS:.o=.c) >valgrind.html 2>valgrind.out
+
 
 #
 # All object files depend on the makefile...
@@ -239,5 +244,5 @@ $(OBJS):	Makefile config.h
 
 
 #
-# End of "$Id: Makefile.in,v 1.13 2003/09/28 21:09:03 mike Exp $".
+# End of "$Id: Makefile.in,v 1.14 2003/12/03 22:17:57 mike Exp $".
 #

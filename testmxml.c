@@ -1,5 +1,5 @@
 /*
- * "$Id: testmxml.c,v 1.6 2003/06/04 17:37:23 mike Exp $"
+ * "$Id: testmxml.c,v 1.7 2003/06/04 21:19:00 mike Exp $"
  *
  * Test program for mini-XML, a small XML-like file parsing library.
  *
@@ -175,23 +175,42 @@ whitespace_cb(mxml_node_t *node,	/* I - Element node */
       !strcmp(name, "pre") || !strcmp(name, "p") ||
       !strcmp(name, "h1") || !strcmp(name, "h2") || !strcmp(name, "h3") ||
       !strcmp(name, "h4") || !strcmp(name, "h5") || !strcmp(name, "h6"))
-    return ('\n');
-  else if (!strcmp(name, "li"))
   {
    /*
-    * Put a tab before <li>'s and a newline after </li>'s...
+    * Newlines before open and after close...
     */
 
-    if (where == MXML_SAVE_OPEN_TAG)
-      return ('\t');
-    else
+    if (where == MXML_WS_BEFORE_OPEN || where == MXML_WS_AFTER_CLOSE)
       return ('\n');
   }
-  else
-    return (0);
+  else if (!strcmp(name, "dl") || !strcmp(name, "ol") || !strcmp(name, "ul"))
+  {
+   /*
+    * Put a newline before and after list elements...
+    */
+
+    return ('\n');
+  }
+  else if (!strcmp(name, "dd") || !strcmp(name, "dt") || !strcmp(name, "li"))
+  {
+   /*
+    * Put a tab before <li>'s, <dd>'s, and <dt>'s, and a newline after them...
+    */
+
+    if (where == MXML_WS_BEFORE_OPEN)
+      return ('\t');
+    else if (where == MXML_WS_AFTER_CLOSE)
+      return ('\n');
+  }
+
+ /*
+  * Return 0 for no added whitespace...
+  */
+
+  return (0);
 }
 
 
 /*
- * End of "$Id: testmxml.c,v 1.6 2003/06/04 17:37:23 mike Exp $".
+ * End of "$Id: testmxml.c,v 1.7 2003/06/04 21:19:00 mike Exp $".
  */

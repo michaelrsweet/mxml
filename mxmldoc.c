@@ -1,5 +1,5 @@
 /*
- * "$Id: mxmldoc.c,v 1.3 2003/06/04 17:37:23 mike Exp $"
+ * "$Id: mxmldoc.c,v 1.4 2003/06/04 21:19:00 mike Exp $"
  *
  * Documentation generator using mini-XML, a small XML-like file parsing
  * library.
@@ -56,18 +56,10 @@
  *
  *   <function name="">
  *     <description>descriptive text</description>
- *     <iargument name="">
+ *     <argument name="" direction="I|O|IO">
  *       <description>descriptive text</description>
  *       <type>type string</type>
- *     </iargument>
- *     <oargument name="">
- *       <description>descriptive text</description>
- *       <type>type string</type>
- *     </oargument>
- *     <ioargument name="">
- *       <description>descriptive text</description>
- *       <type>type string</type>
- *     </ioargument>
+ *     </argument>
  *     <returnvalue>
  *       <description>descriptive text</description>
  *       <type>type string</type>
@@ -223,6 +215,19 @@ main(int  argc,				/* I - Number of command-line args */
 
 
 /*
+ * Basic states for file parser...
+ */
+
+#define STATE_NONE		0	/* No state - whitespace, etc. */
+#define STATE_PREPROCESSOR	1	/* Preprocessor directive */
+#define STATE_C_COMMENT		2	/* Inside a C comment */
+#define STATE_CXX_COMMENT	3	/* Inside a C++ comment */
+#define STATE_STRING		4	/* Inside a string constant */
+#define STATE_CHARACTER		5	/* Inside a character constant */
+#define STATE_IDENTIFIER	6	/* Inside a keyword/identifier */
+
+
+/*
  * 'scan_file()' - Scan a source file.
  */
 
@@ -231,6 +236,339 @@ scan_file(const char  *filename,	/* I - Filename */
           FILE        *fp,		/* I - File to scan */
           mxml_node_t *tree)		/* I - Function tree */
 {
+  int		state,			/* Current parser state */
+		oldstate,		/* Previous state */
+		oldch,			/* Old character */
+		braces,			/* Number of braces active */
+		parens;			/* Number of active parenthesis */
+  int		ch;
+  char		buffer[16384],
+		*bufptr;
+  mxml_node_t	*comment,		/* <comment> node */
+		*function,		/* <function> node */
+		*variable,		/* <variable> or <argument> node */
+		*returnvalue,		/* <returnvalue> node */
+		*type,			/* <type> node */
+		*description;		/* <description> node */
+  static const char *states[] =
+		{
+		  "STATE_NONE",
+		  "STATE_PREPROCESSOR",
+		  "STATE_C_COMMENT",
+		  "STATE_CXX_COMMENT",
+		  "STATE_STRING",
+		  "STATE_CHARACTER",
+		  "STATE_IDENTIFIER"
+		};
+
+
+ /*
+  * Initialize the finite state machine...
+  */
+
+  state       = STATE_NONE;
+  braces      = 0;
+  parens      = 0;
+  bufptr      = buffer;
+
+  comment     = NULL;
+  function    = NULL;
+  variable    = NULL;
+  returnvalue = NULL;
+  type        = NULL;
+  description = NULL;
+
+ /*
+  * Read until end-of-file...
+  */
+
+  while ((ch = getc(fp)) != EOF)
+  {
+    oldstate = state;
+    oldch    = ch;
+
+    switch (state)
+    {
+      case STATE_NONE :			/* No state - whitespace, etc. */
+          switch (ch)
+	  {
+	    case '/' :			/* Possible C/C++ comment */
+	        ch     = getc(fp);
+		bufptr = buffer;
+
+		if (ch == '*')
+		  state = STATE_C_COMMENT;
+		else if (ch == '/')
+		  state = STATE_CXX_COMMENT;
+		else
+		  ungetc(ch, fp);
+		break;
+
+	    case '#' :			/* Preprocessor */
+	        state = STATE_PREPROCESSOR;
+		break;
+
+            case '\'' :			/* Character constant */
+	        state = STATE_CHARACTER;
+		break;
+
+            case '\"' :			/* String constant */
+	        state = STATE_STRING;
+		break;
+
+            case '{' :
+	        braces ++;
+		break;
+
+            case '}' :
+	        if (braces > 0)
+		  braces --;
+		break;
+
+            case '(' :
+	        parens ++;
+		break;
+
+            case ')' :
+	        if (parens > 0)
+		  parens --;
+		break;
+
+            default :			/* Other */
+	        if (isalpha(ch) || ch == '_')
+		{
+		  state     = STATE_IDENTIFIER;
+		  bufptr    = buffer;
+		  *bufptr++ = ch;
+		}
+		else if (ch == '*')
+		{
+		  puts("Identifier: <<< * >>>");
+
+		  if (type)
+		    mxmlNewText(type, 1, "*");
+		}
+		break;
+          }
+          break;
+
+      case STATE_PREPROCESSOR :		/* Preprocessor directive */
+          if (ch == '\n')
+	    state = STATE_NONE;
+	  else if (ch == '\\')
+	    getc(fp);
+          break;
+
+      case STATE_C_COMMENT :		/* Inside a C comment */
+          switch (ch)
+	  {
+	    case '\n' :
+	        while ((ch = getc(fp)) != EOF)
+		  if (ch == '*')
+		  {
+		    ch = getc(fp);
+
+		    if (ch == '/')
+		    {
+		      *bufptr = '\0';
+
+        	      if (comment)
+		      {
+			mxmlDelete(comment);
+			comment = NULL;
+		      }
+
+		      if (variable)
+		      {
+        		description = mxmlNewElement(variable, "description");
+			mxmlNewText(description, 0, buffer); 
+		      }
+		      else
+        		comment = mxmlNewText(MXML_NO_PARENT, 0, buffer);
+
+		      printf("C comment: <<< %s >>>\n", buffer);
+
+		      state = STATE_NONE;
+		      break;
+		    }
+		    else
+		      ungetc(ch, fp);
+		  }
+		  else if (ch == '\n' && bufptr < (buffer + sizeof(buffer) - 1))
+		    *bufptr++ = ch;
+		  else if (!isspace(ch))
+		    break;
+
+		if (ch != EOF)
+		  ungetc(ch, fp);
+
+                if (bufptr < (buffer + sizeof(buffer) - 1))
+		  *bufptr++ = '\n';
+		break;
+
+	    case '/' :
+	        if (ch == '/' && bufptr > buffer && bufptr[-1] == '*')
+		{
+		  while (bufptr > buffer &&
+		         (bufptr[-1] == '*' || isspace(bufptr[-1])))
+		    bufptr --;
+		  *bufptr = '\0';
+
+        	  if (comment)
+		  {
+		    mxmlDelete(comment);
+		    comment = NULL;
+		  }
+
+		  if (variable)
+		  {
+        	    description = mxmlNewElement(variable, "description");
+		    mxmlNewText(description, 0, buffer); 
+		  }
+		  else
+        	    comment = mxmlNewText(MXML_NO_PARENT, 0, buffer);
+
+		  printf("C comment: <<< %s >>>\n", buffer);
+
+		  state = STATE_NONE;
+		  break;
+		}
+
+	    default :
+	        if (ch == ' ' && bufptr == buffer)
+		  break;
+
+	        if (bufptr < (buffer + sizeof(buffer) - 1))
+		  *bufptr++ = ch;
+		break;
+          }
+          break;
+
+      case STATE_CXX_COMMENT :		/* Inside a C++ comment */
+          if (ch == '\n')
+	  {
+	    *bufptr = '\0';
+
+            if (comment)
+	    {
+	      mxmlDelete(comment);
+	      comment = NULL;
+	    }
+
+	    if (variable)
+	    {
+              description = mxmlNewElement(variable, "description");
+	      mxmlNewText(description, 0, buffer); 
+	    }
+	    else
+              comment = mxmlNewText(MXML_NO_PARENT, 0, buffer);
+
+	    printf("C++ comment: <<< %s >>>\n", buffer);
+	  }
+	  else if (ch == ' ' && bufptr == buffer)
+	    break;
+	  else if (bufptr < (buffer + sizeof(buffer) - 1))
+	    *bufptr++ = ch;
+          break;
+
+      case STATE_STRING :		/* Inside a string constant */
+          if (ch == '\\')
+	    getc(fp);
+	  else if (ch == '\"')
+	    state = STATE_NONE;
+          break;
+
+      case STATE_CHARACTER :		/* Inside a character constant */
+          if (ch == '\\')
+	    getc(fp);
+	  else if (ch == '\'')
+	    state = STATE_NONE;
+          break;
+
+      case STATE_IDENTIFIER :		/* Inside a keyword or identifier */
+	  if (isalnum(ch) || ch == '_' || ch == '[' || ch == ']')
+	  {
+	    if (bufptr < (buffer + sizeof(buffer) - 1))
+	      *bufptr++ = ch;
+	  }
+	  else
+	  {
+	    ungetc(ch, fp);
+	    *bufptr = '\0';
+	    printf("Identifier: <<< %s >>>\n", buffer);
+
+            if (!braces)
+	    {
+	      if (!type)
+                type = mxmlNewElement(MXML_NO_PARENT, "type");
+
+              if (!function && ch == '(')
+	      {
+	        function = mxmlNewElement(MXML_NO_PARENT, "function");
+		mxmlElementSetAttr(function, "name", buffer);
+
+		sort_node(tree, function);
+
+                returnvalue = mxmlNewElement(function, "returnvalue");
+
+		mxmlAdd(returnvalue, MXML_ADD_AFTER, MXML_ADD_TO_PARENT, comment);
+		mxmlAdd(returnvalue, MXML_ADD_AFTER, MXML_ADD_TO_PARENT, type);
+
+                comment = NULL;
+		type    = NULL;
+	      }
+	      else if (function && (ch == ')' || ch == ','))
+	      {
+	       /*
+	        * Argument definition...
+		*/
+
+	        variable = mxmlNewElement(function, "argument");
+		mxmlElementSetAttr(variable, "name", buffer);
+
+		mxmlAdd(variable, MXML_ADD_AFTER, MXML_ADD_TO_PARENT, type);
+		type = NULL;
+	      }
+              else if (!function && (ch == ';' || ch == ','))
+	      {
+	       /*
+	        * Variable definition...
+		*/
+
+	        variable = mxmlNewElement(MXML_NO_PARENT, "variable");
+		mxmlElementSetAttr(variable, "name", buffer);
+
+		sort_node(tree, variable);
+
+		mxmlAdd(variable, MXML_ADD_AFTER, MXML_ADD_TO_PARENT, type);
+		type = NULL;
+              }
+	      else
+	        mxmlNewText(type, type->child != NULL, buffer);
+	    }
+	    else if (type)
+	    {
+	      mxmlDelete(type);
+	      type = NULL;
+	    }
+
+	    state = STATE_NONE;
+	  }
+          break;
+    }
+
+#if 0
+    if (state != oldstate)
+      printf("changed states from %s to %s on receipt of character '%c'...\n",
+             states[oldstate], states[state], oldch);
+#endif /* 0 */
+  }
+
+ /*
+  * All done, return with no errors...
+  */
+
+  return (0);
 }
 
 
@@ -279,5 +617,5 @@ sort_node(mxml_node_t *tree,		/* I - Tree to sort into */
 
 
 /*
- * End of "$Id: mxmldoc.c,v 1.3 2003/06/04 17:37:23 mike Exp $".
+ * End of "$Id: mxmldoc.c,v 1.4 2003/06/04 21:19:00 mike Exp $".
  */

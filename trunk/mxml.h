@@ -1,5 +1,5 @@
 /*
- * "$Id: mxml.h,v 1.2 2003/06/03 20:24:28 mike Exp $"
+ * "$Id: mxml.h,v 1.3 2003/06/04 00:30:04 mike Exp $"
  *
  * Header file for mini-XML, a small XML-like file parsing library.
  *
@@ -30,6 +30,7 @@
 #  include <stdio.h>
 #  include <stdlib.h>
 #  include <string.h>
+#  include <ctype.h>
 
 
 /*
@@ -132,5 +133,5 @@ extern mxml_node_t	*mxmlWalkPrev(mxml_node_t *node, mxml_node_t *top);
 
 
 /*
- * End of "$Id: mxml.h,v 1.2 2003/06/03 20:24:28 mike Exp $".
+ * End of "$Id: mxml.h,v 1.3 2003/06/04 00:30:04 mike Exp $".
  */

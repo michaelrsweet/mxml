@@ -1,5 +1,5 @@
 /*
- * "$Id: mxml-file.c,v 1.28 2004/04/06 01:47:20 mike Exp $"
+ * "$Id: mxml-file.c,v 1.29 2004/05/01 15:20:04 mike Exp $"
  *
  * File loading code for mini-XML, a small XML-like file parsing library.
  *
@@ -71,13 +71,13 @@ static int		mxml_string_putc(int ch, void *p);
 static int		mxml_write_name(const char *s, void *p,
 					int (*putc_cb)(int, void *));
 static int		mxml_write_node(mxml_node_t *node, void *p,
-			                int (*cb)(mxml_node_t *, int),
+			                const char *(*cb)(mxml_node_t *, int),
 					int col,
 					int (*putc_cb)(int, void *));
 static int		mxml_write_string(const char *s, void *p,
 					  int (*putc_cb)(int, void *));
 static int		mxml_write_ws(mxml_node_t *node, void *p, 
-			              int (*cb)(mxml_node_t *, int), int ws,
+			              const char *(*cb)(mxml_node_t *, int), int ws,
 				      int col, int (*putc_cb)(int, void *));
 
 
@@ -143,7 +143,7 @@ mxmlLoadString(mxml_node_t *top,	/* I - Top node */
 
 char *					/* O - Allocated string or NULL */
 mxmlSaveAllocString(mxml_node_t *node,	/* I - Node to write */
-                    int         (*cb)(mxml_node_t *node, int ws))
+                    const char  *(*cb)(mxml_node_t *node, int ws))
 					/* I - Whitespace callback or MXML_NO_CALLBACK */
 {
   int	bytes;				/* Required bytes */
@@ -201,7 +201,7 @@ mxmlSaveAllocString(mxml_node_t *node,	/* I - Node to write */
 int					/* O - 0 on success, -1 on error. */
 mxmlSaveFile(mxml_node_t *node,		/* I - Node to write */
              FILE        *fp,		/* I - File to write to */
-	     int         (*cb)(mxml_node_t *node, int ws))
+	     const char  *(*cb)(mxml_node_t *node, int ws))
 					/* I - Whitespace callback or MXML_NO_CALLBACK */
 {
   int	col;				/* Final column */
@@ -238,7 +238,7 @@ int					/* O - Size of string */
 mxmlSaveString(mxml_node_t *node,	/* I - Node to write */
                char        *buffer,	/* I - String buffer */
                int         bufsize,	/* I - Size of string buffer */
-               int         (*cb)(mxml_node_t *node, int ws))
+               const char  *(*cb)(mxml_node_t *node, int ws))
 					/* I - Whitespace callback or MXML_NO_CALLBACK */
 {
   int	col;				/* Final column */
@@ -1426,7 +1426,7 @@ mxml_write_name(const char *s,		/* I - Name to write */
 static int				/* O - Column or -1 on error */
 mxml_write_node(mxml_node_t *node,	/* I - Node to write */
                 void        *p,		/* I - File to write to */
-	        int         (*cb)(mxml_node_t *, int),
+	        const char  *(*cb)(mxml_node_t *, int),
 					/* I - Whitespace callback */
 		int         col,	/* I - Current column */
 		int         (*putc_cb)(int, void *))
@@ -1699,29 +1699,34 @@ mxml_write_string(const char *s,	/* I - String to write */
 static int				/* O - New column */
 mxml_write_ws(mxml_node_t *node,	/* I - Current node */
               void        *p,		/* I - Write pointer */
-              int         (*cb)(mxml_node_t *, int),
+              const char  *(*cb)(mxml_node_t *, int),
 					/* I - Callback function */
 	      int         ws,		/* I - Where value */
 	      int         col,		/* I - Current column */
               int         (*putc_cb)(int, void *))
 					/* I - Write callback */
 {
-  int	ch;				/* Whitespace character */
+  const char	*s;			/* Whitespace string */
 
 
-  if (cb && (ch = (*cb)(node, ws)) != 0)
+  if (cb && (s = (*cb)(node, ws)) != NULL)
   {
-    if ((*putc_cb)(ch, p) < 0)
-      return (-1);
-    else if (ch == '\n')
-      col = 0;
-    else if (ch == '\t')
+    while (*s)
     {
-      col += MXML_TAB;
-      col = col - (col % MXML_TAB);
+      if ((*putc_cb)(*s, p) < 0)
+	return (-1);
+      else if (*s == '\n')
+	col = 0;
+      else if (*s == '\t')
+      {
+	col += MXML_TAB;
+	col = col - (col % MXML_TAB);
+      }
+      else
+	col ++;
+
+      s ++;
     }
-    else
-      col ++;
   }
 
   return (col);
@@ -1729,5 +1734,5 @@ mxml_write_ws(mxml_node_t *node,	/* I - Current node */
 
 
 /*
- * End of "$Id: mxml-file.c,v 1.28 2004/04/06 01:47:20 mike Exp $".
+ * End of "$Id: mxml-file.c,v 1.29 2004/05/01 15:20:04 mike Exp $".
  */

@@ -523,7 +523,7 @@ allocated.</p>
 char *
 mxmlSaveAllocString(
     <a href='#mxml_node_t'>mxml_node_t</a> * node,
-    int (*cb)(mxml_node_t *node, int ws));
+    const char * (*cb)(mxml_node_t *node, int ws));
 </pre>
 <h4>Arguments</h4>
 <p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
@@ -551,7 +551,7 @@ int
 mxmlSaveFile(
     <a href='#mxml_node_t'>mxml_node_t</a> * node,
     FILE * fp,
-    int (*cb)(mxml_node_t *node, int ws));
+    const char * (*cb)(mxml_node_t *node, int ws));
 </pre>
 <h4>Arguments</h4>
 <p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
@@ -579,7 +579,7 @@ mxmlSaveString(
     <a href='#mxml_node_t'>mxml_node_t</a> * node,
     char * buffer,
     int bufsize,
-    int (*cb)(mxml_node_t *node, int ws));
+    const char * (*cb)(mxml_node_t *node, int ws));
 </pre>
 <h4>Arguments</h4>
 <p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>

@@ -1,5 +1,5 @@
 /*
- * "$Id: mxmldoc.c,v 1.32 2004/05/01 07:08:14 mike Exp $"
+ * "$Id: mxmldoc.c,v 1.33 2004/05/01 15:20:05 mike Exp $"
  *
  * Documentation generator using mini-XML, a small XML-like file parsing
  * library.
@@ -135,7 +135,7 @@ static void		update_comment(mxml_node_t *parent,
 static void		write_documentation(mxml_node_t *doc);
 static void		write_element(mxml_node_t *doc, mxml_node_t *element);
 static void		write_string(const char *s);
-static int		ws_cb(mxml_node_t *node, int where);
+static const char	*ws_cb(mxml_node_t *node, int where);
 
 
 /*
@@ -2628,27 +2628,74 @@ write_string(const char *s)		/* I - String to write */
  * 'ws_cb()' - Whitespace callback for saving.
  */
 
-static int				/* O - Whitespace char or 0 for none */
+static const char *			/* O - Whitespace string or NULL for none */
 ws_cb(mxml_node_t *node,		/* I - Element node */
       int         where)		/* I - Where value */
 {
-  const char	*name;			/* Name of element */
+  const char *name;			/* Name of element */
+  int	depth;				/* Depth of node */
+  static const char *spaces = "                                        ";
+					/* Whitespace (40 spaces) for indent */
 
 
   name = node->value.element.name;
 
-  if ((!strcmp(name, "namespace") || !strcmp(name, "enumeration") ||
-       !strcmp(name, "typedef") || !strcmp(name, "function") ||
-       !strcmp(name, "variable") || !strcmp(name, "struct") ||
-       !strcmp(name, "class") || !strcmp(name, "constant") ||
-       !strcmp(name, "argument") || !strcmp(name, "returnvalue")) &&
-      where == MXML_WS_AFTER_CLOSE)
-    return ('\n');
+  switch (where)
+  {
+    case MXML_WS_BEFORE_CLOSE :
+        if (strcmp(name, "argument") &&
+	    strcmp(name, "class") &&
+	    strcmp(name, "constant") &&
+	    strcmp(name, "enumeration") &&
+	    strcmp(name, "function") &&
+	    strcmp(name, "namespace") &&
+	    strcmp(name, "returnvalue") &&
+	    strcmp(name, "struct") &&
+	    strcmp(name, "typedef") &&
+	    strcmp(name, "union") &&
+	    strcmp(name, "variable"))
+	  return (NULL);
 
-  return (0);
+	for (depth = -4; node; node = node->parent, depth += 2);
+	if (depth > 40)
+	  return (spaces);
+	else if (depth < 2)
+	  return (NULL);
+	else
+	  return (spaces + 40 - depth);
+
+    case MXML_WS_AFTER_CLOSE :
+	return ("\n");
+
+    case MXML_WS_BEFORE_OPEN :
+	for (depth = -4; node; node = node->parent, depth += 2);
+	if (depth > 40)
+	  return (spaces);
+	else if (depth < 2)
+	  return (NULL);
+	else
+	  return (spaces + 40 - depth);
+
+    default :
+    case MXML_WS_AFTER_OPEN :
+        if (strcmp(name, "argument") &&
+	    strcmp(name, "class") &&
+	    strcmp(name, "constant") &&
+	    strcmp(name, "enumeration") &&
+	    strcmp(name, "function") &&
+	    strcmp(name, "namespace") &&
+	    strcmp(name, "returnvalue") &&
+	    strcmp(name, "struct") &&
+	    strcmp(name, "typedef") &&
+	    strcmp(name, "union") &&
+	    strcmp(name, "variable"))
+	  return (NULL);
+	else
+          return ("\n");
+  }
 }
 
 
 /*
- * End of "$Id: mxmldoc.c,v 1.32 2004/05/01 07:08:14 mike Exp $".
+ * End of "$Id: mxmldoc.c,v 1.33 2004/05/01 15:20:05 mike Exp $".
  */

@@ -1,9 +1,6 @@
-TODO - 04/29/2004
+TODO - 05/01/2004
 -----------------
 
-	- Update write callback to return a string.
-	  -- Return const char *
-	  -- Loop through chars to figure out correct output column
 	- UTF-16 support.
 	  -- Auto-detect in strings via initial FFFE or FEFF BOM
 	  -- Convert to UTF-8
@@ -21,10 +18,6 @@ TODO - 04/29/2004
 	- Add access methods and make node structure opaque.
 	  -- To allow for C++ migration
 	  -- To make future binary compatibility easier
-	- Build test file for mxmldoc.
-	  -- C++ class documentation doesn't seem to work.
-	  -- Do examples of all types of comments/code that mxmldoc is
-	     supposed to handle.
 	- Add VC++/VC++.NET project files.
 	  -- Include DLL .def file for making a DLL.
 	- Add C++ class/struct.

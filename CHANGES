@@ -1,16 +1,23 @@
-README - 04/30/2004
+README - 05/01/2004
 -------------------
 
 CHANGES IN Mini-XML 2.0
 
+	- Changed the whitespace callback interface to return
+	  strings instead of a single character, allowing for
+	  greater control over the formatting of XML files
+	  written using Mini-XML.  THIS CHANGE WILL REQUIRE
+	  CHANGES TO YOUR CODE IF YOU USE WHITESPACE CALLBACKS.
+	- The mxmldoc utility is now capable of documenting C++
+	  classes, functions, and structures, and correctly
+	  handles C++ comments.
+	- Added new modular tests for mxmldoc.
 	- Updated the mxmldoc output to be more compatible with
 	  embedding in manuals produced with HTMLDOC.
 	- The makefile incorrectly included a "/" separator
 	  between the destination path and install path.  This
 	  caused problems when building and installing with
 	  MingW.
-	- The mxmldoc utility is now capable of documenting C++
-	  structures and classes.
 
 
 CHANGES IN Mini-XML 1.3

@@ -1,5 +1,5 @@
 /*
- * "$Id: mxml.h,v 1.17 2004/04/06 01:47:20 mike Exp $"
+ * "$Id: mxml.h,v 1.18 2004/05/01 15:20:04 mike Exp $"
  *
  * Header file for mini-XML, a small XML-like file parsing library.
  *
@@ -160,12 +160,12 @@ __attribute__ ((__format__ (__printf__, 3, 4)))
 ;
 extern void		mxmlRemove(mxml_node_t *node);
 extern char		*mxmlSaveAllocString(mxml_node_t *node,
-			        	     int (*cb)(mxml_node_t *, int));
+			        	     const char *(*cb)(mxml_node_t *, int));
 extern int		mxmlSaveFile(mxml_node_t *node, FILE *fp,
-			             int (*cb)(mxml_node_t *, int));
+			             const char *(*cb)(mxml_node_t *, int));
 extern int		mxmlSaveString(mxml_node_t *node, char *buffer,
 			               int bufsize,
-			               int (*cb)(mxml_node_t *, int));
+			               const char *(*cb)(mxml_node_t *, int));
 extern int		mxmlSetElement(mxml_node_t *node, const char *name);
 extern void		mxmlSetErrorCallback(void (*cb)(const char *));
 extern int		mxmlSetInteger(mxml_node_t *node, int integer);
@@ -206,5 +206,5 @@ extern mxml_type_t	mxml_real_cb(mxml_node_t *node);
 
 
 /*
- * End of "$Id: mxml.h,v 1.17 2004/04/06 01:47:20 mike Exp $".
+ * End of "$Id: mxml.h,v 1.18 2004/05/01 15:20:04 mike Exp $".
  */

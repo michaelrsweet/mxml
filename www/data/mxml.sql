@@ -1,5 +1,5 @@
 --
--- "$Id: mxml.sql,v 1.6 2004/05/21 02:59:52 mike Exp $"
+-- "$Id: mxml.sql,v 1.7 2004/05/21 03:59:17 mike Exp $"
 --
 -- Database schema for the Mini-XML web pages.
 --
@@ -11,7 +11,7 @@
 --
 --   M. Sweet   05/17/2004   Initial revision.
 --   M. Sweet   05/19/2004   Added link, poll, and vote tables.
---
+--   M. Sweet   05/20/2004   Changes for MySQL
 
 
 --
@@ -23,7 +23,7 @@
 --
 
 CREATE TABLE article (
-  id INTEGER PRIMARY KEY,		-- Article number
+  id INTEGER PRIMARY KEY AUTO_INCREMENT,-- Article number
   is_published INTEGER,			-- 0 = private, 1 = public
   title VARCHAR(255),			-- Title of article
   abstract VARCHAR(255),		-- Plain text abstract of article
@@ -45,7 +45,7 @@ CREATE TABLE article (
 --
 
 CREATE TABLE carboncopy (
-  id INTEGER PRIMARY KEY,		-- Carbon copy ID
+  id INTEGER PRIMARY KEY AUTO_INCREMENT,-- Carbon copy ID
   url VARCHAR(255),			-- File or URL
   email VARCHAR(255)			-- Email address
 );
@@ -60,7 +60,7 @@ CREATE TABLE carboncopy (
 --
 
 CREATE TABLE comment (
-  id INTEGER PRIMARY KEY,		-- Comment ID number
+  id INTEGER PRIMARY KEY AUTO_INCREMENT,-- Comment ID number
   parent_id INTEGER,			-- Parent comment ID number (reply-to)
   status INTEGER,			-- Moderation status, 0 = dead to 5 = great
   url VARCHAR(255),			-- File/link this comment applies to
@@ -79,7 +79,7 @@ CREATE TABLE comment (
 --
 
 CREATE TABLE link (
-  id INTEGER PRIMARY KEY,		-- Link ID number
+  id INTEGER PRIMARY KEY AUTO_INCREMENT,-- Link ID number
   parent_id INTEGER,			-- Parent link ID or 0 for top-level
   is_category INTEGER,			-- 0 = listing, 1 = category
   is_published INTEGER,			-- 0 = private, 1 = public
@@ -112,7 +112,7 @@ CREATE TABLE link (
 --
 
 CREATE TABLE poll (
-  id INTEGER PRIMARY KEY,		-- Poll ID number
+  id INTEGER PRIMARY KEY AUTO_INCREMENT,-- Poll ID number
   is_published INTEGER,			-- 0 = private, 1 = public
   poll_type INTEGER,			-- 0 = pick one, 1 = pick many
   question VARCHAR(255),		-- Question plain text
@@ -151,7 +151,7 @@ CREATE TABLE poll (
 --
 
 CREATE TABLE str (
-  id INTEGER PRIMARY KEY,		-- STR number
+  id INTEGER PRIMARY KEY AUTO_INCREMENT,-- STR number
   master_id INTEGER,			-- "Duplicate of" number
   is_published INTEGER,			-- 0 = private, 1 = public
   status INTEGER,			-- 1 = closed/resolved,
@@ -179,7 +179,7 @@ CREATE TABLE str (
 --
 
 CREATE TABLE strfile (
-  id INTEGER PRIMARY KEY,		-- File ID
+  id INTEGER PRIMARY KEY AUTO_INCREMENT,-- File ID
   str_id INTEGER,			-- STR number
   is_published INTEGER,			-- 0 = private, 1 = public
   filename VARCHAR(255),		-- Name of file
@@ -195,7 +195,7 @@ CREATE TABLE strfile (
 --
 
 CREATE TABLE strtext (
-  id INTEGER PRIMARY KEY,		-- Text ID
+  id INTEGER PRIMARY KEY AUTO_INCREMENT,-- Text ID
   str_id INTEGER,			-- STR number
   is_published INTEGER,			-- 0 = private, 1 = public
   contents TEXT,			-- Text message
@@ -213,7 +213,7 @@ CREATE TABLE strtext (
 --
 
 CREATE TABLE users (
-  id INTEGER PRIMARY KEY,		-- ID
+  id INTEGER PRIMARY KEY AUTO_INCREMENT,-- ID
   is_published INTEGER,			-- 0 = private, 1 = public
   name VARCHAR(255),			-- Login name
   email VARCHAR(255),			-- Name/email address
@@ -238,5 +238,5 @@ CREATE TABLE vote (
 );
 
 --
--- End of "$Id: mxml.sql,v 1.6 2004/05/21 02:59:52 mike Exp $".
+-- End of "$Id: mxml.sql,v 1.7 2004/05/21 03:59:17 mike Exp $".
 --

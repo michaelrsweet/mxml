@@ -1,5 +1,5 @@
 /*
- * "$Id: mxmldoc.c,v 1.13 2003/07/20 13:41:17 mike Exp $"
+ * "$Id: mxmldoc.c,v 1.14 2003/07/20 14:37:34 mike Exp $"
  *
  * Documentation generator using mini-XML, a small XML-like file parsing
  * library.
@@ -1407,7 +1407,7 @@ write_documentation(mxml_node_t *doc)	/* I - XML documentation */
   if (mxmlFindElement(doc, doc, "class", NULL, NULL, MXML_DESCEND_FIRST))
     puts("\t<li><a href=\"#_classes\">Classes</a></li>");
   if (mxmlFindElement(doc, doc, "enumeration", NULL, NULL, MXML_DESCEND_FIRST))
-    puts("\t<li><a href=\"#_enumerations\">Enumeration</a></li>");
+    puts("\t<li><a href=\"#_enumerations\">Enumerations</a></li>");
   if (mxmlFindElement(doc, doc, "function", NULL, NULL, MXML_DESCEND_FIRST))
     puts("\t<li><a href=\"#_functions\">Functions</a></li>");
   if (mxmlFindElement(doc, doc, "struct", NULL, NULL, MXML_DESCEND_FIRST))
@@ -2080,5 +2080,5 @@ ws_cb(mxml_node_t *node,		/* I - Element node */
 
 
 /*
- * End of "$Id: mxmldoc.c,v 1.13 2003/07/20 13:41:17 mike Exp $".
+ * End of "$Id: mxmldoc.c,v 1.14 2003/07/20 14:37:34 mike Exp $".
  */

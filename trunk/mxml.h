@@ -1,5 +1,5 @@
 /*
- * "$Id: mxml.h,v 1.5 2003/06/04 16:30:40 mike Exp $"
+ * "$Id: mxml.h,v 1.6 2003/06/04 17:37:23 mike Exp $"
  *
  * Header file for mini-XML, a small XML-like file parsing library.
  *
@@ -38,13 +38,20 @@
  * Constants...
  */
 
-#  define MXML_NO_CALLBACK	(mxml_type_t (*)(mxml_node_t *))0
-					/* Don't use a type callback */
+#  define MXML_NO_CALLBACK	0	/* Don't use a type callback */
 #  define MXML_WRAP		72	/* Wrap XML output at this column position */
 
 #  define MXML_DESCEND		1	/* Descend when finding/walking */
 #  define MXML_NO_DESCEND	0	/* Don't descend when finding/walking */
 #  define MXML_DESCEND_FIRST	-1	/* Descend for first find */
+
+#  define MXML_SAVE_OPEN_TAG	0	/* Callback for open tag */
+#  define MXML_SAVE_CLOSE_TAG	1	/* Callback for close tag */
+
+
+#  define MXML_ADD_BEFORE	0	/* Add node before specified node */
+#  define MXML_ADD_AFTER	1	/* Add node after specified node */
+#  define MXML_ADD_TO_PARENT	NULL	/* Add node relative to parent */
 
 
 /*
@@ -110,6 +117,8 @@ extern "C" {
  * Prototypes...
  */
 
+extern void		mxmlAdd(mxml_node_t *parent, int where,
+			        mxml_node_t *child, mxml_node_t *node);
 extern void		mxmlDelete(mxml_node_t *node);
 extern const char	*mxmlElementGetAttr(mxml_node_t *node, const char *name);
 extern void		mxmlElementSetAttr(mxml_node_t *node, const char *name,
@@ -125,7 +134,9 @@ extern mxml_node_t	*mxmlNewOpaque(mxml_node_t *parent, const char *opaque);
 extern mxml_node_t	*mxmlNewReal(mxml_node_t *parent, double real);
 extern mxml_node_t	*mxmlNewText(mxml_node_t *parent, int whitespace,
 			             const char *string);
-extern int		mxmlSaveFile(mxml_node_t *node, FILE *fp);
+extern void		mxmlRemove(mxml_node_t *node);
+extern int		mxmlSaveFile(mxml_node_t *node, FILE *fp,
+			             int (*cb)(mxml_node_t *, int));
 extern mxml_node_t	*mxmlWalkNext(mxml_node_t *node, mxml_node_t *top,
 			              int descend);
 extern mxml_node_t	*mxmlWalkPrev(mxml_node_t *node, mxml_node_t *top,
@@ -143,5 +154,5 @@ extern mxml_node_t	*mxmlWalkPrev(mxml_node_t *node, mxml_node_t *top,
 
 
 /*
- * End of "$Id: mxml.h,v 1.5 2003/06/04 16:30:40 mike Exp $".
+ * End of "$Id: mxml.h,v 1.6 2003/06/04 17:37:23 mike Exp $".
  */

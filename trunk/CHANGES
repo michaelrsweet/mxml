@@ -4,9 +4,13 @@ README - 06/04/2003
 
 CHANGES IN Mini-XML 0.93
 
+	- Added mxmlAdd() and mxmlRemove() functions to add and
+	  remove nodes from a tree.  This provides more
+	  flexibility over where the nodes are inserted and
+	  allows nodes to be moved within the tree as needed.
 	- mxmlLoadFile() now correctly handles comments.
-	- mxmlLoadFile() now supports the "gt" and "nbsp"
-	  character entities.
+	- mxmlLoadFile() now supports the required "gt", "quot",
+	  and "nbsp" character entities.
 	- mxmlSaveFile() now uses newlines as whitespace
 	  when valid to do so.
 	- mxmlFindElement() now also takes attribute name and
@@ -19,7 +23,11 @@ CHANGES IN Mini-XML 0.93
 	  now all provide "descend" arguments to control whether
 	  they descend into child nodes in the tree.
 	- Fixed some whitespace issues in mxmlLoadFile().
-	- Fixed Unicode output issues in mxmlSaveFile().
+	- Fixed Unicode output and whitespace issues in
+	  mxmlSaveFile().
+	- mxmlSaveFile() now supports a whitespace callback to
+	  provide more human-readable XML output under program
+	  control.
 
 
 CHANGES IN Mini-XML 0.92

@@ -1,5 +1,5 @@
 /*
- * "$Id: mxml-file.c,v 1.6 2003/06/04 16:30:40 mike Exp $"
+ * "$Id: mxml-file.c,v 1.7 2003/06/04 17:37:23 mike Exp $"
  *
  * File loading code for mini-XML, a small XML-like file parsing library.
  *
@@ -36,7 +36,8 @@
  */
 
 static int	mxml_parse_element(mxml_node_t *node, FILE *fp);
-static int	mxml_write_node(mxml_node_t *node, FILE *fp, int col);
+static int	mxml_write_node(mxml_node_t *node, FILE *fp,
+		                int (*cb)(mxml_node_t *, int), int col);
 static int	mxml_write_string(const char *s, FILE *fp);
 
 
@@ -367,7 +368,7 @@ mxmlLoadFile(mxml_node_t *top,		/* I - Top node */
     {
      /*
       * Add character entity to current buffer...  Currently we only
-      * support &lt;, &amp;, &gt;, &nbsp;, &#nnn;, and &#xXXXX;...
+      * support &lt;, &amp;, &gt;, &nbsp;, &quot;, &#nnn;, and &#xXXXX;...
       */
 
       char	entity[64],		/* Entity string */
@@ -413,6 +414,8 @@ mxmlLoadFile(mxml_node_t *top,		/* I - Top node */
         ch = '<';
       else if (!strcmp(entity, "&nbsp"))
         ch = 0xa0;
+      else if (!strcmp(entity, "&quot"))
+        ch = '\"';
       else
       {
 	fprintf(stderr, "Entity name \"%s;\" not supported under parent <%s>!\n",
@@ -507,17 +510,23 @@ mxmlLoadFile(mxml_node_t *top,		/* I - Top node */
 
 int					/* O - 0 on success, -1 on error */
 mxmlSaveFile(mxml_node_t *node,		/* I - Node to write */
-             FILE        *fp)		/* I - File to write to */
+             FILE        *fp,		/* I - File to write to */
+	     int         (*cb)(mxml_node_t *, int))
+					/* I - Whitespace callback */
 {
+  int	col;				/* Final column */
+
+
  /*
   * Write the node...
   */
 
-  if (mxml_write_node(node, fp, 0) < 0)
+  if ((col = mxml_write_node(node, fp, cb, 0)) < 0)
     return (-1);
 
-  if (putc('\n', fp) < 0)
-    return (-1);
+  if (col > 0)
+    if (putc('\n', fp) < 0)
+      return (-1);
 
  /*
   * Return 0 (success)...
@@ -688,9 +697,12 @@ mxml_parse_element(mxml_node_t *node,	/* I - Element node */
 static int				/* O - Column or -1 on error */
 mxml_write_node(mxml_node_t *node,	/* I - Node to write */
                 FILE        *fp,	/* I - File to write to */
+	        int         (*cb)(mxml_node_t *, int),
+					/* I - Whitespace callback */
 		int         col)	/* I - Current column */
 {
   int		i;			/* Looping var */
+  int		ch;			/* Whitespace character */
   int		n;			/* Chars written */
   mxml_attr_t	*attr;			/* Current attribute */
 
@@ -704,6 +716,18 @@ mxml_write_node(mxml_node_t *node,	/* I - Node to write */
     switch (node->type)
     {
       case MXML_ELEMENT :
+          if (cb && (ch = (*cb)(node, MXML_SAVE_OPEN_TAG)) != 0)
+	  {
+	    if (putc(ch, fp) < 0)
+	      return (-1);
+	    else if (ch == '\n')
+	      col = 0;
+	    else if (ch == '\t')
+	      col += 8;
+	    else
+	      col ++;
+	  }
+
           if ((n = fprintf(fp, "<%s", node->value.element.name)) < 0)
 	    return (-1);
 
@@ -752,7 +776,7 @@ mxml_write_node(mxml_node_t *node,	/* I - Node to write */
 	    else
 	      col ++;
 
-	    if ((col = mxml_write_node(node->child, fp, col)) < 0)
+	    if ((col = mxml_write_node(node->child, fp, cb, col)) < 0)
 	      return (-1);
 
             if (node->value.element.name[0] != '?' &&
@@ -775,6 +799,18 @@ mxml_write_node(mxml_node_t *node,	/* I - Node to write */
 	    return (-1);
 	  else
 	    col += 2;
+
+          if (cb && (ch = (*cb)(node, MXML_SAVE_CLOSE_TAG)) != 0)
+	  {
+	    if (putc(ch, fp) < 0)
+	      return (-1);
+	    else if (ch == '\n')
+	      col = 0;
+	    else if (ch == '\t')
+	      col += 8;
+	    else
+	      col ++;
+	  }
           break;
 
       case MXML_INTEGER :
@@ -829,7 +865,7 @@ mxml_write_node(mxml_node_t *node,	/* I - Node to write */
           break;
 
       case MXML_TEXT :
-	  if (node->value.text.whitespace)
+	  if (node->value.text.whitespace && col > 0)
 	  {
 	    if (col > MXML_WRAP)
 	    {
@@ -887,6 +923,11 @@ mxml_write_string(const char *s,	/* I - String to write */
       if (fputs("&gt;", fp) < 0)
         return (-1);
     }
+    else if (*s == '\"')
+    {
+      if (fputs("&quot;", fp) < 0)
+        return (-1);
+    }
     else if (*s & 128)
     {
      /*
@@ -933,5 +974,5 @@ mxml_write_string(const char *s,	/* I - String to write */
 
 
 /*
- * End of "$Id: mxml-file.c,v 1.6 2003/06/04 16:30:40 mike Exp $".
+ * End of "$Id: mxml-file.c,v 1.7 2003/06/04 17:37:23 mike Exp $".
  */

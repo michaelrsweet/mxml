@@ -1,5 +1,5 @@
 /*
- * "$Id: mxml-file.c,v 1.34 2004/07/11 13:14:07 mike Exp $"
+ * "$Id: mxml-file.c,v 1.35 2004/10/26 21:04:32 mike Exp $"
  *
  * File loading code for Mini-XML, a small XML-like file parsing library.
  *
@@ -1168,12 +1168,12 @@ mxml_get_entity(mxml_node_t *parent,	/* I  - Parent node */
     return (EOF);
   }
 
-  if (entity[1] == '#')
+  if (entity[0] == '#')
   {
-    if (entity[2] == 'x')
-      ch = strtol(entity + 3, NULL, 16);
+    if (entity[1] == 'x')
+      ch = strtol(entity + 2, NULL, 16);
     else
-      ch = strtol(entity + 2, NULL, 10);
+      ch = strtol(entity + 1, NULL, 10);
   }
   else if ((ch = mxmlEntityGetValue(entity)) < 0)
     mxml_error("Entity name \"%s;\" not supported under parent <%s>!",
@@ -1838,7 +1838,7 @@ mxml_string_getc(void *p,		/* I  - Pointer to file */
 
   s = (const char **)p;
 
-  if ((ch = *s[0] & 255) != 0 || *encoding == ENCODE_UTF16LE)
+  if ((ch = (*s)[0] & 255) != 0 || *encoding == ENCODE_UTF16LE)
   {
    /*
     * Got character; convert UTF-8 to integer and return...
@@ -1857,7 +1857,7 @@ mxml_string_getc(void *p,		/* I  - Pointer to file */
 	    * UTF-16 big-endian BOM?
 	    */
 
-            if ((*s[0] & 255) != 0xff)
+            if (((*s)[0] & 255) != 0xff)
 	      return (EOF);
 
 	    *encoding = ENCODE_UTF16BE;
@@ -1871,7 +1871,7 @@ mxml_string_getc(void *p,		/* I  - Pointer to file */
 	    * UTF-16 little-endian BOM?
 	    */
 
-            if ((*s[0] & 255) != 0xfe)
+            if (((*s)[0] & 255) != 0xfe)
 	      return (EOF);
 
 	    *encoding = ENCODE_UTF16LE;
@@ -1885,10 +1885,10 @@ mxml_string_getc(void *p,		/* I  - Pointer to file */
 	    * Two-byte value...
 	    */
 
-	    if ((*s[0] & 0xc0) != 0x80)
+	    if (((*s)[0] & 0xc0) != 0x80)
               return (EOF);
 
-	    ch = ((ch & 0x1f) << 6) | (*s[0] & 0x3f);
+	    ch = ((ch & 0x1f) << 6) | ((*s)[0] & 0x3f);
 
 	    (*s)++;
 
@@ -1900,11 +1900,11 @@ mxml_string_getc(void *p,		/* I  - Pointer to file */
 	    * Three-byte value...
 	    */
 
-	    if ((*s[0] & 0xc0) != 0x80 ||
-        	(*s[1] & 0xc0) != 0x80)
+	    if (((*s)[0] & 0xc0) != 0x80 ||
+        	((*s)[1] & 0xc0) != 0x80)
               return (EOF);
 
-	    ch = ((((ch & 0x0f) << 6) | (*s[0] & 0x3f)) << 6) | (*s[1] & 0x3f);
+	    ch = ((((ch & 0x0f) << 6) | ((*s)[0] & 0x3f)) << 6) | ((*s)[1] & 0x3f);
 
 	    (*s) += 2;
 
@@ -1916,13 +1916,13 @@ mxml_string_getc(void *p,		/* I  - Pointer to file */
 	    * Four-byte value...
 	    */
 
-	    if ((*s[0] & 0xc0) != 0x80 ||
-        	(*s[1] & 0xc0) != 0x80 ||
-        	(*s[2] & 0xc0) != 0x80)
+	    if (((*s)[0] & 0xc0) != 0x80 ||
+        	((*s)[1] & 0xc0) != 0x80 ||
+        	((*s)[2] & 0xc0) != 0x80)
               return (EOF);
 
-	    ch = ((((((ch & 0x07) << 6) | (*s[0] & 0x3f)) << 6) |
-        	   (*s[1] & 0x3f)) << 6) | (*s[2] & 0x3f);
+	    ch = ((((((ch & 0x07) << 6) | ((*s)[0] & 0x3f)) << 6) |
+        	   ((*s)[1] & 0x3f)) << 6) | ((*s)[2] & 0x3f);
 
 	    (*s) += 3;
 
@@ -1936,7 +1936,7 @@ mxml_string_getc(void *p,		/* I  - Pointer to file */
           * Read UTF-16 big-endian char...
 	  */
 
-	  ch = (ch << 8) | (*s[0] & 255);
+	  ch = (ch << 8) | ((*s)[0] & 255);
 	  (*s) ++;
 
           if (ch >= 0xd800 && ch <= 0xdbff)
@@ -1948,10 +1948,10 @@ mxml_string_getc(void *p,		/* I  - Pointer to file */
             int lch;			/* Lower word */
 
 
-            if (!*s[0])
+            if (!(*s)[0])
 	      return (EOF);
 
-            lch = ((*s[0] & 255) << 8) | (*s[1] & 255);
+            lch = (((*s)[0] & 255) << 8) | ((*s)[1] & 255);
 	    (*s) += 2;
 
             if (lch < 0xdc00 || lch >= 0xdfff)
@@ -1967,7 +1967,7 @@ mxml_string_getc(void *p,		/* I  - Pointer to file */
           * Read UTF-16 little-endian char...
 	  */
 
-	  ch = ch | ((*s[0] & 255) << 8);
+	  ch = ch | (((*s)[0] & 255) << 8);
 
 	  if (!ch)
 	  {
@@ -1986,10 +1986,10 @@ mxml_string_getc(void *p,		/* I  - Pointer to file */
             int lch;			/* Lower word */
 
 
-            if (!*s[1])
+            if (!(*s)[1])
 	      return (EOF);
 
-            lch = ((*s[1] & 255) << 8) | (*s[0] & 255);
+            lch = (((*s)[1] & 255) << 8) | ((*s)[0] & 255);
 	    (*s) += 2;
 
             if (lch < 0xdc00 || lch >= 0xdfff)
@@ -2470,5 +2470,5 @@ mxml_write_ws(mxml_node_t *node,	/* I - Current node */
 
 
 /*
- * End of "$Id: mxml-file.c,v 1.34 2004/07/11 13:14:07 mike Exp $".
+ * End of "$Id: mxml-file.c,v 1.35 2004/10/26 21:04:32 mike Exp $".
  */

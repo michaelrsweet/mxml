@@ -5,7 +5,7 @@
 	<style><!--
 	h1, h2, h3, p { font-family: sans-serif; text-align: justify; }
 	tt, pre a:link, pre a:visited, tt a:link, tt a:visited { font-weight: bold; color: #7f0000; }
-	pre { font-weight: bold; color: #7f0000; margin-left: 5em; }
+	pre { font-weight: bold; color: #7f0000; margin-left: 2em; }
 	--></style>
 </head>
 <body>
@@ -143,7 +143,7 @@ mxml_node_t *
 mxmlLoadFile(
     mxml_node_t * top,
     FILE * fp,
-    mxml_type_t * cb);
+    mxml_type_t (*cb)(mxml_node_t *));
 </pre>
 <h3>Arguments</h3>
 <p class="table"><table align="center" border="1" width="80%">
@@ -151,7 +151,7 @@ mxmlLoadFile(
 <tbody>
 <tr><td><tt>top</tt></td><td>Top node</td></tr>
 <tr><td><tt>fp</tt></td><td>File to read from</td></tr>
-<tr><td><tt>cb</tt></td><td>Callback function</td></tr>
+<tr><td><tt>(*cb)(mxml_node_t *)</tt></td><td>Callback function</td></tr>
 </tbody></table></p>
 <h3>Returns</h3>
 <p>First node</p>
@@ -278,8 +278,7 @@ int
 mxmlSaveFile(
     mxml_node_t * node,
     FILE * fp,
-    int * cb,
-    mxml_node_t * int);
+    int (*cb)(mxml_node_t *int));
 </pre>
 <h3>Arguments</h3>
 <p class="table"><table align="center" border="1" width="80%">
@@ -287,8 +286,7 @@ mxmlSaveFile(
 <tbody>
 <tr><td><tt>node</tt></td><td>Node to write</td></tr>
 <tr><td><tt>fp</tt></td><td>File to write to</td></tr>
-<tr><td><tt>cb</tt></td><td></td></tr>
-<tr><td><tt>int</tt></td><td>Whitespace callback</td></tr>
+<tr><td><tt>(*cb)(mxml_node_t *int)</tt></td><td>Whitespace callback</td></tr>
 </tbody></table></p>
 <h3>Returns</h3>
 <p>0 on success, -1 on error</p>

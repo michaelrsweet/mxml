@@ -1,5 +1,5 @@
 /*
- * "$Id: mxml-search.c,v 1.4 2003/06/04 21:19:00 mike Exp $"
+ * "$Id: mxml-search.c,v 1.5 2003/06/06 03:09:31 mike Exp $"
  *
  * Search/navigation functions for mini-XML, a small XML-like file
  * parsing library.
@@ -128,7 +128,7 @@ mxmlWalkNext(mxml_node_t *node,		/* I - Current node */
     node = node->parent;
 
     while (!node->next)
-      if (node->parent == top)
+      if (node->parent == top || !node->parent)
         return (NULL);
       else
         node = node->parent;
@@ -177,5 +177,5 @@ mxmlWalkPrev(mxml_node_t *node,		/* I - Current node */
 
 
 /*
- * End of "$Id: mxml-search.c,v 1.4 2003/06/04 21:19:00 mike Exp $".
+ * End of "$Id: mxml-search.c,v 1.5 2003/06/06 03:09:31 mike Exp $".
  */

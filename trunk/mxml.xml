@@ -35,7 +35,7 @@ direction="I"><type>mxml_node_t *</type><description>Current node</description><
 <description>Load a file into an XML node tree.</description><argument
 name="top" direction="I"><type>mxml_node_t *</type><description>Top node</description></argument>
 <argument name="fp" direction="I"><type>FILE *</type><description>File to read from</description></argument>
-<argument name="cb" direction="I"><type>mxml_type_t *</type><description>Callback function</description></argument>
+<argument name="(*cb)(mxml_node_t *)" direction="I"><type>mxml_type_t</type><description>Callback function</description></argument>
 </function>
 <function name="mxmlNewElement"><returnvalue><description>New node</description><type>mxml_node_t
 *</type></returnvalue>
@@ -75,8 +75,7 @@ name="node" direction="I"><type>mxml_node_t *</type><description>Node to remove<
 <description>Save an XML tree to a file.</description><argument
 name="node" direction="I"><type>mxml_node_t *</type><description>Node to write</description></argument>
 <argument name="fp" direction="I"><type>FILE *</type><description>File to write to</description></argument>
-<argument name="cb"><type>int *</type></argument>
-<argument name="int" direction="I"><type>mxml_node_t *</type><description>Whitespace callback</description></argument>
+<argument name="(*cb)(mxml_node_t *int)" direction="I"><type>int</type><description>Whitespace callback</description></argument>
 </function>
 <function name="mxmlWalkNext"><returnvalue><description>Next node or NULL</description><type>mxml_node_t
 *</type></returnvalue>
@@ -99,4 +98,4 @@ name="node" direction="I"><type>mxml_node_t *</type><description>Current node</d
 <variable name="node"><type>mxml_node_t *</type><description>Current node</description></variable>
 <variable name="parent"><type>mxml_node_t *</type><description>Parent node</description><description>Node type</description></variable>
 <variable name="s"><type>const char *</type><description>String to write</description><description>File to write to</description></variable>
-<variable name="ws"><type>int * cb mxml_node_t * int int</type><description>Where value</description><description>Current column</description></variable>
+<variable name="ws"><type>int(*cb)(mxml_node_t *int) int</type><description>Where value</description><description>Current column</description></variable>

@@ -1,0 +1,6 @@
+Mini-XML 1.3 adds support for all of the standard HTML entity
+names, entities in element names, attribute names, and attribute
+values, null attribute values,  and a new error callback for
+catching errors instead of displaying them to stderr. The new
+release also fixes some bugs with handling of poorly formed XML
+data and in the mxmldoc utility.

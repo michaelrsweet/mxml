@@ -1,5 +1,5 @@
 dnl
-dnl "$Id: configure.in,v 1.10 2004/05/02 16:04:40 mike Exp $"
+dnl "$Id: configure.in,v 1.11 2004/05/02 22:02:36 mike Exp $"
 dnl
 dnl Configuration script for Mini-XML, a small XML-like file parsing library.
 dnl
@@ -16,16 +16,16 @@ dnl MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 dnl GNU General Public License for more details.
 dnl
 
-dnl Version number...
-VERSION="2.0rc1"
-AC_SUBST(VERSION)
-AC_DEFINE(MXML_VERSION, "$VERSION")
-
 dnl Specify a source file from the distribution...
 AC_INIT(mxml.h)
 
 dnl Set the name of the config header file...
 AC_CONFIG_HEADER(config.h)
+
+dnl Version number...
+VERSION=2.0rc1
+AC_SUBST(VERSION)
+AC_DEFINE_UNQUOTED(MXML_VERSION, "Mini-XML v$VERSION")
 
 dnl Clear default debugging options and set normal optimization by
 dnl default unless the user asks for debugging specifically.
@@ -168,9 +168,25 @@ AC_SUBST(CAT3EXT)
 AC_SUBST(MAN1EXT)
 AC_SUBST(MAN3EXT)
 
+dnl pkg-config stuff...
+if test "$includedir" != /usr/include; then
+	PC_CFLAGS="-I$includedir"
+else
+	PC_CFLAGS=""
+fi
+
+if test "$libdir" != /usr/lib; then
+	PC_LIBS="-L$libdir -lmxml"
+else
+	PC_LIBS="-lmxml"
+fi
+
+AC_SUBST(PC_CFLAGS)
+AC_SUBST(PC_LIBS)
+
 dnl Output the makefile, etc...
 AC_OUTPUT(Makefile mxml.list mxml.pc)
 
 dnl
-dnl End of "$Id: configure.in,v 1.10 2004/05/02 16:04:40 mike Exp $".
+dnl End of "$Id: configure.in,v 1.11 2004/05/02 22:02:36 mike Exp $".
 dnl

@@ -1,9 +1,12 @@
-README - 05/01/2004
+README - 05/02/2004
 -------------------
 
 CHANGES IN Mini-XML 2.0
 
 	- New programmers manual.
+	- The mxmldoc utility now produces XML output which
+	  conforms to an updated XML schema, described in the file
+	  "doc/mxmldoc.xsd".
 	- Changed the whitespace callback interface to return
 	  strings instead of a single character, allowing for
 	  greater control over the formatting of XML files

@@ -1,5 +1,5 @@
 /*
- * "$Id: mxml-attr.c,v 1.8 2004/05/02 16:04:40 mike Exp $"
+ * "$Id: mxml-attr.c,v 1.9 2004/06/01 20:19:34 mike Exp $"
  *
  * Attribute support code for Mini-XML, a small XML-like file parsing library.
  *
@@ -117,10 +117,15 @@ mxmlElementSetAttr(mxml_node_t *node,	/* I - Element node */
       * Replace the attribute value and return...
       */
 
-      free(attr->value);
+      if (attr->value)
+        free(attr->value);
 
       if (value)
-	attr->value = strdup(value);
+      {
+	if ((attr->value = strdup(value)) == NULL)
+	  mxml_error("Unable to allocate memory for attribute '%s' in element %s!",
+                     name, node->value.element.name);
+      }
       else
         attr->value = NULL;
 
@@ -172,5 +177,5 @@ mxmlElementSetAttr(mxml_node_t *node,	/* I - Element node */
 
 
 /*
- * End of "$Id: mxml-attr.c,v 1.8 2004/05/02 16:04:40 mike Exp $".
+ * End of "$Id: mxml-attr.c,v 1.9 2004/06/01 20:19:34 mike Exp $".
  */

@@ -1,5 +1,5 @@
 /*
- * "$Id: mxml-file.c,v 1.31 2004/05/16 21:54:47 mike Exp $"
+ * "$Id: mxml-file.c,v 1.32 2004/06/01 20:19:34 mike Exp $"
  *
  * File loading code for Mini-XML, a small XML-like file parsing library.
  *
@@ -601,18 +601,24 @@ static int				/* O - 0 on success, -1 on failure */
 mxml_file_putc(int  ch,			/* I - Character to write */
                void *p)			/* I - Pointer to file */
 {
+  char	buffer[4],			/* Buffer for character */
+	*bufptr;			/* Pointer into buffer */
+  int	buflen;				/* Number of bytes to write */
+
+
   if (ch < 128)
-    return (putc(ch, (FILE *)p));
-  else if (ch < 2048)
+    return (putc(ch, (FILE *)p) == EOF ? -1 : 0);
+
+  bufptr = buffer;
+
+  if (ch < 2048)
   {
    /*
     * Two-byte UTF-8 character...
     */
 
-    if (putc(0xc0 | (ch >> 6), (FILE *)p) < 0)
-      return (-1);
-    else
-      return (putc(0x80 | (ch & 0x3f), (FILE *)p));
+    *bufptr++ = 0xc0 | (ch >> 6);
+    *bufptr++ = 0x80 | (ch & 0x3f);
   }
   else if (ch < 65536)
   {
@@ -620,12 +626,9 @@ mxml_file_putc(int  ch,			/* I - Character to write */
     * Three-byte UTF-8 character...
     */
 
-    if (putc(0xe0 | (ch >> 12), (FILE *)p) < 0)
-      return (-1);
-    else if (putc(0x80 | ((ch >> 6) & 0x3f), (FILE *)p) < 0)
-      return (-1);
-    else
-      return (putc(0x80 | (ch & 0x3f), (FILE *)p));
+    *bufptr++ = 0xe0 | (ch >> 12);
+    *bufptr++ = 0x80 | ((ch >> 6) & 0x3f);
+    *bufptr++ = 0x80 | (ch & 0x3f);
   }
   else
   {
@@ -633,15 +636,15 @@ mxml_file_putc(int  ch,			/* I - Character to write */
     * Four-byte UTF-8 character...
     */
 
-    if (putc(0xf0 | (ch >> 18), (FILE *)p) < 0)
-      return (-1);
-    else if (putc(0x80 | ((ch >> 12) & 0x3f), (FILE *)p) < 0)
-      return (-1);
-    else if (putc(0x80 | ((ch >> 6) & 0x3f), (FILE *)p) < 0)
-      return (-1);
-    else
-      return (putc(0x80 | (ch & 0x3f), (FILE *)p));
+    *bufptr++ = 0xf0 | (ch >> 18);
+    *bufptr++ = 0x80 | ((ch >> 12) & 0x3f);
+    *bufptr++ = 0x80 | ((ch >> 6) & 0x3f);
+    *bufptr++ = 0x80 | (ch & 0x3f);
   }
+
+  buflen = bufptr - buffer;
+
+  return (fwrite(buffer, 1, buflen, (FILE *)p) < buflen ? -1 : 0);
 }
 
 
@@ -1633,6 +1636,7 @@ mxml_write_node(mxml_node_t *node,	/* I - Node to write */
 		width;			/* Width of attr + value */
   mxml_attr_t	*attr;			/* Current attribute */
   char		s[255];			/* Temporary string */
+  int		slen;			/* Length of temporary string */
 
 
   while (node != NULL)
@@ -1779,11 +1783,11 @@ mxml_write_node(mxml_node_t *node,	/* I - Node to write */
 	      col ++;
           }
 
-          sprintf(s, "%d", node->value.integer);
+          slen = snprintf(s, sizeof(s), "%d", node->value.integer);
 	  if (mxml_write_string(s, p, putc_cb) < 0)
 	    return (-1);
 
-	  col += strlen(s);
+	  col += slen;
           break;
 
       case MXML_OPAQUE :
@@ -1809,11 +1813,11 @@ mxml_write_node(mxml_node_t *node,	/* I - Node to write */
 	      col ++;
           }
 
-          sprintf(s, "%f", node->value.real);
+          slen = snprintf(s, sizeof(s), "%f", node->value.real);
 	  if (mxml_write_string(s, p, putc_cb) < 0)
 	    return (-1);
 
-	  col += strlen(s);
+	  col += slen;
           break;
 
       case MXML_TEXT :
@@ -1932,5 +1936,5 @@ mxml_write_ws(mxml_node_t *node,	/* I - Current node */
 
 
 /*
- * End of "$Id: mxml-file.c,v 1.31 2004/05/16 21:54:47 mike Exp $".
+ * End of "$Id: mxml-file.c,v 1.32 2004/06/01 20:19:34 mike Exp $".
  */

@@ -1,9 +1,13 @@
-README - 05/16/2004
+README - 06/01/2004
 -------------------
 
 CHANGES IN Mini-XML 2.0
 
 	- New programmers manual.
+	- Added optimizations to mxmldoc, mxmlSaveFile(), and
+	  mxmlIndexNew() (STR #2)
+	- mxmlEntityAddCallback() now returns an integer status
+	  (STR #2)
 	- Added UTF-16 support (input only; all output is UTF-8)
 	- Added index functions to build a searchable index of
 	  XML nodes.

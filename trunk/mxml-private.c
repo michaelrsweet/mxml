@@ -1,5 +1,5 @@
 /*
- * "$Id: mxml-private.c,v 1.4 2004/05/02 16:04:40 mike Exp $"
+ * "$Id: mxml-private.c,v 1.5 2004/06/01 20:19:34 mike Exp $"
  *
  * Private functions for Mini-XML, a small XML-like file parsing library.
  *
@@ -74,11 +74,7 @@ mxml_error(const char *format,		/* I - Printf-style format string */
   if (mxml_error_cb)
     (*mxml_error_cb)(s);
   else
-  {
-    fputs("mxml: ", stderr);
-    fputs(s, stderr);
-    putc('\n', stderr);
-  }
+    fprintf(stderr, "mxml: %s\n", s);
 
  /*
   * Free the string...
@@ -128,5 +124,5 @@ mxml_real_cb(mxml_node_t *node)		/* I - Current node */
 
 
 /*
- * End of "$Id: mxml-private.c,v 1.4 2004/05/02 16:04:40 mike Exp $".
+ * End of "$Id: mxml-private.c,v 1.5 2004/06/01 20:19:34 mike Exp $".
  */

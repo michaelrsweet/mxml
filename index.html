@@ -29,9 +29,28 @@ requiring large non-standard libraries. Mini-XML only requires
 an ANSI C compatible compiler (GCC works, as do most vendors'
 ANSI C compilers) and a "make" program.</p>
 
-<p>Mini-XML was created to support the basic hierarchy provided
-by XML and some simple data types, but doesn't do validation or
-other types of processing on the data.</p>
+<p>Mini-XML provides the following functionality:</p>
+
+<ul>
+	<li>Reading and writing of UTF-8 encoded XML files.</li>
+	<li>Data is stored in a linked-list tree structure,
+	preserving the XML data hierarchy.</li>
+	<li>Supports arbitrary element names, attributes, and
+	attribute values with no preset limits, just available
+	memory.</li>
+	<li>Supports integer, real, opaque ("cdata"), and text
+	data types in "leaf" nodes.</li>
+	<li>Functions for creating and managing trees of data.</li>
+	<li>"Find" and "walk" functions for easily locating and
+	navigating trees of data.</li>
+</ul>
+
+<p>Mini-XML doesn't do validation or other types of processing
+on the data based upon schema files or other sources of
+definition information, nor does it support character entities
+other than those required by the XML specification. Also, since
+Mini-XML does not support the UTF-16 encoding, it is technically
+not a conforming XML consumer/client.</p>
 
 <h2>Building Mini-XML</h2>
 
@@ -113,7 +132,7 @@ function:</p>
     mxml_node_t *tree;
 
     fp = fopen("filename.xml", "w");
-    mxmlSaveFile(tree, fp);
+    mxmlSaveFile(tree, fp, MXML_NO_CALLBACK);
     fclose(fp);
 </pre>
 

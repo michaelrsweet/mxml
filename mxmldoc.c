@@ -1,5 +1,5 @@
 /*
- * "$Id: mxmldoc.c,v 1.2 2003/06/04 16:30:40 mike Exp $"
+ * "$Id: mxmldoc.c,v 1.3 2003/06/04 17:37:23 mike Exp $"
  *
  * Documentation generator using mini-XML, a small XML-like file parsing
  * library.
@@ -102,9 +102,9 @@
  * Local functions...
  */
 
-static void		insert_node(mxml_node_t *tree, mxml_node_t *func);
 static int		scan_file(const char *filename, FILE *fp,
 			          mxml_node_t *doc);
+static void		sort_node(mxml_node_t *tree, mxml_node_t *func);
 
 
 /*
@@ -193,7 +193,7 @@ main(int  argc,				/* I - Number of command-line args */
     * Write over the existing XML file...
     */
 
-    if (mxmlSaveFile(doc, fp))
+    if (mxmlSaveFile(doc, fp, MXML_NO_CALLBACK))
     {
       fprintf(stderr, "Unable to write the XML documentation file \"%s\": %s!\n",
               argv[1], strerror(errno));
@@ -223,12 +223,24 @@ main(int  argc,				/* I - Number of command-line args */
 
 
 /*
- * 'insert_node()' - Insert a node into a tree.
+ * 'scan_file()' - Scan a source file.
+ */
+
+static int				/* O - 0 on success, -1 on error */
+scan_file(const char  *filename,	/* I - Filename */
+          FILE        *fp,		/* I - File to scan */
+          mxml_node_t *tree)		/* I - Function tree */
+{
+}
+
+
+/*
+ * 'sort_node()' - Insert a node sorted into a tree.
  */
 
 static void
-insert_node(mxml_node_t *tree,		/* I - Tree to insert into */
-            mxml_node_t *node)		/* I - Node to add */
+sort_node(mxml_node_t *tree,		/* I - Tree to sort into */
+          mxml_node_t *node)		/* I - Node to add */
 {
   mxml_node_t	*temp;			/* Current node */
   const char	*tempname,		/* Name of current node */
@@ -242,7 +254,7 @@ insert_node(mxml_node_t *tree,		/* I - Tree to insert into */
   nodename = mxmlElementGetAttr(node, "name");
 
  /*
-  * Delete an existing definition, if one exists...
+  * Delete any existing definition at this level, if one exists...
   */
 
   if ((temp = mxmlFindElement(tree, tree, node->value.element.name,
@@ -250,7 +262,7 @@ insert_node(mxml_node_t *tree,		/* I - Tree to insert into */
     mxmlDelete(temp);
 
  /*
-  * Insert the node into the tree...
+  * Add the node into the tree at the proper place...
   */
 
   for (temp = tree->child; temp; temp = temp->next)
@@ -262,53 +274,10 @@ insert_node(mxml_node_t *tree,		/* I - Tree to insert into */
       break;
   }
 
-  if (temp)
-  {
-   /*
-    * Insert node before this temp...
-    */
-
-    node->next = temp;
-    node->prev = temp->prev;
-
-    if (temp->prev)
-      temp->prev->next = node;
-    else
-      tree->child = node;
-
-    temp->prev = node;
-  }
-  else
-  {
-   /*
-    * Append node to the end...
-    */
-
-    node->prev = tree->last_child;
-
-    if (tree->last_child)
-      tree->last_child->next = node;
-    else
-      tree->last_child = node;
-
-    if (!tree->child)
-      tree->child = node;
-  }
+  mxmlAdd(tree, MXML_ADD_AFTER, temp, node);
 }
 
 
 /*
- * 'scan_file()' - Scan a source file.
- */
-
-static int				/* O - 0 on success, -1 on error */
-scan_file(const char  *filename,	/* I - Filename */
-          FILE        *fp,		/* I - File to scan */
-          mxml_node_t *tree)		/* I - Function tree */
-{
-}
-
-
-/*
- * End of "$Id: mxmldoc.c,v 1.2 2003/06/04 16:30:40 mike Exp $".
+ * End of "$Id: mxmldoc.c,v 1.3 2003/06/04 17:37:23 mike Exp $".
  */

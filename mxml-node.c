@@ -1,5 +1,5 @@
 /*
- * "$Id: mxml-node.c,v 1.1 2003/06/03 19:46:30 mike Exp $"
+ * "$Id: mxml-node.c,v 1.2 2003/06/04 17:37:23 mike Exp $"
  *
  * Node support code for mini-XML, a small XML-like file parsing library.
  *
@@ -17,12 +17,14 @@
  *
  * Contents:
  *
+ *   mxmlAdd()        - Add a node to a tree.
  *   mxmlDelete()     - Delete a node and all of its children.
  *   mxmlNewElement() - Create a new element node.
  *   mxmlNewInteger() - Create a new integer node.
  *   mxmlNewOpaque()  - Create a new opaque string.
  *   mxmlNewReal()    - Create a new real number node.
  *   mxmlNewText()    - Create a new text fragment node.
+ *   mxmlRemove()     - Remove a node from its parent.
  *   mxml_new()       - Create a new node.
  */
 
@@ -38,6 +40,98 @@
  */
 
 static mxml_node_t	*mxml_new(mxml_node_t *parent, mxml_type_t type);
+
+
+/*
+ * 'mxmlAdd()' - Add a node to a tree.
+ */
+
+void
+mxmlAdd(mxml_node_t *parent,		/* I - Parent node */
+        int         where,		/* I - Where to add */
+        mxml_node_t *child,		/* I - Child node for where */
+	mxml_node_t *node)		/* I - Node to add */
+{
+  if (!parent)
+    return;
+
+  if (node->parent)
+    mxmlRemove(node);
+
+  node->parent = parent;
+
+  switch (where)
+  {
+    case MXML_ADD_BEFORE :
+        if (!child || child == parent->child || child->parent != parent)
+	{
+	 /*
+	  * Insert as first node under parent...
+	  */
+
+	  node->next = parent->child;
+
+	  if (parent->child)
+	    parent->child->prev = node;
+	  else
+	    parent->last_child = node;
+
+	  parent->child = node;
+	}
+	else
+	{
+	 /*
+	  * Insert node before this child...
+	  */
+
+	  node->next = child;
+	  node->prev = child->prev;
+
+	  if (child->prev)
+	    child->prev->next = node;
+	  else
+	    parent->child = node;
+
+	  child->prev = node;
+	}
+        break;
+
+    case MXML_ADD_AFTER :
+        if (!child || child == parent->last_child || child->parent != parent)
+	{
+	 /*
+	  * Insert as last node under parent...
+	  */
+
+	  node->parent = parent;
+	  node->prev   = parent->last_child;
+
+	  if (parent->last_child)
+	    parent->last_child->next = node;
+	  else
+	    parent->child = node;
+
+	  parent->last_child = node;
+        }
+	else
+	{
+	 /*
+	  * Insert node after this child...
+	  */
+
+	  node->prev = child;
+	  node->next = child->next;
+
+	  if (child->next)
+	    child->next->prev = node;
+	  else
+	    parent->last_child = node;
+
+	  child->next = node;
+	}
+        break;
+  }
+}
 
 
 /*
@@ -58,7 +152,13 @@ mxmlDelete(mxml_node_t *node)		/* I - Node */
     return;
 
  /*
-  * Delete children first...
+  * Remove the node from its parent, if any...
+  */
+
+  mxmlRemove(node);
+
+ /*
+  * Delete children...
   */
 
   while (node->child)
@@ -101,23 +201,6 @@ mxmlDelete(mxml_node_t *node)		/* I - Node */
         if (node->value.text.string)
 	  free(node->value.text.string);
         break;
-  }
-
- /*
-  * Remove from parent, if any...
-  */
-
-  if (node->parent)
-  {
-    if (node->prev)
-      node->prev->next = node->next;
-    else
-      node->parent->child = node->next;
-
-    if (node->next)
-      node->next->prev = node->prev;
-    else
-      node->parent->last_child = node->prev;
   }
 
  /*
@@ -278,6 +361,36 @@ mxmlNewText(mxml_node_t *parent,	/* I - Parent node */
 
 
 /*
+ * 'mxmlRemove()' - Remove a node from its parent.
+ */
+
+void
+mxmlRemove(mxml_node_t *node)		/* I - Node to remove */
+{
+ /*
+  * Range check input...
+  */
+
+  if (!node || !node->parent)
+    return;
+
+ /*
+  * Remove from parent...
+  */
+
+  if (node->prev)
+    node->prev->next = node->next;
+  else
+    node->parent->child = node->next;
+
+  if (node->next)
+    node->next->prev = node->prev;
+  else
+    node->parent->last_child = node->prev;
+}
+
+
+/*
  * 'mxml_new()' - Create a new node.
  */
 
@@ -306,17 +419,7 @@ mxml_new(mxml_node_t *parent,		/* I - Parent node */
   */
 
   if (parent)
-  {
-    node->parent = parent;
-    node->prev   = parent->last_child;
-
-    if (parent->last_child)
-      parent->last_child->next = node;
-    else
-      parent->child = node;
-
-    parent->last_child = node;
-  }
+    mxmlAdd(parent, MXML_ADD_AFTER, MXML_ADD_TO_PARENT, node);
 
  /*
   * Return the new node...
@@ -327,5 +430,5 @@ mxml_new(mxml_node_t *parent,		/* I - Parent node */
 
 
 /*
- * End of "$Id: mxml-node.c,v 1.1 2003/06/03 19:46:30 mike Exp $".
+ * End of "$Id: mxml-node.c,v 1.2 2003/06/04 17:37:23 mike Exp $".
  */

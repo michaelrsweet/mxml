@@ -144,6 +144,18 @@ Does not free memory used by the node - use mxmlDelete() for that.
 This function does nothing if the node has no parent.</description><argument
 name="node" direction="I"><type>mxml_node_t *</type><description>Node to remove</description></argument>
 </function>
+<function name="mxmlSaveAllocString"><returnvalue><description>Allocated string or NULL</description><type>char
+*</type></returnvalue>
+<description>Save an XML node tree to an allocated string.
+
+This function returns a pointer to a string containing the textual
+representation of the XML node tree.  The string should be freed
+using the free() function when you are done with it.  NULL is returned
+if the node would produce an empty string or if the string cannot be
+allocated.</description><argument
+name="node" direction="I"><type>mxml_node_t *</type><description>Node to write</description></argument>
+<argument name="(*cb)(mxml_node_t *int)" direction="I"><type>int</type><description>Whitespace callback or MXML_NO_CALLBACK</description></argument>
+</function>
 <function name="mxmlSaveFile"><returnvalue><description>0 on success, -1 on error.</description><type>int</type></returnvalue>
 <description>Save an XML tree to a file.
 

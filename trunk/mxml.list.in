@@ -1,5 +1,5 @@
 #
-# "$Id: mxml.list.in,v 1.4 2003/06/15 21:31:45 mike Exp $"
+# "$Id: mxml.list.in,v 1.5 2003/07/20 13:42:03 mike Exp $"
 #
 # EPM software list file for mini-XML, a small XML-like file parsing library.
 #
@@ -32,7 +32,7 @@ $srcdir=@srcdir@
 %vendor Michael Sweet
 %license ${srcdir}/COPYING
 %readme ${srcdir}/README
-%version 1.0.1
+%version 1.1
 
 %description <<EOF
 Mini-XML is a small XML parsing library that you can use to read
@@ -88,5 +88,5 @@ f 0444 root sys ${mandir}/cat3/mxml.$CAT3EXT $srcdir/mxml.$CAT3EXT
 f 0444 root sys ${mandir}/man3/mxml.$MAN3EXT $srcdir/mxml.man
 
 #
-# End of "$Id: mxml.list.in,v 1.4 2003/06/15 21:31:45 mike Exp $".
+# End of "$Id: mxml.list.in,v 1.5 2003/07/20 13:42:03 mike Exp $".
 #

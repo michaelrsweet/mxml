@@ -1,5 +1,5 @@
 /*
- * "$Id: mxml-attr.c,v 1.4 2003/07/27 23:11:40 mike Exp $"
+ * "$Id: mxml-attr.c,v 1.5 2003/12/01 15:27:47 mike Exp $"
  *
  * Attribute support code for mini-XML, a small XML-like file parsing library.
  *
@@ -91,7 +91,7 @@ mxmlElementSetAttr(mxml_node_t *node,	/* I - Element node */
   * Range check input...
   */
 
-  if (!node || node->type != MXML_ELEMENT || !name || !value)
+  if (!node || node->type != MXML_ELEMENT || !name)
     return;
 
  /*
@@ -109,7 +109,10 @@ mxmlElementSetAttr(mxml_node_t *node,	/* I - Element node */
 
       free(attr->value);
 
-      attr->value = strdup(value);
+      if (value)
+	attr->value = strdup(value);
+      else
+        attr->value = NULL;
 
       return;
     }
@@ -135,9 +138,12 @@ mxmlElementSetAttr(mxml_node_t *node,	/* I - Element node */
   attr += node->value.element.num_attrs;
 
   attr->name  = strdup(name);
-  attr->value = strdup(value);
+  if (value)
+    attr->value = strdup(value);
+  else
+    attr->value = NULL;
 
-  if (!attr->name || !attr->value)
+  if (!attr->name || (!attr->value && value))
   {
     if (attr->name)
       free(attr->name);
@@ -156,5 +162,5 @@ mxmlElementSetAttr(mxml_node_t *node,	/* I - Element node */
 
 
 /*
- * End of "$Id: mxml-attr.c,v 1.4 2003/07/27 23:11:40 mike Exp $".
+ * End of "$Id: mxml-attr.c,v 1.5 2003/12/01 15:27:47 mike Exp $".
  */

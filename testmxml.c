@@ -1,5 +1,5 @@
 /*
- * "$Id: testmxml.c,v 1.3 2003/06/03 20:40:01 mike Exp $"
+ * "$Id: testmxml.c,v 1.4 2003/06/04 01:23:21 mike Exp $"
  *
  * Test program for mini-XML, a small XML-like file parsing library.
  *
@@ -82,23 +82,26 @@ main(int  argc,				/* I - Number of command-line args */
     return (1);
   }
 
- /*
-  * Verify that mxmlFindElement() and indirectly mxmlWalkNext() work
-  * properly...
-  */
-
-  if ((node = mxmlFindElement(tree, tree, "choice")) == NULL)
+  if (!strcmp(argv[1], "test.xml"))
   {
-    fputs("Unable to find first <choice> element in XML tree!\n", stderr);
-    mxmlDelete(tree);
-    return (1);
-  }
+   /*
+    * Verify that mxmlFindElement() and indirectly mxmlWalkNext() work
+    * properly...
+    */
 
-  if ((node = mxmlFindElement(node, tree, "choice")) == NULL)
-  {
-    fputs("Unable to find second <choice> element in XML tree!\n", stderr);
-    mxmlDelete(tree);
-    return (1);
+    if ((node = mxmlFindElement(tree, tree, "choice")) == NULL)
+    {
+      fputs("Unable to find first <choice> element in XML tree!\n", stderr);
+      mxmlDelete(tree);
+      return (1);
+    }
+
+    if ((node = mxmlFindElement(node, tree, "choice")) == NULL)
+    {
+      fputs("Unable to find second <choice> element in XML tree!\n", stderr);
+      mxmlDelete(tree);
+      return (1);
+    }
   }
 
  /*
@@ -147,5 +150,5 @@ type_cb(mxml_node_t *node)		/* I - Element node */
 
 
 /*
- * End of "$Id: testmxml.c,v 1.3 2003/06/03 20:40:01 mike Exp $".
+ * End of "$Id: testmxml.c,v 1.4 2003/06/04 01:23:21 mike Exp $".
  */

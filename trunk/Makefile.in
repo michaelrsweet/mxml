@@ -1,5 +1,5 @@
 #
-# "$Id: Makefile.in,v 1.3 2003/06/04 00:25:59 mike Exp $"
+# "$Id: Makefile.in,v 1.4 2003/06/04 16:30:39 mike Exp $"
 #
 # Makefile for mini-XML, a small XML-like file parsing library.
 #
@@ -53,15 +53,15 @@ libdir		=	@libdir@
 #
 
 LIBOBJS		=	mxml-attr.o mxml-file.o mxml-node.o mxml-search.o
-OBJS		=	testmxml.o $(LIBOBJS)
-TARGETS		=	libmxml.a testmxml
+OBJS		=	mxmldoc.o testmxml.o $(LIBOBJS)
+TARGETS		=	libmxml.a mxmldoc testmxml
 
 
 #
 # Make everything...
 #
 
-all:		$(TARGETS)
+all:		Makefile configure $(TARGETS)
 
 
 #
@@ -87,6 +87,37 @@ install:	$(TARGETS)
 
 
 #
+# Uninstall everything...
+#
+
+uninstall:
+	rm -f $(libdir)/libmxml.a
+	rm -f $(includedir)/mxml.h
+
+
+#
+# autoconf stuff...
+#
+
+Makefile:	configure Makefile.in
+	if test -f config.status; then \
+		./config.status --recheck; \
+		./config.status; \
+	else \
+		./configure; \
+	fi
+
+configure:	configure.in
+	autoconf
+	if test -f config.status; then \
+		./config.status --recheck; \
+		./config.status; \
+	else \
+		./configure; \
+	fi
+
+
+#
 # libmxml.a
 #
 
@@ -96,6 +127,16 @@ libmxml.a:	$(LIBOBJS)
 	$(RANLIB) $@
 
 $(LIBOBJS):	mxml.h
+
+
+#
+# mxmldoc
+#
+
+mxmldoc:	libmxml.a mxmldoc.o
+	$(CC) $(LDFLAGS) -o $@ mxmldoc.o libmxml.a
+
+mxmldoc.o:	mxml.h
 
 
 #
@@ -116,9 +157,14 @@ testmxml:	libmxml.a testmxml.o
 
 testmxml.o:	mxml.h
 
+
+#
+# All object files depend on the makefile...
+#
+
 $(OBJS):	Makefile
 
 
 #
-# End of "$Id: Makefile.in,v 1.3 2003/06/04 00:25:59 mike Exp $".
+# End of "$Id: Makefile.in,v 1.4 2003/06/04 16:30:39 mike Exp $".
 #

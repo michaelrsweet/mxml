@@ -1,11 +1,11 @@
-README - 06/03/2003
+README - 06/04/2003
 -------------------
 
 
 INTRODUCTION
 
     This README file describes the Mini-XML library version
-    0.91.
+    0.93.
 
     Mini-XML is a small XML parsing library that you can use to
     read XML and XML-like data files in your application without
@@ -92,15 +92,39 @@ DOCUMENTATION
     You can find a named element/node using the
     "mxmlFindElement()" function:
 
-        mxml_node_t *node = mxmlFindElement(tree, tree, "name");
+        mxml_node_t *node = mxmlFindElement(tree, tree, "name", "attr",
+	                                    "value", MXML_DESCEND);
+
+    The "name", "attr", and "value" arguments can be passed as
+    NULL to act as wildcards, e.g.:
+
+        /* Find the first "a" element */
+        node = mxmlFindElement(tree, tree, "a", NULL, NULL, MXML_DESCEND);
+
+        /* Find the first "a" element with "href" attribute */
+        node = mxmlFindElement(tree, tree, "a", "href", NULL, MXML_DESCEND);
+
+        /* Find the first "a" element with "href" to a URL */
+        node = mxmlFindElement(tree, tree, "a", "href",
+	                       "http://www.easysw.com/~mike/mxml/",
+			       MXML_DESCEND);
+
+        /* Find the first element with a "src" attribute*/
+        node = mxmlFindElement(tree, tree, NULL, "src", NULL, MXML_DESCEND);
+
+        /* Find the first element with a "src" = "foo.jpg" */
+        node = mxmlFindElement(tree, tree, NULL, "src", "foo.jpg",
+	                       MXML_DESCEND);
 
     You can also iterate with the same function:
 
         mxml_node_t *node;
 
-	for (node = mxmlFindElement(tree, tree, "name");
+	for (node = mxmlFindElement(tree, tree, "name", NULL, NULL,
+	                            MXML_DESCEND);
 	     node != NULL;
-	     node = mxmlFindElement(node, tree, "name"))
+	     node = mxmlFindElement(node, tree, "name", NULL, NULL,
+	                            MXML_DESCEND))
         {
 	  ... do something ...
 	}

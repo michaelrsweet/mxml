@@ -1,5 +1,5 @@
 /*
- * "$Id: testmxml.c,v 1.4 2003/06/04 01:23:21 mike Exp $"
+ * "$Id: testmxml.c,v 1.5 2003/06/04 16:30:40 mike Exp $"
  *
  * Test program for mini-XML, a small XML-like file parsing library.
  *
@@ -89,14 +89,16 @@ main(int  argc,				/* I - Number of command-line args */
     * properly...
     */
 
-    if ((node = mxmlFindElement(tree, tree, "choice")) == NULL)
+    if ((node = mxmlFindElement(tree, tree, "choice", NULL, NULL,
+                                MXML_DESCEND)) == NULL)
     {
       fputs("Unable to find first <choice> element in XML tree!\n", stderr);
       mxmlDelete(tree);
       return (1);
     }
 
-    if ((node = mxmlFindElement(node, tree, "choice")) == NULL)
+    if ((node = mxmlFindElement(node, tree, "choice", NULL, NULL,
+                                MXML_NO_DESCEND)) == NULL)
     {
       fputs("Unable to find second <choice> element in XML tree!\n", stderr);
       mxmlDelete(tree);
@@ -140,7 +142,8 @@ type_cb(mxml_node_t *node)		/* I - Element node */
 
   if (!strcmp(type, "integer"))
     return (MXML_INTEGER);
-  else if (!strcmp(type, "opaque"))
+  else if (!strcmp(type, "opaque") ||
+           !strcmp(type, "pre") || !strcmp(type, "PRE"))
     return (MXML_OPAQUE);
   else if (!strcmp(type, "real"))
     return (MXML_REAL);
@@ -150,5 +153,5 @@ type_cb(mxml_node_t *node)		/* I - Element node */
 
 
 /*
- * End of "$Id: testmxml.c,v 1.4 2003/06/04 01:23:21 mike Exp $".
+ * End of "$Id: testmxml.c,v 1.5 2003/06/04 16:30:40 mike Exp $".
  */

@@ -36,6 +36,7 @@ find . -name .cvsignore -exec rm -f '{}' \;
 find . -name CVS -exec rm -rf '{}' \;
 
 rm makesrcdist
+rm index.html
 
 cd ..
 

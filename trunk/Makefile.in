@@ -1,5 +1,5 @@
 #
-# "$Id: Makefile.in,v 1.15 2003/12/18 04:16:37 mike Exp $"
+# "$Id: Makefile.in,v 1.16 2004/02/04 21:24:03 mike Exp $"
 #
 # Makefile for mini-XML, a small XML-like file parsing library.
 #
@@ -106,22 +106,22 @@ clean:
 #
 
 install:	$(TARGETS)
-	-$(MKDIR) -p $(BUILDROOT)/$(bindir)
-	$(CP) mxmldoc $(BUILDROOT)/$(bindir) 
-	-$(MKDIR) -p $(BUILDROOT)/$(docdir)
-	$(CP) $(DOCFILES) $(BUILDROOT)/$(docdir)
-	-$(MKDIR) -p $(BUILDROOT)/$(includedir)
-	$(CP) mxml.h $(BUILDROOT)/$(includedir)
-	-$(MKDIR) -p $(BUILDROOT)/$(libdir)
-	$(CP) libmxml.a $(BUILDROOT)/$(libdir)
-	-$(MKDIR) -p $(BUILDROOT)/$(mandir)/cat1
-	$(CP) mxmldoc.$(CAT1EXT) $(BUILDROOT)/$(mandir)/cat1/mxmldoc.$(CAT1EXT)
-	-$(MKDIR) -p $(BUILDROOT)/$(mandir)/cat3
-	$(CP) mxml.$(CAT3EXT) $(BUILDROOT)/$(mandir)/cat3/mxml.$(CAT3EXT)
-	-$(MKDIR) -p $(BUILDROOT)/$(mandir)/man1
-	$(CP) mxmldoc.man $(BUILDROOT)/$(mandir)/man1/mxmldoc.$(MAN1EXT)
-	-$(MKDIR) -p $(BUILDROOT)/$(mandir)/man3
-	$(CP) mxml.man $(BUILDROOT)/$(mandir)/man3/mxml.$(MAN3EXT)
+	-$(MKDIR) -p $(BUILDROOT)$(bindir)
+	$(CP) mxmldoc $(BUILDROOT)$(bindir) 
+	-$(MKDIR) -p $(BUILDROOT)$(docdir)
+	$(CP) $(DOCFILES) $(BUILDROOT)$(docdir)
+	-$(MKDIR) -p $(BUILDROOT)$(includedir)
+	$(CP) mxml.h $(BUILDROOT)$(includedir)
+	-$(MKDIR) -p $(BUILDROOT)$(libdir)
+	$(CP) libmxml.a $(BUILDROOT)$(libdir)
+	-$(MKDIR) -p $(BUILDROOT)$(mandir)/cat1
+	$(CP) mxmldoc.$(CAT1EXT) $(BUILDROOT)$(mandir)/cat1/mxmldoc.$(CAT1EXT)
+	-$(MKDIR) -p $(BUILDROOT)$(mandir)/cat3
+	$(CP) mxml.$(CAT3EXT) $(BUILDROOT)$(mandir)/cat3/mxml.$(CAT3EXT)
+	-$(MKDIR) -p $(BUILDROOT)$(mandir)/man1
+	$(CP) mxmldoc.man $(BUILDROOT)$(mandir)/man1/mxmldoc.$(MAN1EXT)
+	-$(MKDIR) -p $(BUILDROOT)$(mandir)/man3
+	$(CP) mxml.man $(BUILDROOT)$(mandir)/man3/mxml.$(MAN3EXT)
 
 
 #
@@ -129,14 +129,14 @@ install:	$(TARGETS)
 #
 
 uninstall:
-	$(RM) $(BUILDROOT)/$(bindir)/mxmldoc
-	$(RM) -r $(BUILDROOT)/$(docdir)
-	$(RM) $(BUILDROOT)/$(includedir)/mxml.h
-	$(RM) $(BUILDROOT)/$(libdir)/libmxml.a
-	$(RM) $(BUILDROOT)/$(mandir)/cat1/mxmldoc.$(CAT1EXT)
-	$(RM) $(BUILDROOT)/$(mandir)/cat3/mxml.$(CAT3EXT)
-	$(RM) $(BUILDROOT)/$(mandir)/man1/mxmldoc.$(MAN1EXT)
-	$(RM) $(BUILDROOT)/$(mandir)/man3/mxml.$(MAN3EXT)
+	$(RM) $(BUILDROOT)$(bindir)/mxmldoc
+	$(RM) -r $(BUILDROOT)$(docdir)
+	$(RM) $(BUILDROOT)$(includedir)/mxml.h
+	$(RM) $(BUILDROOT)$(libdir)/libmxml.a
+	$(RM) $(BUILDROOT)$(mandir)/cat1/mxmldoc.$(CAT1EXT)
+	$(RM) $(BUILDROOT)$(mandir)/cat3/mxml.$(CAT3EXT)
+	$(RM) $(BUILDROOT)$(mandir)/man1/mxmldoc.$(MAN1EXT)
+	$(RM) $(BUILDROOT)$(mandir)/man3/mxml.$(MAN3EXT)
 
 
 #
@@ -244,5 +244,5 @@ $(OBJS):	Makefile config.h
 
 
 #
-# End of "$Id: Makefile.in,v 1.15 2003/12/18 04:16:37 mike Exp $".
+# End of "$Id: Makefile.in,v 1.16 2004/02/04 21:24:03 mike Exp $".
 #

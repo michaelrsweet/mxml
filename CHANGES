@@ -1,12 +1,12 @@
-README - 06/04/2003
+README - 06/05/2003
 -------------------
 
 
 CHANGES IN Mini-XML 0.93
 
-	- New mxmldoc example program that is used to track code
-	  documentation using XML and produce HTML reference
-	  pages.
+	- New mxmldoc example program that is also used to
+	  create and update code documentation using XML and
+	  produce HTML reference pages.
 	- Added mxmlAdd() and mxmlRemove() functions to add and
 	  remove nodes from a tree.  This provides more
 	  flexibility over where the nodes are inserted and

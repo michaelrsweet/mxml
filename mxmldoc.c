@@ -1,5 +1,5 @@
 /*
- * "$Id: mxmldoc.c,v 1.7 2003/06/05 12:11:53 mike Exp $"
+ * "$Id: mxmldoc.c,v 1.8 2003/06/05 13:49:14 mike Exp $"
  *
  * Documentation generator using mini-XML, a small XML-like file parsing
  * library.
@@ -100,6 +100,8 @@ static void		sort_node(mxml_node_t *tree, mxml_node_t *func);
 static void		update_comment(mxml_node_t *parent,
 			               mxml_node_t *comment);
 static void		write_documentation(mxml_node_t *doc);
+static void		write_element(mxml_node_t *element);
+static void		write_string(const char *s);
 static int		ws_cb(mxml_node_t *node, int where);
 
 
@@ -542,6 +544,23 @@ scan_file(const char  *filename,	/* I - Filename */
 	        if (type->child &&
 		    !strcmp(type->child->value.text.string, "extern"))
 		{
+		 /*
+		  * Remove external declarations...
+		  */
+
+		  mxmlDelete(type);
+		  type = NULL;
+		  break;
+		}
+
+	        if (type->child &&
+		    !strcmp(type->child->value.text.string, "static") &&
+		    !strcmp(parent->value.element.name, "?xml"))
+		{
+		 /*
+		  * Remove static functions...
+		  */
+
 		  mxmlDelete(type);
 		  type = NULL;
 		  break;
@@ -772,16 +791,18 @@ write_documentation(mxml_node_t *doc)	/* I - XML documentation */
 		*description,		/* Description of function/var */
 		*type;			/* Type of returnvalue/var */
   const char	*name;			/* Name of function/type */
+  char		prefix;			/* Prefix character */
 
 
   puts("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" "
        "\"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">");
   puts("<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en\" lang=\"en\">");
   puts("<head>");
-  puts("\t<title>Mini-XML Home Page</title>");
+  puts("\t<title>Documentation</title>");
   puts("\t<style><!--");
   puts("\th1, h2, h3, p { font-family: sans-serif; text-align: justify; }");
-  puts("\ttt, pre, pre a:link, pre a:visited, tt a:link, tt a:visited { font-weight: bold; color: #7f0000; }");
+  puts("\ttt, pre a:link, pre a:visited, tt a:link, tt a:visited { font-weight: bold; color: #7f0000; }");
+  puts("\tpre { font-weight: bold; color: #7f0000; margin-left: 5em; }");
   puts("\t--></style>");
   puts("</head>");
   puts("<body>");
@@ -808,28 +829,175 @@ write_documentation(mxml_node_t *doc)	/* I - XML documentation */
                                   MXML_NO_DESCEND))
   {
     name = mxmlElementGetAttr(function, "name");
+    puts("<hr noshade/>");
     printf("<h2><a name=\"%s\">%s()</a></h2>\n", name, name);
 
     description = mxmlFindElement(function, function, "description", NULL,
                                   NULL, MXML_DESCEND_FIRST);
-    fputs("<p>", stdout);
-    for (node = mxmlWalkNext(description, description, MXML_DESCEND);
-         node;
-	 node = mxmlWalkNext(node, description, MXML_DESCEND))
-      if (node->type == MXML_TEXT)
-      {
-        if (node->value.text.whitespace)
-	  putchar(' ');
+    if (description)
+    {
+      fputs("<p>", stdout);
+      write_element(description);
+      puts("</p>");
+    }
 
-	fputs(node->value.text.string, stdout);
+    puts("<h3>Syntax</h3>");
+    puts("<pre>");
+
+    arg = mxmlFindElement(function, function, "returnvalue", NULL,
+                          NULL, MXML_DESCEND_FIRST);
+
+    if (arg)
+      write_element(mxmlFindElement(arg, arg, "type", NULL,
+                                    NULL, MXML_DESCEND_FIRST));
+    else
+      fputs("void", stdout);
+
+    printf("\n%s", name);
+    for (arg = mxmlFindElement(function, function, "argument", NULL, NULL,
+                               MXML_DESCEND_FIRST), prefix = '(';
+	 arg;
+	 arg = mxmlFindElement(arg, function, "argument", NULL, NULL,
+                               MXML_NO_DESCEND), prefix = ',')
+    {
+      printf("%c\n    ", prefix);
+      write_element(mxmlFindElement(arg, arg, "type", NULL,
+                                    NULL, MXML_DESCEND_FIRST));
+      printf(" %s", mxmlElementGetAttr(arg, "name"));
+    }
+
+    if (prefix == '(')
+      puts("(void);\n</pre>");
+    else
+      puts(");\n</pre>");
+
+    puts("<h3>Arguments</h3>");
+
+    if (prefix == '(')
+      puts("<p>None.</p>");
+    else
+    {
+      puts("<p class=\"table\"><table align=\"center\" border=\"1\" width=\"80%\">");
+      puts("<thead><tr><th>Name</th><th>Description</th></tr></thead>");
+      puts("<tbody>");
+
+      for (arg = mxmlFindElement(function, function, "argument", NULL, NULL,
+                        	 MXML_DESCEND_FIRST);
+	   arg;
+	   arg = mxmlFindElement(arg, function, "argument", NULL, NULL,
+                        	 MXML_NO_DESCEND))
+      {
+	printf("<tr><td><tt>%s</tt></td><td>", mxmlElementGetAttr(arg, "name"));
+
+	write_element(mxmlFindElement(arg, arg, "description", NULL,
+                                      NULL, MXML_DESCEND_FIRST));
+
+        puts("</td></tr>");
       }
 
-    puts("</p>");
+      puts("</tbody></table></p>");
+    }
+
+    puts("<h3>Returns</h3>");
+
+    arg = mxmlFindElement(function, function, "returnvalue", NULL,
+                          NULL, MXML_DESCEND_FIRST);
+
+    if (!arg)
+      puts("<p>Nothing.</p>");
+    else
+    {
+      fputs("<p>", stdout);
+      write_element(mxmlFindElement(arg, arg, "description", NULL,
+                                    NULL, MXML_DESCEND_FIRST));
+      puts("</p>");
+    }
   }
 
   puts("</body>");
   puts("</html>");
 
+}
+
+
+/*
+ * 'write_element()' - Write an element's text nodes.
+ */
+
+static void
+write_element(mxml_node_t *element)	/* I - Element to write */
+{
+  mxml_node_t	*node;			/* Current node */
+
+
+  for (node = mxmlWalkNext(element, element, MXML_DESCEND);
+       node;
+       node = mxmlWalkNext(node, element, MXML_DESCEND))
+    if (node->type == MXML_TEXT)
+    {
+      if (node->value.text.whitespace)
+	putchar(' ');
+
+      write_string(node->value.text.string);
+    }
+}
+
+
+/*
+ * 'write_string()' - Write a string, quoting XHTML special chars as needed...
+ */
+
+static void
+write_string(const char *s)		/* I - String to write */
+{
+  while (*s)
+  {
+    if (*s == '&')
+      fputs("&amp;", stdout);
+    else if (*s == '<')
+      fputs("&lt;", stdout);
+    else if (*s == '>')
+      fputs("&gt;", stdout);
+    else if (*s == '\"')
+      fputs("&quot;", stdout);
+    else if (*s & 128)
+    {
+     /*
+      * Convert UTF-8 to Unicode constant...
+      */
+
+      int	ch;			/* Unicode character */
+
+
+      ch = *s & 255;
+
+      if ((ch & 0xe0) == 0xc0)
+      {
+        ch = ((ch & 0x1f) << 6) | (s[1] & 0x3f);
+	s ++;
+      }
+      else if ((ch & 0xf0) == 0xe0)
+      {
+        ch = ((((ch * 0x0f) << 6) | (s[1] & 0x3f)) << 6) | (s[2] & 0x3f);
+	s += 2;
+      }
+
+      if (ch == 0xa0)
+      {
+       /*
+        * Handle non-breaking space as-is...
+	*/
+
+        fputs("&nbsp;", stdout);
+      }
+      else
+        printf("&#x%x;", ch);
+    }
+    else
+      putchar(*s);
+
+    s ++;
+  }
 }
 
 
@@ -859,5 +1027,5 @@ ws_cb(mxml_node_t *node,		/* I - Element node */
 
 
 /*
- * End of "$Id: mxmldoc.c,v 1.7 2003/06/05 12:11:53 mike Exp $".
+ * End of "$Id: mxmldoc.c,v 1.8 2003/06/05 13:49:14 mike Exp $".
  */

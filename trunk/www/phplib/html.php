@@ -153,7 +153,7 @@ html_footer($path = "")			// I - Relative path to root
        ."<td valign='bottom'><img src='${path}images/bottom-left.gif' "
        ."width='15' height='15' alt=''/></td>"
        ."<td colspan='3'><small> <br />"
-       ."Copyright 2003-2004 by Michael Sweet. This library is free "
+       ."Copyright 2003-2005 by Michael Sweet. This library is free "
        ."software; you can redistribute it and/or modify it "
        ."under the terms of the GNU Library General Public "
        ."License as published by the Free Software Foundation; "

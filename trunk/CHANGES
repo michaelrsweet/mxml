@@ -1,5 +1,16 @@
-README - 07/22/2003
+README - 07/23/2003
 -------------------
+
+CHANGES IN Mini-XML 1.1.2
+
+	- The mxml(3) man page wasn't updated for the string
+	  functions.
+	- mxmlSaveString() returned the wrong number of
+	  characters.
+	- mxml_add_char() updated the buffer pointer in the
+	  wrong place.
+
+
 
 CHANGES IN Mini-XML 1.1.1
 

@@ -1,5 +1,5 @@
 /*
- * "$Id: mxml-entity.c,v 1.4 2004/05/16 05:25:38 mike Exp $"
+ * "$Id: mxml-entity.c,v 1.5 2004/06/01 20:19:34 mike Exp $"
  *
  * Character entity support code for Mini-XML, a small XML-like
  * file parsing library.
@@ -58,7 +58,7 @@ static int	(*callbacks[100])(const char *name) =
  * 'mxmlEntityAddCallback()' - Add a callback to convert entities to Unicode.
  */
 
-void
+int					/* O - 0 on success, -1 on failure */
 mxmlEntityAddCallback(int (*cb)(const char *name))
 					/* I - Callback function to add */
 {
@@ -66,6 +66,14 @@ mxmlEntityAddCallback(int (*cb)(const char *name))
   {
     callbacks[num_callbacks] = cb;
     num_callbacks ++;
+
+    return (0);
+  }
+  else
+  {
+    mxml_error("Unable to add entity callback!");
+
+    return (-1);
   }
 }
 
@@ -451,5 +459,5 @@ default_callback(const char *name)	/* I - Entity name */
 
 
 /*
- * End of "$Id: mxml-entity.c,v 1.4 2004/05/16 05:25:38 mike Exp $".
+ * End of "$Id: mxml-entity.c,v 1.5 2004/06/01 20:19:34 mike Exp $".
  */

@@ -191,7 +191,7 @@ mxmlElementSetAttr(
 <p>Add a callback to convert entities to Unicode.</p>
 <h4>Syntax</h4>
 <pre>
-void
+int
 mxmlEntityAddCallback(
     int (*cb)(const char *name));
 </pre>
@@ -202,7 +202,7 @@ mxmlEntityAddCallback(
 <tr><td><tt>(*cb)(const char *name)</tt></td><td>Callback function to add</td></tr>
 </tbody></table></p>
 <h4>Returns</h4>
-<p>Nothing.</p>
+<p>0 on success, -1 on failure</p>
 <!-- NEW PAGE -->
 <h3><a name='mxmlEntityGetName'>mxmlEntityGetName()</a></h3>
 <hr noshade/>
@@ -1215,8 +1215,7 @@ union mxml_value_u
 </ul>
 <!-- NEW PAGE -->
 <h3><a name='num_callbacks'>num_callbacks</a></h3>
-<hr noshade/>
-<h4>Definition</h4>
+<hr noshade/><h4>Definition</h4>
 <pre>
 static int num_callbacks = 1;
 </pre>

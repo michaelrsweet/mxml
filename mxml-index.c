@@ -1,5 +1,5 @@
 /*
- * "$Id: mxml-index.c,v 1.4 2004/05/16 18:25:20 mike Exp $"
+ * "$Id: mxml-index.c,v 1.5 2004/06/01 20:19:34 mike Exp $"
  *
  * Index support code for Mini-XML, a small XML-like file parsing library.
  *
@@ -581,64 +581,69 @@ index_sort(mxml_index_t *ind,		/* I - Index to sort */
 
 
  /*
-  * Sort the pivot in the current partition...
+  * Loop until we have sorted all the way to the right...
   */
 
-  pivot = ind->nodes[left];
-
-  for (templ = left, tempr = right; templ < tempr;)
+  do
   {
    /*
-    * Move left while left node <= pivot node...
+    * Sort the pivot in the current partition...
     */
 
-    while ((templ < right) &&
-           index_compare(ind, ind->nodes[templ], pivot) <= 0)
-      templ ++;
+    pivot = ind->nodes[left];
 
-   /*
-    * Move right while right node > pivot node...
-    */
-
-    while ((tempr > left) &&
-           index_compare(ind, ind->nodes[tempr], pivot) > 0)
-      tempr --;
-
-   /*
-    * Swap nodes if needed...
-    */
-
-    if (templ < tempr)
+    for (templ = left, tempr = right; templ < tempr;)
     {
-      temp              = ind->nodes[templ];
-      ind->nodes[templ] = ind->nodes[tempr];
-      ind->nodes[tempr] = temp;
+     /*
+      * Move left while left node <= pivot node...
+      */
+
+      while ((templ < right) &&
+             index_compare(ind, ind->nodes[templ], pivot) <= 0)
+	templ ++;
+
+     /*
+      * Move right while right node > pivot node...
+      */
+
+      while ((tempr > left) &&
+             index_compare(ind, ind->nodes[tempr], pivot) > 0)
+	tempr --;
+
+     /*
+      * Swap nodes if needed...
+      */
+
+      if (templ < tempr)
+      {
+	temp              = ind->nodes[templ];
+	ind->nodes[templ] = ind->nodes[tempr];
+	ind->nodes[tempr] = temp;
+      }
     }
+
+   /*
+    * When we get here, the right (tempr) node is the new position for the
+    * pivot node...
+    */
+
+    if (index_compare(ind, pivot, ind->nodes[tempr]) > 0)
+    {
+      ind->nodes[left]  = ind->nodes[tempr];
+      ind->nodes[tempr] = pivot;
+    }
+
+   /*
+    * Recursively sort the left partition as needed...
+    */
+
+    if (left < (tempr - 1))
+      index_sort(ind, left, tempr - 1);
   }
-
- /*
-  * When we get here, the right (tempr) node is the new position for the
-  * pivot node...
-  */
-
-  if (index_compare(ind, pivot, ind->nodes[tempr]) > 0)
-  {
-    ind->nodes[left]  = ind->nodes[tempr];
-    ind->nodes[tempr] = pivot;
-  }
-
- /*
-  * Recursively sort the left and right partitions as needed...
-  */
-
-  if (left < (tempr - 1))
-    index_sort(ind, left, tempr - 1);
-
-  if (right > (tempr + 1))
-    index_sort(ind, tempr + 1, right);
+  while (right > (left = tempr + 1));
 }
 
 
 /*
- * End of "$Id: mxml-index.c,v 1.4 2004/05/16 18:25:20 mike Exp $".
+ * End of "$Id: mxml-index.c,v 1.5 2004/06/01 20:19:34 mike Exp $".
  */

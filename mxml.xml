@@ -75,6 +75,10 @@ not an element.</description>
     </argument>
   </function>
   <function name="mxmlEntityAddCallback">
+    <returnvalue>
+      <type>int</type>
+      <description>0 on success, -1 on failure</description>
+    </returnvalue>
     <description>Add a callback to convert entities to Unicode.</description>
     <argument name="(*cb)(const char *name)" direction="I">
       <type>int</type>

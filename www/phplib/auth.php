@@ -1,6 +1,6 @@
 <?
 //
-// "$Id: auth.php,v 1.3 2004/05/17 21:04:16 mike Exp $"
+// "$Id: auth.php,v 1.4 2004/05/18 01:39:00 mike Exp $"
 //
 // Authentication functions for PHP pages...
 //
@@ -60,7 +60,7 @@ auth_current()
     if ($cookie[1] == $sid)
     {
       // Refresh the cookies so they don't expire...
-      setcookie("SID", $sid, time() + 90 * 86400, "/");
+      setcookie("SID", "$cookie[0]:$sid", time() + 90 * 86400, "/");
       setcookie("FROM", $row['email'], time() + 90 * 86400, "/");
 
       // Set globals...
@@ -137,6 +137,6 @@ auth_logout()
 
 
 //
-// End of "$Id: auth.php,v 1.3 2004/05/17 21:04:16 mike Exp $".
+// End of "$Id: auth.php,v 1.4 2004/05/18 01:39:00 mike Exp $".
 //
 ?>

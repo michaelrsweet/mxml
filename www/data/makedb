@@ -1,0 +1,5 @@
+#!/bin/sh
+
+sqlite mxml.db <mxml.sql
+chmod 666 mxml.db
+chmod 777 .

@@ -1,5 +1,5 @@
 /*
- * "$Id: mxml.h,v 1.15 2003/12/03 03:59:04 mike Exp $"
+ * "$Id: mxml.h,v 1.16 2003/12/18 04:16:37 mike Exp $"
  *
  * Header file for mini-XML, a small XML-like file parsing library.
  *
@@ -137,6 +137,8 @@ extern void		mxmlDelete(mxml_node_t *node);
 extern const char	*mxmlElementGetAttr(mxml_node_t *node, const char *name);
 extern void		mxmlElementSetAttr(mxml_node_t *node, const char *name,
 			                   const char *value);
+extern const char	*mxmlEntityGetName(int val);
+extern int		mxmlEntityGetValue(const char *name);
 extern mxml_node_t	*mxmlFindElement(mxml_node_t *node, mxml_node_t *top,
 			                 const char *name, const char *attr,
 					 const char *value, int descend);
@@ -204,5 +206,5 @@ extern mxml_type_t	mxml_real_cb(mxml_node_t *node);
 
 
 /*
- * End of "$Id: mxml.h,v 1.15 2003/12/03 03:59:04 mike Exp $".
+ * End of "$Id: mxml.h,v 1.16 2003/12/18 04:16:37 mike Exp $".
  */

@@ -2,5 +2,3 @@ TODO - 12/17/2003
 -----------------
 
 	- Add C++ class.
-	- Add support for character entities.
-	- Attribute values also need to have character entities decoded.

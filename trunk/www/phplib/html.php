@@ -1,6 +1,6 @@
 <?php
 //
-// "$Id: html.php,v 1.10 2004/05/19 22:45:23 mike Exp $"
+// "$Id: html.php,v 1.11 2004/05/20 03:38:42 mike Exp $"
 //
 // PHP functions for standardized HTML output...
 //
@@ -236,6 +236,7 @@ html_start_table($headings,		// I - Array of heading strings
 {
   global $html_row, $html_cols;
 
+
   print("<p><table");
   if ($width != "")
     print(" width='$width'");
@@ -246,12 +247,11 @@ html_start_table($headings,		// I - Array of heading strings
        ."<img src='images/hdr-top-left.gif' width='16' height='16' "
        ."alt=''/></th>");
 
-  $add_html_cols = 0;   //  Add to html_cols after display if colspan is used.
   $html_row  = 0;
-  $html_cols = sizeof($headings);
+  $html_cols = count($headings);
 
   reset($headings);
-  for ($i = 0; $i < $html_cols; $i ++)
+  for ($i = 0; $i < count($headings); $i ++)
   {
     //
     //  Headings can be in the following forms:
@@ -262,57 +262,44 @@ html_start_table($headings,		// I - Array of heading strings
     //    "xxxxxxxx:aa"         -- Heading with align.
     //    "xxxxxxxx::cc"        -- Heading with a colspan.
     //    "xxxxxxxx:::ww"       -- Heading with a width.
-    //    "xxxxxxxx:cc:ww"      -- Heading with colspan and width.
+    //    "xxxxxxxx::cc:ww"     -- Heading with colspan and width.
     //    "xxxxxxxx:aa:cc:ww"   -- Heading with align, colspan and width.
     //
     //    etc, etc.
     //
 
-    $s_header = "";
+    $s_header  = "";
     $s_colspan = "";
-    $s_width = "";
-    $s_align = "";
+    $s_width   = "";
+    $s_align   = "";
 
-    if (strstr( $headings[$i], ":" ))
+    if (strstr($headings[$i], ":"))
     {
-      $data = explode( ":", $headings[$i] );
-
+      $data     = explode(":", $headings[$i]);
       $s_header = $data[0];
 
-      if (ISSET($data[1]))
-      {
-        $align = $data[1];
-        $s_align = "align=$align";
-      }
+      if ($data[1] != "")
+        $s_align = "align=$data[1]";
 
-      if ($data[2] > 0)
+      if ($data[2] > 1)
       {
-        $colspan = $data[2];
-        $s_colspan = "colspan=$colspan";
-        if ($colspan > 1)
-          $add_html_cols += ($colspan - 1);
+        $s_colspan = "colspan=$data[2]";
+
+        if ($data[2] > 1)
+          $html_cols += $data[2] - 1;
       }
 
       if ($data[3] > 0)
-      {
-        $width = $data[3];
-        $s_width = "width=$width%";
-      }
+        $s_width = "width=$data[3]%";
     }
     else
       $s_header = $headings[$i];
 
     if (strlen($s_header))
-    {
       print("<th $s_align $s_colspan $s_width>$s_header</th>");
-    }
     else
-    {
       print("<th $s_colspan $s_width>&nbsp;</th>");
-    }
   }
-
-  $html_cols += $add_html_cols;
 
   print("<th align='right' valign='top'>"
        ."<img src='images/hdr-top-right.gif' "

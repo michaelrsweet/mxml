@@ -1,6 +1,6 @@
 <?
 //
-// "$Id: common.php,v 1.10 2004/05/20 02:04:45 mike Exp $"
+// "$Id: common.php,v 1.11 2004/05/20 03:38:42 mike Exp $"
 //
 // Common utility functions for PHP pages...
 //
@@ -224,6 +224,8 @@ format_text($text)			// I - Original string
 	    else
 	      $ftext .= "<br />\n";
 	  }
+	  else
+	    $ftext .= "\n";
 
           $col = 0;
 	  break;
@@ -671,6 +673,6 @@ validate_email($email)			// I - Email address
 
 
 //
-// End of "$Id: common.php,v 1.10 2004/05/20 02:04:45 mike Exp $".
+// End of "$Id: common.php,v 1.11 2004/05/20 03:38:42 mike Exp $".
 //
 ?>

@@ -23,7 +23,7 @@ PRE { font-family: monospace }
 Michael Sweet<BR>
 Copyright 2003-2004<BR>
 </CENTER>
-<HR>
+<HR NOSHADE>
 <H1 ALIGN="CENTER"><A NAME="CONTENTS">Table of Contents</A></H1>
 <BR>
 <BR><B><A HREF="#INTRO">Introduction</A></B>
@@ -101,9 +101,16 @@ Copyright 2003-2004<BR>
 <LI><A HREF="#mxmlDelete">mxmlDelete()</A></LI>
 <LI><A HREF="#mxmlElementGetAttr">mxmlElementGetAttr()</A></LI>
 <LI><A HREF="#mxmlElementSetAttr">mxmlElementSetAttr()</A></LI>
+<LI><A HREF="#mxmlEntityAddCallback">mxmlEntityAddCallback()</A></LI>
 <LI><A HREF="#mxmlEntityGetName">mxmlEntityGetName()</A></LI>
 <LI><A HREF="#mxmlEntityGetValue">mxmlEntityGetValue()</A></LI>
+<LI><A HREF="#mxmlEntityRemoveCallback">mxmlEntityRemoveCallback()</A></LI>
 <LI><A HREF="#mxmlFindElement">mxmlFindElement()</A></LI>
+<LI><A HREF="#mxmlIndexDelete">mxmlIndexDelete()</A></LI>
+<LI><A HREF="#mxmlIndexEnum">mxmlIndexEnum()</A></LI>
+<LI><A HREF="#mxmlIndexFind">mxmlIndexFind()</A></LI>
+<LI><A HREF="#mxmlIndexNew">mxmlIndexNew()</A></LI>
+<LI><A HREF="#mxmlIndexReset">mxmlIndexReset()</A></LI>
 <LI><A HREF="#mxmlLoadFile">mxmlLoadFile()</A></LI>
 <LI><A HREF="#mxmlLoadString">mxmlLoadString()</A></LI>
 <LI><A HREF="#mxmlNewElement">mxmlNewElement()</A></LI>
@@ -129,6 +136,7 @@ Copyright 2003-2004<BR>
 <LI><A HREF="#_structures">Structures</A></LI>
 <UL>
 <LI><A HREF="#mxml_attr_s">mxml_attr_s</A></LI>
+<LI><A HREF="#mxml_index_s">mxml_index_s</A></LI>
 <LI><A HREF="#mxml_node_s">mxml_node_s</A></LI>
 <LI><A HREF="#mxml_text_s">mxml_text_s</A></LI>
 <LI><A HREF="#mxml_value_s">mxml_value_s</A></LI>
@@ -137,6 +145,7 @@ Copyright 2003-2004<BR>
 <UL>
 <LI><A HREF="#mxml_attr_t">mxml_attr_t</A></LI>
 <LI><A HREF="#mxml_element_t">mxml_element_t</A></LI>
+<LI><A HREF="#mxml_index_t">mxml_index_t</A></LI>
 <LI><A HREF="#mxml_node_t">mxml_node_t</A></LI>
 <LI><A HREF="#mxml_text_t">mxml_text_t</A></LI>
 <LI><A HREF="#mxml_type_t">mxml_type_t</A></LI>
@@ -146,8 +155,12 @@ Copyright 2003-2004<BR>
 <UL>
 <LI><A HREF="#mxml_value_u">mxml_value_u</A></LI>
 </UL>
+<LI><A HREF="#_variables">Variables</A></LI>
+<UL>
+<LI><A HREF="#num_callbacks">num_callbacks</A></LI>
 </UL>
-<HR>
+</UL>
+<HR NOSHADE>
 <H1 align="right"><A name="INTRO">Introduction</A></H1>
 <P>This programmers manual describes Mini-XML version 2.0, a small XML
  parsing library that you can use to read and write XML and XML-like
@@ -307,7 +320,7 @@ File and directory names.</TD></TR>
 <DD>The XML specification from the World Wide Web Consortium (W3C)
 <BR />&nbsp;</DD>
 </DL>
-</BLOCKQUOTE><HR>
+</BLOCKQUOTE><HR NOSHADE>
 <H1 align="right"><A name="INSTALL">1 - Building, Installing, and
  Packaging Mini-XML</A></H1>
 <P>This chapter describes how to build, install, and package Mini-XML on
@@ -370,7 +383,7 @@ epm(1)</TT> program to create software packages in a variety of formats.
 <P>The native packages will be in the local OS's native format: RPM for
  Red Hat Linux, DPKG for Debian Linux, PKG for Solaris, and so forth.
  Use the corresponding commands to install the native packages.</P>
-<HR>
+<HR NOSHADE>
 <H1 align="right"><A name="BASICS">2 - Getting Started with Mini-XML</A></H1>
 <P>This chapter describes how to write programs that use Mini-XML to
  access data in an XML file.</P>
@@ -592,7 +605,7 @@ mxmlSaveString()</TT></A> functions load XML node trees from and save
  the order would be reversed, ending at &quot;?xml&quot;.</P>
 </LI>
 </UL>
-<HR>
+<HR NOSHADE>
 <H1 align="right"><A name="ADVANCED">3 - More Mini-XML Programming
  Techniques</A></H1>
 <P>This chapter shows additional ways to use the Mini-XML library in
@@ -602,7 +615,7 @@ mxmlSaveString()</TT></A> functions load XML node trees from and save
 <H2><A NAME="4_3">Changing Node Values</A></H2>
 <H2><A NAME="4_4">Formatted Text</A></H2>
 <H2><A NAME="4_5">Indexing</A></H2>
-<HR>
+<HR NOSHADE>
 <H1 align="right"><A name="MXMLDOC">4 - Using the mxmldoc Utility</A></H1>
 <P>This chapter describes how to use the <TT>mxmldoc(1)</TT> utility
  that comes with Mini-XML to automatically generate documentation for
@@ -957,7 +970,7 @@ align="bottom"><I> Listing 4-1, XML Schema File &quot;mxmldoc.xsd&quot; (con't)<
 </TD></TR>
 </TABLE>
 </CENTER>
-<HR>
+<HR NOSHADE>
 <H1 align="right"><A name="LICENSE">A - GNU Library General Public
  License</A></H1>
 <P align="center">Version 2, June 1991
@@ -1333,11 +1346,22 @@ align="bottom"><I> Listing 4-1, XML Schema File &quot;mxmldoc.xsd&quot; (con't)<
  SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH
  DAMAGES.</P>
 <P align="center"><BIG>END OF TERMS AND CONDITIONS</BIG></P>
-<HR>
+<HR NOSHADE>
 <H1 align="right"><A name="RELNOTES">B - Release Notes</A></H1>
 <H2><A NAME="7_1">Changes in Mini-XML 2.0</A></H2>
 <UL>
 <LI>New programmers manual.</LI>
+<LI>Added UTF-16 support (input only; all output is UTF-8)</LI>
+<LI>Added index functions to build a searchable index of XML nodes.</LI>
+<LI>Added character entity callback interface to support additional
+ character entities beyond those defined in the XHTML specification.</LI>
+<LI>Added support for XHTML character entities.</LI>
+<LI>The mxmldoc utility now produces XML output which conforms to an
+ updated XML schema, described in the file &quot;doc/mxmldoc.xsd&quot;.</LI>
+<LI>Changed the whitespace callback interface to return strings instead
+ of a single character, allowing for greater control over the formatting
+ of XML files written using Mini-XML. THIS CHANGE WILL REQUIRE CHANGES
+ TO YOUR 1.x CODE IF YOU USE WHITESPACE CALLBACKS.</LI>
 <LI>The mxmldoc utility now produces XML output which conforms to an
  updated XML schema, described in the file &quot;doc/mxmldoc.xsd&quot;.</LI>
 <LI>Changed the whitespace callback interface to return strings instead
@@ -1456,7 +1480,7 @@ align="bottom"><I> Listing 4-1, XML Schema File &quot;mxmldoc.xsd&quot; (con't)<
 <UL>
 <LI>Initial public release.</LI>
 </UL>
-<HR>
+<HR NOSHADE>
 <H1 align="right"><A name="REFERENCE">C - Library Reference</A></H1>
 <H2><A NAME="8_1">Contents</A></H2>
 <UL>
@@ -1465,6 +1489,7 @@ align="bottom"><I> Listing 4-1, XML Schema File &quot;mxmldoc.xsd&quot; (con't)<
 <LI><A href="#_structures">Structures</A></LI>
 <LI><A href="#_types">Types</A></LI>
 <LI><A href="#_unions">Unions</A></LI>
+<LI><A href="#_variables">Variables</A></LI>
 </UL>
 
 <!-- NEW PAGE -->
@@ -1498,9 +1523,18 @@ align="bottom"><I> Listing 4-1, XML Schema File &quot;mxmldoc.xsd&quot; (con't)<
 <LI><A href="#mxmlDelete"><TT>mxmlDelete()</TT></A></LI>
 <LI><A href="#mxmlElementGetAttr"><TT>mxmlElementGetAttr()</TT></A></LI>
 <LI><A href="#mxmlElementSetAttr"><TT>mxmlElementSetAttr()</TT></A></LI>
+<LI><A href="#mxmlEntityAddCallback"><TT>mxmlEntityAddCallback()</TT></A>
+</LI>
 <LI><A href="#mxmlEntityGetName"><TT>mxmlEntityGetName()</TT></A></LI>
 <LI><A href="#mxmlEntityGetValue"><TT>mxmlEntityGetValue()</TT></A></LI>
+<LI><A href="#mxmlEntityRemoveCallback"><TT>mxmlEntityRemoveCallback()</TT>
+</A></LI>
 <LI><A href="#mxmlFindElement"><TT>mxmlFindElement()</TT></A></LI>
+<LI><A href="#mxmlIndexDelete"><TT>mxmlIndexDelete()</TT></A></LI>
+<LI><A href="#mxmlIndexEnum"><TT>mxmlIndexEnum()</TT></A></LI>
+<LI><A href="#mxmlIndexFind"><TT>mxmlIndexFind()</TT></A></LI>
+<LI><A href="#mxmlIndexNew"><TT>mxmlIndexNew()</TT></A></LI>
+<LI><A href="#mxmlIndexReset"><TT>mxmlIndexReset()</TT></A></LI>
 <LI><A href="#mxmlLoadFile"><TT>mxmlLoadFile()</TT></A></LI>
 <LI><A href="#mxmlLoadString"><TT>mxmlLoadString()</TT></A></LI>
 <LI><A href="#mxmlNewElement"><TT>mxmlNewElement()</TT></A></LI>
@@ -1639,6 +1673,29 @@ mxmlElementSetAttr(
 <P>Nothing.</P>
 
 <!-- NEW PAGE -->
+<H3><A name="mxmlEntityAddCallback">mxmlEntityAddCallback()</A></H3>
+<HR noshade/>
+<H4>Description</H4>
+<P>Add a callback to convert entities to Unicode.</P>
+<H4>Syntax</H4>
+<PRE>
+void
+mxmlEntityAddCallback(
+    int (*cb)(const char *name));
+</PRE>
+<H4>Arguments</H4>
+<P class="table"></P>
+<TABLE align="center" border="1" cellpadding="5" cellspacing="0" width="80%">
+<THEAD></THEAD>
+<TR bgcolor="#cccccc"><TH>Name</TH><TH>Description</TH></TR>
+<TBODY></TBODY>
+<TR><TD><TT>(*cb)(const char *name)</TT></TD><TD>Callback function to
+ add</TD></TR>
+</TABLE>
+<H4>Returns</H4>
+<P>Nothing.</P>
+
+<!-- NEW PAGE -->
 <H3><A name="mxmlEntityGetName">mxmlEntityGetName()</A></H3>
 <HR noshade/>
 <H4>Description</H4>
@@ -1686,6 +1743,29 @@ mxmlEntityGetValue(
 <P>Character value or -1 on error</P>
 
 <!-- NEW PAGE -->
+<H3><A name="mxmlEntityRemoveCallback">mxmlEntityRemoveCallback()</A></H3>
+<HR noshade/>
+<H4>Description</H4>
+<P>Remove a callback.</P>
+<H4>Syntax</H4>
+<PRE>
+void
+mxmlEntityRemoveCallback(
+    int (*cb)(const char *name));
+</PRE>
+<H4>Arguments</H4>
+<P class="table"></P>
+<TABLE align="center" border="1" cellpadding="5" cellspacing="0" width="80%">
+<THEAD></THEAD>
+<TR bgcolor="#cccccc"><TH>Name</TH><TH>Description</TH></TR>
+<TBODY></TBODY>
+<TR><TD><TT>(*cb)(const char *name)</TT></TD><TD>Callback function to
+ remove</TD></TR>
+</TABLE>
+<H4>Returns</H4>
+<P>Nothing.</P>
+
+<!-- NEW PAGE -->
 <H3><A name="mxmlFindElement">mxmlFindElement()</A></H3>
 <HR noshade/>
 <H4>Description</H4>
@@ -1725,6 +1805,134 @@ mxmlFindElement(
 </TABLE>
 <H4>Returns</H4>
 <P>Element node or NULL</P>
+
+<!-- NEW PAGE -->
+<H3><A name="mxmlIndexDelete">mxmlIndexDelete()</A></H3>
+<HR noshade/>
+<H4>Description</H4>
+<P>Delete an index.</P>
+<H4>Syntax</H4>
+<PRE>
+void
+mxmlIndexDelete(
+    <A href="#mxml_index_t">mxml_index_t</A> * ind);
+</PRE>
+<H4>Arguments</H4>
+<P class="table"></P>
+<TABLE align="center" border="1" cellpadding="5" cellspacing="0" width="80%">
+<THEAD></THEAD>
+<TR bgcolor="#cccccc"><TH>Name</TH><TH>Description</TH></TR>
+<TBODY></TBODY>
+<TR><TD><TT>ind</TT></TD><TD>Index to delete</TD></TR>
+</TABLE>
+<H4>Returns</H4>
+<P>Nothing.</P>
+
+<!-- NEW PAGE -->
+<H3><A name="mxmlIndexEnum">mxmlIndexEnum()</A></H3>
+<HR noshade/>
+<H4>Description</H4>
+<P>Return the next node in the index. Nodes are returned in the sorted
+ order of the index.</P>
+<H4>Syntax</H4>
+<PRE>
+<A href="#mxml_node_t">mxml_node_t</A> *
+mxmlIndexEnum(
+    <A href="#mxml_index_t">mxml_index_t</A> * ind);
+</PRE>
+<H4>Arguments</H4>
+<P class="table"></P>
+<TABLE align="center" border="1" cellpadding="5" cellspacing="0" width="80%">
+<THEAD></THEAD>
+<TR bgcolor="#cccccc"><TH>Name</TH><TH>Description</TH></TR>
+<TBODY></TBODY>
+<TR><TD><TT>ind</TT></TD><TD>Index to enumerate</TD></TR>
+</TABLE>
+<H4>Returns</H4>
+<P>Next node or NULL if there is none</P>
+
+<!-- NEW PAGE -->
+<H3><A name="mxmlIndexFind">mxmlIndexFind()</A></H3>
+<HR noshade/>
+<H4>Description</H4>
+<P>Find the next matching node. You should call mxmlIndexReset() prior
+ to using this function for the first time with a particular set of
+ &quot;element&quot; and &quot;value&quot; strings. Passing NULL for both &quot;element&quot; and
+ &quot;value&quot; is equivalent to calling mxmlIndexEnum().</P>
+<H4>Syntax</H4>
+<PRE>
+<A href="#mxml_node_t">mxml_node_t</A> *
+mxmlIndexFind(
+    <A href="#mxml_index_t">mxml_index_t</A> * ind,
+    const char * element,
+    const char * value);
+</PRE>
+<H4>Arguments</H4>
+<P class="table"></P>
+<TABLE align="center" border="1" cellpadding="5" cellspacing="0" width="80%">
+<THEAD></THEAD>
+<TR bgcolor="#cccccc"><TH>Name</TH><TH>Description</TH></TR>
+<TBODY></TBODY>
+<TR><TD><TT>ind</TT></TD><TD>Index to search</TD></TR>
+<TR><TD><TT>element</TT></TD><TD>Element name to find, if any</TD></TR>
+<TR><TD><TT>value</TT></TD><TD>Attribute value, if any</TD></TR>
+</TABLE>
+<H4>Returns</H4>
+<P>Node or NULL if none found</P>
+
+<!-- NEW PAGE -->
+<H3><A name="mxmlIndexNew">mxmlIndexNew()</A></H3>
+<HR noshade/>
+<H4>Description</H4>
+<P>Create a new index. The index will contain all nodes that contain the
+ named element and/or attribute. If both &quot;element&quot; and &quot;attr&quot; are NULL,
+ then the index will contain a sorted list of the elements in the node
+ tree. Nodes are sorted by element name and optionally by attribute
+ value if the &quot;attr&quot; argument is not NULL.</P>
+<H4>Syntax</H4>
+<PRE>
+<A href="#mxml_index_t">mxml_index_t</A> *
+mxmlIndexNew(
+    <A href="#mxml_node_t">mxml_node_t</A> * node,
+    const char * element,
+    const char * attr);
+</PRE>
+<H4>Arguments</H4>
+<P class="table"></P>
+<TABLE align="center" border="1" cellpadding="5" cellspacing="0" width="80%">
+<THEAD></THEAD>
+<TR bgcolor="#cccccc"><TH>Name</TH><TH>Description</TH></TR>
+<TBODY></TBODY>
+<TR><TD><TT>node</TT></TD><TD>XML node tree</TD></TR>
+<TR><TD><TT>element</TT></TD><TD>Element to index or NULL for all</TD></TR>
+<TR><TD><TT>attr</TT></TD><TD>Attribute to index or NULL for none</TD></TR>
+</TABLE>
+<H4>Returns</H4>
+<P>New index</P>
+
+<!-- NEW PAGE -->
+<H3><A name="mxmlIndexReset">mxmlIndexReset()</A></H3>
+<HR noshade/>
+<H4>Description</H4>
+<P>Reset the enumeration/find pointer in the index and return the first
+ node in the index. This function should be called prior to using
+ mxmlIndexEnum() or mxmlIndexFind() for the first time.</P>
+<H4>Syntax</H4>
+<PRE>
+<A href="#mxml_node_t">mxml_node_t</A> *
+mxmlIndexReset(
+    <A href="#mxml_index_t">mxml_index_t</A> * ind);
+</PRE>
+<H4>Arguments</H4>
+<P class="table"></P>
+<TABLE align="center" border="1" cellpadding="5" cellspacing="0" width="80%">
+<THEAD></THEAD>
+<TR bgcolor="#cccccc"><TH>Name</TH><TH>Description</TH></TR>
+<TBODY></TBODY>
+<TR><TD><TT>ind</TT></TD><TD>Index to reset</TD></TR>
+</TABLE>
+<H4>Returns</H4>
+<P>First node or NULL if there is none</P>
 
 <!-- NEW PAGE -->
 <H3><A name="mxmlLoadFile">mxmlLoadFile()</A></H3>
@@ -2327,6 +2535,7 @@ mxmlWalkPrev(
 <H2><A name="_structures">Structures</A></H2>
 <UL>
 <LI><A href="#mxml_attr_s"><TT>mxml_attr_s</TT></A></LI>
+<LI><A href="#mxml_index_s"><TT>mxml_index_s</TT></A></LI>
 <LI><A href="#mxml_node_s"><TT>mxml_node_s</TT></A></LI>
 <LI><A href="#mxml_text_s"><TT>mxml_text_s</TT></A></LI>
 <LI><A href="#mxml_value_s"><TT>mxml_value_s</TT></A></LI>
@@ -2353,6 +2562,35 @@ struct mxml_attr_s
 <TBODY></TBODY>
 <TR><TD><TT>name</TT></TD><TD>Attribute name</TD></TR>
 <TR><TD><TT>value</TT></TD><TD>Attribute value</TD></TR>
+</TABLE>
+
+<!-- NEW PAGE -->
+<H3><A name="mxml_index_s">mxml_index_s</A></H3>
+<HR noshade/>
+<H4>Description</H4>
+<P>An XML node index.</P>
+<H4>Definition</H4>
+<PRE>
+struct mxml_index_s
+{
+  int alloc_nodes;
+  char * attr;
+  int cur_node;
+  <A href="#mxml_node_t">mxml_node_t</A> ** nodes;
+  int num_nodes;
+};
+</PRE>
+<H4>Members</H4>
+<P class="table"></P>
+<TABLE align="center" border="1" cellpadding="5" cellspacing="0" width="80%">
+<THEAD></THEAD>
+<TR bgcolor="#cccccc"><TH>Name</TH><TH>Description</TH></TR>
+<TBODY></TBODY>
+<TR><TD><TT>alloc_nodes</TT></TD><TD>Allocated nodes in index</TD></TR>
+<TR><TD><TT>attr</TT></TD><TD>Attribute used for indexing or NULL</TD></TR>
+<TR><TD><TT>cur_node</TT></TD><TD>Current node</TD></TR>
+<TR><TD><TT>nodes</TT></TD><TD>Node array</TD></TR>
+<TR><TD><TT>num_nodes</TT></TD><TD>Number of nodes in index</TD></TR>
 </TABLE>
 
 <!-- NEW PAGE -->
@@ -2441,6 +2679,7 @@ struct mxml_value_s
 <UL>
 <LI><A href="#mxml_attr_t"><TT>mxml_attr_t</TT></A></LI>
 <LI><A href="#mxml_element_t"><TT>mxml_element_t</TT></A></LI>
+<LI><A href="#mxml_index_t"><TT>mxml_index_t</TT></A></LI>
 <LI><A href="#mxml_node_t"><TT>mxml_node_t</TT></A></LI>
 <LI><A href="#mxml_text_t"><TT>mxml_text_t</TT></A></LI>
 <LI><A href="#mxml_type_t"><TT>mxml_type_t</TT></A></LI>
@@ -2465,6 +2704,16 @@ typedef struct <A href="#mxml_attr_s">mxml_attr_s</A> mxml_attr_t;
 <H4>Definition</H4>
 <PRE>
 typedef struct <A href="#mxml_value_s">mxml_value_s</A> mxml_element_t;
+</PRE>
+
+<!-- NEW PAGE -->
+<H3><A name="mxml_index_t">mxml_index_t</A></H3>
+<HR noshade/>
+<H4>Description</H4>
+<P>An XML node index.</P>
+<H4>Definition</H4>
+<PRE>
+typedef struct <A href="#mxml_index_s">mxml_index_s</A> mxml_index_t;
 </PRE>
 
 <!-- NEW PAGE -->
@@ -2541,5 +2790,19 @@ union mxml_value_u
 <TR><TD><TT>real</TT></TD><TD>Real number</TD></TR>
 <TR><TD><TT>text</TT></TD><TD>Text fragment</TD></TR>
 </TABLE>
+
+<!-- NEW PAGE -->
+<H2><A name="_variables">Variables</A></H2>
+<UL>
+<LI><A href="#num_callbacks"><TT>num_callbacks</TT></A></LI>
+</UL>
+
+<!-- NEW PAGE -->
+<H3><A name="num_callbacks">num_callbacks</A></H3>
+<HR noshade/>
+<H4>Definition</H4>
+<PRE>
+static int num_callbacks = 1;
+</PRE>
 </BODY>
 </HTML>

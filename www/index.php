@@ -1,12 +1,13 @@
 <?php
 //
-// "$Id: index.php,v 1.4 2004/05/19 21:17:47 mike Exp $"
+// "$Id: index.php,v 1.5 2004/05/20 03:38:42 mike Exp $"
 //
 // Mini-XML home page...
 //
 
 include_once "phplib/html.php";
 include_once "phplib/common.php";
+include_once "phplib/poll.php";
 
 html_header();
 
@@ -14,21 +15,29 @@ print("<h1 align='center'>Mini-XML Home Page</h1>");
 
 print("<p><table width='100%' height='100%' border='0' cellpadding='0' "
      ."cellspacing='0'>\n"
-     ."<tr><td valign='top' width='40%'>");
+     ."<tr><td valign='top' width='33%'>");
+
+html_start_table(array("Current Poll [&nbsp;<a href='poll.php'>"
+                      ."Show&nbsp;All</a>&nbsp;]"));
+html_start_row();
+print("<td>");
+show_poll(get_recent_poll());
+print("</td>");
+html_end_row();
+html_end_table();
 
 html_start_table(array("Quick Info"), "100%", "100%");
 html_start_row();
 print("<td>"
-     ."<p align='center'>Stable Release: <a href='software.php?1.3'>v1.3, "
-     ."December 21, 2003</a><br />"
-     ."Developer Release: <a href='software.php?2.0rc1'>v2.0rc1, "
-     ."May 20, 2004</a></p>\n"
+     ."<p align='center'>"
+     ."Stable Release: <a href='software.php?1.3'>v1.3</a><br />"
+     ."Developer Release: <a href='software.php?2.0rc1'>v2.0rc1</a></p>\n"
      ."<small><p>Mini-XML is a small XML parsing library that you can use to "
      ."read XML and XML-like data files in your application without "
      ."requiring large non-standard libraries. Mini-XML only requires "
      ."an ANSI C compatible compiler (GCC works, as do most vendors' "
      ."ANSI C compilers) and a 'make' program.</p>\n"
-     ."<p>Mini-XML provides the following functionality:</p>\n"
+     ."<!--<p>Mini-XML provides the following functionality:</p>\n"
      ."<ul>\n"
      ."<li>Reading of UTF-8 and UTF-16 and writing of UTF-8 encoded "
      ."XML files and strings.</li>\n"
@@ -42,14 +51,14 @@ print("<td>"
      ."<li>Functions for creating, indexing, and managing trees of data.</li>\n"
      ."<li>\"Find\" and \"walk\" functions for easily locating and "
      ."navigating trees of data.</li>\n"
-     ."</ul></small>\n"
+     ."</ul>--></small>\n"
      ."</td>");
 html_end_row();
 html_end_table();
 
 print("</td><td>&nbsp;&nbsp;&nbsp;&nbsp;</td>"
-     ."<td valign='top' width='60%'>"
-     ."<h2>Recent Articles [&nbsp;<a href='articles.php'>View&nbsp;All</a>"
+     ."<td valign='top' width='67%'>"
+     ."<h2>Recent Articles [&nbsp;<a href='articles.php'>Show&nbsp;All</a>"
      ."&nbsp;]</h2>\n");
 
 $result = db_query("SELECT * FROM article WHERE is_published = 1 "
@@ -88,6 +97,6 @@ print("</td></tr>\n"
 html_footer();
 
 //
-// End of "$Id: index.php,v 1.4 2004/05/19 21:17:47 mike Exp $".
+// End of "$Id: index.php,v 1.5 2004/05/20 03:38:42 mike Exp $".
 //
 ?>

@@ -1,6 +1,6 @@
 <?php
 //
-// "$Id: globals.php,v 1.5 2004/05/19 22:45:23 mike Exp $"
+// "$Id: globals.php,v 1.6 2004/05/20 03:38:42 mike Exp $"
 //
 // Global PHP constants and variables...
 //
@@ -28,6 +28,7 @@ $argv           = $_SERVER["argv"];
 $PHP_SELF       = $_SERVER["PHP_SELF"];
 $REQUEST_METHOD = $_SERVER["REQUEST_METHOD"];
 $SERVER_NAME    = $_SERVER["SERVER_NAME"];
+$REMOTE_ADDR    = $_SERVER["REMOTE_ADDR"];
 
 if (array_key_exists("ISHTTPS", $_SERVER))
   $PHP_URL = "https://$_SERVER[SERVER_NAME]:$_SERVER[SERVER_PORT]$_SERVER[PHP_SELF]";
@@ -35,6 +36,6 @@ else
   $PHP_URL = "http://$_SERVER[SERVER_NAME]:$_SERVER[SERVER_PORT]$_SERVER[PHP_SELF]";
 
 //
-// End of "$Id: globals.php,v 1.5 2004/05/19 22:45:23 mike Exp $".
+// End of "$Id: globals.php,v 1.6 2004/05/20 03:38:42 mike Exp $".
 //
 ?>

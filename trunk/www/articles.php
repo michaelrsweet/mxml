@@ -1,6 +1,6 @@
 <?php
 //
-// "$Id: articles.php,v 1.3 2004/05/18 19:58:34 mike Exp $"
+// "$Id: articles.php,v 1.4 2004/05/18 21:26:52 mike Exp $"
 //
 // Web form for the article table...
 //
@@ -192,6 +192,7 @@ switch ($op)
 
 	html_start_links(1);
 	html_link("Return to Articles", "$PHP_SELF?L$options");
+	html_link("Show Comments", "#_USER_COMMENTS");
 	if ($LOGIN_USER)
 	{
 	  html_link("Modify Article</A>", "$PHP_SELF?M$id$options");
@@ -217,7 +218,15 @@ switch ($op)
         print("<tr><th align='right' valign='top'>Contents:</th><td class='left'>$temp</td></tr>\n");
 
         print("</table></p>\n");
+
         db_free($result);
+
+        print("<hr noshade/>\n"
+	     ."<h2><a name='_USER_COMMENTS'>Comments</a> "
+	     ."[&nbsp;<a href='comment.php?r0+particles.php_L$id'>"
+	     ."Add&nbsp;Comment</a>&nbsp;]</h2>\n");
+
+	show_comments("articles.php_L$id");
       }
       else
       {
@@ -345,7 +354,7 @@ switch ($op)
 	  print("</table></p>\n");
         }
 
-        html_start_table(array("ID","Title","Last Modified"));
+        html_start_table(array("ID","Title","Last Modified", "Comment(s)"));
 
 	db_seek($result, $index);
 	for ($i = 0; $i < $ARTICLE_PAGE_MAX && $row = db_next($result); $i ++)
@@ -359,7 +368,7 @@ switch ($op)
 	       ."$id</a></td>");
 
           $temp = htmlspecialchars($row['title']);
-          print("<td align='center'><a href='$PHP_SELF?L$id$options' "
+          print("<td align='center' width='67%'><a href='$PHP_SELF?L$id$options' "
 	       ."alt='Article #$id'>"
 	       ."$temp</a></td>");
 
@@ -368,11 +377,16 @@ switch ($op)
 	       ."alt='Article #$id'>"
 	       ."$temp</a></td>");
 
+          $count = count_comments("articles.php_L$id");
+          print("<td align='center'><a href='$PHP_SELF?L$id$options' "
+	       ."alt='Article #$id'>"
+	       ."$count</a></td>");
+
           html_end_row();
 
           html_start_row();
           $temp = htmlspecialchars($row['abstract']);
-          print("<td></td><td colspan='2'>$temp</td>");
+          print("<td></td><td colspan='3'>$temp</td>");
           html_end_row();
 	}
 
@@ -537,6 +551,6 @@ switch ($op)
 
 
 //
-// End of "$Id: articles.php,v 1.3 2004/05/18 19:58:34 mike Exp $".
+// End of "$Id: articles.php,v 1.4 2004/05/18 21:26:52 mike Exp $".
 //
 ?>

@@ -1,6 +1,5 @@
-#define DEBUG 2
 /*
- * "$Id: mxmldoc.c,v 1.29 2004/04/30 03:40:05 mike Exp $"
+ * "$Id: mxmldoc.c,v 1.30 2004/05/01 04:30:42 mike Exp $"
  *
  * Documentation generator using mini-XML, a small XML-like file parsing
  * library.
@@ -386,21 +385,22 @@ scan_file(const char  *filename,	/* I - Filename */
   * Initialize the finite state machine...
   */
 
-  state       = STATE_NONE;
-  braces      = 0;
-  parens      = 0;
-  bufptr      = buffer;
+  state        = STATE_NONE;
+  braces       = 0;
+  parens       = 0;
+  bufptr       = buffer;
 
-  comment     = mxmlNewElement(MXML_NO_PARENT, "temp");
-  constant    = NULL;
-  enumeration = NULL;
-  function    = NULL;
-  variable    = NULL;
-  returnvalue = NULL;
-  type        = NULL;
-  description = NULL;
-  typedefnode = NULL;
-  structclass = NULL;
+  comment      = mxmlNewElement(MXML_NO_PARENT, "temp");
+  constant     = NULL;
+  enumeration  = NULL;
+  function     = NULL;
+  variable     = NULL;
+  returnvalue  = NULL;
+  type         = NULL;
+  description  = NULL;
+  typedefnode  = NULL;
+  structclass  = NULL;
+  fstructclass = NULL;
 
  /*
   * Read until end-of-file...
@@ -474,6 +474,8 @@ scan_file(const char  *filename,	/* I - Filename */
 		  }
 		  else
 		    sort_node(tree, function);
+
+		  function = NULL;
 		}
 		else if (type && type->child &&
 		         ((!strcmp(type->child->value.text.string, "typedef") &&
@@ -713,6 +715,7 @@ scan_file(const char  *filename,	/* I - Filename */
 		{
 		  mxmlDelete(function);
 		  function = NULL;
+		  variable = NULL;
 		}
 
 		if (type)
@@ -1645,9 +1648,9 @@ write_documentation(mxml_node_t *doc)	/* I - XML documentation */
 
 	if (arg)
 	{
-	  if (arg->child->value.text.string)
-	    write_element(doc, mxmlFindElement(arg, arg, "type", NULL,
-                                               NULL, MXML_DESCEND_FIRST));
+	  write_element(doc, mxmlFindElement(arg, arg, "type", NULL,
+                                             NULL, MXML_DESCEND_FIRST));
+	  putchar(' ');
 	}
 	else if (strcmp(cname, name) && strcmp(cname, name + 1))
 	  fputs("void ", stdout);
@@ -1947,9 +1950,9 @@ write_documentation(mxml_node_t *doc)	/* I - XML documentation */
 	 scut = mxmlFindElement(scut, doc, "struct", NULL, NULL,
                         	MXML_NO_DESCEND))
     {
-      name = mxmlElementGetAttr(scut, "name");
+      cname = mxmlElementGetAttr(scut, "name");
       puts("<!-- NEW PAGE -->");
-      printf("<h3><a name='%s'>%s</a></h3>\n", name, name);
+      printf("<h3><a name='%s'>%s</a></h3>\n", cname, cname);
       puts("<hr noshade/>");
 
       description = mxmlFindElement(scut, scut, "description", NULL,
@@ -1965,7 +1968,7 @@ write_documentation(mxml_node_t *doc)	/* I - XML documentation */
       puts("<h4>Definition</h4>");
       puts("<pre>");
 
-      printf("struct %s\n{\n", name);
+      printf("struct %s\n{\n", cname);
       for (arg = mxmlFindElement(scut, scut, "variable", NULL, NULL,
                         	 MXML_DESCEND_FIRST);
 	   arg;
@@ -1993,9 +1996,9 @@ write_documentation(mxml_node_t *doc)	/* I - XML documentation */
 
 	if (arg)
 	{
-	  if (arg->child->value.text.string)
-	    write_element(doc, mxmlFindElement(arg, arg, "type", NULL,
-                                               NULL, MXML_DESCEND_FIRST));
+	  write_element(doc, mxmlFindElement(arg, arg, "type", NULL,
+                                             NULL, MXML_DESCEND_FIRST));
+	  putchar(' ');
 	}
 	else if (strcmp(cname, name) && strcmp(cname, name + 1))
 	  fputs("void ", stdout);
@@ -2409,5 +2412,5 @@ ws_cb(mxml_node_t *node,		/* I - Element node */
 
 
 /*
- * End of "$Id: mxmldoc.c,v 1.29 2004/04/30 03:40:05 mike Exp $".
+ * End of "$Id: mxmldoc.c,v 1.30 2004/05/01 04:30:42 mike Exp $".
  */

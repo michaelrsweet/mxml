@@ -1,5 +1,5 @@
 /*
- * "$Id: testmxml.c,v 1.12 2003/07/27 23:11:40 mike Exp $"
+ * "$Id: testmxml.c,v 1.13 2003/12/13 16:32:42 mike Exp $"
  *
  * Test program for mini-XML, a small XML-like file parsing library.
  *
@@ -47,6 +47,7 @@ int					/* O - Exit status */
 main(int  argc,				/* I - Number of command-line args */
      char *argv[])			/* I - Command-line args */
 {
+  int			i;		/* Looping var */
   FILE			*fp;		/* File to read */
   mxml_node_t		*tree,		/* XML tree */
 			*node;		/* Node which should be in test.xml */
@@ -104,6 +105,15 @@ main(int  argc,				/* I - Number of command-line args */
   mxmlNewOpaque(tree, "opaque");
   mxmlNewReal(tree, 123.4f);
   mxmlNewText(tree, 1, "text");
+
+  mxmlLoadString(tree, "<group>string string string</group>",
+                 MXML_NO_CALLBACK);
+  mxmlLoadString(tree, "<group>1 2 3</group>",
+                 MXML_INTEGER_CALLBACK);
+  mxmlLoadString(tree, "<group>1.0 2.0 3.0</group>",
+                 MXML_REAL_CALLBACK);
+  mxmlLoadString(tree, "<group>opaque opaque opaque</group>",
+                 MXML_OPAQUE_CALLBACK);
 
   node = tree->child;
 
@@ -211,10 +221,39 @@ main(int  argc,				/* I - Number of command-line args */
     return (1);
   }
 
-  mxmlDelete(tree->child);
-  mxmlDelete(tree->child);
-  mxmlDelete(tree->child);
-  mxmlDelete(tree->child);
+  for (i = 0; i < 4; i ++)
+  {
+    node = node->next;
+
+    if (!node)
+    {
+      fprintf(stderr, "ERROR: No group #%d child node in basic test!\n", i + 1);
+      mxmlDelete(tree);
+      return (1);
+    }
+
+    if (node->type != MXML_ELEMENT)
+    {
+      fprintf(stderr, "ERROR: Group child #%d has type %s (%d), expected MXML_ELEMENT!\n",
+              i + 1, node->type < MXML_ELEMENT || node->type > MXML_TEXT ?
+	                 "UNKNOWN" : types[node->type], node->type);
+      mxmlDelete(tree);
+      return (1);
+    }
+  } 
+
+  for (i = 0; i < 8; i ++)
+  {
+    if (tree->child)
+      mxmlDelete(tree->child);
+    else
+    {
+      fprintf(stderr, "ERROR: Child pointer prematurely NULL on child #%d\n",
+              i + 1);
+      mxmlDelete(tree);
+      return (1);
+    }
+  }
 
   if (tree->child)
   {
@@ -392,5 +431,5 @@ whitespace_cb(mxml_node_t *node,	/* I - Element node */
 
 
 /*
- * End of "$Id: testmxml.c,v 1.12 2003/07/27 23:11:40 mike Exp $".
+ * End of "$Id: testmxml.c,v 1.13 2003/12/13 16:32:42 mike Exp $".
  */

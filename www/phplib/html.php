@@ -1,6 +1,6 @@
 <?php
 //
-// "$Id: html.php,v 1.3 2004/05/17 03:39:24 mike Exp $"
+// "$Id: html.php,v 1.4 2004/05/17 20:28:52 mike Exp $"
 //
 // PHP functions for standardized HTML output...
 //
@@ -22,9 +22,14 @@
 //   html_end_row()     - End a table row.
 //
 
+
 //
 // Include necessary headers...
 //
+
+include_once "globals.php";
+include_once "auth.php";
+
 
 //
 // Search keywords...
@@ -53,8 +58,15 @@ $html_keywords = array(
 function				// O - User information
 html_header($title = "")		// I - Additional document title
 {
-  global $html_keywords, $HTTP_COOKIE_VARS;
+  global $html_keywords, $argc, $argv, $PHP_SELF, $LOGIN_USER;
 
+
+  // Check for a logout on the command-line...
+  if ($argc == 1 && $argv[0] == "logout")
+  {
+    auth_logout();
+    $argc = 0;
+  }
 
   // Common stuff...
   print("<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.0 Transitional//EN' "
@@ -89,20 +101,35 @@ html_header($title = "")		// I - Additional document title
        ."<body>\n");
 
   // Standard navigation stuff...
-  print("<p><table width='100%' height='100%' border='1' cellspacing='0' "
-       ."cellpadding='5'>\n"
-       ."<tr class='header'>"
-       ."<td><img src='images/logo.gif' width='39' height='32' alt='Mini-XML' "
-       ."align='middle'/> "
-       ."[ <a href='index.php'>Home</a> | "
+  print("<p><table width='100%' height='100%' border='0' cellspacing='0' "
+       ."cellpadding='0'>\n"
+       ."<tr class='header' height='40'>"
+       ."<td valign='top'><img src='images/top-left.gif' width='15' height='15' "
+       ."alt=''/></td>"
+       ."<td width='100%'><img src='images/logo.gif' width='39' height='32' "
+       ."alt='Mini-XML' align='middle'/> "
+       ."[&nbsp;<a href='index.php'>Home</a> | "
        ."<a href='documentation.php'>Documentation</a> | "
        ."<a href='software.php'>Download</a> | "
        ."<a href='faq.php'>FAQ</a> | "
-       ."<a href='str.php'>Support</a> ]</td>"
+       ."<a href='str.php'>Support</a>&nbsp;]</td>"
+       ."<td align='right'>[&nbsp;");
+
+
+  if ($LOGIN_USER)
+    print("<a href='account.php'>$LOGIN_USER</a>");
+  else
+    print("<a href='login.php'>Login</a>");
+
+  print("&nbsp;]</td>"
+       ."<td valign='top'><img src='images/top-right.gif' width='15' height='15' "
+       ."alt=''/></td>"
        ."</tr>\n");
 
-  print("<tr height='100%'>"
-       ."<td align='justify' valign='top'>\n");
+  print("<tr class='page' height='100%'><td></td>"
+       ."<td colspan='2' valign='top'>"
+       ."<table width='100%' height='100%' border='0' cellpadding='5' "
+       ."cellspacing='0'><tr><td valign='top'>");
 }
 
 
@@ -113,14 +140,19 @@ html_header($title = "")		// I - Additional document title
 function
 html_footer()
 {
-  print("</td></tr>\n");
+  print("</td></tr></table></td><td></td></tr>\n");
   print("<tr class='header'>"
-       ."<td>Copyright 2003-2004 by Michael Sweet. This library is free "
+       ."<td valign='bottom'><img src='images/bottom-left.gif' width='15' "
+       ."height='15' alt=''/></td>"
+       ."<td colspan='2'><small> <br />"
+       ."Copyright 2003-2004 by Michael Sweet. This library is free "
        ."software; you can redistribute it and/or modify it "
        ."under the terms of the GNU Library General Public "
        ."License as published by the Free Software Foundation; "
        ."either version 2 of the License, or (at your option) "
-       ."any later version.</td>"
+       ."any later version.<br />&nbsp;</small></td>"
+       ."<td valign='bottom'><img src='images/bottom-right.gif' width='15' "
+       ."height='15' alt=''/></td>"
        ."</tr>\n");
   print("</table></p>\n");
   print("</body>\n"
@@ -140,7 +172,9 @@ html_start_links($center = 0)		// I - 1 for centered, 0 for in-line
   $html_firstlink = 1;
 
   if ($center)
-    print("<p class='center' align='center'>");
+    print("<p class='center' align='center'>[&nbsp;");
+  else
+    print("<p>[&nbsp;");
 }
 
 
@@ -149,10 +183,9 @@ html_start_links($center = 0)		// I - 1 for centered, 0 for in-line
 //
 
 function
-html_end_links($center = 0)		// I - 1 for centered, 0 for in-line
+html_end_links()
 {
-  if ($center)
-    print("</p>\n");
+  print("&nbsp;]</p>\n");
 }
 
 
@@ -182,48 +215,11 @@ html_link($text,			// I - Text for hyperlink
 //
 
 function
-html_links($links,			// I - Associated array of hyperlinks
-           $path = "")			// I - Relative path to add to root
+html_links($links)			// I - Associated array of hyperlinks
 {
   reset($links);
   while (list($key, $val) = each($links))
-    html_link($key, $path . $val);
-}
-
-
-//
-// 'html_start_box()' - Start a rounded, shaded box.
-//
-
-function
-html_start_box($title = "",		// I - Title for box
-               $path = "")		// I - Relative path to root
-{
-  print("<p><table width='100%' border='0' cellpadding='0' cellspacing='0'>"
-       ."<tr class='box'><th align='left' valign='top'>"
-       ."<img src='${path}images/inv-top-left.gif' width='16' height='16' "
-       ."alt=''/></th>"
-       ."<th>$title</th>"
-       ."<th align='right' valign='top'><img src='${path}images/inv-top-right.gif' "
-       ."width='16' height='16' alt=''/></th></tr>\n"
-       ."<tr class='box'>"
-       ."<th align='left' valign='bottom'>"
-       ."<img src='${path}images/inv-bottom-left.gif' width='16' height='16' "
-       ."alt=''/></th>"
-       ."<td valign='top'>");
-}
-
-
-//
-// 'html_end_box()' - End a rounded, shaded box.
-//
-
-function
-html_end_box($path = "")		// I - Relative path to root
-{
-  print("</td><th align='right' valign='bottom'><img src='${path}images/inv-bottom-right.gif' "
-       ."width='16' height='16' alt=''/></th></tr>\n"
-       ."</table></p>\n");
+    html_link($key, $val);
 }
 
 
@@ -232,17 +228,16 @@ html_end_box($path = "")		// I - Relative path to root
 //
 
 function
-html_start_table($headings,		// I - Array of heading strings
-                 $path = "")		// I - Relative path to root
+html_start_table($headings)		// I - Array of heading strings
 {
   global $html_row, $html_cols;
 
   print("<p><table width='100%' border='0' cellpadding='0' cellspacing='0'>"
        ."<tr class='header'><th align='left' valign='top'>"
-       ."<img src='${path}images/hdr-top-left.gif' width='16' height='16' "
+       ."<img src='images/top-left.gif' width='16' height='16' "
        ."alt=''/></th>");
 
-  $add_html_cols;   //  Add to html_cols after display if colspan is used.
+  $add_html_cols = 0;   //  Add to html_cols after display if colspan is used.
   $html_row  = 0;
   $html_cols = sizeof($headings);
 
@@ -280,35 +275,38 @@ html_start_table($headings,		// I - Array of heading strings
         $align = $data[1];
         $s_align = "align=$align";
       }
+
       if ($data[2] > 0)
       {
         $colspan = $data[2];
         $s_colspan = "colspan=$colspan";
         if ($colspan > 1)
-          $add_html_cols += ($colspan-1);
+          $add_html_cols += ($colspan - 1);
       }
+
       if ($data[3] > 0)
       {
         $width = $data[3];
         $s_width = "width=$width%";
       }
     }
-    else $s_header = $headings[$i];
+    else
+      $s_header = $headings[$i];
 
     if (strlen($s_header))
     {
-      print("<th $s_align $s_colspan $s_width>"
-           ."<font color='white'>$s_header</font></th>");
+      print("<th $s_align $s_colspan $s_width>$s_header</th>");
     }
     else
     {
       print("<th $s_colspan $s_width>&nbsp;</th>");
     }
   }
+
   $html_cols += $add_html_cols;
 
   print("<th align='right' valign='top'>"
-       ."<img src='${path}images/hdr-top-right.gif' "
+       ."<img src='images/top-right.gif' "
        ."width='16' height='16' alt=''/></th></tr>\n");
 }
 
@@ -318,15 +316,15 @@ html_start_table($headings,		// I - Array of heading strings
 //
 
 function
-html_end_table($path = "")		// I - Relative path to root
+html_end_table()
 {
   global $html_cols;
 
   print("<tr class='header'><th align='left' valign='bottom'>"
-       ."<img src='${path}images/hdr-bottom-left.gif' width='16' height='16' "
+       ."<img src='images/bottom-left.gif' width='16' height='16' "
        ."alt=''/></th>"
        ."<th colspan='$html_cols'>&nbsp;</th>"
-       ."<th align='right' valign='bottom'><img src='${path}images/hdr-bottom-right.gif' "
+       ."<th align='right' valign='bottom'><img src='images/bottom-right.gif' "
        ."width='16' height='16' alt=''/></th></tr>\n"
        ."</table></p>\n");
 }
@@ -337,11 +335,14 @@ html_end_table($path = "")		// I - Relative path to root
 //
 
 function
-html_start_row()
+html_start_row($classname = "")		// I - HTML class to use
 {
   global $html_row;
 
-  print("<tr class='data$html_row'><td>&nbsp;</td>");
+  if ($classname == "")
+    $classname = "data$html_row";
+
+  print("<tr class='$classname'><td>&nbsp;</td>");
 }
 
 

@@ -1,7 +1,9 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
 <HTML>
 <HEAD>
-<TITLE>Documentation</TITLE>
+<TITLE>Mini-XML Programmers Manual, Version 2.0</TITLE>
+<META NAME="author" CONTENT="Michael Sweet">
+<META NAME="copyright" CONTENT="Copyright 2003-2004">
 <META HTTP-EQUIV="Content-Type" CONTENT="text/html; CHARSET=iso-iso-8859-1">
 <STYLE TYPE="text/css"><!--
 BODY { font-family: serif }
@@ -17,22 +19,60 @@ PRE { font-family: monospace }
 --></STYLE>
 </HEAD>
 <BODY>
-<CENTER><A HREF="#CONTENTS"><H1>Documentation</H1></A><BR>
+<CENTER><A HREF="#CONTENTS"><H1>Mini-XML Programmers Manual, Version 2.0</H1></A><BR>
+Michael Sweet<BR>
+Copyright 2003-2004<BR>
 </CENTER>
 <HR>
 <H1 ALIGN="CENTER"><A NAME="CONTENTS">Table of Contents</A></H1>
 <BR>
 <BR><B><A HREF="#INTRO">Introduction</A></B>
-<BR>
-<BR><B><A HREF="#INSTALL">1 - Building and Installing Mini-XML</A></B>
-<BR>
-<BR><B><A HREF="#BASICS">2 - Getting Started with Mini-XML</A></B>
-<BR>
-<BR><B><A HREF="#ADVANCED">3 - More Mini-XML Programming Techniques</A></B>
-<BR>
-<BR><B><A HREF="#MXMLDOC">3 - Using the mxmldoc Utility</A></B>
-<BR>
-<BR><B><A HREF="#LICENSE">A - GNU Library General Public License</A></B>
+<UL>
+<LI><A HREF="#1_1">Legal Stuff</A></LI>
+<LI><A HREF="#1_2">History</A></LI>
+<LI><A HREF="#1_3">Organization of This Document</A></LI>
+<LI><A HREF="#1_4">Notation Conventions</A></LI>
+<LI><A HREF="#1_5">Abbreviations</A></LI>
+<LI><A HREF="#1_6">Other References</A></LI>
+</UL>
+<B><A HREF="#INSTALL">1 - Building, Installing, and Packaging Mini-XML</A>
+</B>
+<UL>
+<LI><A HREF="#2_1">Compiling Mini-XML</A></LI>
+<LI><A HREF="#2_2">Installing Mini-XML</A></LI>
+<LI><A HREF="#2_3">Creating Mini-XML Packages</A></LI>
+</UL>
+<B><A HREF="#BASICS">2 - Getting Started with Mini-XML</A></B>
+<UL>
+<LI><A HREF="#3_1">The Basics</A></LI>
+<LI><A HREF="#3_2">Nodes</A></LI>
+<LI><A HREF="#3_3">Loading and Saving XML Files</A></LI>
+<UL>
+<LI><A HREF="#3_3_1">Finding and Iterating Nodes</A></LI>
+</UL>
+</UL>
+<B><A HREF="#ADVANCED">3 - More Mini-XML Programming Techniques</A></B>
+<UL>
+<LI><A HREF="#4_1">Load Callbacks</A></LI>
+<LI><A HREF="#4_2">Save Callbacks</A></LI>
+<LI><A HREF="#4_3">Changing Node Values</A></LI>
+<LI><A HREF="#4_4">Formatted Text</A></LI>
+<LI><A HREF="#4_5">Indexing</A></LI>
+</UL>
+<B><A HREF="#MXMLDOC">4 - Using the mxmldoc Utility</A></B>
+<UL>
+<LI><A HREF="#5_1">The Basics</A></LI>
+<LI><A HREF="#5_2">Code Documentation Conventions</A></LI>
+<UL>
+<LI><A HREF="#5_2_1">Functions and Methods</A></LI>
+<LI><A HREF="#5_2_2">Variables and Class/Structure/Union Members</A></LI>
+<LI><A HREF="#5_2_3">Types</A></LI>
+<LI><A HREF="#5_2_4">Classes, Structures, and Unions</A></LI>
+<LI><A HREF="#5_2_5">Enumerations</A></LI>
+</UL>
+<LI><A HREF="#5_3">XML Schema</A></LI>
+</UL>
+<B><A HREF="#LICENSE">A - GNU Library General Public License</A></B>
 <BR>
 <BR><B><A HREF="#RELNOTES">B - Release Notes</A></B>
 <UL>
@@ -109,19 +149,814 @@ PRE { font-family: monospace }
 </UL>
 <HR>
 <H1 align="right"><A name="INTRO">Introduction</A></H1>
-<HR>
-<H1 align="right"><A name="INSTALL">1 - Building and Installing Mini-XML</A>
-</H1>
+<P>This programmers manual describes Mini-XML version 2.0, a small XML
+ parsing library that you can use to read and write XML and XML-like
+ data files in your application without requiring large non-standard
+ libraries. Mini-XML only requires an ANSI C compatible compiler (GCC
+ works, as do most vendors' ANSI C compilers) and a &quot;make&quot; program.</P>
+<P>Mini-XML provides the following functionality:</P>
+<UL>
+<LI>Reading of UTF-8 and UTF-16 encoded XML files and strings.</LI>
+<LI>Writing of UTF-8 encoded XML files and strings.</LI>
+<LI>Data is stored in a linked-list tree structure, preserving the XML
+ data hierarchy.</LI>
+<LI>Supports arbitrary element names, attributes, and attribute values
+ with no preset limits, just available memory.</LI>
+<LI>Supports integer, real, opaque (&quot;cdata&quot;), and text data types in
+ &quot;leaf&quot; nodes.</LI>
+<LI>Functions for creating and managing trees of data.</LI>
+<LI>&quot;Find&quot; and &quot;walk&quot; functions for easily locating and navigating trees
+ of data.</LI>
+</UL>
+<P>Mini-XML doesn't do validation or other types of processing on the
+ data based upon schema files or other sources of definition
+ information, nor does it support character entities other than those
+ required by the XML specification.</P>
+
+<!-- NEED 4in -->
+<H2><A NAME="1_1">Legal Stuff</A></H2>
+<P>The Mini-XML library is copyright 2003-2004 by Michael Sweet.</P>
+<P>This library is free software; you can redistribute it and/or modify
+ it under the terms of the <A href="#LICENSE">GNU Library General Public
+ License</A> as published by the Free Software Foundation; either
+ version 2 of the License, or (at your option) any later version.</P>
+<P>This library is distributed in the hope that it will be useful, but
+ WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ Library General Public License for more details.</P>
+
+<!-- NEED 4in -->
+<H2><A NAME="1_2">History</A></H2>
+<P>Mini-XML was initially developed for the <A href="http://gimp-print.sf.net/">
+Gimp-Print</A> project to replace the rather large and unwieldy <TT>
+libxml2</TT> library with something substantially smaller and
+ easier-to-use. It all began one morning in June of 2003 when Robert
+ posted the following sentence to the developer's list:</P>
+<BLOCKQUOTE>It's bad enough that we require libxml2, but rolling our own
+ XML parser is a bit more than we can handle.</BLOCKQUOTE>
+<P>I then replied with:</P>
+<BLOCKQUOTE>Given the limited scope of what you use in XML, it should be
+ trivial to code a mini-XML API in a few hundred lines of code.</BLOCKQUOTE>
+<P>I took my own challenge and coded furiously for two days to produced
+ the initial public release of Mini-XML, total lines of code: 696.
+ Robert promptly integrated Mini-XML into Gimp-Print and removed
+ libxml2.</P>
+<P>Thanks to lots of feedback and support from various developers,
+ Mini-XML has evolved since then to provide a more complete XML
+ implementation and now stands at a whopping 2,240 lines of code,
+ compared to 96,335 lines of code for libxml2 version 2.6.9. Aside from
+ Gimp-Print, Mini-XML is used for the following projects/software
+ applications:</P>
+<UL>
+<LI><A href="http://www.cups.org/">Common UNIX Printing System</A></LI>
+<LI><A href="http://www.cups.org/ddk.php">CUPS Driver Development Kit</A>
+</LI>
+<LI><A href="http://www.easysw.com/printpro/">ESP Print Pro</A></LI>
+<LI><A href="http://zynaddsubfx.sourceforge.net">ZynAddSubFX</A></LI>
+</UL>
+<P>Please email me (mxml @ easysw . com) if you would like your project
+ added or removed from this list, or if you have any comments/quotes you
+ would like me to publish about your experiences with Mini-XML.</P>
+
+<!-- NEED 3in -->
+<H2><A NAME="1_3">Organization of This Document</A></H2>
+<P>This manual is organized into the following chapters and appendices:</P>
+<UL>
+<LI>Chapter 1, &quot;<A href="#INSTALL">Building, Installing, and Packaging
+ Mini-XML</A>&quot;, provides compilation, installation, and packaging
+ instructions for Mini-XML.</LI>
+<LI>Chapter 2, &quot;<A href="#BASICS">Getting Started with Mini-XML</A>&quot;,
+ shows how to use the Mini-XML library in your programs.</LI>
+<LI>Chapter 3, &quot;<A href="#ADVANCED">More Mini-XML Programming Techniques</A>
+&quot;, shows additional ways to use the Mini-XML library.</LI>
+<LI>Chapter 4, &quot;<A href="#MXMLDOC">Using the mxmldoc Utility</A>&quot;,
+ describes how to use the <TT>mxmldoc(1)</TT> program to generate
+ software documentation.</LI>
+<LI>Appendix A, &quot;<A href="#LICENSE">GNU Library General Public License</A>
+&quot;, provides the terms and conditions for using and distributing
+ Mini-XML.</LI>
+<LI>Appendix B, &quot;<A href="#RELNOTES">Release Notes</A>&quot;, lists the
+ changes in each release of Mini-XML.</LI>
+<LI>Appendix C, &quot;<A href="#REFERENCE">Library Reference</A>&quot;, contains a
+ complete reference for Mini-XML, generated by <TT>mxmldoc</TT>.</LI>
+</UL>
+
+<!-- NEED 4in -->
+<H2><A NAME="1_4">Notation Conventions</A></H2>
+<P>Various font and syntax conventions are used in this guide. Examples
+ and their meanings and uses are explained below:</P>
+<CENTER>
+<TABLE width="80%">
+<TR><TH>Example</TH><TD>&nbsp;&nbsp;&nbsp;</TD><TH>Description</TH></TR>
+<TR><TD colspan="3">&nbsp;</TD></TR>
+<TR valign="top"><TD><CODE>lpstat</CODE>
+<BR /> <CODE>lpstat(1)</CODE></TD><TD>&nbsp;&nbsp;&nbsp;</TD><TD>The names of commands;
+ the first mention of a command or function in a chapter is followed by
+ a manual page section number.</TD></TR>
+<TR><TD colspan="3">&nbsp;</TD></TR>
+<TR valign="top"><TD><VAR>/var</VAR>
+<BR /><VAR> /usr/share/cups/data/testprint.ps</VAR></TD><TD>&nbsp;&nbsp;&nbsp;</TD><TD>
+File and directory names.</TD></TR>
+<TR><TD colspan="3">&nbsp;</TD></TR>
+<TR valign="top"><TD nowrap><TT>Request ID is Printer-123</TT></TD><TD>
+&nbsp;&nbsp;&nbsp;</TD><TD>Screen output.</TD></TR>
+<TR><TD colspan="3">&nbsp;</TD></TR>
+<TR valign="top"><TD nowrap><KBD>lp -d printer filename ENTER</KBD></TD><TD>
+&nbsp;&nbsp;&nbsp;</TD><TD>Literal user input; special keys like <KBD>ENTER</KBD> are
+ in ALL CAPS.</TD></TR>
+<TR><TD colspan="3">&nbsp;</TD></TR>
+<TR valign="top"><TD>12.3</TD><TD>&nbsp;&nbsp;&nbsp;</TD><TD>Numbers in the text are
+ written using the period (.) to indicate the decimal point.</TD></TR>
+</TABLE>
+</CENTER>
+
+<!-- NEED 4in -->
+<H2><A NAME="1_5">Abbreviations</A></H2>
+<P>The following abbreviations are used throughout this manual:</P>
+<BLOCKQUOTE>
+<DL>
+<DT>Gb</DT>
+<DD>Gigabytes, or 1073741824 bytes
+<BR />&nbsp;</DD>
+<DT>kb</DT>
+<DD>Kilobytes, or 1024 bytes
+<BR />&nbsp;</DD>
+<DT>Mb</DT>
+<DD>Megabytes, or 1048576 bytes
+<BR />&nbsp;</DD>
+<DT>UTF-8, UTF-16</DT>
+<DD>Unicode Transformation Format, 8-bit or 16-bit
+<BR />&nbsp;</DD>
+<DT>W3C</DT>
+<DD>World Wide Web Consortium
+<BR />&nbsp;</DD>
+<DT>XML</DT>
+<DD>Extensible Markup Language
+<BR />&nbsp;</DD>
+</DL>
+</BLOCKQUOTE>
+<H2><A NAME="1_6">Other References</A></H2>
+<BLOCKQUOTE>
+<DL>
+<DT>The Unicode Standard, Version 4.0, Addison-Wesley, ISBN
+ 0-321-18578-1</DT>
+<DD>The definition of the Unicode character set which is used for XML.
+<BR />&nbsp;</DD>
+<DT><A href="http://www.w3.org/TR/2004/REC-xml-20040204/">Extensible
+ Markup Language (XML) 1.0 (Third Edition)</A></DT>
+<DD>The XML specification from the World Wide Web Consortium (W3C)
+<BR />&nbsp;</DD>
+</DL>
+</BLOCKQUOTE><HR>
+<H1 align="right"><A name="INSTALL">1 - Building, Installing, and
+ Packaging Mini-XML</A></H1>
+<P>This chapter describes how to build, install, and package Mini-XML on
+ your system.</P>
+<H2><A NAME="2_1">Compiling Mini-XML</A></H2>
+<P>Mini-XML comes with an autoconf-based configure script; just type the
+ following command to get things going:</P>
+<PRE>
+    <KBD>./configure ENTER</KBD>
+</PRE>
+<P>The default install prefix is<VAR> /usr/local</VAR>, which can be
+ overridden using the <KBD>--prefix</KBD> option:</P>
+<PRE>
+    <KBD>./configure --prefix=/foo ENTER</KBD>
+</PRE>
+<P>Other configure options can be found using the <KBD>--help</KBD>
+ option:</P>
+<PRE>
+    <KBD>./configure --help ENTER</KBD>
+</PRE>
+<P>Once you have configured the software, use the <TT>make(1)</TT>
+ program to do the build and run the test program to verify that things
+ are working, as follows:</P>
+<PRE>
+    <KBD>make ENTER</KBD>
+</PRE>
+<H2><A NAME="2_2">Installing Mini-XML</A></H2>
+<P>Use the <TT>make</TT> command with the <KBD>install</KBD> target to
+ install Mini-XML in the configured directories:</P>
+<PRE>
+    <KBD>make install ENTER</KBD>
+</PRE>
+<H2><A NAME="2_3">Creating Mini-XML Packages</A></H2>
+<P>Mini-XML includes two files that can be used to create binary
+ packages. The first file is<VAR> mxml.spec</VAR> which is used by the <TT>
+rpmbuild(8)</TT> software to create Red Hat Package Manager (&quot;RPM&quot;)
+ packages which are commonly used on Linux. Since <TT>rpmbuild</TT>
+ wants to compile the software on its own, you can provide it with the
+ Mini-XML tar file to build the package:</P>
+<PRE>
+    <KBD>rpmbuild -ta mxml-<I>version</I>.tar.gz ENTER</KBD>
+</PRE>
+<P>The second file is<VAR> mxml.list</VAR> which is used by the <TT>
+epm(1)</TT> program to create software packages in a variety of formats.
+ The <TT>epm</TT> program is available from the following URL:</P>
+<PRE>
+    <A href="http://www.easysw.com/epm/">http://www.easysw.com/epm/</A>
+</PRE>
+<P>Use the <TT>make</TT> command with the <KBD>epm</KBD> target to
+ create portable and native packages for your system:</P>
+<PRE>
+    <KBD>make epm ENTER</KBD>
+</PRE>
+<P>The packages are stored in a subdirectory named<VAR> dist</VAR> for
+ your convenience. The portable packages utilize scripts and tar files
+ to install the software on the target system; this is especially useful
+ when installing on systems with different Linux distributions. Use the<VAR>
+ mxml.install</VAR> script to install the software and<VAR> mxml.remove</VAR>
+ script to remove the software.</P>
+<P>The native packages will be in the local OS's native format: RPM for
+ Red Hat Linux, DPKG for Debian Linux, PKG for Solaris, and so forth.
+ Use the corresponding commands to install the native packages.</P>
 <HR>
 <H1 align="right"><A name="BASICS">2 - Getting Started with Mini-XML</A></H1>
+<P>This chapter describes how to write programs that use Mini-XML to
+ access data in an XML file.</P>
+<H2><A NAME="3_1">The Basics</A></H2>
+<P>Mini-XML provides a single header file which you include:</P>
+<PRE>
+    #include &lt;mxml.h&gt;
+</PRE>
+<P>The Mini-XML library is included with your program using the <KBD>
+-lmxml</KBD> option:</P>
+<PRE>
+    <KBD>gcc -o myprogram myprogram.c -lmxml ENTER</KBD>
+</PRE>
+<P>If you have the <TT>pkg-config(1)</TT> software installed, you can
+ use it to determine the proper compiler and linker options for your
+ installation:</P>
+<PRE>
+    <KBD>pkg-config --cflags mxml ENTER</KBD>
+    <KBD>pkg-config --libs mxml ENTER</KBD>
+</PRE>
+<H2><A NAME="3_2">Nodes</A></H2>
+<P>Every piece of information in an XML file (elements, text, numbers)
+ is stored in memory in &quot;nodes&quot;. Nodes are defined by the <A href="#mxml_node_t">
+<TT>mxml_node_t</TT></A> structure. The <A href="#mxml_type_t"><TT>type</TT>
+</A> member defines the node type (element, integer, opaque, real, or
+ text) which determines which value you want to look at in the <A href="#mxml_value_t">
+<TT>value</TT></A> union.</P>
+<P>New nodes can be created using the <A href="#mxmlNewElement"><TT>
+mxmlNewElement()</TT></A>, <A href="#mxmlNewInteger"><TT>
+mxmlNewInteger()</TT></A>, <A href="#mxmlNewOpaque"><TT>mxmlNewOpaque()</TT>
+</A>, <A href="#mxmlNewReal"><TT>mxmlNewReal()</TT></A>, and <A href="#mxmlNewText">
+<TT>mxmlNewText()</TT></A> functions. Only elements can have child
+ nodes, and the top node must be an element, usually &quot;?xml&quot;.</P>
+<P>Each node has pointers for the node above (<TT>parent</TT>), below (<TT>
+child</TT>), to the left (<TT>prev</TT>), and to the right (<TT>next</TT>
+) of the current node. If you have an XML file like the following:</P>
+<PRE>
+    &lt;?xml version=&quot;1.0&quot;?&gt;
+    &lt;data&gt;
+        &lt;node&gt;val1&lt;/node&gt;
+        &lt;node&gt;val2&lt;/node&gt;
+        &lt;node&gt;val3&lt;/node&gt;
+        &lt;group&gt;
+            &lt;node&gt;val4&lt;/node&gt;
+            &lt;node&gt;val5&lt;/node&gt;
+            &lt;node&gt;val6&lt;/node&gt;
+        &lt;/group&gt;
+        &lt;node&gt;val7&lt;/node&gt;
+        &lt;node&gt;val8&lt;/node&gt;
+        &lt;node&gt;val9&lt;/node&gt;
+    &lt;/data&gt;
+</PRE>
+<P>the node tree returned by <TT>mxmlLoadFile()</TT> would look like the
+ following in memory:</P>
+<PRE>
+    ?xml
+      |
+    data
+      |
+    node - node - node - group - node - node - node
+      |      |      |      |       |      |      |
+    val1   val2   val3     |     val7   val8   val9
+                           |
+                         node - node - node
+                           |      |      |
+                         val4   val5   val6
+</PRE>
+<P>where &quot;-&quot; is a pointer to the next node and &quot;|&quot; is a pointer to the
+ first child node.</P>
+<P>Once you are done with the XML data, use the <A href="#mxmlDelete"><TT>
+mxmlDelete()</TT></A> function to recursively free the memory that is
+ used for a particular node or the entire tree:</P>
+<PRE>
+    mxmlDelete(tree);
+</PRE>
+<H2><A NAME="3_3">Loading and Saving XML Files</A></H2>
+<P>You load an XML file using the <A href="#mxmlLoadFile"><TT>
+mxmlLoadFile()</TT></A> function:</P>
+<PRE>
+    FILE *fp;
+    <A href="#mxml_node_t">mxml_node_t</A> *tree;
+
+    fp = fopen(&quot;filename.xml&quot;, &quot;r&quot;);
+    tree = <A href="#mxmlLoadFile">mxmlLoadFile</A>(NULL, fp, MXML_NO_CALLBACK);
+    fclose(fp);
+</PRE>
+<P>The third argument specifies a callback function which returns the
+ value type of the immediate children for a new element node: <TT>
+MXML_INTEGER</TT>, <TT>MXML_OPAQUE</TT>, <TT>MXML_REAL</TT>, or <TT>
+MXML_TEXT</TT>. This function is called<I> after</I> the element and its
+ attributes have been read, so you can look at the element name,
+ attributes, and attribute values to determine the proper value type to
+ return. The default value type is MXML_TEXT if no callback is used.</P>
+<P>Similarly, you save an XML file using the <A href="#mxmlSaveFile"><TT>
+mxmlSaveFile()</TT></A> function:</P>
+<PRE>
+    FILE *fp;
+    <A href="#mxml_node_t">mxml_node_t</A> *tree;
+
+    fp = fopen(&quot;filename.xml&quot;, &quot;w&quot;);
+    <A href="#mxmlSaveFile">mxmlSaveFile</A>(tree, fp, MXML_NO_CALLBACK);
+    fclose(fp);
+</PRE>
+<P>Callback functions for saving are used to optionally insert
+ whitespace before and after elements in the node tree. Your function
+ will be called up to four times for each element node with a pointer to
+ the node and a &quot;where&quot; value of <TT>MXML_WS_BEFORE_OPEN</TT>, <TT>
+MXML_WS_AFTER_OPEN</TT>, <TT>MXML_WS_BEFORE_CLOSE</TT>, or <TT>
+MXML_WS_AFTER_CLOSE</TT>. The callback function should return <TT>NULL</TT>
+ if no whitespace should be added and the string to insert (spaces,
+ tabs, carriage returns, and newlines) otherwise.</P>
+<P>The <A href="#mxmlLoadString"><TT>mxmlLoadString()</TT></A>, <A href="#mxmlSaveAllocString">
+<TT>mxmlSaveAllocString()</TT></A>, and <A href="#mxmlSaveString"><TT>
+mxmlSaveString()</TT></A> functions load XML node trees from and save
+ XML node trees to strings:</P>
+<PRE>
+    char buffer[8192];
+    char *ptr;
+    <A href="#mxml_node_t">mxml_node_t</A> *tree;
+
+    ...
+    tree = <A href="#mxmlLoadString">mxmlLoadString</A>(NULL, buffer, MXML_NO_CALLBACK);
+
+    ...
+    <A href="#mxmlSaveString">mxmlSaveString</A>(tree, buffer, sizeof(buffer), MXML_NO_CALLBACK);
+
+    ...
+    ptr = <A href="#mxmlSaveAllocString">mxmlSaveAllocString</A>(tree, MXML_NO_CALLBACK);
+</PRE>
+<H3><A NAME="3_3_1">Finding and Iterating Nodes</A></H3>
+<P>The <A href="#mxmlWalkPrev"><TT>mxmlWalkPrev()</TT></A> and <A href="#mxmlWalkNext">
+<TT>mxmlWalkNext()</TT></A>functions can be used to iterate through the
+ XML node tree:</P>
+<PRE>
+    <A href="#mxml_node_t">mxml_node_t</A> *node = <A href="#mxmlWalkPrev">mxmlWalkPrev</A>(current, tree, MXML_DESCEND);
+
+    <A href="#mxml_node_t">mxml_node_t</A> *node = <A href="#mxmlWalkNext">mxmlWalkNext</A>(current, tree, MXML_DESCEND);
+</PRE>
+<P>In addition, you can find a named element/node using the <A href="#mxmlFindElement">
+<TT>mxmlFindElement()</TT></A> function:</P>
+<PRE>
+    <A href="#mxml_node_t">mxml_node_t</A> *node = <A href="#mxmlFindElement">mxmlFindElement</A>(tree, tree, &quot;name&quot;, &quot;attr&quot;,
+                                	&quot;value&quot;, MXML_DESCEND);
+</PRE>
+<P>The <TT>name</TT>, <TT>attr</TT>, and <TT>value</TT> arguments can be
+ passed as <TT>NULL</TT> to act as wildcards, e.g.:</P>
+<PRE>
+    /* Find the first &quot;a&quot; element */
+    node = <A href="#mxmlFindElement">mxmlFindElement</A>(tree, tree, &quot;a&quot;, NULL, NULL, MXML_DESCEND);
+
+    /* Find the first &quot;a&quot; element with &quot;href&quot; attribute */
+    node = <A href="#mxmlFindElement">mxmlFindElement</A>(tree, tree, &quot;a&quot;, &quot;href&quot;, NULL, MXML_DESCEND);
+
+    /* Find the first &quot;a&quot; element with &quot;href&quot; to a URL */
+    node = <A href="#mxmlFindElement">mxmlFindElement</A>(tree, tree, &quot;a&quot;, &quot;href&quot;,
+                	   &quot;http://www.easysw.com/~mike/mxml/&quot;, MXML_DESCEND);
+
+    /* Find the first element with a &quot;src&quot; attribute*/
+    node = <A href="#mxmlFindElement">mxmlFindElement</A>(tree, tree, NULL, &quot;src&quot;, NULL, MXML_DESCEND);
+
+    /* Find the first element with a &quot;src&quot; = &quot;foo.jpg&quot; */
+    node = <A href="#mxmlFindElement">mxmlFindElement</A>(tree, tree, NULL, &quot;src&quot;, &quot;foo.jpg&quot;, MXML_DESCEND);
+</PRE>
+<P>You can also iterate with the same function:</P>
+<PRE>
+    <A href="#mxml_node_t">mxml_node_t</A> *node;
+
+    for (node = <A href="#mxmlFindElement">mxmlFindElement</A>(tree, tree, &quot;name&quot;, NULL, NULL, MXML_DESCEND);
+         node != NULL;
+         node = <A href="#mxmlFindElement">mxmlFindElement</A>(node, tree, &quot;name&quot;, NULL, NULL, MXML_DESCEND))
+    {
+      ... do something ...
+    }
+</PRE>
+<P>The <TT>MXML_DESCEND</TT> argument can actually be one of three
+ constants:</P>
+<UL>
+<LI><TT>MXML_NO_DESCEND</TT> means to not to look at any child nodes in
+ the element hierarchy, just look at siblings at the same level or
+ parent nodes until the top node or top-of-tree is reached. The previous
+ node from &quot;group&quot; would be the &quot;node&quot; element to the left, while the
+ next node from &quot;group&quot; would be the &quot;node&quot; element to the right.</LI>
+<LI><TT>MXML_DESCEND_FIRST</TT> means that it is OK to descend to the
+ first child of a node, but not to descend further when searching.
+ You'll normally use this when iterating through direct children of a
+ parent node, e.g. all of the &quot;node&quot; elements under the &quot;?xml&quot; parent
+ node in the example above. This mode is only applicable to the search
+ function; the walk functions treat this as <TT>MXML_DESCEND</TT> since
+ every call is a first time.</LI>
+<LI><TT>MXML_DESCEND</TT> means to keep descending until you hit the
+ bottom of the tree. The previous node from &quot;group&quot; would be the &quot;val3&quot;
+ node and the next node would be the first node element under &quot;group&quot;.
+ If you were to walk from the root node &quot;?xml&quot; to the end of the tree
+ with <TT>mxmlWalkNext()</TT>, the order would be:
+<PRE>
+    ?xml
+    data
+    node
+    val1
+    node
+    val2
+    node
+    val3
+    group
+    node
+    val4
+    node
+    val5
+    node
+    val6
+    node
+    val7
+    node
+    val8
+    node
+    val9
+</PRE>
+<P>If you started at &quot;val9&quot; and walked using <TT>mxmlWalkPrev()</TT>,
+ the order would be reversed, ending at &quot;?xml&quot;.</P>
+</LI>
+</UL>
 <HR>
 <H1 align="right"><A name="ADVANCED">3 - More Mini-XML Programming
  Techniques</A></H1>
+<P>This chapter shows additional ways to use the Mini-XML library in
+ your programs.</P>
+<H2><A NAME="4_1">Load Callbacks</A></H2>
+<H2><A NAME="4_2">Save Callbacks</A></H2>
+<H2><A NAME="4_3">Changing Node Values</A></H2>
+<H2><A NAME="4_4">Formatted Text</A></H2>
+<H2><A NAME="4_5">Indexing</A></H2>
 <HR>
-<H1 align="right"><A name="MXMLDOC">3 - Using the mxmldoc Utility</A></H1>
+<H1 align="right"><A name="MXMLDOC">4 - Using the mxmldoc Utility</A></H1>
 <P>This chapter describes how to use the <TT>mxmldoc(1)</TT> utility
  that comes with Mini-XML to automatically generate documentation for
  your programs.</P>
+<H2><A NAME="5_1">The Basics</A></H2>
+<P>The <TT>mxmldoc</TT> utility scans C and C++ source and header files
+ and produces an XML file describing the library interface and an XHTML
+ file providing a human-readable reference to the code. Each source and
+ header file must conform to some simple code commenting conventions so
+ that <TT>mxmldoc</TT> can extract the necessary descriptive text.</P>
+<P>The <TT>mxmldoc</TT> command requires the name of an XML file to
+ store the code information; this file is created and updated as
+ necessary. The XML file is optionally followed by a list of source
+ files to scan. After scanning any source files on the command-line, <TT>
+mxmldoc</TT> writes XHTML documentation to the standard output, which
+ can be redirected to the file using the <KBD>&gt;filename</KBD> syntax:</P>
+<PRE>
+    <KBD>mxmldoc myfile.xml &gt;myfile.html ENTER</KBD>
+    <KBD>mxmldoc myfile.xml file1.c file2.cxx file3.h &gt;myfile.html ENTER</KBD>
+</PRE>
+<P>If no source files are provided on the command-line, the current
+ contents of the XML file are converted to XHTML.</P>
+<H2><A NAME="5_2">Code Documentation Conventions</A></H2>
+<P>As noted previously, source code must be commented properly for <TT>
+mxmldoc</TT> to generate correct documentation for the code. Single line
+ comments can use the C++ <TT>//</TT> comment sequence, however all
+ multi-line comments must use the C <TT>/* ... */</TT> comment sequence.</P>
+<H3><A NAME="5_2_1">Functions and Methods</A></H3>
+<P>All implementations of functions and methods must begin with a
+ comment header describing what the function does, the possible input
+ limits (if any), and the possible output values (if any), and any
+ special information needed, as follows:</P>
+<PRE>
+    /*
+     * 'do_this()' - Compute y = this(x).
+     *
+     * Notes: none.
+     */
+
+    float            /* O - Inverse power value, 0.0 &lt;= y &lt;= 1.1 */
+    do_this(float x) /* I - Power value (0.0 &lt;= x &lt;= 1.1) */
+    {
+      ...
+      return (y);
+    }
+</PRE>
+<P>Return/output values are indicated using an &quot;O&quot; prefix, input values
+ are indicated using the &quot;I&quot; prefix, and values that are both input and
+ output use the &quot;IO&quot; prefix for the corresponding in-line comment.</P>
+<H3><A NAME="5_2_2">Variables and Class/Structure/Union Members</A></H3>
+<P>Each variable or member must be declared on a separate line and must
+ be immediately followed by a comment describing the variable or member,
+ as follows:</P>
+<PRE>
+    int this_variable;   /* The current state of this */
+    int that_variable;   /* The current state of that */
+</PRE>
+<H3><A NAME="5_2_3">Types</A></H3>
+<P>Each type must have a comment block immediately before the typedef,
+ as follows:</P>
+<PRE>
+    /*
+     * This type is for foobar options.
+     */
+    typedef int this_type_t;
+</PRE>
+
+<!-- NEED 5in -->
+<H3><A NAME="5_2_4">Classes, Structures, and Unions</A></H3>
+<P>Each class, structure, and union must have a comment block
+ immediately before the definition, and each member must be documented
+ in accordance with the function and variable documentation
+ requirements, as follows:</P>
+<PRE>
+    /*
+     * This structure is for foobar options.
+     */
+    struct this_struct_s
+    {
+      int this_member;   /* Current state for this */
+      int that_member;   /* Current state for that */
+    };
+
+    /*
+     * This class is for barfoo options.
+     */
+    class this_class_c
+    {
+      int this_member;   /* Current state for this */
+      int that_member;   /* Current state for that */
+
+      /*
+       * 'get_this()' - Get the current state for this.
+       */
+      int                /* O - Current state for this */
+      get_this()
+      {
+        return (this_member);
+      }
+    };
+</PRE>
+<H3><A NAME="5_2_5">Enumerations</A></H3>
+<P>Each enumeration must have a comment block immediately before the
+ definition describing what the enumeration is for, and each enumeration
+ value must have a comment immediately after the value, as follows:</P>
+<PRE>
+   /*
+    * Enumeration of media trays.
+    */
+    enum this_enum_e
+    {
+      THIS_TRAY,   /* This tray */
+      THAT_TRAY    /* That tray */
+    };
+</PRE>
+
+<!-- NEW PAGE -->
+<H2><A NAME="5_3">XML Schema</A></H2>
+<P>Listing 4-1 shows the XML schema file<VAR> mxmldoc.xsd</VAR> which is
+ included with Mini-XML. This schema file can be used to convert the XML
+ files produced by <TT>mxmldoc</TT> into other formats.</P>
+<CENTER>
+<TABLE bgcolor="#cccccc" border="1" cellpadding="5" cellspacing="0"><CAPTION
+align="bottom"><I> Listing 4-1, XML Schema File &quot;mxmldoc.xsd&quot;</I></CAPTION>
+<TR><TD>
+<PRE>
+&lt;xsd:schema xmlns:xsd=&quot;http://www.w3.org/2001/XMLSchema&quot;&gt;
+  &lt;xsd:annotation&gt;
+    &lt;xsd:documentation xml:lang=&quot;en&quot;&gt;
+      Mini-XML 2.0 documentation schema for mxmldoc output.
+      Copyright 2003-2004 by Michael Sweet.
+
+      This program is free software; you can redistribute it and/or
+      modify it under the terms of the GNU Library General Public
+      License as published by the Free Software Foundation; either
+      version 2, or (at your option) any later version.
+
+      This program is distributed in the hope that it will be useful,
+      but WITHOUT ANY WARRANTY; without even the implied warranty of
+      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+      GNU General Public License for more details.
+    &lt;/xsd:documentation&gt;
+  &lt;/xsd:annotation&gt;
+
+  &lt;!-- basic element definitions --&gt;
+  &lt;xsd:element name=&quot;argument&quot; type=&quot;argumentType&quot;/&gt;
+  &lt;xsd:element name=&quot;class&quot; type=&quot;classType&quot;/&gt;
+  &lt;xsd:element name=&quot;constant&quot; type=&quot;constantType&quot;/&gt;
+  &lt;xsd:element name=&quot;description&quot; type=&quot;xsd:string&quot;/&gt;
+  &lt;xsd:element name=&quot;enumeration&quot; type=&quot;enumerationType&quot;/&gt;
+  &lt;xsd:element name=&quot;function&quot; type=&quot;functionType&quot;/&gt;
+  &lt;xsd:element name=&quot;mxmldoc&quot; type=&quot;mxmldocType&quot;/&gt;
+  &lt;xsd:element name=&quot;namespace&quot; type=&quot;namespaceType&quot;/&gt;
+  &lt;xsd:element name=&quot;returnvalue&quot; type=&quot;returnvalueType&quot;/&gt;
+  &lt;xsd:element name=&quot;seealso&quot; type=&quot;identifierList&quot;/&gt;
+  &lt;xsd:element name=&quot;struct&quot; type=&quot;structType&quot;/&gt;
+  &lt;xsd:element name=&quot;typedef&quot; type=&quot;typedefType&quot;/&gt;
+  &lt;xsd:element name=&quot;type&quot; type=&quot;xsd:string&quot;/&gt;
+  &lt;xsd:element name=&quot;union&quot; type=&quot;unionType&quot;/&gt;
+  &lt;xsd:element name=&quot;variable&quot; type=&quot;variableType&quot;/&gt;
+
+  &lt;!-- descriptions of complex elements --&gt;
+  &lt;xsd:complexType name=&quot;argumentType&quot;&gt;
+    &lt;xsd:sequence&gt;
+      &lt;xsd:element ref=&quot;type&quot; minOccurs=&quot;1&quot; maxOccurs=&quot;1&quot;/&gt;
+      &lt;xsd:element ref=&quot;description&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;1&quot;/&gt;
+    &lt;/xsd:sequence&gt;
+    &lt;xsd:attribute name=&quot;default&quot; type=&quot;xsd:string&quot; use=&quot;optional&quot;/&gt;
+    &lt;xsd:attribute name=&quot;name&quot; type=&quot;identifier&quot; use=&quot;required&quot;/&gt;
+    &lt;xsd:attribute name=&quot;direction&quot; type=&quot;direction&quot; use=&quot;optional&quot; default=&quot;I&quot;/&gt;
+  &lt;/xsd:complexType&gt;
+
+  &lt;xsd:complexType name=&quot;classType&quot;&gt;
+    &lt;xsd:sequence&gt;
+      &lt;xsd:element ref=&quot;description&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;1&quot;/&gt;
+      &lt;xsd:choice minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot;&gt;
+	&lt;xsd:element ref=&quot;class&quot;/&gt;
+</PRE>
+</TD></TR>
+</TABLE>
+</CENTER>
+
+<!-- NEW PAGE -->
+<CENTER>
+<TABLE bgcolor="#cccccc" border="1" cellpadding="5" cellspacing="0"><CAPTION
+align="bottom"><I> Listing 4-1, XML Schema File &quot;mxmldoc.xsd&quot; (con't)</I>
+</CAPTION>
+<TR><TD>
+<PRE>
+	&lt;xsd:element ref=&quot;enumeration&quot;/&gt;
+	&lt;xsd:element ref=&quot;function&quot;/&gt;
+	&lt;xsd:element ref=&quot;struct&quot;/&gt;
+	&lt;xsd:element ref=&quot;typedef&quot;/&gt;
+	&lt;xsd:element ref=&quot;union&quot;/&gt;
+	&lt;xsd:element ref=&quot;variable&quot;/&gt;
+      &lt;/xsd:choice&gt;
+    &lt;/xsd:sequence&gt;
+    &lt;xsd:attribute name=&quot;name&quot; type=&quot;identifier&quot; use=&quot;required&quot;/&gt;
+    &lt;xsd:attribute name=&quot;parent&quot; type=&quot;xsd:string&quot; use=&quot;optional&quot;/&gt;
+  &lt;/xsd:complexType&gt;
+
+  &lt;xsd:complexType name=&quot;constantType&quot;&gt;
+    &lt;xsd:sequence&gt;
+      &lt;xsd:element ref=&quot;description&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;1&quot;/&gt;
+    &lt;/xsd:sequence&gt;
+    &lt;xsd:attribute name=&quot;name&quot; type=&quot;identifier&quot; use=&quot;required&quot;/&gt;
+  &lt;/xsd:complexType&gt;
+
+  &lt;xsd:complexType name=&quot;enumerationType&quot;&gt;
+    &lt;xsd:sequence&gt;
+      &lt;xsd:element ref=&quot;description&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;1&quot;/&gt;
+      &lt;xsd:element ref=&quot;constant&quot; minOccurs=&quot;1&quot; maxOccurs=&quot;unbounded&quot;/&gt;
+    &lt;/xsd:sequence&gt;
+    &lt;xsd:attribute name=&quot;name&quot; type=&quot;identifier&quot; use=&quot;required&quot;/&gt;
+  &lt;/xsd:complexType&gt;
+
+  &lt;xsd:complexType name=&quot;functionType&quot;&gt;
+    &lt;xsd:sequence&gt;
+      &lt;xsd:element ref=&quot;returnvalue&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;1&quot;/&gt;
+      &lt;xsd:element ref=&quot;description&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;1&quot;/&gt;
+      &lt;xsd:element ref=&quot;argument&quot; minOccurs=&quot;1&quot; maxOccurs=&quot;unbounded&quot;/&gt;
+      &lt;xsd:element ref=&quot;seealso&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;1&quot;/&gt;
+    &lt;/xsd:sequence&gt;
+    &lt;xsd:attribute name=&quot;name&quot; type=&quot;identifier&quot; use=&quot;required&quot;/&gt;
+    &lt;xsd:attribute name=&quot;scope&quot; type=&quot;scope&quot; use=&quot;optional&quot;/&gt;
+  &lt;/xsd:complexType&gt;
+
+  &lt;xsd:complexType name=&quot;mxmldocType&quot;&gt;
+    &lt;xsd:choice minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot;&gt;
+      &lt;xsd:element ref=&quot;class&quot;/&gt;
+      &lt;xsd:element ref=&quot;enumeration&quot;/&gt;
+      &lt;xsd:element ref=&quot;function&quot;/&gt;
+      &lt;xsd:element ref=&quot;namespace&quot;/&gt;
+      &lt;xsd:element ref=&quot;struct&quot;/&gt;
+      &lt;xsd:element ref=&quot;typedef&quot;/&gt;
+      &lt;xsd:element ref=&quot;union&quot;/&gt;
+      &lt;xsd:element ref=&quot;variable&quot;/&gt;
+    &lt;/xsd:choice&gt;
+  &lt;/xsd:complexType&gt;
+
+  &lt;xsd:complexType name=&quot;namespaceType&quot;&gt;
+    &lt;xsd:sequence&gt;
+      &lt;xsd:element ref=&quot;description&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;1&quot;/&gt;
+      &lt;xsd:choice minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot;&gt;
+	&lt;xsd:element ref=&quot;class&quot;/&gt;
+	&lt;xsd:element ref=&quot;enumeration&quot;/&gt;
+	&lt;xsd:element ref=&quot;function&quot;/&gt;
+</PRE>
+</TD></TR>
+</TABLE>
+</CENTER>
+
+<!-- NEW PAGE -->
+<CENTER>
+<TABLE bgcolor="#cccccc" border="1" cellpadding="5" cellspacing="0"><CAPTION
+align="bottom"><I> Listing 4-1, XML Schema File &quot;mxmldoc.xsd&quot; (con't)</I>
+</CAPTION>
+<TR><TD>
+<PRE>
+	&lt;xsd:element ref=&quot;struct&quot;/&gt;
+	&lt;xsd:element ref=&quot;typedef&quot;/&gt;
+	&lt;xsd:element ref=&quot;union&quot;/&gt;
+	&lt;xsd:element ref=&quot;variable&quot;/&gt;
+      &lt;/xsd:choice&gt;
+    &lt;/xsd:sequence&gt;
+    &lt;xsd:attribute name=&quot;name&quot; type=&quot;identifier&quot; use=&quot;required&quot;/&gt;
+  &lt;/xsd:complexType&gt;
+
+  &lt;xsd:complexType name=&quot;returnvalueType&quot;&gt;
+    &lt;xsd:sequence&gt;
+      &lt;xsd:element ref=&quot;type&quot; minOccurs=&quot;1&quot; maxOccurs=&quot;1&quot;/&gt;
+      &lt;xsd:element ref=&quot;description&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;1&quot;/&gt;
+    &lt;/xsd:sequence&gt;
+  &lt;/xsd:complexType&gt;
+
+  &lt;xsd:complexType name=&quot;structType&quot;&gt;
+    &lt;xsd:sequence&gt;
+      &lt;xsd:element ref=&quot;description&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;1&quot;/&gt;
+      &lt;xsd:choice minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot;&gt;
+	&lt;xsd:element ref=&quot;variable&quot;/&gt;
+	&lt;xsd:element ref=&quot;function&quot;/&gt;
+      &lt;/xsd:choice&gt;
+    &lt;/xsd:sequence&gt;
+    &lt;xsd:attribute name=&quot;name&quot; type=&quot;identifier&quot; use=&quot;required&quot;/&gt;
+  &lt;/xsd:complexType&gt;
+
+  &lt;xsd:complexType name=&quot;typedefType&quot;&gt;
+    &lt;xsd:sequence&gt;
+      &lt;xsd:element ref=&quot;type&quot; minOccurs=&quot;1&quot; maxOccurs=&quot;1&quot;/&gt;
+      &lt;xsd:element ref=&quot;description&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;1&quot;/&gt;
+    &lt;/xsd:sequence&gt;
+    &lt;xsd:attribute name=&quot;name&quot; type=&quot;identifier&quot; use=&quot;required&quot;/&gt;
+  &lt;/xsd:complexType&gt;
+
+  &lt;xsd:complexType name=&quot;unionType&quot;&gt;
+    &lt;xsd:sequence&gt;
+      &lt;xsd:element ref=&quot;description&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;1&quot;/&gt;
+      &lt;xsd:element ref=&quot;variable&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot;/&gt;
+    &lt;/xsd:sequence&gt;
+    &lt;xsd:attribute name=&quot;name&quot; type=&quot;identifier&quot; use=&quot;required&quot;/&gt;
+  &lt;/xsd:complexType&gt;
+
+  &lt;xsd:complexType name=&quot;variableType&quot;&gt;
+    &lt;xsd:sequence&gt;
+      &lt;xsd:element ref=&quot;type&quot; minOccurs=&quot;1&quot; maxOccurs=&quot;1&quot;/&gt;
+      &lt;xsd:element ref=&quot;description&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;1&quot;/&gt;
+    &lt;/xsd:sequence&gt;
+    &lt;xsd:attribute name=&quot;name&quot; type=&quot;identifier&quot; use=&quot;required&quot;/&gt;
+  &lt;/xsd:complexType&gt;
+
+  &lt;!-- data types --&gt;
+  &lt;xsd:simpleType name=&quot;direction&quot;&gt;
+    &lt;xsd:restriction base=&quot;xsd:string&quot;&gt;
+      &lt;xsd:enumeration value=&quot;I&quot;/&gt;
+      &lt;xsd:enumeration value=&quot;O&quot;/&gt;
+      &lt;xsd:enumeration value=&quot;IO&quot;/&gt;
+    &lt;/xsd:restriction&gt;
+</PRE>
+</TD></TR>
+</TABLE>
+</CENTER>
+
+<!-- NEW PAGE -->
+<CENTER>
+<TABLE bgcolor="#cccccc" border="1" cellpadding="5" cellspacing="0"><CAPTION
+align="bottom"><I> Listing 4-1, XML Schema File &quot;mxmldoc.xsd&quot; (con't)</I>
+</CAPTION>
+<TR><TD>
+<PRE>
+  &lt;/xsd:simpleType&gt;
+
+  &lt;xsd:simpleType name=&quot;identifier&quot;&gt;
+    &lt;xsd:restriction base=&quot;xsd:string&quot;&gt;
+      &lt;xsd:pattern value=&quot;[a-zA-Z_(.]([a-zA-Z_(.,)* 0-9])*&quot;/&gt;
+    &lt;/xsd:restriction&gt;
+  &lt;/xsd:simpleType&gt;
+
+  &lt;xsd:simpleType name=&quot;identifierList&quot;&gt;
+    &lt;xsd:list itemType=&quot;identifier&quot;/&gt;
+  &lt;/xsd:simpleType&gt;
+
+  &lt;xsd:simpleType name=&quot;scope&quot;&gt;
+    &lt;xsd:restriction base=&quot;xsd:string&quot;&gt;
+      &lt;xsd:enumeration value=&quot;&quot;/&gt;
+      &lt;xsd:enumeration value=&quot;private&quot;/&gt;
+      &lt;xsd:enumeration value=&quot;protected&quot;/&gt;
+      &lt;xsd:enumeration value=&quot;public&quot;/&gt;
+    &lt;/xsd:restriction&gt;
+  &lt;/xsd:simpleType&gt;
+&lt;/xsd:schema&gt;
+</PRE>
+</TD></TR>
+</TABLE>
+</CENTER>
 <HR>
 <H1 align="right"><A name="LICENSE">A - GNU Library General Public
  License</A></H1>
@@ -502,10 +1337,13 @@ PRE { font-family: monospace }
 <H1 align="right"><A name="RELNOTES">B - Release Notes</A></H1>
 <H2><A NAME="7_1">Changes in Mini-XML 2.0</A></H2>
 <UL>
+<LI>New programmers manual.</LI>
+<LI>The mxmldoc utility now produces XML output which conforms to an
+ updated XML schema, described in the file &quot;doc/mxmldoc.xsd&quot;.</LI>
 <LI>Changed the whitespace callback interface to return strings instead
  of a single character, allowing for greater control over the formatting
  of XML files written using Mini-XML. THIS CHANGE WILL REQUIRE CHANGES
- TO YOUR CODE IF YOU USE WHITESPACE CALLBACKS.</LI>
+ TO YOUR 1.x CODE IF YOU USE WHITESPACE CALLBACKS.</LI>
 <LI>The mxmldoc utility is now capable of documenting C++ classes,
  functions, and structures, and correctly handles C++ comments.</LI>
 <LI>Added new modular tests for mxmldoc.</LI>

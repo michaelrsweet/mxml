@@ -1,4 +1,4 @@
-#!/usr/bin/php
+#!/usr/bin/php -q
 <?php
 
 // Make sure that the module is loaded...
@@ -120,12 +120,13 @@ print("        \$row = db_next(\$result);\n");
 print("\n");
 print("        html_header(\"Delete $tname #\$id\");\n");
 print("\n");
-print("	html_startlinks(1);\n");
+print("	html_start_links(1);\n");
 print("	html_link(\"Return to $tname List\", \"\$PHP_SELF?L\");\n");
 print("	html_link(\"View $tname #\$id</A>\", \"\$PHP_SELF?L\$id\");\n");
 print("	html_link(\"Modify $tname #\$id</A>\", \"\$PHP_SELF?M\$id\");\n");
-print("	html_endlinks();\n");
+print("	html_end_links();\n");
 print("\n");
+print("        print(\"<h1>Delete $tname #\$id</h1>\\n\");\n");
 print("        print(\"<form method='post' action='\$PHP_SELF?D\$id'>\"\n");
 print("	     .\"<p><table width='100%' cellpadding='5' cellspacing='0' border='0'>\\n\");\n");
 print("\n");
@@ -152,7 +153,7 @@ while ($row = sqlite_fetch_array($result))
 	$name = ucwords(str_replace('_', ' ', $row['name']));
 
         print("        \$temp = htmlspecialchars(\$row[\"$row[name]\"]);\n");
-        print("        print(\"<tr><th class='right'>$name:</th>"
+        print("        print(\"<tr><th align='right'>$name:</th>"
 	     ."<td class='left'>\$temp</td></tr>\\n\");\n");
 	print("\n");
         break;
@@ -182,12 +183,13 @@ print("	}\n");
 print("\n");
 print("        \$row = db_next(\$result);\n");
 print("\n");
-print("	html_startlinks(1);\n");
+print("	html_start_links(1);\n");
 print("	html_link(\"Return to $tname List\", \"\$PHP_SELF?L\");\n");
 print("	html_link(\"Modify $tname</A>\", \"\$PHP_SELF?M\$id\");\n");
 print("	html_link(\"Delete $tname #\$id</A>\", \"\$PHP_SELF?D\$id\");\n");
-print("	html_endlinks();\n");
+print("	html_end_links();\n");
 print("\n");
+print("        print(\"<h1>$tname #\$id</h1>\\n\");\n");
 print("        print(\"<p><table width='100%' cellpadding='5' cellspacing='0' \"\n");
 print("	     .\"border='0'>\\n\");\n");
 print("\n");
@@ -213,7 +215,7 @@ while ($row = sqlite_fetch_array($result))
 	$name = ucwords(str_replace('_', ' ', $row['name']));
 
         print("        \$temp = htmlspecialchars(\$row['$row[name]']);\n");
-        print("        print(\"<tr><th class='right'>$name:</th>"
+        print("        print(\"<tr><th align='right'>$name:</th>"
 	     ."<td class='left'>\$temp</td></tr>\\n\");\n");
 	print("\n");
         break;
@@ -221,19 +223,20 @@ while ($row = sqlite_fetch_array($result))
 }
 
 print("        print(\"</table></p>\\n\");\n");
-print("        mysql_free_result(\$result);\n");
+print("        db_free(\$result);\n");
 print("      }\n");
 print("      else\n");
 print("      {\n");
 print("        html_header(\"$tname List\");\n");
 print("\n");
-print("	html_startlinks(1);\n");
+print("	html_start_links(1);\n");
 print("	html_link(\"New $tname\", \"\$PHP_SELF?N\");\n");
-print("	html_endlinks();\n");
+print("	html_end_links();\n");
 print("\n");
 print("        \$result = db_query(\"SELECT * FROM $table\");\n");
 print("        \$count  = db_count(\$result);\n");
 print("\n");
+print("        print(\"<h1>$tname List</h1>\\n\");\n");
 print("        if (\$count == 0)\n");
 print("	{\n");
 print("	  print(\"<p>No ${tname}s found.</p>\\n\");\n");
@@ -261,7 +264,7 @@ while ($row = sqlite_fetch_array($result))
 	$name = ucwords(str_replace('_', ' ', $row['name']));
 	if ($firsttime)
 	{
-	  print(",\"$name\"");
+	  print("\"$name\"");
 	  $firsttime = 0;
 	}
 	else
@@ -281,6 +284,9 @@ while ($row = sqlite_fetch_array($result))
   switch ($row['name'])
   {
     case "id" :
+        print("          \$id = \$row['id'];\n\n");
+        break;
+
     case "create_date" :
     case "create_user" :
     case "modify_date" :
@@ -290,7 +296,7 @@ while ($row = sqlite_fetch_array($result))
 
     default :
 	print("          \$temp = htmlspecialchars(\$row['$row[name]']);\n");
-	print("          print(\"<td class='center'><a href='\$PHP_SELF?L\$row->id' \"\n");
+	print("          print(\"<td class='center'><a href='\$PHP_SELF?L\$id' \"\n");
 	print("	       .\"alt='$tname #\$id'>\"\n");
 	print("	       .\"\$temp</a></td>\");\n");
         print("\n");
@@ -360,13 +366,14 @@ print("	header(\"Location: \$PHP_SELF?L\$id\");\n");
 print("      }\n");
 print("      else\n");
 print("      {\n");
-print("        html_header(\"$tname #\$id\");\n");
+print("        html_header(\"Modify $tname #\$id\");\n");
 print("\n");
-print("	html_startlinks(1);\n");
+print("	html_start_links(1);\n");
 print("	html_link(\"Return to $tname List\", \"\$PHP_SELF?L\");\n");
 print("	html_link(\"$tname #\$id\", \"\$PHP_SELF?L\$id\");\n");
-print("	html_endlinks();\n");
+print("	html_end_links();\n");
 print("\n");
+print("        print(\"<h1>Modify $tname #\$id</h1>\\n\");\n");
 print("        \$result = db_query(\"SELECT * FROM $table WHERE id = \$id\");\n");
 print("	if (db_count(\$result) != 1)\n");
 print("	{\n");
@@ -380,7 +387,7 @@ print("\n");
 print("        print(\"<form method='post' action='\$PHP_SELF?M\$id'>\"\n");
 print("	     .\"<p><table width='100%' cellpadding='5' cellspacing='0' border='0'>\\n\");\n");
 print("\n");
-print("        print(\"<tr><th class='right'>Published:</th><td>\");\n");
+print("        print(\"<tr><th align='right'>Published:</th><td>\");\n");
 print("	select_is_published(\$row['is_published']);\n");
 print("	print(\"</td></tr>\\n\");\n");
 print("\n");
@@ -401,7 +408,7 @@ while ($row = sqlite_fetch_array($result))
         $form = strtoupper($row['name']);
 	$name = ucwords(str_replace('_', ' ', $row['name']));
 	print("        \$temp = htmlspecialchars(\$row['$row[name]'], ENT_QUOTES);\n");
-	print("        print(\"<tr><th class='right'>$name:</th>\"\n");
+	print("        print(\"<tr><th align='right'>$name:</th>\"\n");
 
         if ($row['type'] == "TEXT")
 	{
@@ -453,7 +460,7 @@ while ($row = sqlite_fetch_array($result))
   }
 
 print("\n");
-print("        db_query(\"INSERT INTO $table VALUES(0,\"\n");
+print("        db_query(\"INSERT INTO $table VALUES(NULL,\"\n");
 
 sqlite_seek($result, 0);
 while ($row = sqlite_fetch_array($result))
@@ -484,14 +491,15 @@ print("      }\n");
 print("\n");
 print("      html_header(\"New $tname\");\n");
 print("\n");
-print("      html_startlinks(1);\n");
+print("      html_start_links(1);\n");
 print("      html_link(\"Return to $tname List\", \"\$PHP_SELF?L\");\n");
-print("      html_endlinks();\n");
+print("      html_end_links();\n");
 print("\n");
+print("      print(\"<h1>New $tname</h1>\\n\");\n");
 print("      print(\"<form method='post' action='\$PHP_SELF?N'>\"\n");
 print("	   .\"<p><table width='100%' cellpadding='5' cellspacing='0' border='0'>\\n\");\n");
 print("\n");
-print("      print(\"<tr><th class='right'>Published:</th><td>\");\n");
+print("      print(\"<tr><th align='right'>Published:</th><td>\");\n");
 print("      select_is_published();\n");
 print("      print(\"</td></tr>\\n\");\n");
 print("\n");
@@ -512,7 +520,7 @@ while ($row = sqlite_fetch_array($result))
         $form = strtoupper($row['name']);
 	$name = ucwords(str_replace('_', ' ', $row['name']));
 
-	print("      print(\"<tr><th class='right'>$name:</th>\"\n");
+	print("      print(\"<tr><th align='right'>$name:</th>\"\n");
 
         if ($row['type'] == "TEXT")
 	{

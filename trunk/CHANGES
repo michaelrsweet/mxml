@@ -3,6 +3,7 @@ CHANGES - 10/27/2004
 
 CHANGES IN Mini-XML 2.1
 
+	- Added support for custom data nodes (STR #6)
 	- Now treat UTF-8 sequences which are longer than
 	  necessary as an error (STR #4)
 	- Fixed entity number support (STR #8)

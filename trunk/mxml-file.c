@@ -1,5 +1,5 @@
 /*
- * "$Id: mxml-file.c,v 1.36 2004/10/28 01:07:00 mike Exp $"
+ * "$Id: mxml-file.c,v 1.37 2004/10/28 02:58:00 mike Exp $"
  *
  * File loading code for Mini-XML, a small XML-like file parsing library.
  *
@@ -17,29 +17,30 @@
  *
  * Contents:
  *
- *   mxmlLoadFd()           - Load a file descriptor into an XML node tree.
- *   mxmlLoadFile()         - Load a file into an XML node tree.
- *   mxmlLoadString()       - Load a string into an XML node tree.
- *   mxmlSaveAllocString()  - Save an XML node tree to an allocated string.
- *   mxmlSaveFd()           - Save an XML tree to a file descriptor.
- *   mxmlSaveFile()         - Save an XML tree to a file.
- *   mxmlSaveString()       - Save an XML node tree to a string.
- *   mxmlSetErrorCallback() - Set the error message callback.
- *   mxml_add_char()        - Add a character to a buffer, expanding as needed.
- *   mxml_fd_getc()         - Read a character from a file descriptor.
- *   mxml_fd_putc()         - Write a character to a file descriptor.
- *   mxml_fd_read()         - Read a buffer of data from a file descriptor.
- *   mxml_fd_write()        - Write a buffer of data to a file descriptor.
- *   mxml_file_getc()       - Get a character from a file.
- *   mxml_file_putc()       - Write a character to a file.
- *   mxml_get_entity()      - Get the character corresponding to an entity...
- *   mxml_load_data()       - Load data into an XML node tree.
- *   mxml_parse_element()   - Parse an element for any attributes...
- *   mxml_string_getc()     - Get a character from a string.
- *   mxml_write_name()      - Write a name string.
- *   mxml_write_node()      - Save an XML node to a file.
- *   mxml_write_string()    - Write a string, escaping & and < as needed.
- *   mxml_write_ws()        - Do whitespace callback...
+ *   mxmlLoadFd()            - Load a file descriptor into an XML node tree.
+ *   mxmlLoadFile()          - Load a file into an XML node tree.
+ *   mxmlLoadString()        - Load a string into an XML node tree.
+ *   mxmlSaveAllocString()   - Save an XML node tree to an allocated string.
+ *   mxmlSaveFd()            - Save an XML tree to a file descriptor.
+ *   mxmlSaveFile()          - Save an XML tree to a file.
+ *   mxmlSaveString()        - Save an XML node tree to a string.
+ *   mxmlSetCustomHandlers() - Set the handling functions for custom data.
+ *   mxmlSetErrorCallback()  - Set the error message callback.
+ *   mxml_add_char()         - Add a character to a buffer, expanding as needed.
+ *   mxml_fd_getc()          - Read a character from a file descriptor.
+ *   mxml_fd_putc()          - Write a character to a file descriptor.
+ *   mxml_fd_read()          - Read a buffer of data from a file descriptor.
+ *   mxml_fd_write()         - Write a buffer of data to a file descriptor.
+ *   mxml_file_getc()        - Get a character from a file.
+ *   mxml_file_putc()        - Write a character to a file.
+ *   mxml_get_entity()       - Get the character corresponding to an entity...
+ *   mxml_load_data()        - Load data into an XML node tree.
+ *   mxml_parse_element()    - Parse an element for any attributes...
+ *   mxml_string_getc()      - Get a character from a string.
+ *   mxml_write_name()       - Write a name string.
+ *   mxml_write_node()       - Save an XML node to a file.
+ *   mxml_write_string()     - Write a string, escaping & and < as needed.
+ *   mxml_write_ws()         - Do whitespace callback...
  */
 
 /*
@@ -82,6 +83,14 @@ typedef struct mxml_fdbuf_s		/**** File descriptor buffer (@private) ****/
  */
 
 extern void	(*mxml_error_cb)(const char *);
+
+
+/*
+ * Custom data handlers...
+ */
+
+static mxml_custom_load_cb_t	mxml_custom_load_cb = NULL;
+static mxml_custom_save_cb_t	mxml_custom_save_cb = NULL;
 
 
 /*
@@ -418,6 +427,28 @@ mxmlSaveString(mxml_node_t *node,	/* I - Node to write */
   */
 
   return (ptr[0] - buffer);
+}
+
+
+/*
+ * 'mxmlSetCustomHandlers()' - Set the handling functions for custom data.
+ *
+ * The load function accepts a node pointer and a data string and must
+ * return 0 on success and non-zero on error.
+ *
+ * The save function accepts a node pointer and must return a malloc'd
+ * string on success and NULL on error.
+ * 
+ */
+
+void
+mxmlSetCustomHandlers(mxml_custom_load_cb_t load,
+					/* I - Load function */
+                      mxml_custom_save_cb_t save)
+					/* I - Save function */
+{
+  mxml_custom_load_cb = load;
+  mxml_custom_save_cb = save;
 }
 
 
@@ -1247,7 +1278,9 @@ mxml_load_data(mxml_node_t *top,	/* I - Top node */
 
   while ((ch = (*getc_cb)(p, &encoding)) != EOF)
   {
-    if ((ch == '<' || (isspace(ch) && type != MXML_OPAQUE)) && bufptr > buffer)
+    if ((ch == '<' ||
+         (isspace(ch) && type != MXML_OPAQUE && type != MXML_CUSTOM)) &&
+        bufptr > buffer)
     {
      /*
       * Add a new value node...
@@ -1272,6 +1305,26 @@ mxml_load_data(mxml_node_t *top,	/* I - Top node */
 	case MXML_TEXT :
             node = mxmlNewText(parent, whitespace, buffer);
 	    break;
+
+	case MXML_CUSTOM :
+	    if (mxml_custom_load_cb)
+	    {
+	     /*
+	      * Use the callback to fill in the custom data...
+	      */
+
+              node = mxmlNewCustom(parent, NULL, NULL);
+
+	      if ((*mxml_custom_load_cb)(node, buffer))
+	      {
+	        mxml_error("Bad custom value '%s' in parent <%s>!",
+		           buffer, parent ? parent->value.element.name : "null");
+		mxmlDelete(node);
+		node = NULL;
+	      }
+
+	      break;
+	    }
 
         default : /* Should never happen... */
 	    node = NULL;
@@ -2402,6 +2455,31 @@ mxml_write_node(mxml_node_t *node,	/* I - Node to write */
 
 	  col += strlen(node->value.text.string);
           break;
+
+      case MXML_CUSTOM :
+          if (mxml_custom_save_cb)
+	  {
+	    char	*data;		/* Custom data string */
+	    const char	*newline;	/* Last newline in string */
+
+
+            if ((data = (*mxml_custom_save_cb)(node)) == NULL)
+	      return (-1);
+
+            if (mxml_write_string(data, p, putc_cb) < 0)
+	      return (-1);
+
+            if ((newline = strrchr(data, '\n')) == NULL)
+	      col += strlen(data);
+	    else
+              col = strlen(newline);
+
+            free(data);
+	    break;
+	  }
+
+      default : /* Should never happen */
+          return (-1);
     }
 
    /*
@@ -2497,5 +2575,5 @@ mxml_write_ws(mxml_node_t *node,	/* I - Current node */
 
 
 /*
- * End of "$Id: mxml-file.c,v 1.36 2004/10/28 01:07:00 mike Exp $".
+ * End of "$Id: mxml-file.c,v 1.37 2004/10/28 02:58:00 mike Exp $".
  */

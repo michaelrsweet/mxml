@@ -333,6 +333,30 @@ child nodes of the specified type.</description>
       <description>Callback function or MXML_NO_CALLBACK</description>
     </argument>
   </function>
+  <function name="mxmlNewCustom">
+    <returnvalue>
+      <type>mxml_node_t *</type>
+      <description>New node</description>
+    </returnvalue>
+    <description>Create a new custom data node.
+
+The new custom node is added to the end of the specified parent's child
+list. The constant MXML_NO_PARENT can be used to specify that the new
+element node has no parent. NULL can be passed when the data in the
+node is not dynamically allocated or is separately managed.</description>
+    <argument name="parent" direction="I">
+      <type>mxml_node_t *</type>
+      <description>Parent node or MXML_NO_PARENT</description>
+    </argument>
+    <argument name="data" direction="I">
+      <type>void *</type>
+      <description>Pointer to data</description>
+    </argument>
+    <argument name="(*destroy)(void *)" direction="I">
+      <type>void</type>
+      <description>Function to destroy data</description>
+    </argument>
+  </function>
   <function name="mxmlNewElement">
     <returnvalue>
       <type>mxml_node_t *</type>
@@ -583,6 +607,44 @@ element tags.</description>
       <description>Whitespace callback or MXML_NO_CALLBACK</description>
     </argument>
   </function>
+  <function name="mxmlSetCustom">
+    <returnvalue>
+      <type>int</type>
+      <description>0 on success, -1 on failure</description>
+    </returnvalue>
+    <description>Set the data and destructor of a custom data node.
+
+The node is not changed if it is not a custom node.</description>
+    <argument name="node" direction="I">
+      <type>mxml_node_t *</type>
+      <description>Node to set</description>
+    </argument>
+    <argument name="data" direction="I">
+      <type>void *</type>
+      <description>New data pointer</description>
+    </argument>
+    <argument name="(*destroy)(void *)" direction="I">
+      <type>void</type>
+      <description>New destructor function</description>
+    </argument>
+  </function>
+  <function name="mxmlSetCustomHandlers">
+    <description>Set the handling functions for custom data.
+
+The load function accepts a node pointer and a data string and must
+return 0 on success and non-zero on error.
+
+The save function accepts a node pointer and must return a malloc'd
+string on success and NULL on error.</description>
+    <argument name="load" direction="I">
+      <type>mxml_custom_load_cb_t</type>
+      <description>Load function</description>
+    </argument>
+    <argument name="save" direction="I">
+      <type>mxml_custom_save_cb_t</type>
+      <description>Save function</description>
+    </argument>
+  </function>
   <function name="mxmlSetElement">
     <returnvalue>
       <type>int</type>
@@ -764,6 +826,24 @@ the walk to the node's children.</description>
     <type>struct mxml_attr_s</type>
     <description>An XML element attribute value.</description>
   </typedef>
+  <variable default="= NULL" name="mxml_custom_load_cb">
+    <type>static mxml_custom_load_cb_t</type>
+  </variable>
+  <struct name="mxml_custom_s">
+    <description>An XML custom value.</description>
+    <variable name="data">
+      <type>void *</type>
+      <description>Pointer to (allocated) custom data</description>
+    </variable>
+  </struct>
+  <variable default="= NULL" name="mxml_custom_save_cb">
+    <type>static mxml_custom_save_cb_t</type>
+    <description>Local functions...</description>
+  </variable>
+  <typedef name="mxml_custom_t">
+    <type>struct mxml_custom_s</type>
+    <description>An XML custom value.</description>
+  </typedef>
   <typedef name="mxml_element_t">
     <type>struct mxml_value_s</type>
     <description>An XML element value.</description>
@@ -866,6 +946,9 @@ the walk to the node's children.</description>
   </typedef>
   <enumeration name="mxml_type_e">
     <description>The XML node type.</description>
+    <constant name="MXML_CUSTOM">
+      <description>Custom data</description>
+    </constant>
     <constant name="MXML_ELEMENT">
       <description>XML element with attributes</description>
     </constant>
@@ -907,6 +990,10 @@ the walk to the node's children.</description>
   </typedef>
   <union name="mxml_value_u">
     <description>An XML node value.</description>
+    <variable name="custom">
+      <type>mxml_custom_t</type>
+      <description>Custom data</description>
+    </variable>
     <variable name="element">
       <type>mxml_element_t</type>
       <description>Element</description>

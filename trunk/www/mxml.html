@@ -19,11 +19,12 @@ PRE { font-family: monospace }
 --></STYLE>
 </HEAD>
 <BODY>
-<CENTER><A HREF="#CONTENTS"><H1>Mini-XML Programmers Manual, Version 2.0</H1></A><BR>
+<CENTER><A HREF="#CONTENTS"><IMG SRC="logo.png" BORDER="0" WIDTH="222" HEIGHT="181"><BR>
+<H1>Mini-XML Programmers Manual, Version 2.0</H1></A><BR>
 Michael Sweet<BR>
 Copyright 2003-2004<BR>
 </CENTER>
-<HR>
+<HR NOSHADE>
 <H1 ALIGN="CENTER"><A NAME="CONTENTS">Table of Contents</A></H1>
 <BR>
 <BR><B><A HREF="#INTRO">Introduction</A></B>
@@ -160,7 +161,7 @@ Copyright 2003-2004<BR>
 <LI><A HREF="#num_callbacks">num_callbacks</A></LI>
 </UL>
 </UL>
-<HR>
+<HR NOSHADE>
 <H1 align="right"><A name="INTRO">Introduction</A></H1>
 <P>This programmers manual describes Mini-XML version 2.0, a small XML
  parsing library that you can use to read and write XML and XML-like
@@ -320,7 +321,7 @@ File and directory names.</TD></TR>
 <DD>The XML specification from the World Wide Web Consortium (W3C)
 <BR />&nbsp;</DD>
 </DL>
-</BLOCKQUOTE><HR>
+</BLOCKQUOTE><HR NOSHADE>
 <H1 align="right"><A name="INSTALL">1 - Building, Installing, and
  Packaging Mini-XML</A></H1>
 <P>This chapter describes how to build, install, and package Mini-XML on
@@ -383,7 +384,7 @@ epm(1)</TT> program to create software packages in a variety of formats.
 <P>The native packages will be in the local OS's native format: RPM for
  Red Hat Linux, DPKG for Debian Linux, PKG for Solaris, and so forth.
  Use the corresponding commands to install the native packages.</P>
-<HR>
+<HR NOSHADE>
 <H1 align="right"><A name="BASICS">2 - Getting Started with Mini-XML</A></H1>
 <P>This chapter describes how to write programs that use Mini-XML to
  access data in an XML file.</P>
@@ -605,7 +606,7 @@ mxmlSaveString()</TT></A> functions load XML node trees from and save
  the order would be reversed, ending at &quot;?xml&quot;.</P>
 </LI>
 </UL>
-<HR>
+<HR NOSHADE>
 <H1 align="right"><A name="ADVANCED">3 - More Mini-XML Programming
  Techniques</A></H1>
 <P>This chapter shows additional ways to use the Mini-XML library in
@@ -615,7 +616,7 @@ mxmlSaveString()</TT></A> functions load XML node trees from and save
 <H2><A NAME="4_3">Changing Node Values</A></H2>
 <H2><A NAME="4_4">Formatted Text</A></H2>
 <H2><A NAME="4_5">Indexing</A></H2>
-<HR>
+<HR NOSHADE>
 <H1 align="right"><A name="MXMLDOC">4 - Using the mxmldoc Utility</A></H1>
 <P>This chapter describes how to use the <TT>mxmldoc(1)</TT> utility
  that comes with Mini-XML to automatically generate documentation for
@@ -738,8 +739,9 @@ mxmldoc</TT> to generate correct documentation for the code. Single line
  included with Mini-XML. This schema file can be used to convert the XML
  files produced by <TT>mxmldoc</TT> into other formats.</P>
 <CENTER>
-<TABLE bgcolor="#cccccc" border="1" cellpadding="5" cellspacing="0"><CAPTION
-align="bottom"><I> Listing 4-1, XML Schema File &quot;mxmldoc.xsd&quot;</I></CAPTION>
+<TABLE bgcolor="#cccccc" border="1" cellpadding="5" cellspacing="0" width="80%">
+<CAPTION align="bottom"><I> Listing 4-1, XML Schema File &quot;mxmldoc.xsd&quot;</I>
+</CAPTION>
 <TR><TD>
 <PRE>
 &lt;xsd:schema xmlns:xsd=&quot;http://www.w3.org/2001/XMLSchema&quot;&gt;
@@ -800,9 +802,9 @@ align="bottom"><I> Listing 4-1, XML Schema File &quot;mxmldoc.xsd&quot;</I></CAP
 
 <!-- NEW PAGE -->
 <CENTER>
-<TABLE bgcolor="#cccccc" border="1" cellpadding="5" cellspacing="0"><CAPTION
-align="bottom"><I> Listing 4-1, XML Schema File &quot;mxmldoc.xsd&quot; (con't)</I>
-</CAPTION>
+<TABLE bgcolor="#cccccc" border="1" cellpadding="5" cellspacing="0" width="80%">
+<CAPTION align="bottom"><I> Listing 4-1, XML Schema File &quot;mxmldoc.xsd&quot;
+ (con't)</I></CAPTION>
 <TR><TD>
 <PRE>
 	&lt;xsd:element ref=&quot;enumeration&quot;/&gt;
@@ -870,9 +872,9 @@ align="bottom"><I> Listing 4-1, XML Schema File &quot;mxmldoc.xsd&quot; (con't)<
 
 <!-- NEW PAGE -->
 <CENTER>
-<TABLE bgcolor="#cccccc" border="1" cellpadding="5" cellspacing="0"><CAPTION
-align="bottom"><I> Listing 4-1, XML Schema File &quot;mxmldoc.xsd&quot; (con't)</I>
-</CAPTION>
+<TABLE bgcolor="#cccccc" border="1" cellpadding="5" cellspacing="0" width="80%">
+<CAPTION align="bottom"><I> Listing 4-1, XML Schema File &quot;mxmldoc.xsd&quot;
+ (con't)</I></CAPTION>
 <TR><TD>
 <PRE>
 	&lt;xsd:element ref=&quot;struct&quot;/&gt;
@@ -940,9 +942,9 @@ align="bottom"><I> Listing 4-1, XML Schema File &quot;mxmldoc.xsd&quot; (con't)<
 
 <!-- NEW PAGE -->
 <CENTER>
-<TABLE bgcolor="#cccccc" border="1" cellpadding="5" cellspacing="0"><CAPTION
-align="bottom"><I> Listing 4-1, XML Schema File &quot;mxmldoc.xsd&quot; (con't)</I>
-</CAPTION>
+<TABLE bgcolor="#cccccc" border="1" cellpadding="5" cellspacing="0" width="80%">
+<CAPTION align="bottom"><I> Listing 4-1, XML Schema File &quot;mxmldoc.xsd&quot;
+ (con't)</I></CAPTION>
 <TR><TD>
 <PRE>
   &lt;/xsd:simpleType&gt;
@@ -970,7 +972,7 @@ align="bottom"><I> Listing 4-1, XML Schema File &quot;mxmldoc.xsd&quot; (con't)<
 </TD></TR>
 </TABLE>
 </CENTER>
-<HR>
+<HR NOSHADE>
 <H1 align="right"><A name="LICENSE">A - GNU Library General Public
  License</A></H1>
 <P align="center">Version 2, June 1991
@@ -1346,7 +1348,7 @@ align="bottom"><I> Listing 4-1, XML Schema File &quot;mxmldoc.xsd&quot; (con't)<
  SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH
  DAMAGES.</P>
 <P align="center"><BIG>END OF TERMS AND CONDITIONS</BIG></P>
-<HR>
+<HR NOSHADE>
 <H1 align="right"><A name="RELNOTES">B - Release Notes</A></H1>
 <H2><A NAME="7_1">Changes in Mini-XML 2.0</A></H2>
 <UL>
@@ -1480,7 +1482,7 @@ align="bottom"><I> Listing 4-1, XML Schema File &quot;mxmldoc.xsd&quot; (con't)<
 <UL>
 <LI>Initial public release.</LI>
 </UL>
-<HR>
+<HR NOSHADE>
 <H1 align="right"><A name="REFERENCE">C - Library Reference</A></H1>
 <H2><A NAME="8_1">Contents</A></H2>
 <UL>

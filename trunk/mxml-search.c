@@ -1,5 +1,5 @@
 /*
- * "$Id: mxml-search.c,v 1.1 2003/06/03 19:46:30 mike Exp $"
+ * "$Id: mxml-search.c,v 1.2 2003/06/03 20:40:01 mike Exp $"
  *
  * Search/navigation functions for mini-XML, a small XML-like file
  * parsing library.
@@ -21,6 +21,7 @@
  *   mxmlFindElement() - Find the named element.
  *   mxmlWalkNext()    - Walk to the next logical node in the tree.
  *   mxmlWalkPrev()    - Walk to the previous logical node in the tree.
+ *   mxml_walk_next()  - Walk to the next logical node in the tree.
  */
 
 /*
@@ -28,6 +29,14 @@
  */
 
 #include "mxml.h"
+
+
+/*
+ * Local functions...
+ */
+
+mxml_node_t	*mxml_walk_next(mxml_node_t *node, mxml_node_t *top,
+		                int descend);
 
 
 /*
@@ -79,16 +88,7 @@ mxml_node_t *				/* O - Next node or NULL */
 mxmlWalkNext(mxml_node_t *node,		/* I - Current node */
              mxml_node_t *top)		/* I - Top node */
 {
-  if (!node)
-    return (NULL);
-  else if (node->child)
-    return (node->child);
-  else if (node->next)
-    return (node->next);
-  else if (node->parent != top)
-    return (mxmlWalkNext(node->parent, top));
-  else
-    return (NULL);
+  return (mxml_walk_next(node, top, 1));
 }
 
 
@@ -112,5 +112,27 @@ mxmlWalkPrev(mxml_node_t *node,		/* I - Current node */
 
 
 /*
- * End of "$Id: mxml-search.c,v 1.1 2003/06/03 19:46:30 mike Exp $".
+ * 'mxml_walk_next()' - Walk to the next logical node in the tree.
+ */
+
+mxml_node_t *				/* O - Next node or NULL */
+mxml_walk_next(mxml_node_t *node,	/* I - Current node */
+               mxml_node_t *top,	/* I - Top node */
+               int         descend)	/* I - 1 = descend, 0 = don't */
+{
+  if (!node)
+    return (NULL);
+  else if (node->child && descend)
+    return (node->child);
+  else if (node->next)
+    return (node->next);
+  else if (node->parent != top)
+    return (mxml_walk_next(node->parent, top, 0));
+  else
+    return (NULL);
+}
+
+
+/*
+ * End of "$Id: mxml-search.c,v 1.2 2003/06/03 20:40:01 mike Exp $".
  */

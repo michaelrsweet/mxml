@@ -1,0 +1,12 @@
+README - 06/03/2003
+-------------------
+
+
+CHANGES IN Mini-XML 0.91
+
+	- mxmlWalkNext() would go into an infinite loop.
+
+
+CHANGES IN Mini-XML 0.9
+
+	- Initial public release.

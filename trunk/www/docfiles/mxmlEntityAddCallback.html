@@ -33,7 +33,7 @@ PRE { font-family: monospace }
 <P>Add a callback to convert entities to Unicode.</P>
 <H4>Syntax</H4>
 <PRE>
-void
+int
 mxmlEntityAddCallback(
     int (*cb)(const char *name));
 </PRE>
@@ -47,7 +47,7 @@ mxmlEntityAddCallback(
  add</TD></TR>
 </TABLE>
 <H4>Returns</H4>
-<P>Nothing.</P>
+<P>0 on success, -1 on failure</P>
 
 <!-- NEW PAGE -->
 <HR NOSHADE>

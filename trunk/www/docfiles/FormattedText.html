@@ -28,6 +28,17 @@ PRE { font-family: monospace }
 <A HREF="Indexing.html">Next</A>
 <HR NOSHADE>
 <H2><A NAME="4_4">Formatted Text</A></H2>
+<P>The <A href="mxmlNewTextf.html#mxmlNewTextf"><TT>mxmlNewTextf()</TT></A>
+ and <A href="mxmlSetTextf.html#mxmlSetTextf"><TT>mxmlSetTextf()</TT></A>
+ functions create and change text nodes, respectively, using <TT>printf</TT>
+-style format strings and arguments. For example, use the following
+ function call to create a new text node:</P>
+<PRE>
+    <A href="mxmlnodet.html#mxml_node_t">mxml_node_t</A> *node;
+
+    node = <A href="mxmlNewTextf.html#mxmlNewTextf">mxmlNewTextf</A>(node, 1, &quot;%s/%s&quot;,
+                        path, filename);
+</PRE>
 <HR NOSHADE>
 <A HREF="toc.html">Contents</A>
 <A HREF="ChangingNodeValues.html">Previous</A>

@@ -1,5 +1,5 @@
 #
-# "$Id: Makefile.in,v 1.17 2004/04/06 01:47:19 mike Exp $"
+# "$Id: Makefile.in,v 1.18 2004/05/01 23:41:51 mike Exp $"
 #
 # Makefile for mini-XML, a small XML-like file parsing library.
 #
@@ -74,13 +74,13 @@ MAN3EXT		=	@MAN3EXT@
 # Targets...
 #
 
-DOCFILES	=	documentation.html README COPYING CHANGES
+DOCFILES	=	doc/mxml.html doc/mxml.pdf README COPYING CHANGES
 PUBLIBOBJS	=	mxml-attr.o mxml-entity.o mxml-file.o mxml-node.o \
 			mxml-search.o mxml-set.o
 LIBOBJS		=	$(PUBLIBOBJS) mxml-private.o mxml-string.o
 OBJS		=	mxmldoc.o testmxml.o $(LIBOBJS)
-TARGETS		=	libmxml.a mxmldoc mxml.$(CAT3EXT) mxmldoc.$(CAT1EXT) \
-			testmxml mxml.xml
+TARGETS		=	libmxml.a mxmldoc doc/mxml.$(CAT3EXT) \
+			doc/mxmldoc.$(CAT1EXT) testmxml mxml.xml
 
 
 #
@@ -115,13 +115,13 @@ install:	$(TARGETS)
 	-$(MKDIR) -p $(BUILDROOT)$(libdir)
 	$(CP) libmxml.a $(BUILDROOT)$(libdir)
 	-$(MKDIR) -p $(BUILDROOT)$(mandir)/cat1
-	$(CP) mxmldoc.$(CAT1EXT) $(BUILDROOT)$(mandir)/cat1/mxmldoc.$(CAT1EXT)
+	$(CP) doc/mxmldoc.$(CAT1EXT) $(BUILDROOT)$(mandir)/cat1/mxmldoc.$(CAT1EXT)
 	-$(MKDIR) -p $(BUILDROOT)$(mandir)/cat3
-	$(CP) mxml.$(CAT3EXT) $(BUILDROOT)$(mandir)/cat3/mxml.$(CAT3EXT)
+	$(CP) doc/mxml.$(CAT3EXT) $(BUILDROOT)$(mandir)/cat3/mxml.$(CAT3EXT)
 	-$(MKDIR) -p $(BUILDROOT)$(mandir)/man1
-	$(CP) mxmldoc.man $(BUILDROOT)$(mandir)/man1/mxmldoc.$(MAN1EXT)
+	$(CP) doc/mxmldoc.man $(BUILDROOT)$(mandir)/man1/mxmldoc.$(MAN1EXT)
 	-$(MKDIR) -p $(BUILDROOT)$(mandir)/man3
-	$(CP) mxml.man $(BUILDROOT)$(mandir)/man3/mxml.$(MAN3EXT)
+	$(CP) doc/mxml.man $(BUILDROOT)$(mandir)/man3/mxml.$(MAN3EXT)
 
 
 #
@@ -228,7 +228,7 @@ testmxml.o:	mxml.h
 
 mxml.xml:	mxmldoc mxml.h $(PUBLIBOBJS:.o=.c)
 	$(RM) mxml.xml
-	./mxmldoc mxml.xml mxml.h $(PUBLIBOBJS:.o=.c) >documentation.html
+	./mxmldoc mxml.xml mxml.h $(PUBLIBOBJS:.o=.c) >doc/reference.html
 
 valgrind:	mxmldoc
 	$(RM) valgrind.xml
@@ -244,5 +244,5 @@ $(OBJS):	Makefile config.h
 
 
 #
-# End of "$Id: Makefile.in,v 1.17 2004/04/06 01:47:19 mike Exp $".
+# End of "$Id: Makefile.in,v 1.18 2004/05/01 23:41:51 mike Exp $".
 #

@@ -7,10 +7,6 @@ config.h
 config.log
 config.status
 libmxml.a
-mxml.0
-mxml.3
 mxml.list
 mxmldoc
-mxmldoc.0
-mxmldoc.1
 testmxml

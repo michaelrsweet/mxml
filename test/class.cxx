@@ -3,8 +3,6 @@ class foo_c : public bar_c		// Foo class derived from bar
   float	foo;				/* Real number */
   int	bar;				/* Integer */
 
-  static int global;			/* Global integer */
-
   public:
 
   foo_c(float f, int b);
@@ -40,10 +38,35 @@ class foo_c : public bar_c		// Foo class derived from bar
 
   // 'set_foobar()' - Set foo and optionally bar (should show default args).
   void
-  set_foobar(float f, int b = 0)
+  set_foobar(float f, // I - Value of foo
+             int b = 0) // I - Value of bar
   {
     foo = f;
     bar = b;
+  }
+
+  protected:
+
+  static int global;			/* Global integer */
+
+  // 'get_global()' - Get the global integer.
+  int // O - Integer
+  get_global()
+  {
+    return (global);
+  }
+
+  private:
+
+  int barfoo; // Another private integer
+
+  public: 
+
+  // 'get_barfoo()' - Get the barfoo value.
+  int // O - Barfoo value
+  get_barfoo()
+  {
+    return (barfoo);
   }
 }
 

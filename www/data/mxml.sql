@@ -1,5 +1,5 @@
 --
--- "$Id: mxml.sql,v 1.5 2004/05/20 12:31:54 mike Exp $"
+-- "$Id: mxml.sql,v 1.6 2004/05/21 02:59:52 mike Exp $"
 --
 -- Database schema for the Mini-XML web pages.
 --
@@ -225,10 +225,6 @@ CREATE TABLE users (
   modify_user VARCHAR(255)		-- User that made the last change
 );
 
-INSERT INTO users VALUES(NULL, 1, 'mike', 'Michael Sweet <mike@easysw.com>',
-                         '195c416888c3151df53ae9f38c67afcc', 100,
-			 1084823565, 'mike', 1084823565, 'mike');
-
 
 --
 -- Table structure for table 'vote'
@@ -242,5 +238,5 @@ CREATE TABLE vote (
 );
 
 --
--- End of "$Id: mxml.sql,v 1.5 2004/05/20 12:31:54 mike Exp $".
+-- End of "$Id: mxml.sql,v 1.6 2004/05/21 02:59:52 mike Exp $".
 --

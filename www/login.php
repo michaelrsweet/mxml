@@ -1,6 +1,6 @@
 <?php
 //
-// "$Id: login.php,v 1.3 2004/05/20 21:37:57 mike Exp $"
+// "$Id: login.php,v 1.4 2004/05/21 02:59:52 mike Exp $"
 //
 // Login/registration form...
 //
@@ -80,6 +80,11 @@ if ($REQUEST_METHOD == "POST")
 	   "From: $PROJECT_EMAIL\r\n");
 
       html_header("Login Registration");
+
+      html_start_links(1);
+      html_link("Enable Account", "$PHP_SELF?E");
+      html_end_links();
+
       print("<h1>Login Registration</h1>\n"
            ."Thank you for requesting an account.  You should receive an "
 	   ."email from $PROJECT_EMAIL shortly with instructions on "
@@ -247,6 +252,6 @@ else
 
 
 //
-// End of "$Id: login.php,v 1.3 2004/05/20 21:37:57 mike Exp $".
+// End of "$Id: login.php,v 1.4 2004/05/21 02:59:52 mike Exp $".
 //
 ?>

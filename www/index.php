@@ -1,6 +1,6 @@
 <?php
 //
-// "$Id: index.php,v 1.6 2004/05/20 15:45:55 mike Exp $"
+// "$Id: index.php,v 1.7 2004/05/21 02:59:52 mike Exp $"
 //
 // Mini-XML home page...
 //
@@ -22,13 +22,13 @@ html_start_row();
 print("<td>"
      ."<p align='center'>"
      ."Stable Release: <a href='software.php?1.3'>v1.3</a><br />"
-     ."Developer Release: <a href='software.php?2.0rc1'>v2.0rc1</a></p>\n"
+     ."Test Release: <a href='software.php?2.0rc1'>v2.0rc1</a></p>\n"
      ."<small><p>Mini-XML is a small XML parsing library that you can use to "
      ."read XML and XML-like data files in your application without "
      ."requiring large non-standard libraries. Mini-XML only requires "
      ."an ANSI C compatible compiler (GCC works, as do most vendors' "
      ."ANSI C compilers) and a 'make' program.</p>\n"
-     ."<!--<p>Mini-XML provides the following functionality:</p>\n"
+     ."<p>Mini-XML provides the following functionality:</p>\n"
      ."<ul>\n"
      ."<li>Reading of UTF-8 and UTF-16 and writing of UTF-8 encoded "
      ."XML files and strings.</li>\n"
@@ -42,19 +42,23 @@ print("<td>"
      ."<li>Functions for creating, indexing, and managing trees of data.</li>\n"
      ."<li>\"Find\" and \"walk\" functions for easily locating and "
      ."navigating trees of data.</li>\n"
-     ."</ul>--></small>\n"
+     ."</ul></small>\n"
      ."</td>");
 html_end_row();
 html_end_table();
 
-html_start_table(array("Current Poll [&nbsp;<a href='poll.php'>"
-                      ."Show&nbsp;All</a>&nbsp;]"));
-html_start_row();
-print("<td>");
-show_poll(get_recent_poll());
-print("</td>");
-html_end_row();
-html_end_table();
+$poll = get_recent_poll();
+if ($poll > 0)
+{
+  html_start_table(array("Current Poll [&nbsp;<a href='poll.php'>"
+                	."Show&nbsp;All</a>&nbsp;]"));
+  html_start_row();
+  print("<td>");
+  show_poll($poll);
+  print("</td>");
+  html_end_row();
+  html_end_table();
+}
 
 print("</td><td>&nbsp;&nbsp;&nbsp;&nbsp;</td>"
      ."<td valign='top' width='70%'>"
@@ -97,6 +101,6 @@ print("</td></tr>\n"
 html_footer();
 
 //
-// End of "$Id: index.php,v 1.6 2004/05/20 15:45:55 mike Exp $".
+// End of "$Id: index.php,v 1.7 2004/05/21 02:59:52 mike Exp $".
 //
 ?>

@@ -1,6 +1,6 @@
 <?php
 //
-// "$Id: documentation.php,v 1.3 2004/05/20 02:04:44 mike Exp $"
+// "$Id: documentation.php,v 1.4 2004/05/21 02:59:52 mike Exp $"
 //
 // Mini-XML documentation page...
 //
@@ -180,12 +180,12 @@ formats on-line:</p>
 
 	</ul></li>
 
-	<li><a href='mxml.html'>HTML in one file (???k)</a></li>
+	<li><a href='mxml.html'>HTML in one file (113k)</a></li>
 
-	<li><a href='mxml.pdf'>PDF (??? pages, ???k)</a></li>
+	<li><a href='mxml.pdf'>PDF (98 pages, 636k)</a></li>
 
-	<li><a href='mxml.ps.gz'>PostScript (??? pages, gzip'd,
-	???k)</a></li>
+	<li><a href='mxml.ps.gz'>PostScript (98 pages, gzip'd,
+	579k)</a></li>
 
 </ul>
 
@@ -195,6 +195,6 @@ formats on-line:</p>
 }
 
 //
-// End of "$Id: documentation.php,v 1.3 2004/05/20 02:04:44 mike Exp $".
+// End of "$Id: documentation.php,v 1.4 2004/05/21 02:59:52 mike Exp $".
 //
 ?>

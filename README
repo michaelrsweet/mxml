@@ -1,4 +1,4 @@
-README - 05/01/2004
+README - 05/20/2004
 -------------------
 
 
@@ -14,8 +14,8 @@ INTRODUCTION
 
     Mini-XML provides the following functionality:
 
-	- Reading and writing of UTF-8 encoded XML files and
-	  strings.
+	- Reading of UTF-8 and UTF-16 and writing of UTF-8
+	  encoded XML files and strings.
 	- Data is stored in a linked-list tree structure,
 	  preserving the XML data hierarchy.
 	- Supports arbitrary element names, attributes, and

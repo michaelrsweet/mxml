@@ -9,7 +9,7 @@ CVS_RSH=ssh; export CVS_RSH
 MAINTAINER=mike
 
 cd /tmp
-cvs -q -d$MAINTAINER@cvs.easysw.com:/development/cvs get mxml
+cvs -q -d$MAINTAINER@tango.easysw.com:/development/cvs get mxml
 
 if test $# = 0; then
 	echo -n "Version number for distribution? "
@@ -36,7 +36,7 @@ find . -name .cvsignore -exec rm -f '{}' \;
 find . -name CVS -exec rm -rf '{}' \;
 
 rm makesrcdist
-rm index.html
+rm -rf www
 
 cd ..
 

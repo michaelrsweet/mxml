@@ -1,0 +1,30 @@
+BODY {
+  background: #ffffff;
+  font-family: sans-serif;
+  text-align: justify;
+}
+
+A:link {
+  font-weight: bold;
+  text-decoration: none;
+  color: #00007f;
+}
+
+A:visited {
+  font-weight: bold;
+  text-decoration: none;
+  color: #0000ff;
+}
+
+A:hover {
+  font-weight: bold;
+  text-decoration: none;
+  color: #7f0000;
+}
+
+A:active {
+  font-weight: bold;
+  text-decoration: underline;
+  color: #ff0000;
+}
+

@@ -1,0 +1,179 @@
+#
+# "$Id: Makefile.in,v 1.5 2003/06/05 13:49:14 mike Exp $"
+#
+# Makefile for mini-XML, a small XML-like file parsing library.
+#
+# Copyright 2003 by Michael Sweet.
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Library General Public
+# License as published by the Free Software Foundation; either
+# version 2, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+
+#
+# Compiler tools definitions...
+#
+
+AR		=	@AR@
+ARFLAGS		=	@ARFLAGS@
+CC		=	@CC@
+CFLAGS		=	@CFLAGS@ @CPPFLAGS@
+LDFLAGS		=	@LDFLAGS@
+RANLIB		=	@RANLIB@
+SHELL		=	/bin/sh
+
+
+#
+# Configured directories...
+#
+
+prefix		=	@prefix@
+exec_prefix	=	@exec_prefix@
+includedir	=	@includedir@
+libdir		=	@libdir@
+
+
+#
+# Rules...
+#
+
+.SUFFIXES:	.c .o
+.c.o:
+	$(CC) $(CFLAGS) -c $<
+
+
+#
+# Targets...
+#
+
+LIBOBJS		=	mxml-attr.o mxml-file.o mxml-node.o mxml-search.o
+OBJS		=	mxmldoc.o testmxml.o $(LIBOBJS)
+TARGETS		=	libmxml.a mxmldoc testmxml mxml.xml
+
+
+#
+# Make everything...
+#
+
+all:		Makefile configure $(TARGETS)
+
+
+#
+# Clean everything...
+#
+
+clean:
+	rm -f $(OBJS) $(TARGETS)
+	rm -f *.bck *.bak
+	rm -f config.cache config.log config.status
+	rm -rf autom4te*.cache
+
+
+#
+# Install everything...
+#
+
+install:	$(TARGETS)
+	-mkdir -p $(libdir)
+	cp libmxml.a $(libdir)
+	-mkdir -p $(includedir)
+	cp mxml.h $(includedir)
+
+
+#
+# Uninstall everything...
+#
+
+uninstall:
+	rm -f $(libdir)/libmxml.a
+	rm -f $(includedir)/mxml.h
+
+
+#
+# autoconf stuff...
+#
+
+Makefile:	configure Makefile.in
+	if test -f config.status; then \
+		./config.status --recheck; \
+		./config.status; \
+	else \
+		./configure; \
+	fi
+
+configure:	configure.in
+	autoconf
+	if test -f config.status; then \
+		./config.status --recheck; \
+		./config.status; \
+	else \
+		./configure; \
+	fi
+
+
+#
+# libmxml.a
+#
+
+libmxml.a:	$(LIBOBJS)
+	rm -f $@
+	$(AR) $(ARFLAGS) $@ $(LIBOBJS)
+	$(RANLIB) $@
+
+$(LIBOBJS):	mxml.h
+
+
+#
+# mxmldoc
+#
+
+mxmldoc:	libmxml.a mxmldoc.o
+	$(CC) $(LDFLAGS) -o $@ mxmldoc.o libmxml.a
+
+mxmldoc.o:	mxml.h
+
+
+#
+# testmxml
+#
+
+testmxml:	libmxml.a testmxml.o
+	$(CC) $(LDFLAGS) -o $@ testmxml.o libmxml.a
+	@echo Testing library...
+	@./testmxml test.xml >temp1.xml
+	@./testmxml temp1.xml >temp2.xml
+	@if cmp temp1.xml temp2.xml; then \
+		echo Test passed!; \
+		rm -f temp1.xml temp2.xml; \
+	else \
+		echo Test failed!; \
+	fi
+
+testmxml.o:	mxml.h
+
+
+#
+# mxml.xml
+#
+
+mxml.xml:	mxmldoc mxml.h $(LIBOBJS:.o=.c)
+	rm -f mxml.xml
+	./mxmldoc mxml.xml mxml.h $(LIBOBJS:.o=.c) >documentation.html
+
+
+#
+# All object files depend on the makefile...
+#
+
+$(OBJS):	Makefile
+
+
+#
+# End of "$Id: Makefile.in,v 1.5 2003/06/05 13:49:14 mike Exp $".
+#

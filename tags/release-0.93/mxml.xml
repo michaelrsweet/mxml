@@ -1,0 +1,102 @@
+<?xml version="1.0"?>
+<variable name="fp"><type>FILE *</type><description>File to write to</description><description>Callback function</description></variable>
+<function name="mxmlAdd"><description>Add a node to a tree.</description><argument
+name="parent" direction="I"><type>mxml_node_t *</type><description>Parent node</description></argument>
+<argument name="where" direction="I"><type>int</type><description>Where to add</description></argument>
+<argument name="child" direction="I"><type>mxml_node_t *</type><description>Child node for where</description></argument>
+<argument name="node" direction="I"><type>mxml_node_t *</type><description>Node to add</description></argument>
+</function>
+<function name="mxmlDelete"><description>Delete a node and all of its children.</description><argument
+name="node" direction="I"><type>mxml_node_t *</type><description>Node</description></argument>
+</function>
+<function name="mxmlElementGetAttr"><returnvalue><description>Attribute value or NULL</description><type>const
+char *</type></returnvalue>
+<description>Get an attribute.</description><argument name="node"
+direction="I"><type>mxml_node_t *</type><description>Element node</description></argument>
+<argument name="name" direction="I"><type>const char *</type><description>Name of attribute</description></argument>
+</function>
+<function name="mxmlElementSetAttr"><description>Set an attribute.</description><argument
+name="node" direction="I"><type>mxml_node_t *</type><description>Element node</description></argument>
+<argument name="name" direction="I"><type>const char *</type><description>Name of attribute</description></argument>
+<argument name="value" direction="I"><type>const char *</type><description>Attribute value</description></argument>
+</function>
+<function name="mxmlFindElement"><returnvalue><description>Element node or NULL</description><type>mxml_node_t
+*</type></returnvalue>
+<description>Find the named element.</description><argument name="node"
+direction="I"><type>mxml_node_t *</type><description>Current node</description></argument>
+<argument name="top" direction="I"><type>mxml_node_t *</type><description>Top node</description></argument>
+<argument name="name" direction="I"><type>const char *</type><description>Element name or NULL for any</description></argument>
+<argument name="attr" direction="I"><type>const char *</type><description>Attribute name, or NULL for none</description></argument>
+<argument name="value" direction="I"><type>const char *</type><description>Attribute value, or NULL for any</description></argument>
+<argument name="descend" direction="I"><type>int</type><description>Descend into tree?</description></argument>
+</function>
+<function name="mxmlLoadFile"><returnvalue><description>First node</description><type>mxml_node_t
+*</type></returnvalue>
+<description>Load a file into an XML node tree.</description><argument
+name="top" direction="I"><type>mxml_node_t *</type><description>Top node</description></argument>
+<argument name="fp" direction="I"><type>FILE *</type><description>File to read from</description></argument>
+<argument name="cb" direction="I"><type>mxml_type_t *</type><description>Callback function</description></argument>
+</function>
+<function name="mxmlNewElement"><returnvalue><description>New node</description><type>mxml_node_t
+*</type></returnvalue>
+<description>Create a new element node.</description><argument
+name="parent" direction="I"><type>mxml_node_t *</type><description>Parent node</description></argument>
+<argument name="name" direction="I"><type>const char *</type><description>Name of element</description></argument>
+</function>
+<function name="mxmlNewInteger"><returnvalue><description>New node</description><type>mxml_node_t
+*</type></returnvalue>
+<description>Create a new integer node.</description><argument
+name="parent" direction="I"><type>mxml_node_t *</type><description>Parent node</description></argument>
+<argument name="integer" direction="I"><type>int</type><description>Integer value</description></argument>
+</function>
+<function name="mxmlNewOpaque"><returnvalue><description>New node</description><type>mxml_node_t
+*</type></returnvalue>
+<description>Create a new opaque string.</description><argument
+name="parent" direction="I"><type>mxml_node_t *</type><description>Parent node</description></argument>
+<argument name="opaque" direction="I"><type>const char *</type><description>Opaque string</description></argument>
+</function>
+<function name="mxmlNewReal"><returnvalue><description>New node</description><type>mxml_node_t
+*</type></returnvalue>
+<description>Create a new real number node.</description><argument
+name="parent" direction="I"><type>mxml_node_t *</type><description>Parent node</description></argument>
+<argument name="real" direction="I"><type>double</type><description>Real number value</description></argument>
+</function>
+<function name="mxmlNewText"><returnvalue><description>New node</description><type>mxml_node_t
+*</type></returnvalue>
+<description>Create a new text fragment node.</description><argument
+name="parent" direction="I"><type>mxml_node_t *</type><description>Parent node</description></argument>
+<argument name="whitespace" direction="I"><type>int</type><description>Leading whitespace?</description></argument>
+<argument name="string" direction="I"><type>const char *</type><description>String</description></argument>
+</function>
+<function name="mxmlRemove"><description>Remove a node from its parent.</description><argument
+name="node" direction="I"><type>mxml_node_t *</type><description>Node to remove</description></argument>
+</function>
+<function name="mxmlSaveFile"><returnvalue><description>0 on success, -1 on error</description><type>int</type></returnvalue>
+<description>Save an XML tree to a file.</description><argument
+name="node" direction="I"><type>mxml_node_t *</type><description>Node to write</description></argument>
+<argument name="fp" direction="I"><type>FILE *</type><description>File to write to</description></argument>
+<argument name="cb"><type>int *</type></argument>
+<argument name="int" direction="I"><type>mxml_node_t *</type><description>Whitespace callback</description></argument>
+</function>
+<function name="mxmlWalkNext"><returnvalue><description>Next node or NULL</description><type>mxml_node_t
+*</type></returnvalue>
+<description>Walk to the next logical node in the tree.</description><argument
+name="node" direction="I"><type>mxml_node_t *</type><description>Current node</description></argument>
+<argument name="top" direction="I"><type>mxml_node_t *</type><description>Top node</description></argument>
+<argument name="descend" direction="I"><type>int</type><description>Descend into tree?</description></argument>
+</function>
+<function name="mxmlWalkPrev"><returnvalue><description>Previous node or NULL</description><type>mxml_node_t
+*</type></returnvalue>
+<description>Walk to the previous logical node in the tree.</description><argument
+name="node" direction="I"><type>mxml_node_t *</type><description>Current node</description></argument>
+<argument name="top" direction="I"><type>mxml_node_t *</type><description>Top node</description></argument>
+<argument name="descend" direction="I"><type>int</type><description>Descend into tree?</description></argument>
+</function>
+<variable name="mxml_attr_t"><type/></variable>
+<variable name="mxml_element_t"><type/></variable>
+<variable name="mxml_node_t"><type>typedef struct mxml_node_str</type></variable>
+<variable name="mxml_type_t"><type/></variable>
+<variable name="node"><type>mxml_node_t *</type><description>Current node</description></variable>
+<variable name="parent"><type>mxml_node_t *</type><description>Parent node</description><description>Node type</description></variable>
+<variable name="s"><type>const char *</type><description>String to write</description><description>File to write to</description></variable>
+<variable name="ws"><type>int * cb mxml_node_t * int int</type><description>Where value</description><description>Current column</description></variable>

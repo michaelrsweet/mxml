@@ -1,0 +1,338 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<title>Documentation</title>
+	<style><!--
+	h1, h2, h3, p { font-family: sans-serif; text-align: justify; }
+	tt, pre a:link, pre a:visited, tt a:link, tt a:visited { font-weight: bold; color: #7f0000; }
+	pre { font-weight: bold; color: #7f0000; margin-left: 5em; }
+	--></style>
+</head>
+<body>
+<h1>Functions</h1>
+<ul>
+	<li><a href="#mxmlAdd"><tt>mxmlAdd()</tt></a></li>
+	<li><a href="#mxmlDelete"><tt>mxmlDelete()</tt></a></li>
+	<li><a href="#mxmlElementGetAttr"><tt>mxmlElementGetAttr()</tt></a></li>
+	<li><a href="#mxmlElementSetAttr"><tt>mxmlElementSetAttr()</tt></a></li>
+	<li><a href="#mxmlFindElement"><tt>mxmlFindElement()</tt></a></li>
+	<li><a href="#mxmlLoadFile"><tt>mxmlLoadFile()</tt></a></li>
+	<li><a href="#mxmlNewElement"><tt>mxmlNewElement()</tt></a></li>
+	<li><a href="#mxmlNewInteger"><tt>mxmlNewInteger()</tt></a></li>
+	<li><a href="#mxmlNewOpaque"><tt>mxmlNewOpaque()</tt></a></li>
+	<li><a href="#mxmlNewReal"><tt>mxmlNewReal()</tt></a></li>
+	<li><a href="#mxmlNewText"><tt>mxmlNewText()</tt></a></li>
+	<li><a href="#mxmlRemove"><tt>mxmlRemove()</tt></a></li>
+	<li><a href="#mxmlSaveFile"><tt>mxmlSaveFile()</tt></a></li>
+	<li><a href="#mxmlWalkNext"><tt>mxmlWalkNext()</tt></a></li>
+	<li><a href="#mxmlWalkPrev"><tt>mxmlWalkPrev()</tt></a></li>
+</ul>
+<hr noshade/>
+<h2><a name="mxmlAdd">mxmlAdd()</a></h2>
+<p>Add a node to a tree.</p>
+<h3>Syntax</h3>
+<pre>
+void
+mxmlAdd(
+    mxml_node_t * parent,
+    int where,
+    mxml_node_t * child,
+    mxml_node_t * node);
+</pre>
+<h3>Arguments</h3>
+<p class="table"><table align="center" border="1" width="80%">
+<thead><tr><th>Name</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><tt>parent</tt></td><td>Parent node</td></tr>
+<tr><td><tt>where</tt></td><td>Where to add</td></tr>
+<tr><td><tt>child</tt></td><td>Child node for where</td></tr>
+<tr><td><tt>node</tt></td><td>Node to add</td></tr>
+</tbody></table></p>
+<h3>Returns</h3>
+<p>Nothing.</p>
+<hr noshade/>
+<h2><a name="mxmlDelete">mxmlDelete()</a></h2>
+<p>Delete a node and all of its children.</p>
+<h3>Syntax</h3>
+<pre>
+void
+mxmlDelete(
+    mxml_node_t * node);
+</pre>
+<h3>Arguments</h3>
+<p class="table"><table align="center" border="1" width="80%">
+<thead><tr><th>Name</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><tt>node</tt></td><td>Node</td></tr>
+</tbody></table></p>
+<h3>Returns</h3>
+<p>Nothing.</p>
+<hr noshade/>
+<h2><a name="mxmlElementGetAttr">mxmlElementGetAttr()</a></h2>
+<p>Get an attribute.</p>
+<h3>Syntax</h3>
+<pre>
+const char *
+mxmlElementGetAttr(
+    mxml_node_t * node,
+    const char * name);
+</pre>
+<h3>Arguments</h3>
+<p class="table"><table align="center" border="1" width="80%">
+<thead><tr><th>Name</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><tt>node</tt></td><td>Element node</td></tr>
+<tr><td><tt>name</tt></td><td>Name of attribute</td></tr>
+</tbody></table></p>
+<h3>Returns</h3>
+<p>Attribute value or NULL</p>
+<hr noshade/>
+<h2><a name="mxmlElementSetAttr">mxmlElementSetAttr()</a></h2>
+<p>Set an attribute.</p>
+<h3>Syntax</h3>
+<pre>
+void
+mxmlElementSetAttr(
+    mxml_node_t * node,
+    const char * name,
+    const char * value);
+</pre>
+<h3>Arguments</h3>
+<p class="table"><table align="center" border="1" width="80%">
+<thead><tr><th>Name</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><tt>node</tt></td><td>Element node</td></tr>
+<tr><td><tt>name</tt></td><td>Name of attribute</td></tr>
+<tr><td><tt>value</tt></td><td>Attribute value</td></tr>
+</tbody></table></p>
+<h3>Returns</h3>
+<p>Nothing.</p>
+<hr noshade/>
+<h2><a name="mxmlFindElement">mxmlFindElement()</a></h2>
+<p>Find the named element.</p>
+<h3>Syntax</h3>
+<pre>
+mxml_node_t *
+mxmlFindElement(
+    mxml_node_t * node,
+    mxml_node_t * top,
+    const char * name,
+    const char * attr,
+    const char * value,
+    int descend);
+</pre>
+<h3>Arguments</h3>
+<p class="table"><table align="center" border="1" width="80%">
+<thead><tr><th>Name</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><tt>node</tt></td><td>Current node</td></tr>
+<tr><td><tt>top</tt></td><td>Top node</td></tr>
+<tr><td><tt>name</tt></td><td>Element name or NULL for any</td></tr>
+<tr><td><tt>attr</tt></td><td>Attribute name, or NULL for none</td></tr>
+<tr><td><tt>value</tt></td><td>Attribute value, or NULL for any</td></tr>
+<tr><td><tt>descend</tt></td><td>Descend into tree?</td></tr>
+</tbody></table></p>
+<h3>Returns</h3>
+<p>Element node or NULL</p>
+<hr noshade/>
+<h2><a name="mxmlLoadFile">mxmlLoadFile()</a></h2>
+<p>Load a file into an XML node tree.</p>
+<h3>Syntax</h3>
+<pre>
+mxml_node_t *
+mxmlLoadFile(
+    mxml_node_t * top,
+    FILE * fp,
+    mxml_type_t * cb);
+</pre>
+<h3>Arguments</h3>
+<p class="table"><table align="center" border="1" width="80%">
+<thead><tr><th>Name</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><tt>top</tt></td><td>Top node</td></tr>
+<tr><td><tt>fp</tt></td><td>File to read from</td></tr>
+<tr><td><tt>cb</tt></td><td>Callback function</td></tr>
+</tbody></table></p>
+<h3>Returns</h3>
+<p>First node</p>
+<hr noshade/>
+<h2><a name="mxmlNewElement">mxmlNewElement()</a></h2>
+<p>Create a new element node.</p>
+<h3>Syntax</h3>
+<pre>
+mxml_node_t *
+mxmlNewElement(
+    mxml_node_t * parent,
+    const char * name);
+</pre>
+<h3>Arguments</h3>
+<p class="table"><table align="center" border="1" width="80%">
+<thead><tr><th>Name</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><tt>parent</tt></td><td>Parent node</td></tr>
+<tr><td><tt>name</tt></td><td>Name of element</td></tr>
+</tbody></table></p>
+<h3>Returns</h3>
+<p>New node</p>
+<hr noshade/>
+<h2><a name="mxmlNewInteger">mxmlNewInteger()</a></h2>
+<p>Create a new integer node.</p>
+<h3>Syntax</h3>
+<pre>
+mxml_node_t *
+mxmlNewInteger(
+    mxml_node_t * parent,
+    int integer);
+</pre>
+<h3>Arguments</h3>
+<p class="table"><table align="center" border="1" width="80%">
+<thead><tr><th>Name</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><tt>parent</tt></td><td>Parent node</td></tr>
+<tr><td><tt>integer</tt></td><td>Integer value</td></tr>
+</tbody></table></p>
+<h3>Returns</h3>
+<p>New node</p>
+<hr noshade/>
+<h2><a name="mxmlNewOpaque">mxmlNewOpaque()</a></h2>
+<p>Create a new opaque string.</p>
+<h3>Syntax</h3>
+<pre>
+mxml_node_t *
+mxmlNewOpaque(
+    mxml_node_t * parent,
+    const char * opaque);
+</pre>
+<h3>Arguments</h3>
+<p class="table"><table align="center" border="1" width="80%">
+<thead><tr><th>Name</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><tt>parent</tt></td><td>Parent node</td></tr>
+<tr><td><tt>opaque</tt></td><td>Opaque string</td></tr>
+</tbody></table></p>
+<h3>Returns</h3>
+<p>New node</p>
+<hr noshade/>
+<h2><a name="mxmlNewReal">mxmlNewReal()</a></h2>
+<p>Create a new real number node.</p>
+<h3>Syntax</h3>
+<pre>
+mxml_node_t *
+mxmlNewReal(
+    mxml_node_t * parent,
+    double real);
+</pre>
+<h3>Arguments</h3>
+<p class="table"><table align="center" border="1" width="80%">
+<thead><tr><th>Name</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><tt>parent</tt></td><td>Parent node</td></tr>
+<tr><td><tt>real</tt></td><td>Real number value</td></tr>
+</tbody></table></p>
+<h3>Returns</h3>
+<p>New node</p>
+<hr noshade/>
+<h2><a name="mxmlNewText">mxmlNewText()</a></h2>
+<p>Create a new text fragment node.</p>
+<h3>Syntax</h3>
+<pre>
+mxml_node_t *
+mxmlNewText(
+    mxml_node_t * parent,
+    int whitespace,
+    const char * string);
+</pre>
+<h3>Arguments</h3>
+<p class="table"><table align="center" border="1" width="80%">
+<thead><tr><th>Name</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><tt>parent</tt></td><td>Parent node</td></tr>
+<tr><td><tt>whitespace</tt></td><td>Leading whitespace?</td></tr>
+<tr><td><tt>string</tt></td><td>String</td></tr>
+</tbody></table></p>
+<h3>Returns</h3>
+<p>New node</p>
+<hr noshade/>
+<h2><a name="mxmlRemove">mxmlRemove()</a></h2>
+<p>Remove a node from its parent.</p>
+<h3>Syntax</h3>
+<pre>
+void
+mxmlRemove(
+    mxml_node_t * node);
+</pre>
+<h3>Arguments</h3>
+<p class="table"><table align="center" border="1" width="80%">
+<thead><tr><th>Name</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><tt>node</tt></td><td>Node to remove</td></tr>
+</tbody></table></p>
+<h3>Returns</h3>
+<p>Nothing.</p>
+<hr noshade/>
+<h2><a name="mxmlSaveFile">mxmlSaveFile()</a></h2>
+<p>Save an XML tree to a file.</p>
+<h3>Syntax</h3>
+<pre>
+int
+mxmlSaveFile(
+    mxml_node_t * node,
+    FILE * fp,
+    int * cb,
+    mxml_node_t * int);
+</pre>
+<h3>Arguments</h3>
+<p class="table"><table align="center" border="1" width="80%">
+<thead><tr><th>Name</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><tt>node</tt></td><td>Node to write</td></tr>
+<tr><td><tt>fp</tt></td><td>File to write to</td></tr>
+<tr><td><tt>cb</tt></td><td></td></tr>
+<tr><td><tt>int</tt></td><td>Whitespace callback</td></tr>
+</tbody></table></p>
+<h3>Returns</h3>
+<p>0 on success, -1 on error</p>
+<hr noshade/>
+<h2><a name="mxmlWalkNext">mxmlWalkNext()</a></h2>
+<p>Walk to the next logical node in the tree.</p>
+<h3>Syntax</h3>
+<pre>
+mxml_node_t *
+mxmlWalkNext(
+    mxml_node_t * node,
+    mxml_node_t * top,
+    int descend);
+</pre>
+<h3>Arguments</h3>
+<p class="table"><table align="center" border="1" width="80%">
+<thead><tr><th>Name</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><tt>node</tt></td><td>Current node</td></tr>
+<tr><td><tt>top</tt></td><td>Top node</td></tr>
+<tr><td><tt>descend</tt></td><td>Descend into tree?</td></tr>
+</tbody></table></p>
+<h3>Returns</h3>
+<p>Next node or NULL</p>
+<hr noshade/>
+<h2><a name="mxmlWalkPrev">mxmlWalkPrev()</a></h2>
+<p>Walk to the previous logical node in the tree.</p>
+<h3>Syntax</h3>
+<pre>
+mxml_node_t *
+mxmlWalkPrev(
+    mxml_node_t * node,
+    mxml_node_t * top,
+    int descend);
+</pre>
+<h3>Arguments</h3>
+<p class="table"><table align="center" border="1" width="80%">
+<thead><tr><th>Name</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><tt>node</tt></td><td>Current node</td></tr>
+<tr><td><tt>top</tt></td><td>Top node</td></tr>
+<tr><td><tt>descend</tt></td><td>Descend into tree?</td></tr>
+</tbody></table></p>
+<h3>Returns</h3>
+<p>Previous node or NULL</p>
+</body>
+</html>

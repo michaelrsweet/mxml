@@ -1,6 +1,6 @@
 //#define DEBUG 1
 /*
- * "$Id: mxmldoc.c,v 1.19 2003/12/03 04:26:30 mike Exp $"
+ * "$Id: mxmldoc.c,v 1.20 2003/12/03 22:17:57 mike Exp $"
  *
  * Documentation generator using mini-XML, a small XML-like file parsing
  * library.
@@ -612,7 +612,6 @@ scan_file(const char  *filename,	/* I - Filename */
 		{
 		  mxmlDelete(type);
 		  type = NULL;
-		  braces --;
 		}
 
 	        braces ++;
@@ -2141,5 +2140,5 @@ ws_cb(mxml_node_t *node,		/* I - Element node */
 
 
 /*
- * End of "$Id: mxmldoc.c,v 1.19 2003/12/03 04:26:30 mike Exp $".
+ * End of "$Id: mxmldoc.c,v 1.20 2003/12/03 22:17:57 mike Exp $".
  */

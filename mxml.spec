@@ -1,5 +1,5 @@
 #
-# "$Id: mxml.spec,v 1.1 2003/06/15 00:44:34 mike Exp $"
+# "$Id: mxml.spec,v 1.2 2003/06/15 01:22:37 mike Exp $"
 #
 # RPM "spec" file for mini-XML, a small XML-like file parsing library.
 #
@@ -86,9 +86,13 @@ rm -rf $RPM_BUILD_ROOT
 /usr/share/doc/mxml/*
 %dir /usr/share/man/cat1
 /usr/share/man/cat1/*
+%dir /usr/share/man/cat3
+/usr/share/man/cat3/*
 %dir /usr/share/man/man1
 /usr/share/man/man1/*
+%dir /usr/share/man/man3
+/usr/share/man/man3/*
 
 #
-# End of "$Id: mxml.spec,v 1.1 2003/06/15 00:44:34 mike Exp $".
+# End of "$Id: mxml.spec,v 1.2 2003/06/15 01:22:37 mike Exp $".
 #

@@ -1,5 +1,5 @@
 /*
- * "$Id: mxml-entity.c,v 1.3 2004/05/02 16:04:40 mike Exp $"
+ * "$Id: mxml-entity.c,v 1.4 2004/05/16 05:25:38 mike Exp $"
  *
  * Character entity support code for Mini-XML, a small XML-like
  * file parsing library.
@@ -18,9 +18,14 @@
  *
  * Contents:
  *
- *   mxmlEntityGetName()  - Get the name that corresponds to the character
- *                          value.
- *   mxmlEntityGetValue() - Get the character corresponding to a named entity.
+ *   mxmlEntityAddCallback()    - Add a callback to convert entities to
+ *                                Unicode.
+ *   mxmlEntityGetName()        - Get the name that corresponds to the
+ *                                character value.
+ *   mxmlEntityGetValue()       - Get the character corresponding to a named
+ *                                entity.
+ *   mxmlEntityRemoveCallback() - Remove a callback.
+ *   default_callback()         - Lookup standard (X)HTML entities.
  */
 
 /*
@@ -29,6 +34,40 @@
 
 #include "config.h"
 #include "mxml.h"
+
+
+/*
+ * Local functions...
+ */
+
+static int	default_callback(const char *name);
+
+
+/*
+ * Callback array...
+ */
+
+static int	num_callbacks = 1;
+static int	(*callbacks[100])(const char *name) =
+		{
+		  default_callback
+		};
+
+
+/*
+ * 'mxmlEntityAddCallback()' - Add a callback to convert entities to Unicode.
+ */
+
+void
+mxmlEntityAddCallback(int (*cb)(const char *name))
+					/* I - Callback function to add */
+{
+  if (num_callbacks < (int)(sizeof(callbacks) / sizeof(callbacks[0])))
+  {
+    callbacks[num_callbacks] = cb;
+    num_callbacks ++;
+  }
+}
 
 
 /*
@@ -69,6 +108,54 @@ mxmlEntityGetName(int val)		/* I - Character value */
 
 int					/* O - Character value or -1 on error */
 mxmlEntityGetValue(const char *name)	/* I - Entity name */
+{
+  int	i;				/* Looping var */
+  int	ch;				/* Character value */
+
+
+  for (i = 0; i < num_callbacks; i ++)
+    if ((ch = (callbacks[i])(name)) >= 0)
+      return (ch);
+
+  return (-1);
+}
+
+
+/*
+ * 'mxmlEntityRemoveCallback()' - Remove a callback.
+ */
+
+void
+mxmlEntityRemoveCallback(int (*cb)(const char *name))
+					/* I - Callback function to remove */
+{
+  int	i;				/* Looping var */
+
+
+  for (i = 0; i < num_callbacks; i ++)
+    if (cb == callbacks[i])
+    {
+     /*
+      * Remove the callback...
+      */
+
+      num_callbacks --;
+
+      if (i < num_callbacks)
+        memmove(callbacks + i, callbacks + i + 1,
+	        (num_callbacks - i) * sizeof(callbacks[0]));
+
+      return;
+    }
+}
+
+
+/*
+ * 'default_callback()' - Lookup standard (X)HTML entities.
+ */
+
+static int				/* O - Unicode value or -1 */
+default_callback(const char *name)	/* I - Entity name */
 {
   int	diff,				/* Difference between names */
 	current,			/* Current entity in search */
@@ -364,5 +451,5 @@ mxmlEntityGetValue(const char *name)	/* I - Entity name */
 
 
 /*
- * End of "$Id: mxml-entity.c,v 1.3 2004/05/02 16:04:40 mike Exp $".
+ * End of "$Id: mxml-entity.c,v 1.4 2004/05/16 05:25:38 mike Exp $".
  */

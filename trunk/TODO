@@ -1,4 +1,4 @@
-TODO - 05/02/2004
+TODO - 05/16/2004
 -----------------
 
 	- UTF-16 support.
@@ -9,12 +9,6 @@ TODO - 05/02/2004
 	  -- Use HTMLDOC to generate
 	  -- Provide more tutorials
 	  -- Release notes
-	- Add indexing support.
-	  -- Build static index of nodes based on element and/or attribute
-	     (i.e. index elements, index attributes, or index attributes of
-	      a specific element)
-	  -- Provide functions to create, destroy, find first, and find next
-	  -- Provide additional index for first character?
 	- Add access methods and make node structure opaque.
 	  -- To allow for C++ migration
 	  -- To make future binary compatibility easier
@@ -24,6 +18,3 @@ TODO - 05/02/2004
 	  -- Make this the core implementation which the C API accesses?
 	  -- Class would allow for subclassing, is that necessary?
 	- Binary XML support???
-	- Character entity support
-	  -- Add support for a callback which returns a Unicode
-	     char from an entity name.

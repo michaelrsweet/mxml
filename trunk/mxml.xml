@@ -74,6 +74,13 @@ not an element.</description>
       <description>Attribute value</description>
     </argument>
   </function>
+  <function name="mxmlEntityAddCallback">
+    <description>Add a callback to convert entities to Unicode.</description>
+    <argument name="(*cb)(const char *name)" direction="I">
+      <type>int</type>
+      <description>Callback function to add</description>
+    </argument>
+  </function>
   <function name="mxmlEntityGetName">
     <returnvalue>
       <type>const char *</type>
@@ -99,6 +106,13 @@ name is not known.</description>
     <argument name="name" direction="I">
       <type>const char *</type>
       <description>Entity name</description>
+    </argument>
+  </function>
+  <function name="mxmlEntityRemoveCallback">
+    <description>Remove a callback.</description>
+    <argument name="(*cb)(const char *name)" direction="I">
+      <type>int</type>
+      <description>Callback function to remove</description>
     </argument>
   </function>
   <function name="mxmlFindElement">
@@ -139,6 +153,73 @@ constrains the search to a particular node's children.</description>
     <argument name="descend" direction="I">
       <type>int</type>
       <description>Descend into tree - MXML_DESCEND, MXML_NO_DESCEND, or MXML_DESCEND_FIRST</description>
+    </argument>
+  </function>
+  <function name="mxmlIndexDelete">
+    <description>Sort attribute...</description>
+    <argument name="ind" direction="I">
+      <type>mxml_index_t *</type>
+      <description>Index to delete</description>
+    </argument>
+  </function>
+  <function name="mxmlIndexEnum">
+    <returnvalue>
+      <type>mxml_node_t *</type>
+      <description>Next node or NULL if there is none</description>
+    </returnvalue>
+    <description>Return the next node in the index.</description>
+    <argument name="ind" direction="I">
+      <type>mxml_index_t *</type>
+      <description>Index to enumerate</description>
+    </argument>
+  </function>
+  <function name="mxmlIndexFind">
+    <returnvalue>
+      <type>mxml_node_t *</type>
+      <description>Node or NULL if none found</description>
+    </returnvalue>
+    <description>Find the next matching node.</description>
+    <argument name="ind" direction="I">
+      <type>mxml_index_t *</type>
+      <description>Index to search</description>
+    </argument>
+    <argument name="element" direction="I">
+      <type>const char *</type>
+      <description>Element name to find, if any</description>
+    </argument>
+    <argument name="value" direction="I">
+      <type>const char *</type>
+      <description>Attribute value, if any</description>
+    </argument>
+  </function>
+  <function name="mxmlIndexNew">
+    <returnvalue>
+      <type>mxml_index_t *</type>
+      <description>New index</description>
+    </returnvalue>
+    <description>Create a new index.</description>
+    <argument name="node" direction="I">
+      <type>mxml_node_t *</type>
+      <description>XML node tree</description>
+    </argument>
+    <argument name="element" direction="I">
+      <type>const char *</type>
+      <description>Element to index or NULL for all</description>
+    </argument>
+    <argument name="attr" direction="I">
+      <type>const char *</type>
+      <description>Attribute to index or NULL for none</description>
+    </argument>
+  </function>
+  <function name="mxmlIndexReset">
+    <returnvalue>
+      <type>mxml_node_t *</type>
+      <description>First node or NULL if there is none</description>
+    </returnvalue>
+    <description>Return the first node in the index.</description>
+    <argument name="ind" direction="I">
+      <type>mxml_index_t *</type>
+      <description>Index to reset</description>
     </argument>
   </function>
   <function name="mxmlLoadFile">
@@ -599,6 +680,33 @@ the walk to the node's children.</description>
     <type>struct mxml_value_s</type>
     <description>An XML element value.</description>
   </typedef>
+  <struct name="mxml_index_s">
+    <description>An XML node index.</description>
+    <variable name="alloc_nodes">
+      <type>int</type>
+      <description>Allocated nodes in index</description>
+    </variable>
+    <variable name="attr">
+      <type>char *</type>
+      <description>Attribute used for indexing or NULL</description>
+    </variable>
+    <variable name="cur_node">
+      <type>int</type>
+      <description>Current node</description>
+    </variable>
+    <variable name="nodes">
+      <type>mxml_node_t **</type>
+      <description>Node array</description>
+    </variable>
+    <variable name="num_nodes">
+      <type>int</type>
+      <description>Number of nodes in index</description>
+    </variable>
+  </struct>
+  <typedef name="mxml_index_t">
+    <type>struct mxml_index_s</type>
+    <description>An XML node index.</description>
+  </typedef>
   <struct name="mxml_node_s">
     <description>An XML node.</description>
     <variable name="child">
@@ -713,4 +821,11 @@ the walk to the node's children.</description>
       <description>Text fragment</description>
     </variable>
   </union>
+  <variable default="= 1" name="num_callbacks">
+    <type>static int</type>
+  </variable>
+  <variable name="sort_attr_name">
+    <type>static const char *</type>
+    <description>Delete an index.</description>
+  </variable>
 </mxmldoc>

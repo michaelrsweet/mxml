@@ -17,6 +17,7 @@
 	<li><a href='#_structures'>Structures</a></li>
 	<li><a href='#_types'>Types</a></li>
 	<li><a href='#_unions'>Unions</a></li>
+	<li><a href='#_variables'>Variables</a></li>
 </ul>
 <!-- NEW PAGE -->
 <h2><a name='_enumerations'>Enumerations</a></h2>
@@ -45,9 +46,16 @@
 	<li><a href='#mxmlDelete'><tt>mxmlDelete()</tt></a></li>
 	<li><a href='#mxmlElementGetAttr'><tt>mxmlElementGetAttr()</tt></a></li>
 	<li><a href='#mxmlElementSetAttr'><tt>mxmlElementSetAttr()</tt></a></li>
+	<li><a href='#mxmlEntityAddCallback'><tt>mxmlEntityAddCallback()</tt></a></li>
 	<li><a href='#mxmlEntityGetName'><tt>mxmlEntityGetName()</tt></a></li>
 	<li><a href='#mxmlEntityGetValue'><tt>mxmlEntityGetValue()</tt></a></li>
+	<li><a href='#mxmlEntityRemoveCallback'><tt>mxmlEntityRemoveCallback()</tt></a></li>
 	<li><a href='#mxmlFindElement'><tt>mxmlFindElement()</tt></a></li>
+	<li><a href='#mxmlIndexDelete'><tt>mxmlIndexDelete()</tt></a></li>
+	<li><a href='#mxmlIndexEnum'><tt>mxmlIndexEnum()</tt></a></li>
+	<li><a href='#mxmlIndexFind'><tt>mxmlIndexFind()</tt></a></li>
+	<li><a href='#mxmlIndexNew'><tt>mxmlIndexNew()</tt></a></li>
+	<li><a href='#mxmlIndexReset'><tt>mxmlIndexReset()</tt></a></li>
 	<li><a href='#mxmlLoadFile'><tt>mxmlLoadFile()</tt></a></li>
 	<li><a href='#mxmlLoadString'><tt>mxmlLoadString()</tt></a></li>
 	<li><a href='#mxmlNewElement'><tt>mxmlNewElement()</tt></a></li>
@@ -177,6 +185,25 @@ mxmlElementSetAttr(
 <h4>Returns</h4>
 <p>Nothing.</p>
 <!-- NEW PAGE -->
+<h3><a name='mxmlEntityAddCallback'>mxmlEntityAddCallback()</a></h3>
+<hr noshade/>
+<h4>Description</h4>
+<p>Add a callback to convert entities to Unicode.</p>
+<h4>Syntax</h4>
+<pre>
+void
+mxmlEntityAddCallback(
+    int (*cb)(const char *name));
+</pre>
+<h4>Arguments</h4>
+<p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
+<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><tt>(*cb)(const char *name)</tt></td><td>Callback function to add</td></tr>
+</tbody></table></p>
+<h4>Returns</h4>
+<p>Nothing.</p>
+<!-- NEW PAGE -->
 <h3><a name='mxmlEntityGetName'>mxmlEntityGetName()</a></h3>
 <hr noshade/>
 <h4>Description</h4>
@@ -220,6 +247,25 @@ mxmlEntityGetValue(
 <h4>Returns</h4>
 <p>Character value or -1 on error</p>
 <!-- NEW PAGE -->
+<h3><a name='mxmlEntityRemoveCallback'>mxmlEntityRemoveCallback()</a></h3>
+<hr noshade/>
+<h4>Description</h4>
+<p>Remove a callback.</p>
+<h4>Syntax</h4>
+<pre>
+void
+mxmlEntityRemoveCallback(
+    int (*cb)(const char *name));
+</pre>
+<h4>Arguments</h4>
+<p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
+<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><tt>(*cb)(const char *name)</tt></td><td>Callback function to remove</td></tr>
+</tbody></table></p>
+<h4>Returns</h4>
+<p>Nothing.</p>
+<!-- NEW PAGE -->
 <h3><a name='mxmlFindElement'>mxmlFindElement()</a></h3>
 <hr noshade/>
 <h4>Description</h4>
@@ -257,6 +303,109 @@ mxmlFindElement(
 </tbody></table></p>
 <h4>Returns</h4>
 <p>Element node or NULL</p>
+<!-- NEW PAGE -->
+<h3><a name='mxmlIndexDelete'>mxmlIndexDelete()</a></h3>
+<hr noshade/>
+<h4>Description</h4>
+<p>Sort attribute...</p>
+<h4>Syntax</h4>
+<pre>
+void
+mxmlIndexDelete(
+    <a href='#mxml_index_t'>mxml_index_t</a> * ind);
+</pre>
+<h4>Arguments</h4>
+<p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
+<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><tt>ind</tt></td><td>Index to delete</td></tr>
+</tbody></table></p>
+<h4>Returns</h4>
+<p>Nothing.</p>
+<!-- NEW PAGE -->
+<h3><a name='mxmlIndexEnum'>mxmlIndexEnum()</a></h3>
+<hr noshade/>
+<h4>Description</h4>
+<p>Return the next node in the index.</p>
+<h4>Syntax</h4>
+<pre>
+<a href='#mxml_node_t'>mxml_node_t</a> *
+mxmlIndexEnum(
+    <a href='#mxml_index_t'>mxml_index_t</a> * ind);
+</pre>
+<h4>Arguments</h4>
+<p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
+<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><tt>ind</tt></td><td>Index to enumerate</td></tr>
+</tbody></table></p>
+<h4>Returns</h4>
+<p>Next node or NULL if there is none</p>
+<!-- NEW PAGE -->
+<h3><a name='mxmlIndexFind'>mxmlIndexFind()</a></h3>
+<hr noshade/>
+<h4>Description</h4>
+<p>Find the next matching node.</p>
+<h4>Syntax</h4>
+<pre>
+<a href='#mxml_node_t'>mxml_node_t</a> *
+mxmlIndexFind(
+    <a href='#mxml_index_t'>mxml_index_t</a> * ind,
+    const char * element,
+    const char * value);
+</pre>
+<h4>Arguments</h4>
+<p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
+<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><tt>ind</tt></td><td>Index to search</td></tr>
+<tr><td><tt>element</tt></td><td>Element name to find, if any</td></tr>
+<tr><td><tt>value</tt></td><td>Attribute value, if any</td></tr>
+</tbody></table></p>
+<h4>Returns</h4>
+<p>Node or NULL if none found</p>
+<!-- NEW PAGE -->
+<h3><a name='mxmlIndexNew'>mxmlIndexNew()</a></h3>
+<hr noshade/>
+<h4>Description</h4>
+<p>Create a new index.</p>
+<h4>Syntax</h4>
+<pre>
+<a href='#mxml_index_t'>mxml_index_t</a> *
+mxmlIndexNew(
+    <a href='#mxml_node_t'>mxml_node_t</a> * node,
+    const char * element,
+    const char * attr);
+</pre>
+<h4>Arguments</h4>
+<p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
+<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><tt>node</tt></td><td>XML node tree</td></tr>
+<tr><td><tt>element</tt></td><td>Element to index or NULL for all</td></tr>
+<tr><td><tt>attr</tt></td><td>Attribute to index or NULL for none</td></tr>
+</tbody></table></p>
+<h4>Returns</h4>
+<p>New index</p>
+<!-- NEW PAGE -->
+<h3><a name='mxmlIndexReset'>mxmlIndexReset()</a></h3>
+<hr noshade/>
+<h4>Description</h4>
+<p>Return the first node in the index.</p>
+<h4>Syntax</h4>
+<pre>
+<a href='#mxml_node_t'>mxml_node_t</a> *
+mxmlIndexReset(
+    <a href='#mxml_index_t'>mxml_index_t</a> * ind);
+</pre>
+<h4>Arguments</h4>
+<p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
+<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><tt>ind</tt></td><td>Index to reset</td></tr>
+</tbody></table></p>
+<h4>Returns</h4>
+<p>First node or NULL if there is none</p>
 <!-- NEW PAGE -->
 <h3><a name='mxmlLoadFile'>mxmlLoadFile()</a></h3>
 <hr noshade/>
@@ -814,6 +963,7 @@ mxmlWalkPrev(
 <h2><a name='_structures'>Structures</a></h2>
 <ul>
 	<li><a href='#mxml_attr_s'><tt>mxml_attr_s</tt></a></li>
+	<li><a href='#mxml_index_s'><tt>mxml_index_s</tt></a></li>
 	<li><a href='#mxml_node_s'><tt>mxml_node_s</tt></a></li>
 	<li><a href='#mxml_text_s'><tt>mxml_text_s</tt></a></li>
 	<li><a href='#mxml_value_s'><tt>mxml_value_s</tt></a></li>
@@ -837,6 +987,32 @@ struct mxml_attr_s
 <tbody>
 <tr><td><tt>name</tt></td><td>Attribute name</td></tr>
 <tr><td><tt>value</tt></td><td>Attribute value</td></tr>
+</tbody></table></p>
+<!-- NEW PAGE -->
+<h3><a name='mxml_index_s'>mxml_index_s</a></h3>
+<hr noshade/>
+<h4>Description</h4>
+<p>An XML node index.</p>
+<h4>Definition</h4>
+<pre>
+struct mxml_index_s
+{
+  int alloc_nodes;
+  char * attr;
+  int cur_node;
+  <a href='#mxml_node_t'>mxml_node_t</a> ** nodes;
+  int num_nodes;
+};
+</pre>
+<h4>Members</h4>
+<p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
+<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><tt>alloc_nodes</tt></td><td>Allocated nodes in index</td></tr>
+<tr><td><tt>attr</tt></td><td>Attribute used for indexing or NULL</td></tr>
+<tr><td><tt>cur_node</tt></td><td>Current node</td></tr>
+<tr><td><tt>nodes</tt></td><td>Node array</td></tr>
+<tr><td><tt>num_nodes</tt></td><td>Number of nodes in index</td></tr>
 </tbody></table></p>
 <!-- NEW PAGE -->
 <h3><a name='mxml_node_s'>mxml_node_s</a></h3>
@@ -915,6 +1091,7 @@ struct mxml_value_s
 <ul>
 	<li><a href='#mxml_attr_t'><tt>mxml_attr_t</tt></a></li>
 	<li><a href='#mxml_element_t'><tt>mxml_element_t</tt></a></li>
+	<li><a href='#mxml_index_t'><tt>mxml_index_t</tt></a></li>
 	<li><a href='#mxml_node_t'><tt>mxml_node_t</tt></a></li>
 	<li><a href='#mxml_text_t'><tt>mxml_text_t</tt></a></li>
 	<li><a href='#mxml_type_t'><tt>mxml_type_t</tt></a></li>
@@ -937,6 +1114,15 @@ typedef struct <a href='#mxml_attr_s'>mxml_attr_s</a> mxml_attr_t;
 <h4>Definition</h4>
 <pre>
 typedef struct <a href='#mxml_value_s'>mxml_value_s</a> mxml_element_t;
+</pre>
+<!-- NEW PAGE -->
+<h3><a name='mxml_index_t'>mxml_index_t</a></h3>
+<hr noshade/>
+<h4>Description</h4>
+<p>An XML node index.</p>
+<h4>Definition</h4>
+<pre>
+typedef struct <a href='#mxml_index_s'>mxml_index_s</a> mxml_index_t;
 </pre>
 <!-- NEW PAGE -->
 <h3><a name='mxml_node_t'>mxml_node_t</a></h3>
@@ -1005,5 +1191,27 @@ union mxml_value_u
 <tr><td><tt>real</tt></td><td>Real number</td></tr>
 <tr><td><tt>text</tt></td><td>Text fragment</td></tr>
 </tbody></table></p>
+<!-- NEW PAGE -->
+<h2><a name='_variables'>Variables</a></h2>
+<ul>
+	<li><a href='#num_callbacks'><tt>num_callbacks</tt></a></li>
+	<li><a href='#sort_attr_name'><tt>sort_attr_name</tt></a></li>
+</ul>
+<!-- NEW PAGE -->
+<h3><a name='num_callbacks'>num_callbacks</a></h3>
+<hr noshade/>
+<h4>Definition</h4>
+<pre>
+static int num_callbacks = 1;
+</pre>
+<!-- NEW PAGE -->
+<h3><a name='sort_attr_name'>sort_attr_name</a></h3>
+<hr noshade/>
+<h4>Description</h4>
+<p>Delete an index.</p>
+<h4>Definition</h4>
+<pre>
+static const char * sort_attr_name;
+</pre>
 </body>
 </html>

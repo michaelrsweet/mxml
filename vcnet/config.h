@@ -1,5 +1,5 @@
 /*
- * "$Id: config.h,v 1.1 2004/06/21 11:17:51 mike Exp $"
+ * "$Id: config.h,v 1.2 2004/06/25 18:52:34 mike Exp $"
  *
  * Configuration file for Mini-XML, a small XML-like file parsing library.
  *
@@ -38,7 +38,7 @@
  * Do we have the vsnprintf() function?
  */
 
-#define HAVE_VSNPRINTF 1
+/*#undef HAVE_VSNPRINTF */
 
 
 /*
@@ -65,5 +65,5 @@ extern int	mxml_vsnprintf(char *, size_t, const char *, va_list);
 #  endif /* !HAVE_VSNPRINTF */
 
 /*
- * End of "$Id: config.h,v 1.1 2004/06/21 11:17:51 mike Exp $".
+ * End of "$Id: config.h,v 1.2 2004/06/25 18:52:34 mike Exp $".
  */

@@ -1,5 +1,5 @@
 /*
- * "$Id: mxml-file.c,v 1.32 2004/06/01 20:19:34 mike Exp $"
+ * "$Id: mxml-file.c,v 1.33 2004/06/25 18:52:34 mike Exp $"
  *
  * File loading code for Mini-XML, a small XML-like file parsing library.
  *
@@ -1783,11 +1783,11 @@ mxml_write_node(mxml_node_t *node,	/* I - Node to write */
 	      col ++;
           }
 
-          slen = snprintf(s, sizeof(s), "%d", node->value.integer);
+          sprintf(s, "%d", node->value.integer);
 	  if (mxml_write_string(s, p, putc_cb) < 0)
 	    return (-1);
 
-	  col += slen;
+	  col += strlen(s);
           break;
 
       case MXML_OPAQUE :
@@ -1813,11 +1813,11 @@ mxml_write_node(mxml_node_t *node,	/* I - Node to write */
 	      col ++;
           }
 
-          slen = snprintf(s, sizeof(s), "%f", node->value.real);
+          sprintf(s, "%f", node->value.real);
 	  if (mxml_write_string(s, p, putc_cb) < 0)
 	    return (-1);
 
-	  col += slen;
+	  col += strlen(s);
           break;
 
       case MXML_TEXT :
@@ -1936,5 +1936,5 @@ mxml_write_ws(mxml_node_t *node,	/* I - Current node */
 
 
 /*
- * End of "$Id: mxml-file.c,v 1.32 2004/06/01 20:19:34 mike Exp $".
+ * End of "$Id: mxml-file.c,v 1.33 2004/06/25 18:52:34 mike Exp $".
  */

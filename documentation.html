@@ -11,15 +11,11 @@
 <body>
 <h1>Contents</h1>
 <ul>
-	<li><a href="#_classes">Classes</a></li>
 	<li><a href="#_enumerations">Enumeration</a></li>
 	<li><a href="#_functions">Functions</a></li>
 	<li><a href="#_structures">Structures</a></li>
 	<li><a href="#_types">Types</a></li>
 	<li><a href="#_unions">Unions</a></li>
-</ul>
-<h1><a name="_classes">Classes</a></h1>
-<ul>
 </ul>
 <h1><a name="_enumerations">Enumerations</a></h1>
 <ul>
@@ -27,7 +23,7 @@
 </ul>
 <hr noshade/>
 <h2><a name="mxml_type_e">mxml_type_e</a></h2>
-<p>Node Type</p>
+<p>The XML node type.</p>
 <h3>Values</h3>
 <p class="table"><table align="center" border="1" width="80%">
 <thead><tr><th>Name</th><th>Description</th></tr></thead>
@@ -58,52 +54,65 @@
 </ul>
 <hr noshade/>
 <h2><a name="mxmlAdd">mxmlAdd()</a></h2>
-<p>Add a node to a tree.</p>
+<p>Add a node to a tree.
+
+Adds the specified node to the parent. If the child argument is not
+NULL, puts the new node before or after the specified child depending
+on the value of the where argument. If the child argument is NULL,
+puts the new node at the beginning of the child list (MXML_ADD_BEFORE)
+or at the end of the child list (MXML_ADD_AFTER). The constant
+MXML_ADD_TO_PARENT can be used to specify a NULL child pointer.</p>
 <h3>Syntax</h3>
 <pre>
 void
 mxmlAdd(
-    mxml_node_t * parent,
+    <a href="#mxml_node_t">mxml_node_t</a> * parent,
     int where,
-    mxml_node_t * child,
-    mxml_node_t * node);
+    <a href="#mxml_node_t">mxml_node_t</a> * child,
+    <a href="#mxml_node_t">mxml_node_t</a> * node);
 </pre>
 <h3>Arguments</h3>
 <p class="table"><table align="center" border="1" width="80%">
 <thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td><tt>parent</tt></td><td>Parent node</td></tr>
-<tr><td><tt>where</tt></td><td>Where to add</td></tr>
-<tr><td><tt>child</tt></td><td>Child node for where</td></tr>
+<tr><td><tt>where</tt></td><td>Where to add, MXML_ADD_BEFORE or MXML_ADD_AFTER</td></tr>
+<tr><td><tt>child</tt></td><td>Child node for where or MXML_ADD_TO_PARENT</td></tr>
 <tr><td><tt>node</tt></td><td>Node to add</td></tr>
 </tbody></table></p>
 <h3>Returns</h3>
 <p>Nothing.</p>
 <hr noshade/>
 <h2><a name="mxmlDelete">mxmlDelete()</a></h2>
-<p>Delete a node and all of its children.</p>
+<p>Delete a node and all of its children.
+
+If the specified node has a parent, this function first removes the
+node from its parent using the mxmlRemove() function.</p>
 <h3>Syntax</h3>
 <pre>
 void
 mxmlDelete(
-    mxml_node_t * node);
+    <a href="#mxml_node_t">mxml_node_t</a> * node);
 </pre>
 <h3>Arguments</h3>
 <p class="table"><table align="center" border="1" width="80%">
 <thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
-<tr><td><tt>node</tt></td><td>Node</td></tr>
+<tr><td><tt>node</tt></td><td>Node to delete</td></tr>
 </tbody></table></p>
 <h3>Returns</h3>
 <p>Nothing.</p>
 <hr noshade/>
 <h2><a name="mxmlElementGetAttr">mxmlElementGetAttr()</a></h2>
-<p>Get an attribute.</p>
+<p>Get an attribute.
+
+This function returns NULL if the node is not an element or the
+named attribute does not exist.</p>
 <h3>Syntax</h3>
 <pre>
 const char *
 mxmlElementGetAttr(
-    mxml_node_t * node,
+    <a href="#mxml_node_t">mxml_node_t</a> * node,
     const char * name);
 </pre>
 <h3>Arguments</h3>
@@ -117,12 +126,17 @@ mxmlElementGetAttr(
 <p>Attribute value or NULL</p>
 <hr noshade/>
 <h2><a name="mxmlElementSetAttr">mxmlElementSetAttr()</a></h2>
-<p>Set an attribute.</p>
+<p>Set an attribute.
+
+If the named attribute already exists, the value of the attribute
+is replaced by the new string value. The string value is copied
+into the element node. This function does nothing if the node is
+not an element.</p>
 <h3>Syntax</h3>
 <pre>
 void
 mxmlElementSetAttr(
-    mxml_node_t * node,
+    <a href="#mxml_node_t">mxml_node_t</a> * node,
     const char * name,
     const char * value);
 </pre>
@@ -138,13 +152,22 @@ mxmlElementSetAttr(
 <p>Nothing.</p>
 <hr noshade/>
 <h2><a name="mxmlFindElement">mxmlFindElement()</a></h2>
-<p>Find the named element.</p>
+<p>Find the named element.
+
+The search is constrained by the name, attribute name, and value; any
+NULL names or values are treated as wildcards, so different kinds of
+searches can be implemented by looking for all elements of a given name
+or all elements with a specific attribute. The descend argument determines
+whether the search descends into child nodes; normally you will use
+MXML_DESCEND_FIRST for the initial search and MXML_NO_DESCEND to find
+additional direct descendents of the node. The top node argument
+constrains the search to a particular node's children.</p>
 <h3>Syntax</h3>
 <pre>
-mxml_node_t *
+<a href="#mxml_node_t">mxml_node_t</a> *
 mxmlFindElement(
-    mxml_node_t * node,
-    mxml_node_t * top,
+    <a href="#mxml_node_t">mxml_node_t</a> * node,
+    <a href="#mxml_node_t">mxml_node_t</a> * top,
     const char * name,
     const char * attr,
     const char * value,
@@ -159,20 +182,27 @@ mxmlFindElement(
 <tr><td><tt>name</tt></td><td>Element name or NULL for any</td></tr>
 <tr><td><tt>attr</tt></td><td>Attribute name, or NULL for none</td></tr>
 <tr><td><tt>value</tt></td><td>Attribute value, or NULL for any</td></tr>
-<tr><td><tt>descend</tt></td><td>Descend into tree?</td></tr>
+<tr><td><tt>descend</tt></td><td>Descend into tree - MXML_DESCEND, MXML_NO_DESCEND, or MXML_DESCEND_FIRST</td></tr>
 </tbody></table></p>
 <h3>Returns</h3>
 <p>Element node or NULL</p>
 <hr noshade/>
 <h2><a name="mxmlLoadFile">mxmlLoadFile()</a></h2>
-<p>Load a file into an XML node tree.</p>
+<p>Load a file into an XML node tree.
+
+The nodes in the specified file are added to the specified top node.
+If no top node is provided, the XML file MUST be well-formed with a
+single parent node like &lt;?xml&gt; for the entire file. The callback
+function returns the value type that should be used for child nodes.
+If MXML_NO_CALLBACK is specified then all child nodes will be either
+MXML_ELEMENT or MXML_TEXT nodes.</p>
 <h3>Syntax</h3>
 <pre>
-mxml_node_t *
+<a href="#mxml_node_t">mxml_node_t</a> *
 mxmlLoadFile(
-    mxml_node_t * top,
+    <a href="#mxml_node_t">mxml_node_t</a> * top,
     FILE * fp,
-    mxml_type_t (*cb)(mxml_node_t *));
+    <a href="#mxml_type_t">mxml_type_t</a> (*cb)(mxml_node_t *));
 </pre>
 <h3>Arguments</h3>
 <p class="table"><table align="center" border="1" width="80%">
@@ -180,94 +210,117 @@ mxmlLoadFile(
 <tbody>
 <tr><td><tt>top</tt></td><td>Top node</td></tr>
 <tr><td><tt>fp</tt></td><td>File to read from</td></tr>
-<tr><td><tt>(*cb)(mxml_node_t *)</tt></td><td>Callback function</td></tr>
+<tr><td><tt>(*cb)(mxml_node_t *)</tt></td><td>Callback function or MXML_NO_CALLBACK</td></tr>
 </tbody></table></p>
 <h3>Returns</h3>
-<p>First node</p>
+<p>First node or NULL if the file could not be read.</p>
 <hr noshade/>
 <h2><a name="mxmlNewElement">mxmlNewElement()</a></h2>
-<p>Create a new element node.</p>
+<p>Create a new element node.
+
+The new element node is added to the end of the specified parent's child
+list. The constant MXML_NO_PARENT can be used to specify that the new
+element node has no parent.</p>
 <h3>Syntax</h3>
 <pre>
-mxml_node_t *
+<a href="#mxml_node_t">mxml_node_t</a> *
 mxmlNewElement(
-    mxml_node_t * parent,
+    <a href="#mxml_node_t">mxml_node_t</a> * parent,
     const char * name);
 </pre>
 <h3>Arguments</h3>
 <p class="table"><table align="center" border="1" width="80%">
 <thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
-<tr><td><tt>parent</tt></td><td>Parent node</td></tr>
+<tr><td><tt>parent</tt></td><td>Parent node or MXML_NO_PARENT</td></tr>
 <tr><td><tt>name</tt></td><td>Name of element</td></tr>
 </tbody></table></p>
 <h3>Returns</h3>
 <p>New node</p>
 <hr noshade/>
 <h2><a name="mxmlNewInteger">mxmlNewInteger()</a></h2>
-<p>Create a new integer node.</p>
+<p>Create a new integer node.
+
+The new integer node is added to the end of the specified parent's child
+list. The constant MXML_NO_PARENT can be used to specify that the new
+integer node has no parent.</p>
 <h3>Syntax</h3>
 <pre>
-mxml_node_t *
+<a href="#mxml_node_t">mxml_node_t</a> *
 mxmlNewInteger(
-    mxml_node_t * parent,
+    <a href="#mxml_node_t">mxml_node_t</a> * parent,
     int integer);
 </pre>
 <h3>Arguments</h3>
 <p class="table"><table align="center" border="1" width="80%">
 <thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
-<tr><td><tt>parent</tt></td><td>Parent node</td></tr>
+<tr><td><tt>parent</tt></td><td>Parent node or MXML_NO_PARENT</td></tr>
 <tr><td><tt>integer</tt></td><td>Integer value</td></tr>
 </tbody></table></p>
 <h3>Returns</h3>
 <p>New node</p>
 <hr noshade/>
 <h2><a name="mxmlNewOpaque">mxmlNewOpaque()</a></h2>
-<p>Create a new opaque string.</p>
+<p>Create a new opaque string.
+
+The new opaque node is added to the end of the specified parent's child
+list. The constant MXML_NO_PARENT can be used to specify that the new
+opaque node has no parent. The opaque string must be nul-terminated and
+is copied into the new node.</p>
 <h3>Syntax</h3>
 <pre>
-mxml_node_t *
+<a href="#mxml_node_t">mxml_node_t</a> *
 mxmlNewOpaque(
-    mxml_node_t * parent,
+    <a href="#mxml_node_t">mxml_node_t</a> * parent,
     const char * opaque);
 </pre>
 <h3>Arguments</h3>
 <p class="table"><table align="center" border="1" width="80%">
 <thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
-<tr><td><tt>parent</tt></td><td>Parent node</td></tr>
+<tr><td><tt>parent</tt></td><td>Parent node or MXML_NO_PARENT</td></tr>
 <tr><td><tt>opaque</tt></td><td>Opaque string</td></tr>
 </tbody></table></p>
 <h3>Returns</h3>
 <p>New node</p>
 <hr noshade/>
 <h2><a name="mxmlNewReal">mxmlNewReal()</a></h2>
-<p>Create a new real number node.</p>
+<p>Create a new real number node.
+
+The new real number node is added to the end of the specified parent's
+child list. The constant MXML_NO_PARENT can be used to specify that
+the new real number node has no parent.</p>
 <h3>Syntax</h3>
 <pre>
-mxml_node_t *
+<a href="#mxml_node_t">mxml_node_t</a> *
 mxmlNewReal(
-    mxml_node_t * parent,
+    <a href="#mxml_node_t">mxml_node_t</a> * parent,
     double real);
 </pre>
 <h3>Arguments</h3>
 <p class="table"><table align="center" border="1" width="80%">
 <thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
-<tr><td><tt>parent</tt></td><td>Parent node</td></tr>
+<tr><td><tt>parent</tt></td><td>Parent node or MXML_NO_PARENT</td></tr>
 <tr><td><tt>real</tt></td><td>Real number value</td></tr>
 </tbody></table></p>
 <h3>Returns</h3>
 <p>New node</p>
 <hr noshade/>
 <h2><a name="mxmlNewText">mxmlNewText()</a></h2>
-<p>Create a new text fragment node.</p>
+<p>Create a new text fragment node.
+
+The new text node is added to the end of the specified parent's child
+list. The constant MXML_NO_PARENT can be used to specify that the new
+text node has no parent. The whitespace parameter is used to specify
+whether leading whitespace is present before the node. The text
+string must be nul-terminated and is copied into the new node.</p>
 <h3>Syntax</h3>
 <pre>
-mxml_node_t *
+<a href="#mxml_node_t">mxml_node_t</a> *
 mxmlNewText(
-    mxml_node_t * parent,
+    <a href="#mxml_node_t">mxml_node_t</a> * parent,
     int whitespace,
     const char * string);
 </pre>
@@ -275,20 +328,23 @@ mxmlNewText(
 <p class="table"><table align="center" border="1" width="80%">
 <thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
-<tr><td><tt>parent</tt></td><td>Parent node</td></tr>
-<tr><td><tt>whitespace</tt></td><td>Leading whitespace?</td></tr>
+<tr><td><tt>parent</tt></td><td>Parent node or MXML_NO_PARENT</td></tr>
+<tr><td><tt>whitespace</tt></td><td>1 = leading whitespace, 0 = no whitespace</td></tr>
 <tr><td><tt>string</tt></td><td>String</td></tr>
 </tbody></table></p>
 <h3>Returns</h3>
 <p>New node</p>
 <hr noshade/>
 <h2><a name="mxmlRemove">mxmlRemove()</a></h2>
-<p>Remove a node from its parent.</p>
+<p>Remove a node from its parent.
+
+Does not free memory used by the node - use mxmlDelete() for that.
+This function does nothing if the node has no parent.</p>
 <h3>Syntax</h3>
 <pre>
 void
 mxmlRemove(
-    mxml_node_t * node);
+    <a href="#mxml_node_t">mxml_node_t</a> * node);
 </pre>
 <h3>Arguments</h3>
 <p class="table"><table align="center" border="1" width="80%">
@@ -300,12 +356,18 @@ mxmlRemove(
 <p>Nothing.</p>
 <hr noshade/>
 <h2><a name="mxmlSaveFile">mxmlSaveFile()</a></h2>
-<p>Save an XML tree to a file.</p>
+<p>Save an XML tree to a file.
+
+The callback argument specifies a function that returns a whitespace
+character or nul (0) before and after each element. If MXML_NO_CALLBACK
+is specified, whitespace will only be added before MXML_TEXT nodes
+with leading whitespace and before attribute names inside opening
+element tags.</p>
 <h3>Syntax</h3>
 <pre>
 int
 mxmlSaveFile(
-    mxml_node_t * node,
+    <a href="#mxml_node_t">mxml_node_t</a> * node,
     FILE * fp,
     int (*cb)(mxml_node_t *int));
 </pre>
@@ -315,19 +377,23 @@ mxmlSaveFile(
 <tbody>
 <tr><td><tt>node</tt></td><td>Node to write</td></tr>
 <tr><td><tt>fp</tt></td><td>File to write to</td></tr>
-<tr><td><tt>(*cb)(mxml_node_t *int)</tt></td><td>Whitespace callback</td></tr>
+<tr><td><tt>(*cb)(mxml_node_t *int)</tt></td><td>Whitespace callback or MXML_NO_CALLBACK</td></tr>
 </tbody></table></p>
 <h3>Returns</h3>
-<p>0 on success, -1 on error</p>
+<p>0 on success, -1 on error.</p>
 <hr noshade/>
 <h2><a name="mxmlWalkNext">mxmlWalkNext()</a></h2>
-<p>Walk to the next logical node in the tree.</p>
+<p>Walk to the next logical node in the tree.
+
+The descend argument controls whether the first child is considered
+to be the next node. The top node argument constrains the walk to
+the node's children.</p>
 <h3>Syntax</h3>
 <pre>
-mxml_node_t *
+<a href="#mxml_node_t">mxml_node_t</a> *
 mxmlWalkNext(
-    mxml_node_t * node,
-    mxml_node_t * top,
+    <a href="#mxml_node_t">mxml_node_t</a> * node,
+    <a href="#mxml_node_t">mxml_node_t</a> * top,
     int descend);
 </pre>
 <h3>Arguments</h3>
@@ -336,19 +402,23 @@ mxmlWalkNext(
 <tbody>
 <tr><td><tt>node</tt></td><td>Current node</td></tr>
 <tr><td><tt>top</tt></td><td>Top node</td></tr>
-<tr><td><tt>descend</tt></td><td>Descend into tree?</td></tr>
+<tr><td><tt>descend</tt></td><td>Descend into tree - MXML_DESCEND, MXML_NO_DESCEND, or MXML_DESCEND_FIRST</td></tr>
 </tbody></table></p>
 <h3>Returns</h3>
 <p>Next node or NULL</p>
 <hr noshade/>
 <h2><a name="mxmlWalkPrev">mxmlWalkPrev()</a></h2>
-<p>Walk to the previous logical node in the tree.</p>
+<p>Walk to the previous logical node in the tree.
+
+The descend argument controls whether the previous node's last child
+is considered to be the previous node. The top node argument constrains
+the walk to the node's children.</p>
 <h3>Syntax</h3>
 <pre>
-mxml_node_t *
+<a href="#mxml_node_t">mxml_node_t</a> *
 mxmlWalkPrev(
-    mxml_node_t * node,
-    mxml_node_t * top,
+    <a href="#mxml_node_t">mxml_node_t</a> * node,
+    <a href="#mxml_node_t">mxml_node_t</a> * top,
     int descend);
 </pre>
 <h3>Arguments</h3>
@@ -357,7 +427,7 @@ mxmlWalkPrev(
 <tbody>
 <tr><td><tt>node</tt></td><td>Current node</td></tr>
 <tr><td><tt>top</tt></td><td>Top node</td></tr>
-<tr><td><tt>descend</tt></td><td>Descend into tree?</td></tr>
+<tr><td><tt>descend</tt></td><td>Descend into tree - MXML_DESCEND, MXML_NO_DESCEND, or MXML_DESCEND_FIRST</td></tr>
 </tbody></table></p>
 <h3>Returns</h3>
 <p>Previous node or NULL</p>
@@ -370,7 +440,7 @@ mxmlWalkPrev(
 </ul>
 <hr noshade/>
 <h2><a name="mxml_attr_s">mxml_attr_s</a></h2>
-<p>Attribute Value</p>
+<p>An XML element attribute value.</p>
 <h3>Definition</h3>
 <pre>
 struct mxml_attr_s
@@ -388,18 +458,18 @@ struct mxml_attr_s
 </tbody></table></p>
 <hr noshade/>
 <h2><a name="mxml_node_s">mxml_node_s</a></h2>
-<p>Node</p>
+<p>Data types...</p>
 <h3>Definition</h3>
 <pre>
 struct mxml_node_s
 {
-  mxml_node_t * child;
-  mxml_node_t * last_child;
-  mxml_node_t * next;
-  mxml_node_t * parent;
-  mxml_node_t * prev;
-  mxml_type_t type;
-  mxml_value_t value;
+  <a href="#mxml_node_t">mxml_node_t</a> * child;
+  <a href="#mxml_node_t">mxml_node_t</a> * last_child;
+  <a href="#mxml_node_t">mxml_node_t</a> * next;
+  <a href="#mxml_node_t">mxml_node_t</a> * parent;
+  <a href="#mxml_node_t">mxml_node_t</a> * prev;
+  <a href="#mxml_type_t">mxml_type_t</a> type;
+  <a href="#mxml_value_t">mxml_value_t</a> value;
 };
 </pre>
 <h3>Members</h3>
@@ -416,7 +486,7 @@ struct mxml_node_s
 </tbody></table></p>
 <hr noshade/>
 <h2><a name="mxml_text_s">mxml_text_s</a></h2>
-<p>Text Value</p>
+<p>An XML text value.</p>
 <h3>Definition</h3>
 <pre>
 struct mxml_text_s
@@ -434,12 +504,12 @@ struct mxml_text_s
 </tbody></table></p>
 <hr noshade/>
 <h2><a name="mxml_value_s">mxml_value_s</a></h2>
-<p>Element Value</p>
+<p>An XML element value.</p>
 <h3>Definition</h3>
 <pre>
 struct mxml_value_s
 {
-  mxml_attr_t * attrs;
+  <a href="#mxml_attr_t">mxml_attr_t</a> * attrs;
   char * name;
   int num_attrs;
 };
@@ -456,44 +526,52 @@ struct mxml_value_s
 <ul>
 	<li><a href="#mxml_attr_t"><tt>mxml_attr_t</tt></a></li>
 	<li><a href="#mxml_element_t"><tt>mxml_element_t</tt></a></li>
+	<li><a href="#mxml_node_t"><tt>mxml_node_t</tt></a></li>
 	<li><a href="#mxml_text_t"><tt>mxml_text_t</tt></a></li>
 	<li><a href="#mxml_type_t"><tt>mxml_type_t</tt></a></li>
 	<li><a href="#mxml_value_t"><tt>mxml_value_t</tt></a></li>
 </ul>
 <hr noshade/>
 <h2><a name="mxml_attr_t">mxml_attr_t</a></h2>
-<p>Attribute Value</p>
+<p>An XML element attribute value.</p>
 <h3>Definition</h3>
 <pre>
-typedef struct mxml_attr_s mxml_attr_t;
+typedef struct <a href="#mxml_attr_s">mxml_attr_s</a> mxml_attr_t;
 </pre>
 <hr noshade/>
 <h2><a name="mxml_element_t">mxml_element_t</a></h2>
-<p>Element Value</p>
+<p>An XML element value.</p>
 <h3>Definition</h3>
 <pre>
-typedef struct mxml_value_s mxml_element_t;
+typedef struct <a href="#mxml_value_s">mxml_value_s</a> mxml_element_t;
+</pre>
+<hr noshade/>
+<h2><a name="mxml_node_t">mxml_node_t</a></h2>
+<p>An XML node.</p>
+<h3>Definition</h3>
+<pre>
+typedef struct <a href="#mxml_node_s">mxml_node_s</a> mxml_node_t;
 </pre>
 <hr noshade/>
 <h2><a name="mxml_text_t">mxml_text_t</a></h2>
-<p>Text Value</p>
+<p>An XML text value.</p>
 <h3>Definition</h3>
 <pre>
-typedef struct mxml_text_s mxml_text_t;
+typedef struct <a href="#mxml_text_s">mxml_text_s</a> mxml_text_t;
 </pre>
 <hr noshade/>
 <h2><a name="mxml_type_t">mxml_type_t</a></h2>
-<p>Node Type</p>
+<p>The XML node type.</p>
 <h3>Definition</h3>
 <pre>
-typedef enum mxml_type_e mxml_type_t;
+typedef enum <a href="#mxml_type_e">mxml_type_e</a> mxml_type_t;
 </pre>
 <hr noshade/>
 <h2><a name="mxml_value_t">mxml_value_t</a></h2>
-<p>Node Value</p>
+<p>An XML node value.</p>
 <h3>Definition</h3>
 <pre>
-typedef union mxml_value_u mxml_value_t;
+typedef union <a href="#mxml_value_u">mxml_value_u</a> mxml_value_t;
 </pre>
 <h1><a name="_unions">Unions</a></h1>
 <ul>
@@ -501,16 +579,16 @@ typedef union mxml_value_u mxml_value_t;
 </ul>
 <hr noshade/>
 <h2><a name="mxml_value_u">mxml_value_u</a></h2>
-<p>Node Value</p>
+<p>An XML node value.</p>
 <h3>Definition</h3>
 <pre>
 struct mxml_value_u
 {
-  mxml_element_t element;
+  <a href="#mxml_element_t">mxml_element_t</a> element;
   int integer;
   char * opaque;
   double real;
-  mxml_text_t text;
+  <a href="#mxml_text_t">mxml_text_t</a> text;
 };
 </pre>
 <h3>Members</h3>

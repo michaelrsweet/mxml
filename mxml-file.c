@@ -1,5 +1,5 @@
 /*
- * "$Id: mxml-file.c,v 1.9 2003/06/04 23:20:31 mike Exp $"
+ * "$Id: mxml-file.c,v 1.10 2003/06/14 23:56:47 mike Exp $"
  *
  * File loading code for mini-XML, a small XML-like file parsing library.
  *
@@ -46,13 +46,20 @@ static int	mxml_write_ws(mxml_node_t *node, FILE *fp,
 
 /*
  * 'mxmlLoadFile()' - Load a file into an XML node tree.
+ *
+ * The nodes in the specified file are added to the specified top node.
+ * If no top node is provided, the XML file MUST be well-formed with a
+ * single parent node like <?xml> for the entire file. The callback
+ * function returns the value type that should be used for child nodes.
+ * If MXML_NO_CALLBACK is specified then all child nodes will be either
+ * MXML_ELEMENT or MXML_TEXT nodes.
  */
 
-mxml_node_t *				/* O - First node */
+mxml_node_t *				/* O - First node or NULL if the file could not be read. */
 mxmlLoadFile(mxml_node_t *top,		/* I - Top node */
              FILE        *fp,		/* I - File to read from */
              mxml_type_t (*cb)(mxml_node_t *))
-					/* I - Callback function */
+					/* I - Callback function or MXML_NO_CALLBACK */
 {
   mxml_node_t	*node,			/* Current node */
 		*parent;		/* Current parent node */
@@ -509,13 +516,19 @@ mxmlLoadFile(mxml_node_t *top,		/* I - Top node */
 
 /*
  * 'mxmlSaveFile()' - Save an XML tree to a file.
+ *
+ * The callback argument specifies a function that returns a whitespace
+ * character or nul (0) before and after each element. If MXML_NO_CALLBACK
+ * is specified, whitespace will only be added before MXML_TEXT nodes
+ * with leading whitespace and before attribute names inside opening
+ * element tags.
  */
 
-int					/* O - 0 on success, -1 on error */
+int					/* O - 0 on success, -1 on error. */
 mxmlSaveFile(mxml_node_t *node,		/* I - Node to write */
              FILE        *fp,		/* I - File to write to */
 	     int         (*cb)(mxml_node_t *, int))
-					/* I - Whitespace callback */
+					/* I - Whitespace callback or MXML_NO_CALLBACK */
 {
   int	col;				/* Final column */
 
@@ -999,5 +1012,5 @@ mxml_write_ws(mxml_node_t *node,	/* I - Current node */
 
 
 /*
- * End of "$Id: mxml-file.c,v 1.9 2003/06/04 23:20:31 mike Exp $".
+ * End of "$Id: mxml-file.c,v 1.10 2003/06/14 23:56:47 mike Exp $".
  */

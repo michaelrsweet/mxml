@@ -156,7 +156,7 @@ constrains the search to a particular node's children.</description>
     </argument>
   </function>
   <function name="mxmlIndexDelete">
-    <description>Sort attribute...</description>
+    <description>Delete an index.</description>
     <argument name="ind" direction="I">
       <type>mxml_index_t *</type>
       <description>Index to delete</description>
@@ -167,7 +167,9 @@ constrains the search to a particular node's children.</description>
       <type>mxml_node_t *</type>
       <description>Next node or NULL if there is none</description>
     </returnvalue>
-    <description>Return the next node in the index.</description>
+    <description>Return the next node in the index.
+
+Nodes are returned in the sorted order of the index.</description>
     <argument name="ind" direction="I">
       <type>mxml_index_t *</type>
       <description>Index to enumerate</description>
@@ -178,7 +180,12 @@ constrains the search to a particular node's children.</description>
       <type>mxml_node_t *</type>
       <description>Node or NULL if none found</description>
     </returnvalue>
-    <description>Find the next matching node.</description>
+    <description>Find the next matching node.
+
+You should call mxmlIndexReset() prior to using this function for
+the first time with a particular set of &quot;element&quot; and &quot;value&quot;
+strings. Passing NULL for both &quot;element&quot; and &quot;value&quot; is equivalent
+to calling mxmlIndexEnum().</description>
     <argument name="ind" direction="I">
       <type>mxml_index_t *</type>
       <description>Index to search</description>
@@ -197,7 +204,13 @@ constrains the search to a particular node's children.</description>
       <type>mxml_index_t *</type>
       <description>New index</description>
     </returnvalue>
-    <description>Create a new index.</description>
+    <description>Create a new index.
+
+The index will contain all nodes that contain the named element and/or
+attribute. If both &quot;element&quot; and &quot;attr&quot; are NULL, then the index will
+contain a sorted list of the elements in the node tree.  Nodes are
+sorted by element name and optionally by attribute value if the &quot;attr&quot;
+argument is not NULL.</description>
     <argument name="node" direction="I">
       <type>mxml_node_t *</type>
       <description>XML node tree</description>
@@ -216,7 +229,11 @@ constrains the search to a particular node's children.</description>
       <type>mxml_node_t *</type>
       <description>First node or NULL if there is none</description>
     </returnvalue>
-    <description>Return the first node in the index.</description>
+    <description>Reset the enumeration/find pointer in the index and
+return the first node in the index.
+
+This function should be called prior to using mxmlIndexEnum() or
+mxmlIndexFind() for the first time.</description>
     <argument name="ind" direction="I">
       <type>mxml_index_t *</type>
       <description>Index to reset</description>
@@ -826,6 +843,6 @@ the walk to the node's children.</description>
   </variable>
   <variable name="sort_attr_name">
     <type>static const char *</type>
-    <description>Delete an index.</description>
+    <description>Current attribute to sort on</description>
   </variable>
 </mxmldoc>

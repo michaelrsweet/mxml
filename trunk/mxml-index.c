@@ -1,5 +1,5 @@
 /*
- * "$Id: mxml-index.c,v 1.1 2004/05/16 05:25:38 mike Exp $"
+ * "$Id: mxml-index.c,v 1.2 2004/05/16 13:09:44 mike Exp $"
  *
  * Index support code for Mini-XML, a small XML-like file parsing library.
  *
@@ -21,7 +21,8 @@
  *   mxmlIndexEnum()     - Return the next node in the index.
  *   mxmlIndexFind()     - Find the next matching node.
  *   mxmlIndexNew()      - Create a new index.
- *   mxmlIndexReset()    - Return the first node in the index.
+ *   mxmlIndexReset()    - Reset the enumeration/find pointer in the index and
+ *                         return the first node in the index.
  *   sort_attr()         - Sort by attribute value...
  *   sort_attr()         - Sort by element name...
  *   sort_element_attr() - Sort by element name and attribute value...
@@ -39,6 +40,8 @@
  * Sort functions...
  */
 
+static int	index_compare(mxml_index_t *ind, const char *element,
+		              const char *value, mxml_node_t *node);
 static int	sort_attr(const void *a, const void *b);
 static int	sort_element(const void *a, const void *b);
 static int	sort_element_attr(const void *a, const void *b);
@@ -48,7 +51,7 @@ static int	sort_element_attr(const void *a, const void *b);
  * Sort attribute...
  */
 
-static const char *sort_attr_name;
+static const char *sort_attr_name;	/* Current attribute to sort on */
 
 
 /*
@@ -81,6 +84,8 @@ mxmlIndexDelete(mxml_index_t *ind)	/* I - Index to delete */
 
 /*
  * 'mxmlIndexEnum()' - Return the next node in the index.
+ *
+ * Nodes are returned in the sorted order of the index.
  */
 
 mxml_node_t *				/* O - Next node or NULL if there is none */
@@ -106,6 +111,11 @@ mxmlIndexEnum(mxml_index_t *ind)	/* I - Index to enumerate */
 
 /*
  * 'mxmlIndexFind()' - Find the next matching node.
+ *
+ * You should call mxmlIndexReset() prior to using this function for
+ * the first time with a particular set of "element" and "value"
+ * strings. Passing NULL for both "element" and "value" is equivalent
+ * to calling mxmlIndexEnum().
  */
 
 mxml_node_t *				/* O - Node or NULL if none found */
@@ -113,7 +123,10 @@ mxmlIndexFind(mxml_index_t *ind,	/* I - Index to search */
               const char   *element,	/* I - Element name to find, if any */
 	      const char   *value)	/* I - Attribute value, if any */
 {
-  int	i, j;				/* Looping vars */
+  int		diff,			/* Difference between names */
+		current,		/* Current entity in search */
+		first,			/* First entity in search */
+		last;			/* Last entity in search */
 
 
  /*
@@ -132,58 +145,85 @@ mxmlIndexFind(mxml_index_t *ind,	/* I - Index to search */
     return (mxmlIndexEnum(ind));
 
  /*
-  * Find the node...
+  * If there are no nodes in the index, return NULL...
   */
 
-  for (i = ind->cur_node; i < ind->num_nodes; i ++)
+  if (!ind->num_nodes)
+    return (NULL);
+
+ /*
+  * If cur_node == 0, then find the first matching node...
+  */
+
+  if (ind->cur_node == 0)
   {
    /*
-    * Check the element name...
+    * Find the first node using a modified binary search algorithm...
     */
 
-    if (element)
+    first = 0;
+    last  = ind->num_nodes - 1;
+
+    while (last > first)
     {
-      if ((j = strcmp(element, ind->nodes[i]->value.element.name)) > 0)
+      current = (first + last) / 2;
+
+      if ((diff = index_compare(ind, element, value, ind->nodes[current])) == 0)
       {
        /*
-        * No more elements <= name...
+        * Found a match, move back to find the first...
 	*/
 
-        ind->cur_node = ind->num_nodes;
+        while (current > 0 &&
+	       !index_compare(ind, element, value, ind->nodes[current - 1]))
+	  current --;
 
-        return (NULL);
+       /*
+        * Return the first match and save the index to the next...
+	*/
+
+        ind->cur_node = current + 1;
+
+	return (ind->nodes[current]);
       }
-      else if (j < 0)
-        continue;
+      else if (diff < 0)
+	last = current;
+      else
+	first = current;
     }
 
    /*
-    * Check the attribute value...
+    * If we get this far, then we found exactly 0 or 1 matches...
     */
 
-    if (value)
+    current       = (first + last) / 2;
+    ind->cur_node = ind->num_nodes;
+
+    if (!index_compare(ind, element, value, ind->nodes[current]))
     {
-      if ((j = strcmp(value, mxmlElementGetAttr(ind->nodes[i], ind->attr))) > 0)
-      {
-       /*
-        * No more attributes <= value...
-	*/
+     /*
+      * Found exactly one match...
+      */
 
-        ind->cur_node = ind->num_nodes;
-
-        return (NULL);
-      }
-      else if (j != 0)
-        continue;
+      return (ind->nodes[current]);
     }
+    else
+    {
+     /*
+      * No matches...
+      */
 
+      return (NULL);
+    }
+  }
+  else if (ind->cur_node < ind->num_nodes &&
+           !index_compare(ind, element, value, ind->nodes[ind->cur_node]))
+  {
    /*
-    * Got a match, return it...
+    * Return the next matching node...
     */
 
-    ind->cur_node = i + 1;
-
-    return (ind->nodes[i]);
+    return (ind->nodes[ind->cur_node ++]);
   }
 
  /*
@@ -198,6 +238,12 @@ mxmlIndexFind(mxml_index_t *ind,	/* I - Index to search */
 
 /*
  * 'mxmlIndexNew()' - Create a new index.
+ *
+ * The index will contain all nodes that contain the named element and/or
+ * attribute. If both "element" and "attr" are NULL, then the index will
+ * contain a sorted list of the elements in the node tree.  Nodes are
+ * sorted by element name and optionally by attribute value if the "attr"
+ * argument is not NULL.
  */
 
 mxml_index_t *				/* O - New index */
@@ -306,7 +352,11 @@ mxmlIndexNew(mxml_node_t *node,		/* I - XML node tree */
 
 
 /*
- * 'mxmlIndexReset()' - Return the first node in the index.
+ * 'mxmlIndexReset()' - Reset the enumeration/find pointer in the index and
+ *                      return the first node in the index.
+ *
+ * This function should be called prior to using mxmlIndexEnum() or
+ * mxmlIndexFind() for the first time.
  */
 
 mxml_node_t *				/* O - First node or NULL if there is none */
@@ -330,9 +380,50 @@ mxmlIndexReset(mxml_index_t *ind)	/* I - Index to reset */
   */
 
   if (ind->num_nodes)
-    return (ind->nodes);
+    return (ind->nodes[0]);
   else
     return (NULL);
+}
+
+
+/*
+ * 'index_compare()' - Compare a node with index values.
+ */
+
+static int				/* O - Result of comparison */
+index_compare(mxml_index_t *ind,	/* I - Index */
+              const char   *element,	/* I - Element name or NULL */
+	      const char   *value,	/* I - Attribute value or NULL */
+              mxml_node_t  *node)	/* I - Node */
+{
+  int	diff;				/* Difference */
+
+
+ /*
+  * Check the element name...
+  */
+
+  if (element)
+  {
+    if ((diff = strcmp(element, node->value.element.name)) != 0)
+      return (diff);
+  }
+
+ /*
+  * Check the attribute value...
+  */
+
+  if (value)
+  {
+    if ((diff = strcmp(value, mxmlElementGetAttr(node, ind->attr))) != 0)
+      return (diff);
+  }
+
+ /*
+  * No difference, return 0...
+  */
+
+  return (0);
 }
 
 
@@ -383,5 +474,5 @@ sort_element_attr(const void *a,	/* I - First node */
 
 
 /*
- * End of "$Id: mxml-index.c,v 1.1 2004/05/16 05:25:38 mike Exp $".
+ * End of "$Id: mxml-index.c,v 1.2 2004/05/16 13:09:44 mike Exp $".
  */

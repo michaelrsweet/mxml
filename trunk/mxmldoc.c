@@ -1,5 +1,5 @@
 /*
- * "$Id: mxmldoc.c,v 1.21 2003/12/03 22:22:49 mike Exp $"
+ * "$Id: mxmldoc.c,v 1.22 2003/12/04 04:55:57 mike Exp $"
  *
  * Documentation generator using mini-XML, a small XML-like file parsing
  * library.
@@ -716,8 +716,19 @@ scan_file(const char  *filename,	/* I - Filename */
 		}
 		break;
 
+	    case '=' :
+		if (type)
+		{
+#ifdef DEBUG
+                  fputs("Identifier: <<<< = >>>\n", stderr);
+#endif /* DEBUG */
+                  ch = type->last_child->value.text.string[0];
+		  mxmlNewText(type, isalnum(ch) || ch == '_', "=");
+		}
+		break;
+
             default :			/* Other */
-	        if (isalpha(ch) || ch == '_' || ch == '.')
+	        if (isalnum(ch) || ch == '_' || ch == '.')
 		{
 		  state     = STATE_IDENTIFIER;
 		  bufptr    = buffer;
@@ -1061,11 +1072,15 @@ scan_file(const char  *filename,	/* I - Filename */
 
 #ifdef DEBUG
                 fprintf(stderr, "function: %s\n", buffer);
+		fprintf(stderr, "    comment=%p\n", comment);
 		fprintf(stderr, "    child = (%p) %s\n",
-		        comment->child, comment->child->value.text.string);
+		        comment->child,
+			comment->child ?
+			    comment->child->value.text.string : "(null)");
 		fprintf(stderr, "    last_child = (%p) %s\n",
 		        comment->last_child,
-			comment->last_child->value.text.string);
+			comment->last_child ?
+			    comment->last_child->value.text.string : "(null)");
 #endif /* DEBUG */
 
                 if (!type->last_child ||
@@ -1211,7 +1226,7 @@ scan_file(const char  *filename,	/* I - Filename */
 			    buffer);
 	      }
 	    }
-	    else if (enumeration)
+	    else if (enumeration && !isdigit(buffer[0]))
 	    {
 #ifdef DEBUG
 	      fprintf(stderr, "Constant: <<<< %s >>>\n", buffer);
@@ -1920,7 +1935,7 @@ write_documentation(mxml_node_t *doc)	/* I - XML documentation */
       puts("<h3>Definition</h3>");
       puts("<pre>");
 
-      printf("struct %s\n{\n", name);
+      printf("union %s\n{\n", name);
       for (arg = mxmlFindElement(scut, scut, "variable", NULL, NULL,
                         	 MXML_DESCEND_FIRST);
 	   arg;
@@ -2148,5 +2163,5 @@ ws_cb(mxml_node_t *node,		/* I - Element node */
 
 
 /*
- * End of "$Id: mxmldoc.c,v 1.21 2003/12/03 22:22:49 mike Exp $".
+ * End of "$Id: mxmldoc.c,v 1.22 2003/12/04 04:55:57 mike Exp $".
  */

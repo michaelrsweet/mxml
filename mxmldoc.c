@@ -1,5 +1,5 @@
 /*
- * "$Id: mxmldoc.c,v 1.35 2004/05/02 16:04:40 mike Exp $"
+ * "$Id: mxmldoc.c,v 1.36 2004/05/02 22:02:36 mike Exp $"
  *
  * Documentation generator using Mini-XML, a small XML-like file parsing
  * library.
@@ -52,58 +52,64 @@
  * as desired.  The following is a poor-man's schema:
  *
  * <?xml version="1.0"?>
- * <namespace name="">                        [optional...]
- *   <constant name="">
- *     <description>descriptive text</description>
- *   </constant>
+ * <mxmldoc xmlns="http://www.easysw.com"
+ *  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ *  xsi:schemaLocation="http://www.easysw.com/~mike/mxml/mxmldoc.xsd">
  *
- *   <enumeration name="">
- *     <constant name="">...</constant>
- *   </enumeration>
- *
- *   <typedef name="">
- *     <description>descriptive text</description>
- *     <type>type string</type>
- *   </typedef>
- *
- *   <function name="" scope="">
- *     <description>descriptive text</description>
- *     <argument name="" direction="I|O|IO" default="">
+ *   <namespace name="">                        [optional...]
+ *     <constant name="">
+ *       <description>descriptive text</description>
+ *     </constant>
+ *  
+ *     <enumeration name="">
+ *       <description>descriptive text</description>
+ *       <constant name="">...</constant>
+ *     </enumeration>
+ *  
+ *     <typedef name="">
  *       <description>descriptive text</description>
  *       <type>type string</type>
- *     </argument>
- *     <returnvalue>
+ *     </typedef>
+ *  
+ *     <function name="" scope="">
+ *       <description>descriptive text</description>
+ *       <argument name="" direction="I|O|IO" default="">
+ *         <description>descriptive text</description>
+ *         <type>type string</type>
+ *       </argument>
+ *       <returnvalue>
+ *         <description>descriptive text</description>
+ *         <type>type string</type>
+ *       </returnvalue>
+ *       <seealso>function names separated by spaces</seealso>
+ *     </function>
+ *  
+ *     <variable name="" scope="">
  *       <description>descriptive text</description>
  *       <type>type string</type>
- *     </returnvalue>
- *     <seealso>function names separated by spaces</seealso>
- *   </function>
- *
- *   <variable name="" scope="">
- *     <description>descriptive text</description>
- *     <type>type string</type>
- *   </variable>
- *
- *   <struct name="">
- *     <description>descriptive text</description>
- *     <variable name="">...</variable>
- *     <function name="">...</function>
- *   </struct>
- *
- *   <union name="">
- *     <description>descriptive text</description>
- *     <variable name="">...</variable>
- *   </union>
- *
- *   <class name="" parent="">
- *     <description>descriptive text</description>
- *     <class name="">...</class>
- *     <enumeration name="">...</enumeration>
- *     <function name="">...</function>
- *     <struct name="">...</struct>
- *     <variable name="">...</variable>
- *   </class>
- * </namespace>
+ *     </variable>
+ *  
+ *     <struct name="">
+ *       <description>descriptive text</description>
+ *       <variable name="">...</variable>
+ *       <function name="">...</function>
+ *     </struct>
+ *  
+ *     <union name="">
+ *       <description>descriptive text</description>
+ *       <variable name="">...</variable>
+ *     </union>
+ *  
+ *     <class name="" parent="">
+ *       <description>descriptive text</description>
+ *       <class name="">...</class>
+ *       <enumeration name="">...</enumeration>
+ *       <function name="">...</function>
+ *       <struct name="">...</struct>
+ *       <variable name="">...</variable>
+ *     </class>
+ *   </namespace>
+ * </mxmldoc>
  */
  
 
@@ -149,6 +155,7 @@ main(int  argc,				/* I - Number of command-line args */
   int		i;			/* Looping var */
   FILE		*fp;			/* File to read */
   mxml_node_t	*doc;			/* XML documentation tree */
+  mxml_node_t	*mxmldoc;		/* mxmldoc node */
 
 
  /*
@@ -177,13 +184,28 @@ main(int  argc,				/* I - Number of command-line args */
 
     if (!doc)
     {
+      mxmldoc = NULL;
+
       fprintf(stderr, "mxmldoc: Unable to read the XML documentation file \"%s\"!\n",
               argv[1]);
-      doc = mxmlNewElement(NULL, "?xml");
-      mxmlElementSetAttr(doc, "version", "1.0");
+    }
+    else if ((mxmldoc = mxmlFindElement(doc, doc, "mxmldoc", NULL,
+                                        NULL, MXML_DESCEND)) == NULL)
+    {
+      fprintf(stderr, "mxmldoc: XML documentation file \"%s\" is missing <mxmldoc> node!!\n",
+              argv[1]);
+
+      mxmlDelete(doc);
+      doc = NULL;
     }
   }
   else
+  {
+    doc     = NULL;
+    mxmldoc = NULL;
+  }
+
+  if (!doc)
   {
    /*
     * Create an empty XML documentation file...
@@ -191,6 +213,21 @@ main(int  argc,				/* I - Number of command-line args */
 
     doc = mxmlNewElement(NULL, "?xml");
     mxmlElementSetAttr(doc, "version", "1.0");
+
+    mxmldoc = mxmlNewElement(doc, "mxmldoc");
+
+#ifdef MXML_INCLUDE_SCHEMA
+   /*
+    * Currently we don't include the schema/namespace stuff with the
+    * XML output since some validators don't seem to like it...
+    */
+
+    mxmlElementSetAttr(mxmldoc, "xmlns", "http://www.easysw.com");
+    mxmlElementSetAttr(mxmldoc, "xmlns:xsi",
+                       "http://www.w3.org/2001/XMLSchema-instance");
+    mxmlElementSetAttr(mxmldoc, "xsi:schemaLocation",
+                       "http://www.easysw.com/~mike/mxml/mxmldoc.xsd");
+#endif /* MXML_INCLUDE_SCHEMA */
   }
 
  /*
@@ -205,7 +242,7 @@ main(int  argc,				/* I - Number of command-line args */
       mxmlDelete(doc);
       return (1);
     }
-    else if (scan_file(argv[i], fp, doc))
+    else if (scan_file(argv[i], fp, mxmldoc))
     {
       fclose(fp);
       mxmlDelete(doc);
@@ -250,7 +287,7 @@ main(int  argc,				/* I - Number of command-line args */
   * Write HTML documentation...
   */
 
-  write_documentation(doc);
+  write_documentation(mxmldoc);
 
  /*
   * Delete the tree and return...
@@ -969,7 +1006,7 @@ scan_file(const char  *filename,	/* I - Filename */
 			update_comment(typedefnode,
 			               mxmlNewText(description, 0, buffer));
 		      }
-		      else if (strcmp(tree->value.element.name, "?xml") &&
+		      else if (strcmp(tree->value.element.name, "mxmldoc") &&
 		               !mxmlFindElement(tree, tree, "description",
 			                        NULL, NULL, MXML_DESCEND_FIRST))
                       {
@@ -1066,7 +1103,7 @@ scan_file(const char  *filename,	/* I - Filename */
 		    update_comment(typedefnode,
 			           mxmlNewText(description, 0, buffer));
 		  }
-		  else if (strcmp(tree->value.element.name, "?xml") &&
+		  else if (strcmp(tree->value.element.name, "mxmldoc") &&
 		           !mxmlFindElement(tree, tree, "description",
 			                    NULL, NULL, MXML_DESCEND_FIRST))
                   {
@@ -1147,7 +1184,7 @@ scan_file(const char  *filename,	/* I - Filename */
 	      update_comment(typedefnode,
 			     mxmlNewText(description, 0, buffer));
 	    }
-	    else if (strcmp(tree->value.element.name, "?xml") &&
+	    else if (strcmp(tree->value.element.name, "mxmldoc") &&
 		     !mxmlFindElement(tree, tree, "description",
 			              NULL, NULL, MXML_DESCEND_FIRST))
             {
@@ -1283,7 +1320,7 @@ scan_file(const char  *filename,	/* I - Filename */
 
 	        if (type->child &&
 		    !strcmp(type->child->value.text.string, "static") &&
-		    !strcmp(tree->value.element.name, "?xml"))
+		    !strcmp(tree->value.element.name, "mxmldoc"))
 		{
 		 /*
 		  * Remove static functions...
@@ -1334,6 +1371,8 @@ scan_file(const char  *filename,	/* I - Filename */
 		{
                   returnvalue = mxmlNewElement(function, "returnvalue");
 
+		  mxmlAdd(returnvalue, MXML_ADD_AFTER, MXML_ADD_TO_PARENT, type);
+
 		  description = mxmlNewElement(returnvalue, "description");
 #ifdef DEBUG
 		  fputs("    adding comment to returnvalue...\n", stderr);
@@ -1341,8 +1380,6 @@ scan_file(const char  *filename,	/* I - Filename */
 		  update_comment(returnvalue, comment->last_child);
 		  mxmlAdd(description, MXML_ADD_AFTER, MXML_ADD_TO_PARENT,
 		          comment->last_child);
-
-		  mxmlAdd(returnvalue, MXML_ADD_AFTER, MXML_ADD_TO_PARENT, type);
                 }
 		else
 		  mxmlDelete(type);
@@ -1408,7 +1445,7 @@ scan_file(const char  *filename,	/* I - Filename */
 		  }
 
 		  if (typedefnode)
-		    mxmlAdd(typedefnode, MXML_ADD_AFTER, MXML_ADD_TO_PARENT,
+		    mxmlAdd(typedefnode, MXML_ADD_BEFORE, MXML_ADD_TO_PARENT,
 		            type);
                   else
 		    mxmlDelete(type);
@@ -1746,6 +1783,7 @@ write_documentation(mxml_node_t *doc)	/* I - XML documentation */
   puts("<html xmlns='http://www.w3.org/1999/xhtml' xml:lang='en' lang='en'>");
   puts("<head>");
   puts("\t<title>Documentation</title>");
+  puts("\t<meta name='creator' content='" MXML_VERSION "'/>");
   puts("\t<style><!--");
   puts("\th1, h2, h3, p { font-family: sans-serif; text-align: justify; }");
   puts("\ttt, pre a:link, pre a:visited, tt a:link, tt a:visited { font-weight: bold; color: #7f0000; }");
@@ -1823,7 +1861,7 @@ write_documentation(mxml_node_t *doc)	/* I - XML documentation */
       puts("<h4>Definition</h4>");
       puts("<pre>");
 
-      printf("class %s", name);
+      printf("class %s", cname);
       if ((parent = mxmlElementGetAttr(scut, "parent")) != NULL)
         printf(" %s", parent);
       puts("\n{");
@@ -2659,6 +2697,7 @@ ws_cb(mxml_node_t *node,		/* I - Element node */
 	    strcmp(name, "constant") &&
 	    strcmp(name, "enumeration") &&
 	    strcmp(name, "function") &&
+	    strcmp(name, "mxmldoc") &&
 	    strcmp(name, "namespace") &&
 	    strcmp(name, "returnvalue") &&
 	    strcmp(name, "struct") &&
@@ -2694,6 +2733,7 @@ ws_cb(mxml_node_t *node,		/* I - Element node */
 	    strcmp(name, "constant") &&
 	    strcmp(name, "enumeration") &&
 	    strcmp(name, "function") &&
+	    strcmp(name, "mxmldoc") &&
 	    strcmp(name, "namespace") &&
 	    strcmp(name, "returnvalue") &&
 	    strcmp(name, "struct") &&
@@ -2708,5 +2748,5 @@ ws_cb(mxml_node_t *node,		/* I - Element node */
 
 
 /*
- * End of "$Id: mxmldoc.c,v 1.35 2004/05/02 16:04:40 mike Exp $".
+ * End of "$Id: mxmldoc.c,v 1.36 2004/05/02 22:02:36 mike Exp $".
  */

@@ -1,10 +1,10 @@
 /*
- * "$Id: mxml-search.c,v 1.8 2003/07/27 23:11:40 mike Exp $"
+ * "$Id: mxml-search.c,v 1.9 2004/04/06 01:47:20 mike Exp $"
  *
  * Search/navigation functions for mini-XML, a small XML-like file
  * parsing library.
  *
- * Copyright 2003 by Michael Sweet.
+ * Copyright 2003-2004 by Michael Sweet.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -195,5 +195,5 @@ mxmlWalkPrev(mxml_node_t *node,		/* I - Current node */
 
 
 /*
- * End of "$Id: mxml-search.c,v 1.8 2003/07/27 23:11:40 mike Exp $".
+ * End of "$Id: mxml-search.c,v 1.9 2004/04/06 01:47:20 mike Exp $".
  */

@@ -1,9 +1,9 @@
 dnl
-dnl "$Id: configure.in,v 1.8 2003/09/28 12:44:39 mike Exp $"
+dnl "$Id: configure.in,v 1.9 2004/04/06 01:47:20 mike Exp $"
 dnl
 dnl Configuration script for mini-XML, a small XML-like file parsing library.
 dnl
-dnl Copyright 2003 by Michael Sweet.
+dnl Copyright 2003-2004 by Michael Sweet.
 dnl
 dnl This program is free software; you can redistribute it and/or
 dnl modify it under the terms of the GNU Library General Public
@@ -167,5 +167,5 @@ dnl Output the makefile, etc...
 AC_OUTPUT(Makefile mxml.list)
 
 dnl
-dnl End of "$Id: configure.in,v 1.8 2003/09/28 12:44:39 mike Exp $".
+dnl End of "$Id: configure.in,v 1.9 2004/04/06 01:47:20 mike Exp $".
 dnl

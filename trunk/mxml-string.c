@@ -1,9 +1,9 @@
 /*
- * "$Id: mxml-string.c,v 1.2 2003/09/28 12:44:39 mike Exp $"
+ * "$Id: mxml-string.c,v 1.3 2004/04/06 01:47:20 mike Exp $"
  *
  * String functions for mini-XML, a small XML-like file parsing library.
  *
- * Copyright 2003 by Michael Sweet.
+ * Copyright 2003-2004 by Michael Sweet.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -18,6 +18,7 @@
  * Contents:
  *
  *   mxml_strdup()    - Duplicate a string.
+ *   mxml_strdupf()   - Format and duplicate a string.
  *   mxml_vsnprintf() - Format a string into a fixed size buffer.
  */
 
@@ -372,5 +373,5 @@ mxml_vsnprintf(char       *buffer,	/* O - Output buffer */
 
 
 /*
- * End of "$Id: mxml-string.c,v 1.2 2003/09/28 12:44:39 mike Exp $".
+ * End of "$Id: mxml-string.c,v 1.3 2004/04/06 01:47:20 mike Exp $".
  */

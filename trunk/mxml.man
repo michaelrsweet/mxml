@@ -1,9 +1,9 @@
 .\"
-.\" "$Id: mxml.man,v 1.2 2003/07/23 14:47:17 mike Exp $"
+.\" "$Id: mxml.man,v 1.3 2004/04/06 01:47:20 mike Exp $"
 .\"
 .\" mxml man page for mini-XML, a small XML-like file parsing library.
 .\"
-.\" Copyright 2003 by Michael Sweet.
+.\" Copyright 2003-2004 by Michael Sweet.
 .\"
 .\" This program is free software; you can redistribute it and/or
 .\" modify it under the terms of the GNU Library General Public
@@ -175,7 +175,7 @@ is used for a particular node or the entire tree:
 .SH SEE ALSO
 mxmldoc(1), http://www.easysw.com/~mike/mxml/
 .SH COPYRIGHT
-Copyright 2003 by Michael Sweet.
+Copyright 2003-2004 by Michael Sweet.
 .\"
-.\" End of "$Id: mxml.man,v 1.2 2003/07/23 14:47:17 mike Exp $".
+.\" End of "$Id: mxml.man,v 1.3 2004/04/06 01:47:20 mike Exp $".
 .\"

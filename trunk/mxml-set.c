@@ -1,9 +1,9 @@
 /*
- * "$Id: mxml-set.c,v 1.1 2003/09/28 21:09:04 mike Exp $"
+ * "$Id: mxml-set.c,v 1.2 2004/04/06 01:47:20 mike Exp $"
  *
  * Node set functions for mini-XML, a small XML-like file parsing library.
  *
- * Copyright 2003 by Michael Sweet.
+ * Copyright 2003-2004 by Michael Sweet.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -220,5 +220,5 @@ mxmlSetTextf(mxml_node_t *node,		/* I - Node to set */
 
 
 /*
- * End of "$Id: mxml-set.c,v 1.1 2003/09/28 21:09:04 mike Exp $".
+ * End of "$Id: mxml-set.c,v 1.2 2004/04/06 01:47:20 mike Exp $".
  */

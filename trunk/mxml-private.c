@@ -1,9 +1,9 @@
 /*
- * "$Id: mxml-private.c,v 1.2 2003/12/03 03:59:04 mike Exp $"
+ * "$Id: mxml-private.c,v 1.3 2004/04/06 01:47:20 mike Exp $"
  *
  * Private functions for mini-XML, a small XML-like file parsing library.
  *
- * Copyright 2003 by Michael Sweet.
+ * Copyright 2003-2004 by Michael Sweet.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -128,5 +128,5 @@ mxml_real_cb(mxml_node_t *node)		/* I - Current node */
 
 
 /*
- * End of "$Id: mxml-private.c,v 1.2 2003/12/03 03:59:04 mike Exp $".
+ * End of "$Id: mxml-private.c,v 1.3 2004/04/06 01:47:20 mike Exp $".
  */

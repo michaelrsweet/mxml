@@ -1,4 +1,6 @@
-The first release candidate for Mini-XML 2.0 is now available.
+Mini-XML 2.0 is now available for download from:
+
+    http://www.easysw.com/~mike/mxml/software.php
 
 Mini-XML 2.0 adds a new programmers manual, support for reading
 UTF-16 encoded files and strings (all output is still encoded

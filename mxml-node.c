@@ -1,5 +1,5 @@
 /*
- * "$Id: mxml-node.c,v 1.9 2003/09/28 21:09:04 mike Exp $"
+ * "$Id: mxml-node.c,v 1.10 2003/12/03 03:59:04 mike Exp $"
  *
  * Node support code for mini-XML, a small XML-like file parsing library.
  *
@@ -61,8 +61,10 @@ mxmlAdd(mxml_node_t *parent,		/* I - Parent node */
         mxml_node_t *child,		/* I - Child node for where or MXML_ADD_TO_PARENT */
 	mxml_node_t *node)		/* I - Node to add */
 {
-/*  fprintf(stderr, "mxmlAdd(parent=%p, where=%d, child=%p, node=%p)\n", parent,
-         where, child, node);*/
+#ifdef DEBUG
+  fprintf(stderr, "mxmlAdd(parent=%p, where=%d, child=%p, node=%p)\n", parent,
+          where, child, node);
+#endif /* DEBUG */
 
  /*
   * Range check input...
@@ -70,6 +72,14 @@ mxmlAdd(mxml_node_t *parent,		/* I - Parent node */
 
   if (!parent || !node)
     return;
+
+#if DEBUG > 1
+  fprintf(stderr, "    BEFORE: node->parent=%p\n", node->parent);
+  fprintf(stderr, "    BEFORE: parent->child=%p\n", parent->child);
+  fprintf(stderr, "    BEFORE: parent->last_child=%p\n", parent->last_child);
+  fprintf(stderr, "    BEFORE: parent->prev=%p\n", parent->prev);
+  fprintf(stderr, "    BEFORE: parent->next=%p\n", parent->next);
+#endif /* DEBUG > 1 */
 
  /*
   * Remove the node from any existing parent...
@@ -155,6 +165,14 @@ mxmlAdd(mxml_node_t *parent,		/* I - Parent node */
 	}
         break;
   }
+
+#if DEBUG > 1
+  fprintf(stderr, "    AFTER: node->parent=%p\n", node->parent);
+  fprintf(stderr, "    AFTER: parent->child=%p\n", parent->child);
+  fprintf(stderr, "    AFTER: parent->last_child=%p\n", parent->last_child);
+  fprintf(stderr, "    AFTER: parent->prev=%p\n", parent->prev);
+  fprintf(stderr, "    AFTER: parent->next=%p\n", parent->next);
+#endif /* DEBUG > 1 */
 }
 
 
@@ -171,7 +189,9 @@ mxmlDelete(mxml_node_t *node)		/* I - Node to delete */
   int	i;				/* Looping var */
 
 
-/*  fprintf(stderr, "mxmlDelete(node=%p)\n", node);*/
+#ifdef DEBUG
+  fprintf(stderr, "mxmlDelete(node=%p)\n", node);
+#endif /* DEBUG */
 
  /*
   * Range check input...
@@ -255,6 +275,11 @@ mxmlNewElement(mxml_node_t *parent,	/* I - Parent node or MXML_NO_PARENT */
   mxml_node_t	*node;			/* New node */
 
 
+#ifdef DEBUG
+  fprintf(stderr, "mxmlNewElement(parent=%p, name=\"%s\")\n", parent,
+          name ? name : "(null)");
+#endif /* DEBUG */
+
  /*
   * Range check input...
   */
@@ -287,6 +312,10 @@ mxmlNewInteger(mxml_node_t *parent,	/* I - Parent node or MXML_NO_PARENT */
 {
   mxml_node_t	*node;			/* New node */
 
+
+#ifdef DEBUG
+  fprintf(stderr, "mxmlNewInteger(parent=%p, integer=%d)\n", parent, integer);
+#endif /* DEBUG */
 
  /*
   * Range check input...
@@ -322,6 +351,11 @@ mxmlNewOpaque(mxml_node_t *parent,	/* I - Parent node or MXML_NO_PARENT */
   mxml_node_t	*node;			/* New node */
 
 
+#ifdef DEBUG
+  fprintf(stderr, "mxmlNewOpaque(parent=%p, opaque=\"%s\")\n", parent,
+          opaque ? opaque : "(null)");
+#endif /* DEBUG */
+
  /*
   * Range check input...
   */
@@ -354,6 +388,10 @@ mxmlNewReal(mxml_node_t *parent,	/* I - Parent node or MXML_NO_PARENT */
 {
   mxml_node_t	*node;			/* New node */
 
+
+#ifdef DEBUG
+  fprintf(stderr, "mxmlNewReal(parent=%p, real=%g)\n", parent, real);
+#endif /* DEBUG */
 
  /*
   * Range check input...
@@ -390,6 +428,11 @@ mxmlNewText(mxml_node_t *parent,	/* I - Parent node or MXML_NO_PARENT */
 {
   mxml_node_t	*node;			/* New node */
 
+
+#ifdef DEBUG
+  fprintf(stderr, "mxmlNewText(parent=%p, whitespace=%d, string=\"%s\")\n",
+          parent, whitespace, string ? string : "(null)");
+#endif /* DEBUG */
 
  /*
   * Range check input...
@@ -432,6 +475,11 @@ mxmlNewTextf(mxml_node_t *parent,	/* I - Parent node or MXML_NO_PARENT */
   va_list	ap;			/* Pointer to arguments */
 
 
+#ifdef DEBUG
+  fprintf(stderr, "mxmlNewTextf(parent=%p, whitespace=%d, format=\"%s\", ...)\n",
+          parent, whitespace, format ? format : "(null)");
+#endif /* DEBUG */
+
  /*
   * Range check input...
   */
@@ -467,11 +515,13 @@ mxmlNewTextf(mxml_node_t *parent,	/* I - Parent node or MXML_NO_PARENT */
 void
 mxmlRemove(mxml_node_t *node)		/* I - Node to remove */
 {
+#ifdef DEBUG
+  fprintf(stderr, "mxmlRemove(node=%p)\n", node);
+#endif /* DEBUG */
+
  /*
   * Range check input...
   */
-
-/*  fprintf(stderr, "mxmlRemove(node=%p)\n", node);*/
 
   if (!node || !node->parent)
     return;
@@ -479,6 +529,19 @@ mxmlRemove(mxml_node_t *node)		/* I - Node to remove */
  /*
   * Remove from parent...
   */
+
+#if DEBUG > 1
+  fprintf(stderr, "    BEFORE: node->parent=%p\n", node->parent);
+  if (node->parent)
+  {
+    fprintf(stderr, "    BEFORE: node->parent->child=%p\n", node->parent->child);
+    fprintf(stderr, "    BEFORE: node->parent->last_child=%p\n", node->parent->last_child);
+  }
+  fprintf(stderr, "    BEFORE: node->child=%p\n", node->child);
+  fprintf(stderr, "    BEFORE: node->last_child=%p\n", node->last_child);
+  fprintf(stderr, "    BEFORE: node->prev=%p\n", node->prev);
+  fprintf(stderr, "    BEFORE: node->next=%p\n", node->next);
+#endif /* DEBUG > 1 */
 
   if (node->prev)
     node->prev->next = node->next;
@@ -493,6 +556,19 @@ mxmlRemove(mxml_node_t *node)		/* I - Node to remove */
   node->parent = NULL;
   node->prev   = NULL;
   node->next   = NULL;
+
+#if DEBUG > 1
+  fprintf(stderr, "    AFTER: node->parent=%p\n", node->parent);
+  if (node->parent)
+  {
+    fprintf(stderr, "    AFTER: node->parent->child=%p\n", node->parent->child);
+    fprintf(stderr, "    AFTER: node->parent->last_child=%p\n", node->parent->last_child);
+  }
+  fprintf(stderr, "    AFTER: node->child=%p\n", node->child);
+  fprintf(stderr, "    AFTER: node->last_child=%p\n", node->last_child);
+  fprintf(stderr, "    AFTER: node->prev=%p\n", node->prev);
+  fprintf(stderr, "    AFTER: node->next=%p\n", node->next);
+#endif /* DEBUG > 1 */
 }
 
 
@@ -507,12 +583,26 @@ mxml_new(mxml_node_t *parent,		/* I - Parent node */
   mxml_node_t	*node;			/* New node */
 
 
+#if DEBUG > 1
+  fprintf(stderr, "mxml_new(parent=%p, type=%d)\n", parent, type);
+#endif /* DEBUG > 1 */
+
  /*
   * Allocate memory for the node...
   */
 
   if ((node = calloc(1, sizeof(mxml_node_t))) == NULL)
+  {
+#if DEBUG > 1
+    fputs("    returning NULL\n", stderr);
+#endif /* DEBUG > 1 */
+
     return (NULL);
+  }
+
+#if DEBUG > 1
+  fprintf(stderr, "    returning %p\n", node);
+#endif /* DEBUG > 1 */
 
  /*
   * Set the node type...
@@ -536,5 +626,5 @@ mxml_new(mxml_node_t *parent,		/* I - Parent node */
 
 
 /*
- * End of "$Id: mxml-node.c,v 1.9 2003/09/28 21:09:04 mike Exp $".
+ * End of "$Id: mxml-node.c,v 1.10 2003/12/03 03:59:04 mike Exp $".
  */

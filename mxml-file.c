@@ -1,5 +1,5 @@
 /*
- * "$Id: mxml-file.c,v 1.22 2003/12/01 15:27:47 mike Exp $"
+ * "$Id: mxml-file.c,v 1.23 2003/12/03 03:59:04 mike Exp $"
  *
  * File loading code for mini-XML, a small XML-like file parsing library.
  *
@@ -17,20 +17,21 @@
  *
  * Contents:
  *
- *   mxmlLoadFile()        - Load a file into an XML node tree.
- *   mxmlLoadString()      - Load a string into an XML node tree.
- *   mxmlSaveAllocString() - Save an XML node tree to an allocated string.
- *   mxmlSaveFile()        - Save an XML tree to a file.
- *   mxmlSaveString()      - Save an XML node tree to a string.
- *   mxml_add_char()       - Add a character to a buffer, expanding as needed.
- *   mxml_file_getc()      - Get a character from a file.
- *   mxml_load_data()      - Load data into an XML node tree.
- *   mxml_parse_element()  - Parse an element for any attributes...
- *   mxml_string_getc()    - Get a character from a string.
- *   mxml_write_name()     - Write a name string.
- *   mxml_write_node()     - Save an XML node to a file.
- *   mxml_write_string()   - Write a string, escaping & and < as needed.
- *   mxml_write_ws()       - Do whitespace callback...
+ *   mxmlLoadFile()         - Load a file into an XML node tree.
+ *   mxmlLoadString()       - Load a string into an XML node tree.
+ *   mxmlSaveAllocString()  - Save an XML node tree to an allocated string.
+ *   mxmlSaveFile()         - Save an XML tree to a file.
+ *   mxmlSaveString()       - Save an XML node tree to a string.
+ *   mxmlSetErrorCallback() - Set the error message callback.
+ *   mxml_add_char()        - Add a character to a buffer, expanding as needed.
+ *   mxml_file_getc()       - Get a character from a file.
+ *   mxml_load_data()       - Load data into an XML node tree.
+ *   mxml_parse_element()   - Parse an element for any attributes...
+ *   mxml_string_getc()     - Get a character from a string.
+ *   mxml_write_name()      - Write a name string.
+ *   mxml_write_node()      - Save an XML node to a file.
+ *   mxml_write_string()    - Write a string, escaping & and < as needed.
+ *   mxml_write_ws()        - Do whitespace callback...
  */
 
 /*
@@ -264,6 +265,20 @@ mxmlSaveString(mxml_node_t *node,	/* I - Node to write */
 
 
 /*
+ * 'mxmlSetErrorCallback()' - Set the error message callback.
+ */
+
+extern void	(*mxml_error_cb)(const char *);
+
+void
+mxmlSetErrorCallback(void (*cb)(const char *))
+					/* I - Error callback function */
+{
+  mxml_error_cb = cb;
+}
+
+
+/*
  * 'mxml_add_char()' - Add a character to a buffer, expanding as needed.
  */
 
@@ -291,8 +306,7 @@ mxml_add_char(int  ch,			/* I  - Character to add */
     {
       free(*buffer);
 
-      fprintf(stderr, "Unable to expand string buffer to %d bytes!\n",
-	      *bufsize);
+      mxml_error("Unable to expand string buffer to %d bytes!", *bufsize);
 
       return (-1);
     }
@@ -358,7 +372,7 @@ mxml_load_data(mxml_node_t *top,	/* I - Top node */
 
   if ((buffer = malloc(64)) == NULL)
   {
-    fputs("Unable to allocate string buffer!\n", stderr);
+    mxml_error("Unable to allocate string buffer!");
     return (NULL);
   }
 
@@ -411,9 +425,9 @@ mxml_load_data(mxml_node_t *top,	/* I - Top node */
         * Bad integer/real number value...
 	*/
 
-        fprintf(stderr, "Bad %s value '%s' in parent <%s>!\n",
-	        type == MXML_INTEGER ? "integer" : "real", buffer,
-		parent ? parent->value.element.name : "null");
+        mxml_error("Bad %s value '%s' in parent <%s>!",
+	           type == MXML_INTEGER ? "integer" : "real", buffer,
+		   parent ? parent->value.element.name : "null");
 	break;
       }
 
@@ -426,8 +440,8 @@ mxml_load_data(mxml_node_t *top,	/* I - Top node */
 	* Just print error for now...
 	*/
 
-	fprintf(stderr, "Unable to add value node of type %d to parent <%s>!\n",
-	        type, parent ? parent->value.element.name : "null");
+	mxml_error("Unable to add value node of type %d to parent <%s>!",
+	           type, parent ? parent->value.element.name : "null");
 	break;
       }
     }
@@ -503,8 +517,8 @@ mxml_load_data(mxml_node_t *top,	/* I - Top node */
 	  * Just print error for now...
 	  */
 
-	  fprintf(stderr, "Unable to add comment node to parent <%s>!\n",
-	          parent ? parent->value.element.name : "null");
+	  mxml_error("Unable to add comment node to parent <%s>!",
+	             parent ? parent->value.element.name : "null");
 	  break;
 	}
       }
@@ -546,8 +560,8 @@ mxml_load_data(mxml_node_t *top,	/* I - Top node */
 	  * Just print error for now...
 	  */
 
-	  fprintf(stderr, "Unable to add declaration node to parent <%s>!\n",
-	          parent ? parent->value.element.name : "null");
+	  mxml_error("Unable to add declaration node to parent <%s>!",
+	             parent ? parent->value.element.name : "null");
 	  break;
 	}
 
@@ -572,8 +586,8 @@ mxml_load_data(mxml_node_t *top,	/* I - Top node */
 	  * Close tag doesn't match tree; print an error for now...
 	  */
 
-	  fprintf(stderr, "Mismatched close tag <%s> under parent <%s>!\n",
-	          buffer, parent->value.element.name);
+	  mxml_error("Mismatched close tag <%s> under parent <%s>!",
+	             buffer, parent->value.element.name);
           break;
 	}
 
@@ -607,8 +621,8 @@ mxml_load_data(mxml_node_t *top,	/* I - Top node */
 	  * Just print error for now...
 	  */
 
-	  fprintf(stderr, "Unable to add element node to parent <%s>!\n",
-	          parent ? parent->value.element.name : "null");
+	  mxml_error("Unable to add element node to parent <%s>!",
+	             parent ? parent->value.element.name : "null");
 	  break;
 	}
 
@@ -618,8 +632,8 @@ mxml_load_data(mxml_node_t *top,	/* I - Top node */
 	{
 	  if ((ch = (*getc_cb)(p)) != '>')
 	  {
-	    fprintf(stderr, "Expected > but got '%c' instead for element <%s/>!\n",
-	            ch, buffer);
+	    mxml_error("Expected > but got '%c' instead for element <%s/>!",
+	               ch, buffer);
             break;
 	  }
 
@@ -665,8 +679,8 @@ mxml_load_data(mxml_node_t *top,	/* I - Top node */
 	  *entptr++ = ch;
 	else
 	{
-	  fprintf(stderr, "Entity name too long under parent <%s>!\n",
-	          parent ? parent->value.element.name : "null");
+	  mxml_error("Entity name too long under parent <%s>!",
+	             parent ? parent->value.element.name : "null");
           break;
 	}
 
@@ -674,8 +688,8 @@ mxml_load_data(mxml_node_t *top,	/* I - Top node */
 
       if (ch != ';')
       {
-	fprintf(stderr, "Entity name \"%s\" not terminated under parent <%s>!\n",
-	        entity, parent ? parent->value.element.name : "null");
+	mxml_error("Entity name \"%s\" not terminated under parent <%s>!",
+	           entity, parent ? parent->value.element.name : "null");
         break;
       }
 
@@ -698,8 +712,8 @@ mxml_load_data(mxml_node_t *top,	/* I - Top node */
         ch = '\"';
       else
       {
-	fprintf(stderr, "Entity name \"%s;\" not supported under parent <%s>!\n",
-	        entity, parent ? parent->value.element.name : "null");
+	mxml_error("Entity name \"%s;\" not supported under parent <%s>!",
+	           entity, parent ? parent->value.element.name : "null");
         break;
       }
 
@@ -836,7 +850,7 @@ mxml_parse_element(mxml_node_t *node,	/* I - Element node */
 
   if ((name = malloc(64)) == NULL)
   {
-    fputs("Unable to allocate memory for name!\n", stderr);
+    mxml_error("Unable to allocate memory for name!");
     return (EOF);
   }
 
@@ -845,7 +859,7 @@ mxml_parse_element(mxml_node_t *node,	/* I - Element node */
   if ((value = malloc(64)) == NULL)
   {
     free(name);
-    fputs("Unable to allocate memory for value!\n", stderr);
+    mxml_error("Unable to allocate memory for value!");
     return (EOF);
   }
 
@@ -857,9 +871,9 @@ mxml_parse_element(mxml_node_t *node,	/* I - Element node */
 
   while ((ch = (*getc_cb)(p)) != EOF)
   {
-#ifdef DEBUG
+#if DEBUG > 1
     fprintf(stderr, "parse_element: ch='%c'\n", ch);
-#endif /* DEBUG */
+#endif /* DEBUG > 1 */
 
    /*
     * Skip leading whitespace...
@@ -882,8 +896,8 @@ mxml_parse_element(mxml_node_t *node,	/* I - Element node */
 
       if (quote != '>')
       {
-        fprintf(stderr, "Expected '>' after '%c' for element %s, but got '%c'!\n",
-	        ch, node->value.element.name, quote);
+        mxml_error("Expected '>' after '%c' for element %s, but got '%c'!",
+	           ch, node->value.element.name, quote);
         ch = EOF;
       }
 
@@ -947,8 +961,8 @@ mxml_parse_element(mxml_node_t *node,	/* I - Element node */
 
       if ((ch = (*getc_cb)(p)) == EOF)
       {
-        fprintf(stderr, "Missing value for attribute '%s' in element %s!\n",
-	        name, node->value.element.name);
+        mxml_error("Missing value for attribute '%s' in element %s!",
+	           name, node->value.element.name);
         return (EOF);
       }
 
@@ -1024,8 +1038,8 @@ mxml_parse_element(mxml_node_t *node,	/* I - Element node */
 
       if (quote != '>')
       {
-        fprintf(stderr, "Expected '>' after '%c' for element %s, but got '%c'!\n",
-	        ch, node->value.element.name, quote);
+        mxml_error("Expected '>' after '%c' for element %s, but got '%c'!",
+	           ch, node->value.element.name, quote);
         ch = EOF;
       }
 
@@ -1647,5 +1661,5 @@ mxml_write_ws(mxml_node_t *node,	/* I - Current node */
 
 
 /*
- * End of "$Id: mxml-file.c,v 1.22 2003/12/01 15:27:47 mike Exp $".
+ * End of "$Id: mxml-file.c,v 1.23 2003/12/03 03:59:04 mike Exp $".
  */

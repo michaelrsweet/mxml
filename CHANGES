@@ -1,8 +1,11 @@
-README - 12/01/2003
+README - 12/02/2003
 -------------------
 
 CHANGES IN Mini-XML 1.3
 
+	- Fixed several bugs in the mxmldoc utility.
+	- Added new error callback function to catch a variety
+	  of errors and log them to someplace other than stderr.
 	- The mxmlElementSetAttr() function now allows for NULL
 	  attribute values.
 	- The load and save functions now properly handle quoted

@@ -1,5 +1,5 @@
 /*
- * "$Id: mxml-private.c,v 1.1 2003/09/28 21:09:04 mike Exp $"
+ * "$Id: mxml-private.c,v 1.2 2003/12/03 03:59:04 mike Exp $"
  *
  * Private functions for mini-XML, a small XML-like file parsing library.
  *
@@ -17,6 +17,7 @@
  *
  * Contents:
  *
+ *   mxml_error()      - Display an error message.
  *   mxml_integer_cb() - Default callback for integer values.
  *   mxml_opaque_cb()  - Default callback for opaque values.
  *   mxml_real_cb()    - Default callback for real number values.
@@ -26,7 +27,65 @@
  * Include necessary headers...
  */
 
+#include "config.h"
 #include "mxml.h"
+
+
+/*
+ * Error callback function...
+ */
+
+void	(*mxml_error_cb)(const char *) = NULL;
+
+
+/*
+ * 'mxml_error()' - Display an error message.
+ */
+
+void
+mxml_error(const char *format,		/* I - Printf-style format string */
+           ...)				/* I - Additional arguments as needed */
+{
+  va_list	ap;			/* Pointer to arguments */
+  char		*s;			/* Message string */
+
+
+ /*
+  * Range check input...
+  */
+
+  if (!format)
+    return;
+
+ /*
+  * Format the error message string...
+  */
+
+  va_start(ap, format);
+
+  s = mxml_strdupf(format, ap);
+
+  va_end(ap);
+
+ /*
+  * And then display the error message...
+  */
+
+  if (mxml_error_cb)
+    (*mxml_error_cb)(s);
+  else
+  {
+    fputs("mxml: ", stderr);
+    fputs(s, stderr);
+    putc('\n', stderr);
+  }
+
+ /*
+  * Free the string...
+  */
+
+  free(s);
+}
 
 
 /*
@@ -69,5 +128,5 @@ mxml_real_cb(mxml_node_t *node)		/* I - Current node */
 
 
 /*
- * End of "$Id: mxml-private.c,v 1.1 2003/09/28 21:09:04 mike Exp $".
+ * End of "$Id: mxml-private.c,v 1.2 2003/12/03 03:59:04 mike Exp $".
  */

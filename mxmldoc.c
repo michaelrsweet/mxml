@@ -1,5 +1,5 @@
 /*
- * "$Id: mxmldoc.c,v 1.17 2003/09/28 21:09:04 mike Exp $"
+ * "$Id: mxmldoc.c,v 1.18 2003/12/03 03:59:04 mike Exp $"
  *
  * Documentation generator using mini-XML, a small XML-like file parsing
  * library.
@@ -20,6 +20,7 @@
  *
  *   main()                - Main entry for test program.
  *   add_variable()        - Add a variable or argument.
+ *   safe_strcpy()         - Copy a string allowing for overlapping strings.
  *   scan_file()           - Scan a source file.
  *   sort_node()           - Insert a node sorted into a tree.
  *   update_comment()      - Update a comment node.
@@ -102,11 +103,25 @@
  
 
 /*
+ * Basic states for file parser...
+ */
+
+#define STATE_NONE		0	/* No state - whitespace, etc. */
+#define STATE_PREPROCESSOR	1	/* Preprocessor directive */
+#define STATE_C_COMMENT		2	/* Inside a C comment */
+#define STATE_CXX_COMMENT	3	/* Inside a C++ comment */
+#define STATE_STRING		4	/* Inside a string constant */
+#define STATE_CHARACTER		5	/* Inside a character constant */
+#define STATE_IDENTIFIER	6	/* Inside a keyword/identifier */
+
+
+/*
  * Local functions...
  */
 
 static mxml_node_t	*add_variable(mxml_node_t *parent, const char *name,
 			              mxml_node_t *type);
+static void		safe_strcpy(char *dst, const char *src);
 static int		scan_file(const char *filename, FILE *fp,
 			          mxml_node_t *doc);
 static void		sort_node(mxml_node_t *tree, mxml_node_t *func);
@@ -303,16 +318,18 @@ add_variable(mxml_node_t *parent,	/* I - Parent node */
 
 
 /*
- * Basic states for file parser...
+ * 'safe_strcpy()' - Copy a string allowing for overlapping strings.
  */
 
-#define STATE_NONE		0	/* No state - whitespace, etc. */
-#define STATE_PREPROCESSOR	1	/* Preprocessor directive */
-#define STATE_C_COMMENT		2	/* Inside a C comment */
-#define STATE_CXX_COMMENT	3	/* Inside a C++ comment */
-#define STATE_STRING		4	/* Inside a string constant */
-#define STATE_CHARACTER		5	/* Inside a character constant */
-#define STATE_IDENTIFIER	6	/* Inside a keyword/identifier */
+static void
+safe_strcpy(char       *dst,		/* I - Destination string */
+            const char *src)		/* I - Source string */
+{
+  while (*src)
+    *dst++ = *src++;
+
+  *dst = '\0';
+}
 
 
 /*
@@ -328,7 +345,7 @@ scan_file(const char  *filename,	/* I - Filename */
 		braces,			/* Number of braces active */
 		parens;			/* Number of active parenthesis */
   int		ch;			/* Current character */
-  char		buffer[16384],		/* String buffer */
+  char		buffer[65536],		/* String buffer */
 		*bufptr;		/* Pointer into buffer */
   mxml_node_t	*comment,		/* <comment> node */
 		*constant,		/* <constant> node */
@@ -454,7 +471,7 @@ scan_file(const char  *filename,	/* I - Filename */
 		                               type->child->value.text.string);
 
 #ifdef DEBUG
-                  fprintf(stderr, "%c%s: <<< %s >>>\n",
+                  fprintf(stderr, "%c%s: <<<< %s >>>\n",
 		          toupper(type->child->value.text.string[0]),
 			  type->child->value.text.string + 1,
 			  type->child->next ?
@@ -503,7 +520,10 @@ scan_file(const char  *filename,	/* I - Filename */
 		          comment->last_child);
 
                   if (scan_file(filename, fp, structclass))
+		  {
+		    mxmlDelete(comment);
 		    return (-1);
+		  }
 
 #ifdef DEBUG
                   fputs("    ended typedef...\n", stderr);
@@ -535,7 +555,7 @@ scan_file(const char  *filename,	/* I - Filename */
 		  enumeration = mxmlNewElement(MXML_NO_PARENT, "enumeration");
 
 #ifdef DEBUG
-                  fprintf(stderr, "Enumeration: <<< %s >>>\n",
+                  fprintf(stderr, "Enumeration: <<<< %s >>>\n",
 			  type->child->next ?
 			      type->child->next->value.text.string : "(noname)");
 #endif /* DEBUG */
@@ -603,14 +623,17 @@ scan_file(const char  *filename,	/* I - Filename */
 	        if (braces > 0)
 		  braces --;
 		else
+		{
+		  mxmlDelete(comment);
 		  return (0);
+		}
 		break;
 
             case '(' :
 		if (type)
 		{
 #ifdef DEBUG
-                  fputs("Identifier: <<< ( >>>\n", stderr);
+                  fputs("Identifier: <<<< ( >>>\n", stderr);
 #endif /* DEBUG */
 		  mxmlNewText(type, 0, "(");
 		}
@@ -625,7 +648,7 @@ scan_file(const char  *filename,	/* I - Filename */
 		if (type && parens)
 		{
 #ifdef DEBUG
-                  fputs("Identifier: <<< ) >>>\n", stderr);
+                  fputs("Identifier: <<<< ) >>>\n", stderr);
 #endif /* DEBUG */
 		  mxmlNewText(type, 0, ")");
 		}
@@ -655,7 +678,7 @@ scan_file(const char  *filename,	/* I - Filename */
 		if (type)
 		{
 #ifdef DEBUG
-                  fputs("Identifier: <<< : >>>\n", stderr);
+                  fputs("Identifier: <<<< : >>>\n", stderr);
 #endif /* DEBUG */
 		  mxmlNewText(type, 1, ":");
 		}
@@ -665,7 +688,7 @@ scan_file(const char  *filename,	/* I - Filename */
 		if (type)
 		{
 #ifdef DEBUG
-                  fputs("Identifier: <<< * >>>\n", stderr);
+                  fputs("Identifier: <<<< * >>>\n", stderr);
 #endif /* DEBUG */
                   ch = type->last_child->value.text.string[0];
 		  mxmlNewText(type, isalnum(ch) || ch == '_', "*");
@@ -773,7 +796,7 @@ scan_file(const char  *filename,	/* I - Filename */
 #endif /* DEBUG */
                       }
 #ifdef DEBUG
-		      fprintf(stderr, "C comment: <<< %s >>>\n", buffer);
+		      fprintf(stderr, "C comment: <<<< %s >>>\n", buffer);
 #endif /* DEBUG */
 
 		      state = STATE_NONE;
@@ -859,7 +882,7 @@ scan_file(const char  *filename,	/* I - Filename */
         	    mxmlNewText(comment, 0, buffer);
 
 #ifdef DEBUG
-		  fprintf(stderr, "C comment: <<< %s >>>\n", buffer);
+		  fprintf(stderr, "C comment: <<<< %s >>>\n", buffer);
 #endif /* DEBUG */
 
 		  state = STATE_NONE;
@@ -937,7 +960,7 @@ scan_file(const char  *filename,	/* I - Filename */
               mxmlNewText(comment, 0, buffer);
 
 #ifdef DEBUG
-	    fprintf(stderr, "C++ comment: <<< %s >>>\n", buffer);
+	    fprintf(stderr, "C++ comment: <<<< %s >>>\n", buffer);
 #endif /* DEBUG */
 	  }
 	  else if (ch == ' ' && bufptr == buffer)
@@ -1064,7 +1087,7 @@ scan_file(const char  *filename,	/* I - Filename */
 			    buffer);
 
 #ifdef DEBUG
-                fprintf(stderr, "Argument: <<< %s >>>\n", buffer);
+                fprintf(stderr, "Argument: <<<< %s >>>\n", buffer);
 #endif /* DEBUG */
 
 	        variable = add_variable(function, "argument", type);
@@ -1080,7 +1103,7 @@ scan_file(const char  *filename,	/* I - Filename */
 	        if (typedefnode || structclass)
 		{
 #ifdef DEBUG
-                  fprintf(stderr, "Typedef/struct/class: <<< %s >>>>\n", buffer);
+                  fprintf(stderr, "Typedef/struct/class: <<<< %s >>>>\n", buffer);
 #endif /* DEBUG */
 
 		  if (typedefnode)
@@ -1119,7 +1142,7 @@ scan_file(const char  *filename,	/* I - Filename */
 		  */
 
 #ifdef DEBUG
-                  fprintf(stderr, "Typedef: <<< %s >>>\n", buffer);
+                  fprintf(stderr, "Typedef: <<<< %s >>>\n", buffer);
 #endif /* DEBUG */
 
 		  typedefnode = mxmlNewElement(MXML_NO_PARENT, "typedef");
@@ -1146,7 +1169,7 @@ scan_file(const char  *filename,	/* I - Filename */
 			      buffer);
 
 #ifdef DEBUG
-                  fprintf(stderr, "Variable: <<< %s >>>>\n", buffer);
+                  fprintf(stderr, "Variable: <<<< %s >>>>\n", buffer);
 #endif /* DEBUG */
 
 	          variable = add_variable(MXML_NO_PARENT, "variable", type);
@@ -1158,7 +1181,7 @@ scan_file(const char  *filename,	/* I - Filename */
 	      else
               {
 #ifdef DEBUG
-                fprintf(stderr, "Identifier: <<< %s >>>>\n", buffer);
+                fprintf(stderr, "Identifier: <<<< %s >>>>\n", buffer);
 #endif /* DEBUG */
 
 	        mxmlNewText(type, type->child != NULL &&
@@ -1170,7 +1193,7 @@ scan_file(const char  *filename,	/* I - Filename */
 	    else if (enumeration)
 	    {
 #ifdef DEBUG
-	      fprintf(stderr, "Constant: <<< %s >>>\n", buffer);
+	      fprintf(stderr, "Constant: <<<< %s >>>\n", buffer);
 #endif /* DEBUG */
 
 	      constant = mxmlNewElement(MXML_NO_PARENT, "constant");
@@ -1225,18 +1248,27 @@ sort_node(mxml_node_t *tree,		/* I - Tree to sort into */
 		*nodename;		/* Name of node */
 
 
+#if DEBUG > 1
+  fprintf(stderr, "    sort_node(tree=%p, node=%p)\n", tree, node);
+#endif /* DEBUG > 1 */
+
  /*
   * Range check input...
   */
 
-  if (!tree || !node)
+  if (!tree || !node || node->parent == tree)
     return;
 
  /*
   * Get the node name...
   */
 
-  nodename = mxmlElementGetAttr(node, "name");
+  if ((nodename = mxmlElementGetAttr(node, "name")) == NULL)
+    return;
+
+#if DEBUG > 1
+  fprintf(stderr, "        nodename=%p (\"%s\")\n", nodename, nodename);
+#endif /* DEBUG > 1 */
 
  /*
   * Delete any existing definition at this level, if one exists...
@@ -1252,8 +1284,16 @@ sort_node(mxml_node_t *tree,		/* I - Tree to sort into */
 
   for (temp = tree->child; temp; temp = temp->next)
   {
+#if DEBUG > 1
+    fprintf(stderr, "        temp=%p\n", temp);
+#endif /* DEBUG > 1 */
+
     if ((tempname = mxmlElementGetAttr(temp, "name")) == NULL)
       continue;
+
+#if DEBUG > 1
+    fprintf(stderr, "        tempname=%p (\"%s\")\n", tempname, tempname);
+#endif /* DEBUG > 1 */
 
     if (strcmp(nodename, tempname) < 0)
       break;
@@ -1315,7 +1355,7 @@ update_comment(mxml_node_t *parent,	/* I - Parent node */
       while (isspace(*ptr))
         ptr ++;
 
-      strcpy(comment->value.text.string, ptr);
+      safe_strcpy(comment->value.text.string, ptr);
     }
   }
   else if (!strncmp(ptr, "I ", 2) || !strncmp(ptr, "O ", 2) ||
@@ -1341,7 +1381,7 @@ update_comment(mxml_node_t *parent,	/* I - Parent node */
     while (isspace(*ptr))
       ptr ++;
 
-    strcpy(comment->value.text.string, ptr);
+    safe_strcpy(comment->value.text.string, ptr);
   }
 
  /*
@@ -1351,7 +1391,7 @@ update_comment(mxml_node_t *parent,	/* I - Parent node */
   for (ptr = comment->value.text.string; *ptr == '*'; ptr ++);
   for (; isspace(*ptr); ptr ++);
   if (ptr > comment->value.text.string)
-    strcpy(comment->value.text.string, ptr);
+    safe_strcpy(comment->value.text.string, ptr);
 
   for (ptr = comment->value.text.string + strlen(comment->value.text.string) - 1;
        ptr > comment->value.text.string && *ptr == '*';
@@ -2087,5 +2127,5 @@ ws_cb(mxml_node_t *node,		/* I - Element node */
 
 
 /*
- * End of "$Id: mxmldoc.c,v 1.17 2003/09/28 21:09:04 mike Exp $".
+ * End of "$Id: mxmldoc.c,v 1.18 2003/12/03 03:59:04 mike Exp $".
  */

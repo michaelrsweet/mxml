@@ -1,7 +1,7 @@
 /*
- * "$Id: mxml-entity.c,v 1.2 2004/04/06 01:47:20 mike Exp $"
+ * "$Id: mxml-entity.c,v 1.3 2004/05/02 16:04:40 mike Exp $"
  *
- * Character entity support code for mini-XML, a small XML-like
+ * Character entity support code for Mini-XML, a small XML-like
  * file parsing library.
  *
  * Copyright 2003-2004 by Michael Sweet.
@@ -364,5 +364,5 @@ mxmlEntityGetValue(const char *name)	/* I - Entity name */
 
 
 /*
- * End of "$Id: mxml-entity.c,v 1.2 2004/04/06 01:47:20 mike Exp $".
+ * End of "$Id: mxml-entity.c,v 1.3 2004/05/02 16:04:40 mike Exp $".
  */

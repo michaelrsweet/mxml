@@ -1,9 +1,9 @@
 #
-# "$Id: mxml.spec,v 1.10 2004/04/29 12:29:17 mike Exp $"
+# "$Id: mxml.spec,v 1.11 2004/05/02 16:04:40 mike Exp $"
 #
-# RPM "spec" file for mini-XML, a small XML-like file parsing library.
+# RPM "spec" file for Mini-XML, a small XML-like file parsing library.
 #
-# Copyright 2003 by Michael Sweet.
+# Copyright 2003-2004 by Michael Sweet.
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Library General Public
@@ -18,14 +18,14 @@
 
 Summary: Miniature XML development library
 Name: mxml
-Version: 2.0
+Version: 2.0rc1
 Release: 1
 Copyright: GPL
 Group: Development/Libraries
 Source: http://www.easysw.com/~mike/mxml/mxml-%{version}.tar.gz
 Url: http://www.easysw.com/~mike/mxml/
-Packager: Mike Sweet <mike@easysw.com>
-Vendor: Mike Sweet
+Packager: Michael Sweet <mxml@easysw.com>
+Vendor: Michael Sweet
 
 # Use buildroot so as not to disturb the version already installed
 BuildRoot: /var/tmp/%{name}-root
@@ -52,9 +52,7 @@ following functionality:
 Mini-XML doesn't do validation or other types of processing on
 the data based upon schema files or other sources of definition
 information, nor does it support character entities other than
-those required by the XML specification.  Also, since Mini-XML
-does not support the UTF-16 encoding, it is technically not a
-conforming XML consumer/client.
+those required by the XML specification.
 
 %prep
 %setup
@@ -80,9 +78,11 @@ rm -rf $RPM_BUILD_ROOT
 %dir /usr/bin
 /usr/bin/*
 %dir /usr/include
-/usr/include/*
+/usr/include/mxml.h
 %dir /usr/lib
-/usr/lib/*
+/usr/lib/libmxml.a
+%dir /usr/lib/pkgconfig
+/usr/lib/pkgconfig/mxml.pc
 %dir /usr/share/doc/mxml
 /usr/share/doc/mxml/*
 %dir /usr/share/man/cat1
@@ -95,5 +95,5 @@ rm -rf $RPM_BUILD_ROOT
 /usr/share/man/man3/*
 
 #
-# End of "$Id: mxml.spec,v 1.10 2004/04/29 12:29:17 mike Exp $".
+# End of "$Id: mxml.spec,v 1.11 2004/05/02 16:04:40 mike Exp $".
 #

@@ -1,7 +1,7 @@
 /*
- * "$Id: mxml-file.c,v 1.29 2004/05/01 15:20:04 mike Exp $"
+ * "$Id: mxml-file.c,v 1.30 2004/05/02 16:04:40 mike Exp $"
  *
- * File loading code for mini-XML, a small XML-like file parsing library.
+ * File loading code for Mini-XML, a small XML-like file parsing library.
  *
  * Copyright 2003-2004 by Michael Sweet.
  *
@@ -1734,5 +1734,5 @@ mxml_write_ws(mxml_node_t *node,	/* I - Current node */
 
 
 /*
- * End of "$Id: mxml-file.c,v 1.29 2004/05/01 15:20:04 mike Exp $".
+ * End of "$Id: mxml-file.c,v 1.30 2004/05/02 16:04:40 mike Exp $".
  */

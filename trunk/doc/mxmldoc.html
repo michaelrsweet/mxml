@@ -1,13 +1,80 @@
 <html>
 <body>
 
-<h1 align='right'><a name='MXMLDOC'>3 - Using the mxmldoc
+<h1 align='right'><a name='MXMLDOC'>4 - Using the mxmldoc
 Utility</a></h1>
 
 <p>This chapter describes how to use the <tt>mxmldoc(1)</tt>
 utility that comes with Mini-XML to automatically generate
 documentation for your programs.</p>
 
+<h2>The Basics</h2>
+
+<p>The <tt>mxmldoc</tt> utility scans C and C++ source and
+header files and produces an XML file describing the library
+interface and an XHTML file providing a human-readable reference
+to the code.</p>
+
+<h2>XML Schema</h2>
+
+<p>The following poor-man's schema describes the format of the
+XML files produced by <tt>mxmldoc</tt>:
+
+<pre>
+    &lt;?xml version="1.0"?&gt;
+    &lt;namespace name=""&gt;                        [optional...]
+      &lt;constant name=""&gt;
+	&lt;description&gt;descriptive text&lt;/description&gt;
+      &lt;/constant&gt;
+
+      &lt;enumeration name=""&gt;
+	&lt;constant name=""&gt;...&lt;/constant&gt;
+      &lt;/enumeration&gt;
+
+      &lt;typedef name=""&gt;
+	&lt;description&gt;descriptive text&lt;/description&gt;
+	&lt;type&gt;type string&lt;/type&gt;
+      &lt;/typedef&gt;
+
+      &lt;function name="" scope=""&gt;
+	&lt;description&gt;descriptive text&lt;/description&gt;
+	&lt;argument name="" direction="I|O|IO" default=""&gt;
+          &lt;description&gt;descriptive text&lt;/description&gt;
+          &lt;type&gt;type string&lt;/type&gt;
+	&lt;/argument&gt;
+	&lt;returnvalue&gt;
+          &lt;description&gt;descriptive text&lt;/description&gt;
+          &lt;type&gt;type string&lt;/type&gt;
+	&lt;/returnvalue&gt;
+	&lt;seealso&gt;function names separated by spaces&lt;/seealso&gt;
+      &lt;/function&gt;
+
+      &lt;variable name="" scope=""&gt;
+	&lt;description&gt;descriptive text&lt;/description&gt;
+	&lt;type&gt;type string&lt;/type&gt;
+      &lt;/variable&gt;
+
+      &lt;struct name=""&gt;
+	&lt;description&gt;descriptive text&lt;/description&gt;
+	&lt;variable name=""&gt;...&lt;/variable&gt;
+	&lt;function name=""&gt;...&lt;/function&gt;
+      &lt;/struct&gt;
+
+      &lt;union name=""&gt;
+	&lt;description&gt;descriptive text&lt;/description&gt;
+	&lt;variable name=""&gt;...&lt;/variable&gt;
+      &lt;/union&gt;
+
+      &lt;class name="" parent=""&gt;
+	&lt;description&gt;descriptive text&lt;/description&gt;
+	&lt;class name=""&gt;...&lt;/class&gt;
+	&lt;enumeration name=""&gt;...&lt;/enumeration&gt;
+	&lt;function name=""&gt;...&lt;/function&gt;
+	&lt;struct name=""&gt;...&lt;/struct&gt;
+	&lt;variable name=""&gt;...&lt;/variable&gt;
+      &lt;/class&gt;
+    &lt;/namespace&gt;
+</pre>
 
 </body>
 </html>

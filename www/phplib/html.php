@@ -1,6 +1,6 @@
 <?php
 //
-// "$Id: html.php,v 1.7 2004/05/18 19:58:35 mike Exp $"
+// "$Id: html.php,v 1.8 2004/05/19 01:39:04 mike Exp $"
 //
 // PHP functions for standardized HTML output...
 //
@@ -141,6 +141,7 @@ function
 html_footer()
 {
   print("</td></tr></table></td><td></td></tr>\n");
+  print("<tr class='page'><td colspan='5'>&nbsp;</td></tr>\n");
   print("<tr class='header'>"
        ."<td valign='bottom'><img src='images/bottom-left.gif' width='15' "
        ."height='15' alt=''/></td>"
@@ -228,11 +229,18 @@ html_links($links)			// I - Associated array of hyperlinks
 //
 
 function
-html_start_table($headings)		// I - Array of heading strings
+html_start_table($headings,		// I - Array of heading strings
+                 $width = "100%",	// I - Width of table
+		 $height = "")		// I - Height of table
 {
   global $html_row, $html_cols;
 
-  print("<p><table width='100%' border='0' cellpadding='0' cellspacing='0'>"
+  print("<p><table");
+  if ($width != "")
+    print(" width='$width'");
+  if ($height != "")
+    print(" height='$height'");
+  print(" border='0' cellpadding='0' cellspacing='0'>"
        ."<tr class='header'><th align='left' valign='top'>"
        ."<img src='images/top-left.gif' width='16' height='16' "
        ."alt=''/></th>");

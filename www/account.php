@@ -1,6 +1,6 @@
 <?php
 //
-// "$Id: account.php,v 1.5 2004/05/19 00:57:33 mike Exp $"
+// "$Id: account.php,v 1.6 2004/05/19 01:39:04 mike Exp $"
 //
 // Account management page...
 //
@@ -60,13 +60,11 @@ switch ($op)
 	while ($row = db_next($result))
 	{
 	  $id       = $row['id'];
-          $title    = htmlspecialchars($row['title'], ENT_QUOTES);
+          $title    = htmlspecialchars($row['title'], ENT_QUOTES) .
+	              " <img src='images/private.gif' width='16' height='16' "
+	             ."border='0' align='middle' alt='Private'/>";
           $abstract = htmlspecialchars($row['abstract'], ENT_QUOTES);
 	  $date     = date("M d, Y", $row['modify_date']);
-
-          if ($row['is_published'] == 0)
-	    $title .= " <img src='images/private.gif' width='16' height='16' "
-	             ."border='0' align='middle' alt='Private'/>";
 
           html_start_row();
 
@@ -192,6 +190,6 @@ switch ($op)
 
 
 //
-// End of "$Id: account.php,v 1.5 2004/05/19 00:57:33 mike Exp $".
+// End of "$Id: account.php,v 1.6 2004/05/19 01:39:04 mike Exp $".
 //
 ?>

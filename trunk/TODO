@@ -1,10 +1,6 @@
 TODO - 05/16/2004
 -----------------
 
-	- UTF-16 support.
-	  -- Auto-detect in strings via initial FFFE or FEFF BOM
-	  -- Convert to UTF-8
-	  -- Read UTF-8 or UTF-16, write UTF-8
 	- New documentation.
 	  -- Use HTMLDOC to generate
 	  -- Provide more tutorials

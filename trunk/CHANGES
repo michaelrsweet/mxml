@@ -4,6 +4,7 @@ README - 05/16/2004
 CHANGES IN Mini-XML 2.0
 
 	- New programmers manual.
+	- Added UTF-16 support (input only; all output is UTF-8)
 	- Added index functions to build a searchable index of
 	  XML nodes.
 	- Added character entity callback interface to support

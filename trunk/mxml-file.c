@@ -1,5 +1,5 @@
 /*
- * "$Id: mxml-file.c,v 1.30 2004/05/02 16:04:40 mike Exp $"
+ * "$Id: mxml-file.c,v 1.31 2004/05/16 21:54:47 mike Exp $"
  *
  * File loading code for Mini-XML, a small XML-like file parsing library.
  *
@@ -45,6 +45,15 @@
 
 
 /*
+ * Character encoding...
+ */
+
+#define ENCODE_UTF8	0		/* UTF-8 */
+#define ENCODE_UTF16BE	1		/* UTF-16 Big-Endian */
+#define ENCODE_UTF16LE	2		/* UTF-16 Little-Endian */
+
+
+/*
  * Global error handler...
  */
 
@@ -58,15 +67,17 @@ extern void	(*mxml_error_cb)(const char *);
 static int		mxml_add_char(int ch, char **ptr, char **buffer,
 			              int *bufsize);
 static int		mxml_get_entity(mxml_node_t *parent, void *p,
-					int (*getc_cb)(void *));
-static int		mxml_file_getc(void *p);
+			                int *encoding,
+					int (*getc_cb)(void *, int *));
+static int		mxml_file_getc(void *p, int *encoding);
 static int		mxml_file_putc(int ch, void *p);
 static mxml_node_t	*mxml_load_data(mxml_node_t *top, void *p,
 			                mxml_type_t (*cb)(mxml_node_t *),
-			                int (*getc_cb)(void *));
+			                int (*getc_cb)(void *, int *));
 static int		mxml_parse_element(mxml_node_t *node, void *p,
-			                   int (*getc_cb)(void *));
-static int		mxml_string_getc(void *p);
+			                   int *encoding,
+					   int (*getc_cb)(void *, int *));
+static int		mxml_string_getc(void *p, int *encoding);
 static int		mxml_string_putc(int ch, void *p);
 static int		mxml_write_name(const char *s, void *p,
 					int (*putc_cb)(int, void *));
@@ -371,11 +382,12 @@ mxml_add_char(int  ch,			/* I  - Character to add */
  * 'mxml_get_entity()' - Get the character corresponding to an entity...
  */
 
-static int				/* O - Character value or EOF on error */
-mxml_get_entity(mxml_node_t *parent,	/* I - Parent node */
-		void        *p,		/* I - Pointer to source */
-                int         (*getc_cb)(void *))
-					/* I - Get character function */
+static int				/* O  - Character value or EOF on error */
+mxml_get_entity(mxml_node_t *parent,	/* I  - Parent node */
+		void        *p,		/* I  - Pointer to source */
+		int         *encoding,	/* IO - Character encoding */
+                int         (*getc_cb)(void *, int *))
+					/* I  - Get character function */
 {
   int	ch;				/* Current character */
   char	entity[64],			/* Entity string */
@@ -384,8 +396,8 @@ mxml_get_entity(mxml_node_t *parent,	/* I - Parent node */
 
   entptr = entity;
 
-  while ((ch = (*getc_cb)(p)) != EOF)
-    if (!isalnum(ch) && ch != '#')
+  while ((ch = (*getc_cb)(p, encoding)) != EOF)
+    if (ch > 126 || (!isalnum(ch) && ch != '#'))
       break;
     else if (entptr < (entity + sizeof(entity) - 1))
       *entptr++ = ch;
@@ -424,8 +436,9 @@ mxml_get_entity(mxml_node_t *parent,	/* I - Parent node */
  * 'mxml_file_getc()' - Get a character from a file.
  */
 
-static int				/* O - Character or EOF */
-mxml_file_getc(void *p)			/* I - Pointer to file */
+static int				/* O  - Character or EOF */
+mxml_file_getc(void *p,			/* I  - Pointer to file */
+               int  *encoding)		/* IO - Encoding */
 {
   int	ch,				/* Character from file */
 	temp;				/* Temporary character */
@@ -439,63 +452,142 @@ mxml_file_getc(void *p)			/* I - Pointer to file */
   fp = (FILE *)p;
   ch = getc(fp);
 
-  if (ch == EOF || !(ch & 0x80))
-    return (ch);
-
- /*
-  * Got a UTF-8 character; convert UTF-8 to Unicode and return...
-  */
-
-  if ((ch & 0xe0) == 0xc0)
-  {
-   /*
-    * Two-byte value...
-    */
-
-    if ((temp = getc(fp)) == EOF || (temp & 0xc0) != 0x80)
-      return (EOF);
-
-    ch = ((ch & 0x1f) << 6) | (temp & 0x3f);
-  }
-  else if ((ch & 0xf0) == 0xe0)
-  {
-   /*
-    * Three-byte value...
-    */
-
-    if ((temp = getc(fp)) == EOF || (temp & 0xc0) != 0x80)
-      return (EOF);
-
-    ch = ((ch & 0x0f) << 6) | (temp & 0x3f);
-
-    if ((temp = getc(fp)) == EOF || (temp & 0xc0) != 0x80)
-      return (EOF);
-
-    ch = (ch << 6) | (temp & 0x3f);
-  }
-  else if ((ch & 0xf8) == 0xf0)
-  {
-   /*
-    * Four-byte value...
-    */
-
-    if ((temp = getc(fp)) == EOF || (temp & 0xc0) != 0x80)
-      return (EOF);
-
-    ch = ((ch & 0x07) << 6) | (temp & 0x3f);
-
-    if ((temp = getc(fp)) == EOF || (temp & 0xc0) != 0x80)
-      return (EOF);
-
-    ch = (ch << 6) | (temp & 0x3f);
-
-    if ((temp = getc(fp)) == EOF || (temp & 0xc0) != 0x80)
-      return (EOF);
-
-    ch = (ch << 6) | (temp & 0x3f);
-  }
-  else
+  if (ch == EOF)
     return (EOF);
+
+  switch (*encoding)
+  {
+    case ENCODE_UTF8 :
+       /*
+	* Got a UTF-8 character; convert UTF-8 to Unicode and return...
+	*/
+
+	if (!(ch & 0x80))
+	  return (ch);
+        else if (ch == 0xfe)
+	{
+	 /*
+	  * UTF-16 big-endian BOM?
+	  */
+
+          ch = getc(fp);
+	  if (ch != 0xff)
+	    return (EOF);
+
+	  *encoding = ENCODE_UTF16BE;
+
+	  return (mxml_file_getc(p, encoding));
+	}
+	else if (ch == 0xff)
+	{
+	 /*
+	  * UTF-16 little-endian BOM?
+	  */
+
+          ch = getc(fp);
+	  if (ch != 0xfe)
+	    return (EOF);
+
+	  *encoding = ENCODE_UTF16LE;
+
+	  return (mxml_file_getc(p, encoding));
+	}
+	else if ((ch & 0xe0) == 0xc0)
+	{
+	 /*
+	  * Two-byte value...
+	  */
+
+	  if ((temp = getc(fp)) == EOF || (temp & 0xc0) != 0x80)
+	    return (EOF);
+
+	  ch = ((ch & 0x1f) << 6) | (temp & 0x3f);
+	}
+	else if ((ch & 0xf0) == 0xe0)
+	{
+	 /*
+	  * Three-byte value...
+	  */
+
+	  if ((temp = getc(fp)) == EOF || (temp & 0xc0) != 0x80)
+	    return (EOF);
+
+	  ch = ((ch & 0x0f) << 6) | (temp & 0x3f);
+
+	  if ((temp = getc(fp)) == EOF || (temp & 0xc0) != 0x80)
+	    return (EOF);
+
+	  ch = (ch << 6) | (temp & 0x3f);
+	}
+	else if ((ch & 0xf8) == 0xf0)
+	{
+	 /*
+	  * Four-byte value...
+	  */
+
+	  if ((temp = getc(fp)) == EOF || (temp & 0xc0) != 0x80)
+	    return (EOF);
+
+	  ch = ((ch & 0x07) << 6) | (temp & 0x3f);
+
+	  if ((temp = getc(fp)) == EOF || (temp & 0xc0) != 0x80)
+	    return (EOF);
+
+	  ch = (ch << 6) | (temp & 0x3f);
+
+	  if ((temp = getc(fp)) == EOF || (temp & 0xc0) != 0x80)
+	    return (EOF);
+
+	  ch = (ch << 6) | (temp & 0x3f);
+	}
+	else
+	  return (EOF);
+	break;
+
+    case ENCODE_UTF16BE :
+       /*
+        * Read UTF-16 big-endian char...
+	*/
+
+	ch = (ch << 8) | getc(fp);
+
+        if (ch >= 0xd800 && ch <= 0xdbff)
+	{
+	 /*
+	  * Multi-word UTF-16 char...
+	  */
+
+          int lch = (getc(fp) << 8) | getc(fp);
+
+          if (ch < 0xdc00 || ch >= 0xdfff)
+	    return (EOF);
+
+          ch = (((ch & 0x3ff) << 10) | (lch & 0x3ff)) + 0x10000;
+	}
+	break;
+
+    case ENCODE_UTF16LE :
+       /*
+        * Read UTF-16 little-endian char...
+	*/
+
+	ch |= (getc(fp) << 8);
+
+        if (ch >= 0xd800 && ch <= 0xdbff)
+	{
+	 /*
+	  * Multi-word UTF-16 char...
+	  */
+
+          int lch = getc(fp) | (getc(fp) << 8);
+
+          if (ch < 0xdc00 || ch >= 0xdfff)
+	    return (EOF);
+
+          ch = (((ch & 0x3ff) << 10) | (lch & 0x3ff)) + 0x10000;
+	}
+	break;
+  }
 
   return (ch);
 }
@@ -562,7 +654,7 @@ mxml_load_data(mxml_node_t *top,	/* I - Top node */
                void        *p,		/* I - Pointer to data */
                mxml_type_t (*cb)(mxml_node_t *),
 					/* I - Callback function or MXML_NO_CALLBACK */
-               int         (*getc_cb)(void *))
+               int         (*getc_cb)(void *, int *))
 					/* I - Read function */
 {
   mxml_node_t	*node,			/* Current node */
@@ -573,6 +665,7 @@ mxml_load_data(mxml_node_t *top,	/* I - Top node */
 		*bufptr;		/* Pointer into buffer */
   int		bufsize;		/* Size of buffer */
   mxml_type_t	type;			/* Current node type */
+  int		encoding;		/* Character encoding */
 
 
  /*
@@ -589,13 +682,14 @@ mxml_load_data(mxml_node_t *top,	/* I - Top node */
   bufptr     = buffer;
   parent     = top;
   whitespace = 0;
+  encoding   = ENCODE_UTF8;
 
   if (cb && parent)
     type = (*cb)(parent);
   else
     type = MXML_TEXT;
 
-  while ((ch = (*getc_cb)(p)) != EOF)
+  while ((ch = (*getc_cb)(p, &encoding)) != EOF)
   {
     if ((ch == '<' || (isspace(ch) && type != MXML_OPAQUE)) && bufptr > buffer)
     {
@@ -676,12 +770,12 @@ mxml_load_data(mxml_node_t *top,	/* I - Top node */
 
       bufptr = buffer;
 
-      while ((ch = (*getc_cb)(p)) != EOF)
+      while ((ch = (*getc_cb)(p, &encoding)) != EOF)
         if (isspace(ch) || ch == '>' || (ch == '/' && bufptr > buffer))
 	  break;
 	else if (ch == '&')
 	{
-	  if ((ch = mxml_get_entity(parent, p, getc_cb)) == EOF)
+	  if ((ch = mxml_get_entity(parent, p, &encoding, getc_cb)) == EOF)
 	    goto error;
 
 	  if (mxml_add_char(ch, &bufptr, &buffer, &bufsize))
@@ -700,7 +794,7 @@ mxml_load_data(mxml_node_t *top,	/* I - Top node */
         * Gather rest of comment...
 	*/
 
-	while ((ch = (*getc_cb)(p)) != EOF)
+	while ((ch = (*getc_cb)(p, &encoding)) != EOF)
 	{
 	  if (ch == '>' && bufptr > (buffer + 4) &&
 	      !strncmp(bufptr - 2, "--", 2))
@@ -708,7 +802,7 @@ mxml_load_data(mxml_node_t *top,	/* I - Top node */
 	  else
 	  {
             if (ch == '&')
-	      if ((ch = mxml_get_entity(parent, p, getc_cb)) == EOF)
+	      if ((ch = mxml_get_entity(parent, p, &encoding, getc_cb)) == EOF)
 		goto error;
 
 	    if (mxml_add_char(ch, &bufptr, &buffer, &bufsize))
@@ -753,14 +847,14 @@ mxml_load_data(mxml_node_t *top,	/* I - Top node */
 	  else
 	  {
             if (ch == '&')
-	      if ((ch = mxml_get_entity(parent, p, getc_cb)) == EOF)
+	      if ((ch = mxml_get_entity(parent, p, &encoding, getc_cb)) == EOF)
 		goto error;
 
 	    if (mxml_add_char(ch, &bufptr, &buffer, &bufsize))
 	      goto error;
 	  }
 	}
-        while ((ch = (*getc_cb)(p)) != EOF);
+        while ((ch = (*getc_cb)(p, &encoding)) != EOF);
 
        /*
         * Error out if we didn't get the whole declaration...
@@ -818,7 +912,7 @@ mxml_load_data(mxml_node_t *top,	/* I - Top node */
 	*/
 
         while (ch != '>' && ch != EOF)
-	  ch = (*getc_cb)(p);
+	  ch = (*getc_cb)(p, &encoding);
 
        /*
 	* Ascend into the parent and set the value type as needed...
@@ -849,10 +943,10 @@ mxml_load_data(mxml_node_t *top,	/* I - Top node */
 	}
 
         if (isspace(ch))
-          ch = mxml_parse_element(node, p, getc_cb);
+          ch = mxml_parse_element(node, p, &encoding, getc_cb);
         else if (ch == '/')
 	{
-	  if ((ch = (*getc_cb)(p)) != '>')
+	  if ((ch = (*getc_cb)(p, &encoding)) != '>')
 	  {
 	    mxml_error("Expected > but got '%c' instead for element <%s/>!",
 	               ch, buffer);
@@ -886,7 +980,7 @@ mxml_load_data(mxml_node_t *top,	/* I - Top node */
       * Add character entity to current buffer...
       */
 
-      if ((ch = mxml_get_entity(parent, p, getc_cb)) == EOF)
+      if ((ch = mxml_get_entity(parent, p, &encoding, getc_cb)) == EOF)
 	goto error;
 
       if (mxml_add_char(ch, &bufptr, &buffer, &bufsize))
@@ -937,11 +1031,13 @@ error:
  * 'mxml_parse_element()' - Parse an element for any attributes...
  */
 
-static int				/* O - Terminating character */
-mxml_parse_element(mxml_node_t *node,	/* I - Element node */
-                   void        *p,	/* I - Data to read from */
-                   int         (*getc_cb)(void *))
-					/* I - Data callback */
+static int				/* O  - Terminating character */
+mxml_parse_element(mxml_node_t *node,	/* I  - Element node */
+                   void        *p,	/* I  - Data to read from */
+		   int         *encoding,
+					/* IO - Encoding */
+                   int         (*getc_cb)(void *, int *))
+					/* I  - Data callback */
 {
   int	ch,				/* Current character in file */
 	quote;				/* Quoting character */
@@ -979,7 +1075,7 @@ mxml_parse_element(mxml_node_t *node,	/* I - Element node */
   * Loop until we hit a >, /, ?, or EOF...
   */
 
-  while ((ch = (*getc_cb)(p)) != EOF)
+  while ((ch = (*getc_cb)(p, encoding)) != EOF)
   {
 #if DEBUG > 1
     fprintf(stderr, "parse_element: ch='%c'\n", ch);
@@ -1002,7 +1098,7 @@ mxml_parse_element(mxml_node_t *node,	/* I - Element node */
       * Grab the > character and print an error if it isn't there...
       */
 
-      quote = (*getc_cb)(p);
+      quote = (*getc_cb)(p, encoding);
 
       if (quote != '>')
       {
@@ -1031,10 +1127,10 @@ mxml_parse_element(mxml_node_t *node,	/* I - Element node */
 
       quote = ch;
 
-      while ((ch = (*getc_cb)(p)) != EOF)
+      while ((ch = (*getc_cb)(p, encoding)) != EOF)
       {
         if (ch == '&')
-	  if ((ch = mxml_get_entity(node, p, getc_cb)) == EOF)
+	  if ((ch = mxml_get_entity(node, p, encoding, getc_cb)) == EOF)
 	    goto error;
 
 	if (mxml_add_char(ch, &ptr, &name, &namesize))
@@ -1050,13 +1146,13 @@ mxml_parse_element(mxml_node_t *node,	/* I - Element node */
       * Grab an normal, non-quoted name...
       */
 
-      while ((ch = (*getc_cb)(p)) != EOF)
+      while ((ch = (*getc_cb)(p, encoding)) != EOF)
 	if (isspace(ch) || ch == '=' || ch == '/' || ch == '>' || ch == '?')
           break;
 	else
 	{
           if (ch == '&')
-	    if ((ch = mxml_get_entity(node, p, getc_cb)) == EOF)
+	    if ((ch = mxml_get_entity(node, p, encoding, getc_cb)) == EOF)
 	      goto error;
 
 	  if (mxml_add_char(ch, &ptr, &name, &namesize))
@@ -1072,7 +1168,7 @@ mxml_parse_element(mxml_node_t *node,	/* I - Element node */
       * Read the attribute value...
       */
 
-      if ((ch = (*getc_cb)(p)) == EOF)
+      if ((ch = (*getc_cb)(p, encoding)) == EOF)
       {
         mxml_error("Missing value for attribute '%s' in element %s!",
 	           name, node->value.element.name);
@@ -1088,13 +1184,13 @@ mxml_parse_element(mxml_node_t *node,	/* I - Element node */
         quote = ch;
 	ptr   = value;
 
-        while ((ch = (*getc_cb)(p)) != EOF)
+        while ((ch = (*getc_cb)(p, encoding)) != EOF)
 	  if (ch == quote)
 	    break;
 	  else
 	  {
 	    if (ch == '&')
-	      if ((ch = mxml_get_entity(node, p, getc_cb)) == EOF)
+	      if ((ch = mxml_get_entity(node, p, encoding, getc_cb)) == EOF)
 	        goto error;
 	      
 	    if (mxml_add_char(ch, &ptr, &value, &valsize))
@@ -1112,13 +1208,13 @@ mxml_parse_element(mxml_node_t *node,	/* I - Element node */
 	value[0] = ch;
 	ptr      = value + 1;
 
-	while ((ch = (*getc_cb)(p)) != EOF)
+	while ((ch = (*getc_cb)(p, encoding)) != EOF)
 	  if (isspace(ch) || ch == '=' || ch == '/' || ch == '>')
             break;
 	  else
 	  {
 	    if (ch == '&')
-	      if ((ch = mxml_get_entity(node, p, getc_cb)) == EOF)
+	      if ((ch = mxml_get_entity(node, p, encoding, getc_cb)) == EOF)
 	        goto error;
 	      
 	    if (mxml_add_char(ch, &ptr, &value, &valsize))
@@ -1153,7 +1249,7 @@ mxml_parse_element(mxml_node_t *node,	/* I - Element node */
       * Grab the > character and print an error if it isn't there...
       */
 
-      quote = (*getc_cb)(p);
+      quote = (*getc_cb)(p, encoding);
 
       if (quote != '>')
       {
@@ -1194,8 +1290,9 @@ error:
  * 'mxml_string_getc()' - Get a character from a string.
  */
 
-static int				/* O - Character or EOF */
-mxml_string_getc(void *p)		/* I - Pointer to file */
+static int				/* O  - Character or EOF */
+mxml_string_getc(void *p,		/* I  - Pointer to file */
+                 int  *encoding)	/* IO - Encoding */
 {
   int		ch;			/* Character */
   const char	**s;			/* Pointer to string pointer */
@@ -1203,7 +1300,7 @@ mxml_string_getc(void *p)		/* I - Pointer to file */
 
   s = (const char **)p;
 
-  if ((ch = *s[0]) != 0)
+  if ((ch = *s[0] & 255) != 0 || *encoding == ENCODE_UTF16LE)
   {
    /*
     * Got character; convert UTF-8 to integer and return...
@@ -1211,62 +1308,163 @@ mxml_string_getc(void *p)		/* I - Pointer to file */
 
     (*s)++;
 
-    if (!(ch & 0x80))
-      return (ch);
-    else if ((ch & 0xe0) == 0xc0)
+    switch (*encoding)
     {
-     /*
-      * Two-byte value...
-      */
+      case ENCODE_UTF8 :
+	  if (!(ch & 0x80))
+	    return (ch);
+	  else if (ch == 0xfe)
+	  {
+	   /*
+	    * UTF-16 big-endian BOM?
+	    */
 
-      if ((*s[0] & 0xc0) != 0x80)
-        return (EOF);
+            if ((*s[0] & 255) != 0xff)
+	      return (EOF);
 
-      ch = ((ch & 0x1f) << 6) | (*s[0] & 0x3f);
+	    *encoding = ENCODE_UTF16BE;
+	    (*s)++;
 
-      (*s)++;
+	    return (mxml_string_getc(p, encoding));
+	  }
+	  else if (ch == 0xff)
+	  {
+	   /*
+	    * UTF-16 little-endian BOM?
+	    */
 
-      return (ch);
+            if ((*s[0] & 255) != 0xfe)
+	      return (EOF);
+
+	    *encoding = ENCODE_UTF16LE;
+	    (*s)++;
+
+	    return (mxml_string_getc(p, encoding));
+	  }
+	  else if ((ch & 0xe0) == 0xc0)
+	  {
+	   /*
+	    * Two-byte value...
+	    */
+
+	    if ((*s[0] & 0xc0) != 0x80)
+              return (EOF);
+
+	    ch = ((ch & 0x1f) << 6) | (*s[0] & 0x3f);
+
+	    (*s)++;
+
+	    return (ch);
+	  }
+	  else if ((ch & 0xf0) == 0xe0)
+	  {
+	   /*
+	    * Three-byte value...
+	    */
+
+	    if ((*s[0] & 0xc0) != 0x80 ||
+        	(*s[1] & 0xc0) != 0x80)
+              return (EOF);
+
+	    ch = ((((ch & 0x0f) << 6) | (*s[0] & 0x3f)) << 6) | (*s[1] & 0x3f);
+
+	    (*s) += 2;
+
+	    return (ch);
+	  }
+	  else if ((ch & 0xf8) == 0xf0)
+	  {
+	   /*
+	    * Four-byte value...
+	    */
+
+	    if ((*s[0] & 0xc0) != 0x80 ||
+        	(*s[1] & 0xc0) != 0x80 ||
+        	(*s[2] & 0xc0) != 0x80)
+              return (EOF);
+
+	    ch = ((((((ch & 0x07) << 6) | (*s[0] & 0x3f)) << 6) |
+        	   (*s[1] & 0x3f)) << 6) | (*s[2] & 0x3f);
+
+	    (*s) += 3;
+
+	    return (ch);
+	  }
+	  else
+	    return (EOF);
+
+      case ENCODE_UTF16BE :
+	 /*
+          * Read UTF-16 big-endian char...
+	  */
+
+	  ch = (ch << 8) | (*s[0] & 255);
+	  (*s) ++;
+
+          if (ch >= 0xd800 && ch <= 0xdbff)
+	  {
+	   /*
+	    * Multi-word UTF-16 char...
+	    */
+
+            int lch;			/* Lower word */
+
+
+            if (!*s[0])
+	      return (EOF);
+
+            lch = ((*s[0] & 255) << 8) | (*s[1] & 255);
+	    (*s) += 2;
+
+            if (ch < 0xdc00 || ch >= 0xdfff)
+	      return (EOF);
+
+            ch = (((ch & 0x3ff) << 10) | (lch & 0x3ff)) + 0x10000;
+	  }
+
+	  return (ch);
+
+      case ENCODE_UTF16LE :
+	 /*
+          * Read UTF-16 little-endian char...
+	  */
+
+	  ch = ch | ((*s[0] & 255) << 8);
+
+	  if (!ch)
+	  {
+	    (*s) --;
+	    return (EOF);
+	  }
+
+	  (*s) ++;
+
+          if (ch >= 0xd800 && ch <= 0xdbff)
+	  {
+	   /*
+	    * Multi-word UTF-16 char...
+	    */
+
+            int lch;			/* Lower word */
+
+
+            if (!*s[1])
+	      return (EOF);
+
+            lch = ((*s[1] & 255) << 8) | (*s[0] & 255);
+	    (*s) += 2;
+
+            if (ch < 0xdc00 || ch >= 0xdfff)
+	      return (EOF);
+
+            ch = (((ch & 0x3ff) << 10) | (lch & 0x3ff)) + 0x10000;
+	  }
+
+	  return (ch);
     }
-    else if ((ch & 0xf0) == 0xe0)
-    {
-     /*
-      * Three-byte value...
-      */
-
-      if ((*s[0] & 0xc0) != 0x80 ||
-          (*s[1] & 0xc0) != 0x80)
-        return (EOF);
-
-      ch = ((((ch & 0x0f) << 6) | (*s[0] & 0x3f)) << 6) | (*s[1] & 0x3f);
-
-      (*s) += 2;
-
-      return (ch);
-    }
-    else if ((ch & 0xf8) == 0xf0)
-    {
-     /*
-      * Four-byte value...
-      */
-
-      if ((*s[0] & 0xc0) != 0x80 ||
-          (*s[1] & 0xc0) != 0x80 ||
-          (*s[2] & 0xc0) != 0x80)
-        return (EOF);
-
-      ch = ((((((ch & 0x07) << 6) | (*s[0] & 0x3f)) << 6) |
-             (*s[1] & 0x3f)) << 6) | (*s[2] & 0x3f);
-
-      (*s) += 3;
-
-      return (ch);
-    }
-    else
-      return (EOF);
   }
-  else
-    return (EOF);
+
+  return (EOF);
 }
 
 
@@ -1734,5 +1932,5 @@ mxml_write_ws(mxml_node_t *node,	/* I - Current node */
 
 
 /*
- * End of "$Id: mxml-file.c,v 1.30 2004/05/02 16:04:40 mike Exp $".
+ * End of "$Id: mxml-file.c,v 1.31 2004/05/16 21:54:47 mike Exp $".
  */

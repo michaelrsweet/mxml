@@ -1,5 +1,5 @@
 /*
- * "$Id: mxmldoc.c,v 1.4 2003/06/04 21:19:00 mike Exp $"
+ * "$Id: mxmldoc.c,v 1.5 2003/06/04 23:20:31 mike Exp $"
  *
  * Documentation generator using mini-XML, a small XML-like file parsing
  * library.
@@ -18,7 +18,6 @@
  *
  * Contents:
  *
- *   main()    - Main entry for documentation generator.
  */
 
 /*
@@ -97,6 +96,7 @@
 static int		scan_file(const char *filename, FILE *fp,
 			          mxml_node_t *doc);
 static void		sort_node(mxml_node_t *tree, mxml_node_t *func);
+static int		ws_cb(mxml_node_t *node, int where);
 
 
 /*
@@ -149,9 +149,8 @@ main(int  argc,				/* I - Number of command-line args */
     * Create an empty XML documentation file...
     */
 
-    doc = mxmlNewElement(NULL, "namespace");
-
-    mxmlElementSetAttr(doc, "name", "std");
+    doc = mxmlNewElement(NULL, "?xml");
+    mxmlElementSetAttr(doc, "version", "1.0");
   }
 
  /*
@@ -185,7 +184,7 @@ main(int  argc,				/* I - Number of command-line args */
     * Write over the existing XML file...
     */
 
-    if (mxmlSaveFile(doc, fp, MXML_NO_CALLBACK))
+    if (mxmlSaveFile(doc, fp, ws_cb))
     {
       fprintf(stderr, "Unable to write the XML documentation file \"%s\": %s!\n",
               argv[1], strerror(errno));
@@ -318,6 +317,8 @@ scan_file(const char  *filename,	/* I - Filename */
 
             case '{' :
 	        braces ++;
+		function = NULL;
+		variable = NULL;
 		break;
 
             case '}' :
@@ -394,7 +395,8 @@ scan_file(const char  *filename,	/* I - Filename */
 		    else
 		      ungetc(ch, fp);
 		  }
-		  else if (ch == '\n' && bufptr < (buffer + sizeof(buffer) - 1))
+		  else if (ch == '\n' && bufptr > buffer &&
+		           bufptr < (buffer + sizeof(buffer) - 1))
 		    *bufptr++ = ch;
 		  else if (!isspace(ch))
 		    break;
@@ -617,5 +619,41 @@ sort_node(mxml_node_t *tree,		/* I - Tree to sort into */
 
 
 /*
- * End of "$Id: mxmldoc.c,v 1.4 2003/06/04 21:19:00 mike Exp $".
+ * 'ws_cb()' - Whitespace callback for saving.
+ */
+
+static int				/* O - Whitespace char or 0 for none */
+ws_cb(mxml_node_t *node,		/* I - Element node */
+      int         where)		/* I - Where value */
+{
+  const char	*name;			/* Name of element */
+
+
+  name = node->value.element.name;
+
+  if (!strcmp(name, "namespace") || !strcmp(name, "enumeration") ||
+      !strcmp(name, "typedef") || !strcmp(name, "function") ||
+      !strcmp(name, "variable") || !strcmp(name, "struct") ||
+      !strcmp(name, "class"))
+  {
+    if (where < MXML_WS_AFTER_OPEN)
+      return ('\n');
+  }
+  else if (!strcmp(name, "constant") || !strcmp(name, "argument") ||
+           !strcmp(name, "returnvalue"))
+  {
+    if (where <= MXML_WS_AFTER_OPEN)
+      return ('\n');
+  }
+  else if (where == MXML_WS_AFTER_CLOSE)
+    return ('\n');
+  else if (where == MXML_WS_BEFORE_OPEN && strcmp(name, "?xml"))
+    return ('\t');
+
+  return (0);
+}
+
+
+/*
+ * End of "$Id: mxmldoc.c,v 1.5 2003/06/04 23:20:31 mike Exp $".
  */

@@ -1,5 +1,5 @@
 #
-# "$Id: mxml.list.in,v 1.2 2003/06/15 01:22:37 mike Exp $"
+# "$Id: mxml.list.in,v 1.3 2003/06/15 01:29:02 mike Exp $"
 #
 # EPM software list file for mini-XML, a small XML-like file parsing library.
 #
@@ -79,7 +79,6 @@ f 0444 root sys ${libdir}/libmxml.a libmxml.a
 f 0444 root sys ${docdir}/README $srcdir/README
 f 0444 root sys ${docdir}/COPYING $srcdir/COPYING
 f 0444 root sys ${docdir}/CHANGES $srcdir/CHANGES
-f 0444 root sys ${docdir}/index.html $srcdir/index.html
 f 0444 root sys ${docdir}/documentation.html $srcdir/documentation.html
 
 # Man pages
@@ -89,5 +88,5 @@ f 0444 root sys ${mandir}/cat3/mxml.$CAT3EXT $srcdir/mxml.$CAT3EXT
 f 0444 root sys ${mandir}/man3/mxml.$MAN3EXT $srcdir/mxml.man
 
 #
-# End of "$Id: mxml.list.in,v 1.2 2003/06/15 01:22:37 mike Exp $".
+# End of "$Id: mxml.list.in,v 1.3 2003/06/15 01:29:02 mike Exp $".
 #

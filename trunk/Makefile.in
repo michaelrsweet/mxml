@@ -1,5 +1,5 @@
 #
-# "$Id: Makefile.in,v 1.2 2003/06/04 00:12:12 mike Exp $"
+# "$Id: Makefile.in,v 1.3 2003/06/04 00:25:59 mike Exp $"
 #
 # Makefile for mini-XML, a small XML-like file parsing library.
 #
@@ -109,6 +109,7 @@ testmxml:	libmxml.a testmxml.o
 	@./testmxml temp1.xml >temp2.xml
 	@if cmp temp1.xml temp2.xml; then \
 		echo Test passed!; \
+		rm -f temp1.xml temp2.xml; \
 	else \
 		echo Test failed!; \
 	fi
@@ -119,5 +120,5 @@ $(OBJS):	Makefile
 
 
 #
-# End of "$Id: Makefile.in,v 1.2 2003/06/04 00:12:12 mike Exp $".
+# End of "$Id: Makefile.in,v 1.3 2003/06/04 00:25:59 mike Exp $".
 #

@@ -1,5 +1,5 @@
 /*
- * "$Id: mxml-file.c,v 1.1 2003/06/03 19:46:30 mike Exp $"
+ * "$Id: mxml-file.c,v 1.2 2003/06/04 00:25:59 mike Exp $"
  *
  * File loading code for mini-XML, a small XML-like file parsing library.
  *
@@ -443,6 +443,12 @@ mxmlSaveFile(mxml_node_t *node,		/* I - Node to write */
 
     node = node->next;
   }
+
+ /*
+  * Return 0 (success)...
+  */
+
+  return (0);
 }
 
 
@@ -632,5 +638,5 @@ mxml_write_string(const char *s,	/* I - String to write */
 
 
 /*
- * End of "$Id: mxml-file.c,v 1.1 2003/06/03 19:46:30 mike Exp $".
+ * End of "$Id: mxml-file.c,v 1.2 2003/06/04 00:25:59 mike Exp $".
  */

@@ -1,6 +1,6 @@
 <?php
 //
-// "$Id: articles.php,v 1.2 2004/05/18 12:02:02 mike Exp $"
+// "$Id: articles.php,v 1.3 2004/05/18 19:58:34 mike Exp $"
 //
 // Web form for the article table...
 //
@@ -14,18 +14,32 @@ include_once "phplib/html.php";
 include_once "phplib/common.php";
 
 
+//
+// Maximum number of articles per page...
+//
+
+$ARTICLE_PAGE_MAX = 10;
+
+
 // Get command-line options...
 //
-// Usage: article.php [operation]
+// Usage: article.php [operation] [options]
 //
 // Operations:
 //
-// D#        - Delete Article
+// D#        - Delete article
 // L         = List all 
-// L#        = List Article #
-// M#        = Modify Article #
-// N         = Create new Article
+// L#        = List article #
+// M#        = Modify article #
+// N         = Create new article
+//
+// Options:
+//
+// I#        = Set first article
+// Qtext     = Set search text
 
+$search = "";
+$index  = 0;
 
 if ($argc)
 {
@@ -48,12 +62,49 @@ if ($argc)
     exit();
   }
 
+  if (($op == 'D' || $op == 'M') && $LOGIN_USER == "")
+  {
+    html_header("Article Error");
+    print("<p>Command '$op' requires a login!\n");
+    html_footer();
+    exit();
+  }
+
   if ($op == 'N' && $id)
   {
     html_header("Article Error");
     print("<p>Command '$op' may not have an ID!\n");
     html_footer();
     exit();
+  }
+
+  for ($i = 1; $i < $argc; $i ++)
+  {
+    $option = substr($argv[$i], 1);
+
+    switch ($argv[$i][0])
+    {
+      case 'Q' : // Set search text
+          $search = $option;
+	  $i ++;
+	  while ($i < $argc)
+	  {
+	    $search .= " $argv[$i]";
+	    $i ++;
+	  }
+	  break;
+      case 'I' : // Set first STR
+          $index = (int)$option;
+	  if ($index < 0)
+	    $index = 0;
+	  break;
+      default :
+	  html_header("Article Error");
+	  print("<p>Bad option '$argv[$i]'!</p>\n");
+	  html_footer();
+	  exit();
+	  break;
+    }
   }
 }
 else
@@ -62,6 +113,14 @@ else
   $id = 0;
 }
 
+if ($REQUEST_METHOD == "POST")
+{
+  if (array_key_exists("SEARCH", $_POST))
+    $search = $_POST["SEARCH"];
+}
+
+$options = "+I$index+Q" . urlencode($search);
+
 switch ($op)
 {
   case 'D' : // Delete Article
@@ -69,7 +128,7 @@ switch ($op)
       {
         db_query("DELETE FROM article WHERE id = $id");
 
-        header("Location: $PHP_SELF?L");
+        header("Location: $PHP_SELF?L$options");
       }
       else
       {
@@ -86,9 +145,9 @@ switch ($op)
         html_header("Delete Article #$id");
 
 	html_start_links(1);
-	html_link("Return to Article List", "$PHP_SELF?L");
-	html_link("View Article #$id</A>", "$PHP_SELF?L$id");
-	html_link("Modify Article #$id</A>", "$PHP_SELF?M$id");
+	html_link("Return to Articles", "$PHP_SELF?L$options");
+	html_link("View Article #$id</A>", "$PHP_SELF?L$id$options");
+	html_link("Modify Article #$id</A>", "$PHP_SELF?M$id$options");
 	html_end_links();
 
         print("<h1>Delete Article #$id</h1>\n");
@@ -132,9 +191,12 @@ switch ($op)
         $row = db_next($result);
 
 	html_start_links(1);
-	html_link("Return to Article List", "$PHP_SELF?L");
-	html_link("Modify Article</A>", "$PHP_SELF?M$id");
-	html_link("Delete Article #$id</A>", "$PHP_SELF?D$id");
+	html_link("Return to Articles", "$PHP_SELF?L$options");
+	if ($LOGIN_USER)
+	{
+	  html_link("Modify Article</A>", "$PHP_SELF?M$id$options");
+	  html_link("Delete Article #$id</A>", "$PHP_SELF?D$id$options");
+	}
 	html_end_links();
 
         print("<h1>Article #$id</h1>\n");
@@ -146,29 +208,98 @@ switch ($op)
 	       ."currently hidden from public view.</td></tr>\n");
 
         $temp = htmlspecialchars($row['title']);
-        print("<tr><th align='right'>Title:</th><td class='left'>$temp</td></tr>\n");
+        print("<tr><th align='right' valign='top'>Title:</th><td class='left'>$temp</td></tr>\n");
 
         $temp = htmlspecialchars($row['abstract']);
-        print("<tr><th align='right'>Abstract:</th><td class='left'>$temp</td></tr>\n");
+        print("<tr><th align='right' valign='top'>Abstract:</th><td class='left'>$temp</td></tr>\n");
 
-        $temp = htmlspecialchars($row['contents']);
-        print("<tr><th align='right'>Contents:</th><td class='left'>$temp</td></tr>\n");
+        $temp = format_text($row['contents']);
+        print("<tr><th align='right' valign='top'>Contents:</th><td class='left'>$temp</td></tr>\n");
 
         print("</table></p>\n");
         db_free($result);
       }
       else
       {
-        html_header("Article List");
+        html_header("Articles");
 
 	html_start_links(1);
-	html_link("New Article", "$PHP_SELF?N");
+	html_link("Post New Article", "$PHP_SELF?N$options");
 	html_end_links();
 
-        $result = db_query("SELECT * FROM article");
+        print("<h1>Articles</h1>\n");
+
+        print("<form method='POST' action='$PHP_SELF'><p align='center'>"
+	     ."Search&nbsp;Words: &nbsp;<input type='text' size='60' "
+	     ."name='SEARCH' value='$search'>"
+	     ."<input type='submit' value='Search Articles'></p></form>\n");
+
+	print("<hr noshade/>\n");
+
+        $query = "";
+	$prefix = "WHERE ";
+
+        if (!$LOGIN_USER)
+	{
+	  $query .= "${prefix}is_published = 1";
+	  $prefix = " AND ";
+	}
+
+        if ($search)
+	{
+	  $search_string = str_replace("'", " ", $search);
+	  $search_string = str_replace("\"", " ", $search_string);
+	  $search_string = str_replace("\\", " ", $search_string);
+	  $search_string = str_replace("%20", " ", $search_string);
+	  $search_string = str_replace("%27", " ", $search_string);
+	  $search_string = str_replace("  ", " ", $search_string);
+	  $search_words  = explode(' ', $search_string);
+
+	  // Loop through the array of words, adding them to the 
+	  $query  .= "${prefix}(";
+	  $prefix = "";
+	  $next   = " OR";
+	  $logic  = "";
+
+	  reset($search_words);
+	  while ($keyword = current($search_words))
+	  {
+	    next($search_words);
+	    $keyword = db_escape(ltrim(rtrim($keyword)));
+
+	    if (strcasecmp($keyword, 'or') == 0)
+	    {
+	      $next = ' OR';
+	      if ($prefix != '')
+        	$prefix = ' OR';
+	    }
+	    else if (strcasecmp($keyword, 'and') == 0)
+	    {
+	      $next = ' AND';
+	      if ($prefix != '')
+        	$prefix = ' AND';
+	    }
+	    else if (strcasecmp($keyword, 'not') == 0)
+	    {
+	      $logic = ' NOT';
+	    }
+	    else
+	    {
+	      $query  .= "$prefix$logic (title LIKE \"%$keyword%\""
+	                ." OR abstract LIKE \"%$keyword%\""
+	                ." OR contents LIKE \"%$keyword%\")";
+	      $prefix = $next;
+	      $logic  = '';
+	    }
+          }
+
+	  $query  .= ")";
+	}
+
+        $result = db_query("SELECT * FROM article $query "
+	                  ."ORDER BY modify_date");
         $count  = db_count($result);
 
-        print("<h1>Article List</h1>\n");
         if ($count == 0)
 	{
 	  print("<p>No Articles found.</p>\n");
@@ -177,33 +308,95 @@ switch ($op)
 	  exit();
 	}
 
-        html_start_table(array("Title","Abstract","Contents"));
+        if ($index >= $count)
+	  $index = $count - ($count % $ARTICLE_PAGE_MAX);
+	if ($index < 0)
+	  $index = 0;
 
-	while ($row = db_next($result))
+        $start = $index + 1;
+        $end   = $index + $ARTICLE_PAGE_MAX;
+	if ($end > $count)
+	  $end = $count;
+
+        $prev = $index - $ARTICLE_PAGE_MAX;
+	if ($prev < 0)
+	  $prev = 0;
+	$next = $index + $ARTICLE_PAGE_MAX;
+
+        print("<p>$count article(s) found, showing $start to $end:</p>\n");
+
+        if ($count > $ARTICLE_PAGE_MAX)
+	{
+          print("<p><table border='0' cellspacing='0' cellpadding='0' "
+	       ."width='100%'>\n");
+
+          print("<tr><td>");
+	  if ($index > 0)
+	    print("[&nbsp;<a href='$PHP_SELF?L+I$prev+Q" . urlencode($search)
+		 ."'>Previous&nbsp;$ARTICLE_PAGE_MAX</a>&nbsp;]");
+          print("</td><td align='right'>");
+	  if ($end < $count)
+	  {
+	    $next_count = min($ARTICLE_PAGE_MAX, $count - $end);
+	    print("[&nbsp;<a href='$PHP_SELF?L+I$next+Q" . urlencode($search)
+		 ."'>Next&nbsp;$next_count</a>&nbsp;]");
+          }
+          print("</td></tr>\n");
+	  print("</table></p>\n");
+        }
+
+        html_start_table(array("ID","Title","Last Modified"));
+
+	db_seek($result, $index);
+	for ($i = 0; $i < $ARTICLE_PAGE_MAX && $row = db_next($result); $i ++)
 	{
           html_start_row();
 
           $id = $row['id'];
 
+          print("<td align='center'><a href='$PHP_SELF?L$id$options' "
+	       ."alt='Article #$id'>"
+	       ."$id</a></td>");
+
           $temp = htmlspecialchars($row['title']);
-          print("<td class='center'><a href='$PHP_SELF?L$id' "
+          print("<td align='center'><a href='$PHP_SELF?L$id$options' "
 	       ."alt='Article #$id'>"
 	       ."$temp</a></td>");
 
-          $temp = htmlspecialchars($row['abstract']);
-          print("<td class='center'><a href='$PHP_SELF?L$id' "
-	       ."alt='Article #$id'>"
-	       ."$temp</a></td>");
-
-          $temp = htmlspecialchars($row['contents']);
-          print("<td class='center'><a href='$PHP_SELF?L$id' "
+          $temp = date("M d, Y", $row['modify_date']);
+          print("<td align='center'><a href='$PHP_SELF?L$id$options' "
 	       ."alt='Article #$id'>"
 	       ."$temp</a></td>");
 
           html_end_row();
+
+          html_start_row();
+          $temp = htmlspecialchars($row['abstract']);
+          print("<td></td><td colspan='2'>$temp</td>");
+          html_end_row();
 	}
 
         html_end_table();
+
+        if ($count > $ARTICLE_PAGE_MAX)
+	{
+          print("<p><table border='0' cellspacing='0' cellpadding='0' "
+	       ."width='100%'>\n");
+
+          print("<tr><td>");
+	  if ($index > 0)
+	    print("[&nbsp;<a href='$PHP_SELF?L+I$prev+Q" . urlencode($search)
+		 ."'>Previous&nbsp;$ARTICLE_PAGE_MAX</a>&nbsp;]");
+          print("</td><td align='right'>");
+	  if ($end < $count)
+	  {
+	    $next_count = min($ARTICLE_PAGE_MAX, $count - $end);
+	    print("[&nbsp;<a href='$PHP_SELF?L+I$next+Q" . urlencode($search)
+		 ."'>Next&nbsp;$next_count</a>&nbsp;]");
+          }
+          print("</td></tr>\n");
+	  print("</table></p>\n");
+        }
       }
 
       html_footer();
@@ -227,15 +420,15 @@ switch ($op)
 	        ."modify_user = '$LOGIN_USER' "
 	        ."WHERE id = $id");
 
-	header("Location: $PHP_SELF?L$id");
+	header("Location: $PHP_SELF?L$id$options");
       }
       else
       {
         html_header("Modify Article #$id");
 
 	html_start_links(1);
-	html_link("Return to Article List", "$PHP_SELF?L");
-	html_link("Article #$id", "$PHP_SELF?L$id");
+	html_link("Return to Articles", "$PHP_SELF?L$options");
+	html_link("Article #$id", "$PHP_SELF?L$id$options");
 	html_end_links();
 
         print("<h1>Modify Article #$id</h1>\n");
@@ -249,7 +442,7 @@ switch ($op)
 
         $row = db_next($result);
 
-        print("<form method='post' action='$PHP_SELF?M$id'>"
+        print("<form method='post' action='$PHP_SELF?M$id$options'>"
 	     ."<p><table width='100%' cellpadding='5' cellspacing='0' border='0'>\n");
 
         print("<tr><th align='right'>Published:</th><td>");
@@ -298,23 +491,28 @@ switch ($op)
 
 	$id = db_insert_id();
 
-	header("Location: $PHP_SELF?L$id");
+	header("Location: $PHP_SELF?L$id$options");
 	break;
       }
 
-      html_header("New Article");
+      html_header("Post New Article");
 
       html_start_links(1);
-      html_link("Return to Article List", "$PHP_SELF?L");
+      html_link("Return to Articles", "$PHP_SELF?L$options");
       html_end_links();
 
-      print("<h1>New Article</h1>\n");
-      print("<form method='post' action='$PHP_SELF?N'>"
+      print("<h1>Post New Article</h1>\n");
+      print("<form method='post' action='$PHP_SELF?N$options'>"
 	   ."<p><table width='100%' cellpadding='5' cellspacing='0' border='0'>\n");
 
-      print("<tr><th align='right'>Published:</th><td>");
-      select_is_published();
-      print("</td></tr>\n");
+      if ($LOGIN_USER != "")
+      {
+        print("<tr><th align='right'>Published:</th><td>");
+        select_is_published();
+        print("</td></tr>\n");
+      }
+      else
+        print("<input type='hidden' name='IS_PUBLISHED' value='0'/>\n");
 
       print("<tr><th align='right'>Title:</th>"
 	   ."<td><input type='text' name='TITLE' "
@@ -339,6 +537,6 @@ switch ($op)
 
 
 //
-// End of "$Id: articles.php,v 1.2 2004/05/18 12:02:02 mike Exp $".
+// End of "$Id: articles.php,v 1.3 2004/05/18 19:58:34 mike Exp $".
 //
 ?>

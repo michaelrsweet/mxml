@@ -1,5 +1,5 @@
 /*
- * "$Id: mxmldoc.c,v 1.31 2004/05/01 05:39:48 mike Exp $"
+ * "$Id: mxmldoc.c,v 1.32 2004/05/01 07:08:14 mike Exp $"
  *
  * Documentation generator using mini-XML, a small XML-like file parsing
  * library.
@@ -66,7 +66,7 @@
  *     <type>type string</type>
  *   </typedef>
  *
- *   <function name="">
+ *   <function name="" scope="">
  *     <description>descriptive text</description>
  *     <argument name="" direction="I|O|IO" default="">
  *       <description>descriptive text</description>
@@ -79,7 +79,7 @@
  *     <seealso>function names separated by spaces</seealso>
  *   </function>
  *
- *   <variable name="">
+ *   <variable name="" scope="">
  *     <description>descriptive text</description>
  *     <type>type string</type>
  *   </variable>
@@ -307,7 +307,7 @@ add_variable(mxml_node_t *parent,	/* I - Parent node */
 
     for (bufptr = buffer; node; bufptr += strlen(bufptr))
     {
-      if (node->value.text.whitespace)
+      if (node->value.text.whitespace && bufptr > buffer)
 	*bufptr++ = ' ';
 
       strcpy(bufptr, node->value.text.string);
@@ -336,7 +336,7 @@ add_variable(mxml_node_t *parent,	/* I - Parent node */
 
     for (bufptr = buffer; node; bufptr += strlen(bufptr))
     {
-      if (node->value.text.whitespace)
+      if (node->value.text.whitespace && bufptr > buffer)
 	*bufptr++ = ' ';
 
       strcpy(bufptr, node->value.text.string);
@@ -406,6 +406,7 @@ scan_file(const char  *filename,	/* I - Filename */
   int		ch;			/* Current character */
   char		buffer[65536],		/* String buffer */
 		*bufptr;		/* Pointer into buffer */
+  const char	*scope;			/* Current variable/function scope */
   mxml_node_t	*comment,		/* <comment> node */
 		*constant,		/* <constant> node */
 		*enumeration,		/* <enumeration> node */
@@ -416,7 +417,9 @@ scan_file(const char  *filename,	/* I - Filename */
 		*variable,		/* <variable> or <argument> node */
 		*returnvalue,		/* <returnvalue> node */
 		*type,			/* <type> node */
-		*description;		/* <description> node */
+		*description,		/* <description> node */
+		*node,			/* Current node */
+		*next;			/* Next node */
 #if DEBUG > 1
   mxml_node_t	*temp;			/* Temporary node */
   int		oldstate,		/* Previous state */
@@ -459,6 +462,11 @@ scan_file(const char  *filename,	/* I - Filename */
   typedefnode  = NULL;
   structclass  = NULL;
   fstructclass = NULL;
+
+  if (!strcmp(tree->value.element.name, "class"))
+    scope = "private";
+  else
+    scope = NULL;
 
  /*
   * Read until end-of-file...
@@ -574,6 +582,13 @@ scan_file(const char  *filename,	/* I - Filename */
 			  type->child->value.text.string + 1,
 			  type->child->next ?
 			      type->child->next->value.text.string : "(noname)");
+
+                  fputs("    type =", stderr);
+                  for (node = type->child; node; node = node->next)
+		    fprintf(stderr, " \"%s\"", node->value.text.string);
+		  putc('\n', stderr);
+
+                  fprintf(stderr, "    scope = %s\n", scope ? scope : "(null)");
 #endif /* DEBUG */
 
                   if (type->child->next)
@@ -585,7 +600,29 @@ scan_file(const char  *filename,	/* I - Filename */
 
                   if (typedefnode && type->child)
 		    type->child->value.text.whitespace = 0;
-                  else
+                  else if (structclass && type->child &&
+		           type->child->next && type->child->next->next)
+		  {
+		    for (bufptr = buffer, node = type->child->next->next;
+		         node;
+			 bufptr += strlen(bufptr))
+		    {
+		      if (node->value.text.whitespace && bufptr > buffer)
+			*bufptr++ = ' ';
+
+		      strcpy(bufptr, node->value.text.string);
+
+		      next = node->next;
+		      mxmlDelete(node);
+		      node = next;
+		    }
+
+		    mxmlElementSetAttr(structclass, "parent", buffer);
+
+		    mxmlDelete(type);
+		    type = NULL;
+		  }
+		  else
 		  {
 		    mxmlDelete(type);
 		    type = NULL;
@@ -723,6 +760,9 @@ scan_file(const char  *filename,	/* I - Filename */
 	        fputs("    close brace...\n", stderr);
 #endif /* DEBUG */
 
+                if (structclass)
+		  scope = NULL;
+
                 enumeration = NULL;
 		constant    = NULL;
 		structclass = NULL;
@@ -775,7 +815,16 @@ scan_file(const char  *filename,	/* I - Filename */
 
 	        if (function)
 		{
-		  mxmlDelete(function);
+		  if (!strcmp(tree->value.element.name, "class"))
+		  {
+#ifdef DEBUG
+		    fputs("    ADDING FUNCTION TO CLASS\n", stderr);
+#endif /* DEBUG */
+		    sort_node(tree, function);
+		  }
+		  else
+		    mxmlDelete(function);
+
 		  function = NULL;
 		  variable = NULL;
 		}
@@ -1167,8 +1216,47 @@ scan_file(const char  *filename,	/* I - Filename */
 	    *bufptr = '\0';
 	    state   = STATE_NONE;
 
+#ifdef DEBUG
+            fprintf(stderr, "    braces=%d, type=%p, type->child=%p, buffer=\"%s\"\n",
+	            braces, type, type ? type->child : NULL, buffer);
+#endif /* DEBUG */
+
             if (!braces)
 	    {
+	      if (!type || !type->child)
+	      {
+		if (!strcmp(tree->value.element.name, "class"))
+		{
+		  if (!strcmp(buffer, "public") ||
+	              !strcmp(buffer, "public:"))
+		  {
+		    scope = "public";
+#ifdef DEBUG
+		    fputs("    scope = public\n", stderr);
+#endif /* DEBUG */
+		    break;
+		  }
+		  else if (!strcmp(buffer, "private") ||
+	                   !strcmp(buffer, "private:"))
+		  {
+		    scope = "private";
+#ifdef DEBUG
+		    fputs("    scope = private\n", stderr);
+#endif /* DEBUG */
+		    break;
+		  }
+		  else if (!strcmp(buffer, "protected") ||
+	                   !strcmp(buffer, "protected:"))
+		  {
+		    scope = "protected";
+#ifdef DEBUG
+		    fputs("    scope = protected\n", stderr);
+#endif /* DEBUG */
+		    break;
+		  }
+		}
+	      }
+
 	      if (!type)
                 type = mxmlNewElement(MXML_NO_PARENT, "type");
 
@@ -1224,9 +1312,13 @@ scan_file(const char  *filename,	/* I - Filename */
 
 		mxmlElementSetAttr(function, "name", bufptr);
 
+		if (scope)
+		  mxmlElementSetAttr(function, "scope", scope);
+
 #ifdef DEBUG
                 fprintf(stderr, "function: %s\n", buffer);
-		fprintf(stderr, "    comment=%p\n", comment);
+		fprintf(stderr, "    scope = %s\n", scope ? scope : "(null)");
+		fprintf(stderr, "    comment = %p\n", comment);
 		fprintf(stderr, "    child = (%p) %s\n",
 		        comment->child,
 			comment->child ?
@@ -1360,12 +1452,16 @@ scan_file(const char  *filename,	/* I - Filename */
 
 #ifdef DEBUG
                   fprintf(stderr, "Variable: <<<< %s >>>>\n", buffer);
+                  fprintf(stderr, "    scope = %s\n", scope ? scope : "(null)");
 #endif /* DEBUG */
 
 	          variable = add_variable(MXML_NO_PARENT, "variable", type);
 		  type     = NULL;
 
 		  sort_node(tree, variable);
+
+		  if (scope)
+		    mxmlElementSetAttr(variable, "scope", scope);
 		}
               }
 	      else
@@ -1436,7 +1532,8 @@ sort_node(mxml_node_t *tree,		/* I - Tree to sort into */
 {
   mxml_node_t	*temp;			/* Current node */
   const char	*tempname,		/* Name of current node */
-		*nodename;		/* Name of node */
+		*nodename,		/* Name of node */
+		*scope;			/* Scope */
 
 
 #if DEBUG > 1
@@ -1467,7 +1564,23 @@ sort_node(mxml_node_t *tree,		/* I - Tree to sort into */
 
   if ((temp = mxmlFindElement(tree, tree, node->value.element.name,
                               "name", nodename, MXML_DESCEND_FIRST)) != NULL)
+  {
+   /*
+    * Copy the scope if needed...
+    */
+
+    if ((scope = mxmlElementGetAttr(temp, "scope")) != NULL &&
+        mxmlElementGetAttr(node, "scope") == NULL)
+    {
+#ifdef DEBUG
+      fprintf(stderr, "    copying scope %s for %s\n", scope, nodename);
+#endif /* DEBUG */
+
+      mxmlElementSetAttr(node, "scope", scope);
+    }
+
     mxmlDelete(temp);
+  }
 
  /*
   * Add the node into the tree at the proper place...
@@ -1611,7 +1724,9 @@ write_documentation(mxml_node_t *doc)	/* I - XML documentation */
 		*type;			/* Type for argument */
   const char	*name,			/* Name of function/type */
 		*cname,			/* Class name */
-		*defval;		/* Default value */
+		*defval,		/* Default value */
+		*parent,		/* Parent class */
+		*scope;			/* Variable/method scope */
   char		prefix;			/* Prefix character */
 
 
@@ -1701,14 +1816,25 @@ write_documentation(mxml_node_t *doc)	/* I - XML documentation */
       puts("<h4>Definition</h4>");
       puts("<pre>");
 
-      printf("class %s\n{\n", name);
+      printf("class %s", name);
+      if ((parent = mxmlElementGetAttr(scut, "parent")) != NULL)
+        printf(" %s", parent);
+      puts("\n{");
+      scope = "";
+
       for (arg = mxmlFindElement(scut, scut, "variable", NULL, NULL,
                         	 MXML_DESCEND_FIRST);
 	   arg;
 	   arg = mxmlFindElement(arg, scut, "variable", NULL, NULL,
                         	 MXML_NO_DESCEND))
       {
-	printf("  ");
+        if (strcmp(scope, mxmlElementGetAttr(arg, "scope")))
+	{
+	  scope = mxmlElementGetAttr(arg, "scope");
+	  printf("  %s:\n", scope);
+	}
+
+	printf("    ");
 	write_element(doc, mxmlFindElement(arg, arg, "type", NULL,
                                            NULL, MXML_DESCEND_FIRST));
 	printf(" %s;\n", mxmlElementGetAttr(arg, "name"));
@@ -1720,9 +1846,15 @@ write_documentation(mxml_node_t *doc)	/* I - XML documentation */
 	   function = mxmlFindElement(function, scut, "function", NULL, NULL,
                                       MXML_NO_DESCEND))
       {
+        if (strcmp(scope, mxmlElementGetAttr(function, "scope")))
+	{
+	  scope = mxmlElementGetAttr(function, "scope");
+	  printf("  %s:\n", scope);
+	}
+
         name = mxmlElementGetAttr(function, "name");
 
-        printf("  ");
+        printf("    ");
 
 	arg = mxmlFindElement(function, function, "returnvalue", NULL,
                               NULL, MXML_DESCEND_FIRST);
@@ -1747,7 +1879,10 @@ write_documentation(mxml_node_t *doc)	/* I - XML documentation */
 	  type = mxmlFindElement(arg, arg, "type", NULL, NULL,
 	                	 MXML_DESCEND_FIRST);
 
-	  printf("%c", prefix);
+	  putchar(prefix);
+	  if (prefix == ',')
+	    putchar(' ');
+
 	  if (type->child)
 	  {
 	    write_element(doc, type);
@@ -1755,7 +1890,7 @@ write_documentation(mxml_node_t *doc)	/* I - XML documentation */
 	  }
 	  fputs(mxmlElementGetAttr(arg, "name"), stdout);
           if ((defval = mxmlElementGetAttr(arg, "default")) != NULL)
-	    fputs(defval, stdout);
+	    printf(" %s", defval);
 	}
 
 	if (prefix == '(')
@@ -1962,7 +2097,7 @@ write_documentation(mxml_node_t *doc)	/* I - XML documentation */
 	}
 	fputs(mxmlElementGetAttr(arg, "name"), stdout);
         if ((defval = mxmlElementGetAttr(arg, "default")) != NULL)
-	  fputs(defval, stdout);
+	  printf(" %s", defval);
       }
 
       if (prefix == '(')
@@ -2107,7 +2242,10 @@ write_documentation(mxml_node_t *doc)	/* I - XML documentation */
 	  type = mxmlFindElement(arg, arg, "type", NULL, NULL,
 	                	 MXML_DESCEND_FIRST);
 
-	  printf("%c", prefix);
+	  putchar(prefix);
+	  if (prefix == ',')
+	    putchar(' ');
+
 	  if (type->child)
 	  {
 	    write_element(doc, type);
@@ -2115,7 +2253,7 @@ write_documentation(mxml_node_t *doc)	/* I - XML documentation */
 	  }
 	  fputs(mxmlElementGetAttr(arg, "name"), stdout);
           if ((defval = mxmlElementGetAttr(arg, "default")) != NULL)
-	    fputs(defval, stdout);
+	    printf(" %s", defval);
 	}
 
 	if (prefix == '(')
@@ -2369,7 +2507,7 @@ write_documentation(mxml_node_t *doc)	/* I - XML documentation */
                                          NULL, MXML_DESCEND_FIRST));
       printf(" %s", mxmlElementGetAttr(arg, "name"));
       if ((defval = mxmlElementGetAttr(arg, "default")) != NULL)
-	fputs(defval, stdout);
+	printf(" %s", defval);
       puts(";\n</pre>");
     }
   }
@@ -2512,5 +2650,5 @@ ws_cb(mxml_node_t *node,		/* I - Element node */
 
 
 /*
- * End of "$Id: mxmldoc.c,v 1.31 2004/05/01 05:39:48 mike Exp $".
+ * End of "$Id: mxmldoc.c,v 1.32 2004/05/01 07:08:14 mike Exp $".
  */

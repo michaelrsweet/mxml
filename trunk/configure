@@ -786,6 +786,16 @@ if test -n "$ac_init_help"; then
 
   cat <<\_ACEOF
 
+Optional Features:
+  --disable-FEATURE       do not include FEATURE (same as --enable-FEATURE=no)
+  --enable-FEATURE[=ARG]  include FEATURE [ARG=yes]
+  --enable-debug          turn on debugging default=no
+
+Optional Packages:
+  --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
+  --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
+  --with-docdir           set directory for documentation
+
 Some influential environment variables:
   CC          C compiler command
   CFLAGS      C compiler flags
@@ -1144,46 +1154,35 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
 
-#AC_PREFIX_DEFAULT(/usr)
 
-# Extract the first word of "ar", so it can be a program name with args.
-set dummy ar; ac_word=$2
-echo "$as_me:$LINENO: checking for $ac_word" >&5
-echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6
-if test "${ac_cv_path_AR+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
+
+CFLAGS="${CFLAGS:=}"
+CXXFLAGS="${CXXFLAGS:=}"
+LDFLAGS="${LDFLAGS:=}"
+
+OPTIM="-O"
+
+
+# Check whether --enable-debug or --disable-debug was given.
+if test "${enable_debug+set}" = set; then
+  enableval="$enable_debug"
+  if eval "test x$enable_debug = xyes"; then
+ 	OPTIM="-g"
 else
-  case $AR in
-  [\\/]* | ?:[\\/]*)
-  ac_cv_path_AR="$AR" # Let the user override the test with a path.
-  ;;
-  *)
-  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-  for ac_exec_ext in '' $ac_executable_extensions; do
-  if $as_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_path_AR="$as_dir/$ac_word$ac_exec_ext"
-    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-done
-
-  ;;
-esac
+	LDFLAGS="$LDFLAGS -s"
 fi
-AR=$ac_cv_path_AR
+fi;
 
-if test -n "$AR"; then
-  echo "$as_me:$LINENO: result: $AR" >&5
-echo "${ECHO_T}$AR" >&6
+
+# Check whether --with-docdir or --without-docdir was given.
+if test "${with_docdir+set}" = set; then
+  withval="$with_docdir"
+  docdir="$withval"
 else
-  echo "$as_me:$LINENO: result: no" >&5
-echo "${ECHO_T}no" >&6
-fi
+  docdir="NONE"
+fi;
+
+
 
 ac_ext=c
 ac_cpp='$CPP $CPPFLAGS'
@@ -2347,6 +2346,247 @@ else
   RANLIB="$ac_cv_prog_RANLIB"
 fi
 
+# Extract the first word of "ar", so it can be a program name with args.
+set dummy ar; ac_word=$2
+echo "$as_me:$LINENO: checking for $ac_word" >&5
+echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6
+if test "${ac_cv_path_AR+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  case $AR in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_AR="$AR" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+  for ac_exec_ext in '' $ac_executable_extensions; do
+  if $as_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_path_AR="$as_dir/$ac_word$ac_exec_ext"
+    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+done
+
+  ;;
+esac
+fi
+AR=$ac_cv_path_AR
+
+if test -n "$AR"; then
+  echo "$as_me:$LINENO: result: $AR" >&5
+echo "${ECHO_T}$AR" >&6
+else
+  echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6
+fi
+
+# Extract the first word of "cp", so it can be a program name with args.
+set dummy cp; ac_word=$2
+echo "$as_me:$LINENO: checking for $ac_word" >&5
+echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6
+if test "${ac_cv_path_CP+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  case $CP in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_CP="$CP" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+  for ac_exec_ext in '' $ac_executable_extensions; do
+  if $as_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_path_CP="$as_dir/$ac_word$ac_exec_ext"
+    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+done
+
+  ;;
+esac
+fi
+CP=$ac_cv_path_CP
+
+if test -n "$CP"; then
+  echo "$as_me:$LINENO: result: $CP" >&5
+echo "${ECHO_T}$CP" >&6
+else
+  echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6
+fi
+
+# Extract the first word of "mkdir", so it can be a program name with args.
+set dummy mkdir; ac_word=$2
+echo "$as_me:$LINENO: checking for $ac_word" >&5
+echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6
+if test "${ac_cv_path_MKDIR+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  case $MKDIR in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_MKDIR="$MKDIR" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+  for ac_exec_ext in '' $ac_executable_extensions; do
+  if $as_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_path_MKDIR="$as_dir/$ac_word$ac_exec_ext"
+    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+done
+
+  ;;
+esac
+fi
+MKDIR=$ac_cv_path_MKDIR
+
+if test -n "$MKDIR"; then
+  echo "$as_me:$LINENO: result: $MKDIR" >&5
+echo "${ECHO_T}$MKDIR" >&6
+else
+  echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6
+fi
+
+# Extract the first word of "nroff", so it can be a program name with args.
+set dummy nroff; ac_word=$2
+echo "$as_me:$LINENO: checking for $ac_word" >&5
+echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6
+if test "${ac_cv_path_NROFF+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  case $NROFF in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_NROFF="$NROFF" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+  for ac_exec_ext in '' $ac_executable_extensions; do
+  if $as_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_path_NROFF="$as_dir/$ac_word$ac_exec_ext"
+    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+done
+
+  ;;
+esac
+fi
+NROFF=$ac_cv_path_NROFF
+
+if test -n "$NROFF"; then
+  echo "$as_me:$LINENO: result: $NROFF" >&5
+echo "${ECHO_T}$NROFF" >&6
+else
+  echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6
+fi
+
+if test x$NROFF = x; then
+	# Extract the first word of "groff", so it can be a program name with args.
+set dummy groff; ac_word=$2
+echo "$as_me:$LINENO: checking for $ac_word" >&5
+echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6
+if test "${ac_cv_path_GROFF+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  case $GROFF in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_GROFF="$GROFF" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+  for ac_exec_ext in '' $ac_executable_extensions; do
+  if $as_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_path_GROFF="$as_dir/$ac_word$ac_exec_ext"
+    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+done
+
+  ;;
+esac
+fi
+GROFF=$ac_cv_path_GROFF
+
+if test -n "$GROFF"; then
+  echo "$as_me:$LINENO: result: $GROFF" >&5
+echo "${ECHO_T}$GROFF" >&6
+else
+  echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6
+fi
+
+	if test x$GROFF = x; then
+        	NROFF="echo"
+	else
+        	NROFF="$GROFF -T ascii"
+	fi
+fi
+# Extract the first word of "rm", so it can be a program name with args.
+set dummy rm; ac_word=$2
+echo "$as_me:$LINENO: checking for $ac_word" >&5
+echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6
+if test "${ac_cv_path_RM+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  case $RM in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_RM="$RM" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+  for ac_exec_ext in '' $ac_executable_extensions; do
+  if $as_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_path_RM="$as_dir/$ac_word$ac_exec_ext"
+    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+done
+
+  ;;
+esac
+fi
+RM=$ac_cv_path_RM
+
+if test -n "$RM"; then
+  echo "$as_me:$LINENO: result: $RM" >&5
+echo "${ECHO_T}$RM" >&6
+else
+  echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6
+fi
+
 
 case "`uname`" in
         Darwin* | *BSD*)
@@ -2363,7 +2603,52 @@ if test -n "$GCC"; then
 	CFLAGS="-Wall $CFLAGS"
 fi
 
-ac_config_files="$ac_config_files Makefile"
+if test "$prefix" = "NONE"; then
+	prefix="/usr/local"
+fi
+
+if test "$exec_prefix" = "NONE"; then
+	exec_prefix="$prefix"
+fi
+
+if test "$docdir" = "NONE"; then
+	docdir="$datadir/doc/mxml"
+fi
+
+if test "$mandir" = "\${prefix}/man" -a "$prefix" = "/usr"; then
+	case "$uname" in
+        	*BSD* | Darwin* | Linux*)
+        		# BSD, Darwin (MacOS X), and Linux
+        		mandir="/usr/share/man"
+        		;;
+        	IRIX*)
+        		# SGI IRIX
+        		mandir="/usr/share/catman/u_man"
+        		;;
+        	*)
+        		# All others
+        		mandir="/usr/man"
+        		;;
+	esac
+fi
+
+case "$uname" in
+        *BSD* | Darwin*)
+        	# *BSD
+        	CAT1EXT="0"
+        	MAN1EXT="1"
+        	;;
+        *)
+        	# All others
+        	CAT1EXT="1"
+        	MAN1EXT="1"
+        	;;
+esac
+
+
+
+
+ac_config_files="$ac_config_files Makefile mxml.list"
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
 # tests run on this system so they can be shared between configure
@@ -2861,6 +3146,7 @@ do
   case "$ac_config_target" in
   # Handling of arguments.
   "Makefile" ) CONFIG_FILES="$CONFIG_FILES Makefile" ;;
+  "mxml.list" ) CONFIG_FILES="$CONFIG_FILES mxml.list" ;;
   *) { { echo "$as_me:$LINENO: error: invalid argument: $ac_config_target" >&5
 echo "$as_me: error: invalid argument: $ac_config_target" >&2;}
    { (exit 1); exit 1; }; };;
@@ -2941,10 +3227,11 @@ s,@ECHO_C@,$ECHO_C,;t t
 s,@ECHO_N@,$ECHO_N,;t t
 s,@ECHO_T@,$ECHO_T,;t t
 s,@LIBS@,$LIBS,;t t
-s,@AR@,$AR,;t t
+s,@LDFLAGS@,$LDFLAGS,;t t
+s,@OPTIM@,$OPTIM,;t t
+s,@docdir@,$docdir,;t t
 s,@CC@,$CC,;t t
 s,@CFLAGS@,$CFLAGS,;t t
-s,@LDFLAGS@,$LDFLAGS,;t t
 s,@CPPFLAGS@,$CPPFLAGS,;t t
 s,@ac_ct_CC@,$ac_ct_CC,;t t
 s,@EXEEXT@,$EXEEXT,;t t
@@ -2954,7 +3241,15 @@ s,@CXXFLAGS@,$CXXFLAGS,;t t
 s,@ac_ct_CXX@,$ac_ct_CXX,;t t
 s,@RANLIB@,$RANLIB,;t t
 s,@ac_ct_RANLIB@,$ac_ct_RANLIB,;t t
+s,@AR@,$AR,;t t
+s,@CP@,$CP,;t t
+s,@MKDIR@,$MKDIR,;t t
+s,@NROFF@,$NROFF,;t t
+s,@GROFF@,$GROFF,;t t
+s,@RM@,$RM,;t t
 s,@ARFLAGS@,$ARFLAGS,;t t
+s,@CAT1EXT@,$CAT1EXT,;t t
+s,@MAN1EXT@,$MAN1EXT,;t t
 CEOF
 
 _ACEOF

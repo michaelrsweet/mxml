@@ -266,15 +266,61 @@ href='#mxmlIndexEnum'><tt>mxmlIndexEnum()</tt></a>,  <a
 href='#mxmlIndexFind'><tt>mxmlIndexFind()</tt></a>, and  <a
 href='#mxmlIndexReset'><tt>mxmlIndexReset()</tt></a> functions
 are used to access the nodes in the index. The <a
-href='#mxmlIndexEnum'><tt>mxmlIndexEnum()</tt></a> function
-enumerates each of the nodes in the index.</p>
+href='#mxmlIndexReset'><tt>mxmlIndexReset()</tt></a> function
+resets the "current" node pointer in the index, allowing you to
+do new searches and enumerations on the same index. Typically
+you will call this function prior to your calls to <a
+href='#mxmlIndexEnum'><tt>mxmlIndexEnum()</tt></a> and <a
+href='#mxmlIndexFind'><tt>mxmlIndexFind()</tt></a>.</p>
+
+<p>The <a href='#mxmlIndexEnum'><tt>mxmlIndexEnum()</tt></a>
+function enumerates each of the nodes in the index and can be
+used in a loop as follows:</p>
+
+<pre>
+    <a href='#mxml_node_t'>mxml_node_t</a> *node;
+    <a href='#mxml_index_t'>mxml_index_t</a> *ind;
+
+    mxmlIndexReset(ind);
+
+    while ((node = mxmlIndexEnum(ind)) != NULL)
+    {
+      // do something with node
+    }
+</pre>
 
 <p>The <a href='#mxmlIndexFind'><tt>mxmlIndexFind()</tt></a>
-function</p>
+function locates the next occurrence of the named element and
+attribute value in the index. It can be used to find all
+matching elements in an index, as follows:</p>
 
-<p>The <a href='#mxmlIndexReset'><tt>mxmlIndexReset()</tt></a>
-function</p>
+<pre>
+    <a href='#mxml_node_t'>mxml_node_t</a> *node;
+    <a href='#mxml_index_t'>mxml_index_t</a> *ind;
 
+    mxmlIndexReset(ind);
+
+    while ((node = mxmlIndexFind(ind, "element", "attr-value")) != NULL)
+    {
+      // do something with node
+    }
+</pre>
+
+<p>The second and third arguments represent the element name and
+attribute value, respectively. A <tt>NULL</tt> pointer is used
+to return all elements or attributes in the index. Passing
+<tt>NULL</tt> for both the element name and attribute value
+is equivalent to calling <tt>mxmlIndexEnum</tt>.</p>
+
+<p>When you are done using the index, delete it using the
+<a href='#mxmlIndexDelete()'><tt>mxmlIndexDelete()</tt></a>
+function:</p>
+
+<pre>
+    <a href='#mxml_index_t'>mxml_index_t</a> *ind;
+
+    mxmlIndexDelete(ind);
+</pre>
 
 </body>
 </html>

@@ -1,5 +1,5 @@
 /*
- * "$Id: mxmldoc.c,v 1.37 2004/06/01 20:19:34 mike Exp $"
+ * "$Id: mxmldoc.c,v 1.38 2004/10/28 01:07:00 mike Exp $"
  *
  * Documentation generator using Mini-XML, a small XML-like file parsing
  * library.
@@ -891,6 +891,16 @@ scan_file(const char  *filename,	/* I - Filename */
 #endif /* DEBUG */
                   ch = type->last_child->value.text.string[0];
 		  mxmlNewText(type, isalnum(ch) || ch == '_', "*");
+		}
+		break;
+
+	    case '&' :
+		if (type)
+		{
+#ifdef DEBUG
+                  fputs("Identifier: <<<< & >>>\n", stderr);
+#endif /* DEBUG */
+		  mxmlNewText(type, 1, "&");
 		}
 		break;
 
@@ -2735,5 +2745,5 @@ ws_cb(mxml_node_t *node,		/* I - Element node */
 
 
 /*
- * End of "$Id: mxmldoc.c,v 1.37 2004/06/01 20:19:34 mike Exp $".
+ * End of "$Id: mxmldoc.c,v 1.38 2004/10/28 01:07:00 mike Exp $".
  */

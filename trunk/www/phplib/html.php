@@ -1,6 +1,6 @@
 <?php
 //
-// "$Id: html.php,v 1.1 2004/05/17 02:14:55 mike Exp $"
+// "$Id: html.php,v 1.2 2004/05/17 03:23:06 mike Exp $"
 //
 // PHP functions for standardized HTML output...
 //
@@ -91,7 +91,7 @@ html_header($title = "")		// I - Additional document title
   // Standard navigation stuff...
   print("<p><table width='100%' height='100%' border='1' cellspacing='0' "
        ."cellpadding='5'>\n"
-       ."<tr bgcolor='#cccccc'>"
+       ."<tr class='header'>"
        ."<td>[ "
        ."<a href='index.php'>Home</a> | "
        ."<a href='documentation.php'>Documentation</a> | "
@@ -114,7 +114,7 @@ function
 html_footer()
 {
   print("</td></tr>\n");
-  print("<tr bgcolor='#cccccc'>"
+  print("<tr class='header'>"
        ."<td>Copyright 2003-2004 by Michael Sweet. This library is free "
        ."software; you can redistribute it and/or modify it "
        ."under the terms of the GNU Library General Public "

@@ -1,6 +1,6 @@
 <?php
 //
-// "$Id: db.php,v 1.1 2004/05/17 02:14:55 mike Exp $"
+// "$Id: db.php,v 1.2 2004/05/17 03:23:06 mike Exp $"
 //
 // Common database include file for PHP web pages.  This file can be used
 // to abstract the specific database in use...
@@ -43,46 +43,46 @@ if ($DB_CONN = sqlite_open("data/$DB_NAME.db", 0666, $sqlerr))
     // Opened the database, create all tables...
     sqlite_query($DB_CONN,
 		 "CREATE TABLE str ("
-		."id INT PRIMARY KEY,"
-		."master_id INT,"
-		."is_published INT,"
-		."status INT,"
-		."priority INT,"
-		."scope INT,"
+		."id INTEGER PRIMARY KEY,"
+		."master_id INTEGER,"
+		."is_published INTEGER,"
+		."status INTEGER,"
+		."priority INTEGER,"
+		."scope INTEGER,"
 		."summary text,"
 		."subsystem VARCHAR(128),"
 		."str_version VARCHAR(16),"
 		."fix_version VARCHAR(16),"
 		."manager_email VARCHAR(128),"
-		."create_date INT,"
+		."create_date INTEGER,"
 		."create_email VARCHAR(128),"
-		."modify_date INT,"
+		."modify_date INTEGER,"
 		."modify_email VARCHAR(128)"
 		.")");
 
     sqlite_query($DB_CONN,
 		 "CREATE TABLE strcc ("
-		."id INT PRIMARY KEY,"
-		."str_id INT,"
+		."id INTEGER PRIMARY KEY,"
+		."str_id INTEGER,"
 		."email VARCHAR(128)"
 		.")");
 
     sqlite_query($DB_CONN,
 		 "CREATE TABLE strfile ("
-		."id INT PRIMARY KEY,"
-		."str_id INT,"
-		."is_published INT,"
-		."date INT,"
+		."id INTEGER PRIMARY KEY,"
+		."str_id INTEGER,"
+		."is_published INTEGER,"
+		."date INTEGER,"
 		."email VARCHAR(128),"
 		."filename VARCHAR(128)"
 		.")");
 
     sqlite_query($DB_CONN,
 		 "CREATE TABLE strtext ("
-		."id INT PRIMARY KEY,"
-		."str_id INT,"
-		."is_published INT,"
-		."date INT,"
+		."id INTEGER PRIMARY KEY,"
+		."str_id INTEGER,"
+		."is_published INTEGER,"
+		."date INTEGER,"
 		."email VARCHAR(128),"
 		."contents TEXT"
 		.")");
@@ -185,6 +185,8 @@ db_query($SQL_QUERY)			// I - SQL query string
 {
   global $DB_CONN;
 
+//  print("<p>$SQL_QUERY</p>\n");
+
   return (sqlite_query($DB_CONN, $SQL_QUERY));
 }
 
@@ -205,6 +207,6 @@ db_seek($result,			// I - Result of query
 
 
 //
-// End of "$Id: db.php,v 1.1 2004/05/17 02:14:55 mike Exp $".
+// End of "$Id: db.php,v 1.2 2004/05/17 03:23:06 mike Exp $".
 //
 ?>

@@ -9,6 +9,7 @@ CHANGES IN Mini-XML 1.0
 	  typedefs properly.
 	- Documentation provided via mxmldoc and more in-line
 	  comments in the code.
+	- Added man pages and packaging files.
 
 
 CHANGES IN Mini-XML 0.93

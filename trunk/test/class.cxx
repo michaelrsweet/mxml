@@ -3,6 +3,8 @@ class foo_c			// Foo class
   float	foo;				/* Real number */
   int	bar;				/* Integer */
 
+  static int global;			/* Global integer */
+
   public:
 
   foo_c(float f, int b);
@@ -34,6 +36,14 @@ class foo_c			// Foo class
   set_foo(float f) // I - Value of foo
   {
     foo = f;
+  }
+
+  // 'set_foobar()' - Set foo and optionally bar (should show default args).
+  void
+  set_foobar(float f, int b = 0)
+  {
+    foo = f;
+    bar = b;
   }
 }
 

@@ -1,5 +1,5 @@
 #
-# "$Id: Makefile.in,v 1.6 2003/06/15 00:44:33 mike Exp $"
+# "$Id: Makefile.in,v 1.7 2003/06/15 01:22:36 mike Exp $"
 #
 # Makefile for mini-XML, a small XML-like file parsing library.
 #
@@ -53,17 +53,19 @@ BUILDROOT	=	$(DSTROOT)
 #
 
 CAT1EXT		=	@CAT1EXT@
+CAT3EXT		=	@CAT3EXT@
 MAN1EXT		=	@MAN1EXT@
+MAN3EXT		=	@MAN3EXT@
 
 
 #
 # Rules...
 #
 
-.SUFFIXES:	.0 .1 .c .man .o
+.SUFFIXES:	.0 .1 .3 .c .man .o
 .c.o:
 	$(CC) $(CFLAGS) -c $<
-.man.0 .man.1:
+.man.0 .man.1 .man.3:
 	$(RM) $@
 	$(NROFF) -man $< >$@
 
@@ -75,7 +77,8 @@ MAN1EXT		=	@MAN1EXT@
 DOCFILES	=	index.html documentation.html README COPYING CHANGES
 LIBOBJS		=	mxml-attr.o mxml-file.o mxml-node.o mxml-search.o
 OBJS		=	mxmldoc.o testmxml.o $(LIBOBJS)
-TARGETS		=	libmxml.a mxmldoc mxmldoc.$(CAT1EXT) testmxml mxml.xml
+TARGETS		=	libmxml.a mxmldoc mxml.$(CAT3EXT) mxmldoc.$(CAT1EXT) \
+			testmxml mxml.xml
 
 
 #
@@ -111,8 +114,12 @@ install:	$(TARGETS)
 	$(CP) libmxml.a $(BUILDROOT)/$(libdir)
 	-$(MKDIR) -p $(BUILDROOT)/$(mandir)/cat1
 	$(CP) mxmldoc.$(CAT1EXT) $(BUILDROOT)/$(mandir)/cat1/mxmldoc.$(CAT1EXT)
+	-$(MKDIR) -p $(BUILDROOT)/$(mandir)/cat3
+	$(CP) mxml.$(CAT3EXT) $(BUILDROOT)/$(mandir)/cat3/mxml.$(CAT3EXT)
 	-$(MKDIR) -p $(BUILDROOT)/$(mandir)/man1
 	$(CP) mxmldoc.man $(BUILDROOT)/$(mandir)/man1/mxmldoc.$(MAN1EXT)
+	-$(MKDIR) -p $(BUILDROOT)/$(mandir)/man3
+	$(CP) mxml.man $(BUILDROOT)/$(mandir)/man3/mxml.$(MAN3EXT)
 
 
 #
@@ -125,7 +132,9 @@ uninstall:
 	$(RM) $(BUILDROOT)/$(includedir)/mxml.h
 	$(RM) $(BUILDROOT)/$(libdir)/libmxml.a
 	$(RM) $(BUILDROOT)/$(mandir)/cat1/mxmldoc.$(CAT1EXT)
+	$(RM) $(BUILDROOT)/$(mandir)/cat3/mxml.$(CAT3EXT)
 	$(RM) $(BUILDROOT)/$(mandir)/man1/mxmldoc.$(MAN1EXT)
+	$(RM) $(BUILDROOT)/$(mandir)/man3/mxml.$(MAN3EXT)
 
 
 #
@@ -208,5 +217,5 @@ $(OBJS):	Makefile
 
 
 #
-# End of "$Id: Makefile.in,v 1.6 2003/06/15 00:44:33 mike Exp $".
+# End of "$Id: Makefile.in,v 1.7 2003/06/15 01:22:36 mike Exp $".
 #

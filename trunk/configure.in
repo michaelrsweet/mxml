@@ -1,5 +1,5 @@
 dnl
-dnl "$Id: configure.in,v 1.3 2003/06/15 00:44:33 mike Exp $"
+dnl "$Id: configure.in,v 1.4 2003/06/15 01:22:36 mike Exp $"
 dnl
 dnl Configuration script for mini-XML, a small XML-like file parsing library.
 dnl
@@ -115,20 +115,26 @@ case "$uname" in
         	# *BSD
         	CAT1EXT="0"
         	MAN1EXT="1"
+        	CAT3EXT="0"
+        	MAN3EXT="3"
         	;;
         *)
         	# All others
         	CAT1EXT="1"
         	MAN1EXT="1"
+        	CAT3EXT="3"
+        	MAN3EXT="3"
         	;;
 esac
 
 AC_SUBST(CAT1EXT)
+AC_SUBST(CAT3EXT)
 AC_SUBST(MAN1EXT)
+AC_SUBST(MAN3EXT)
 
 dnl Output the makefile, etc...
 AC_OUTPUT(Makefile mxml.list)
 
 dnl
-dnl End of "$Id: configure.in,v 1.3 2003/06/15 00:44:33 mike Exp $".
+dnl End of "$Id: configure.in,v 1.4 2003/06/15 01:22:36 mike Exp $".
 dnl

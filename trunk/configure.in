@@ -1,5 +1,5 @@
 dnl
-dnl "$Id: configure.in,v 1.6 2003/07/20 13:41:17 mike Exp $"
+dnl "$Id: configure.in,v 1.7 2003/07/27 23:11:40 mike Exp $"
 dnl
 dnl Configuration script for mini-XML, a small XML-like file parsing library.
 dnl
@@ -31,14 +31,18 @@ AC_SUBST(LDFLAGS)
 OPTIM="-O"
 AC_SUBST(OPTIM)
 
-AC_ARG_ENABLE(debug, [  --enable-debug          turn on debugging [default=no]],
+AC_ARG_WITH(ansi, [  --with-ansi             set full ANSI C mode, default=no],
+	use_ansi="$withval",
+	use_ansi="no")
+
+AC_ARG_ENABLE(debug, [  --enable-debug          turn on debugging, default=no],
 if eval "test x$enable_debug = xyes"; then
  	OPTIM="-g"
 else
 	LDFLAGS="$LDFLAGS -s"
 fi)
 
-AC_ARG_WITH(docdir, [  --with-docdir           set directory for documentation],
+AC_ARG_WITH(docdir, [  --with-docdir           set directory for documentation, default=${prefix}/share/doc/mxml],
 	docdir="$withval",
 	docdir="NONE")
 
@@ -82,11 +86,19 @@ esac
 AC_SUBST(ARFLAGS)
 
 dnl Checks for string functions.
-AC_CHECK_FUNCS(strdup strlcat strlcpy)
+AC_CHECK_FUNCS(strlcat strlcpy)
+
+if test "x$use_ansi" != xyes; then
+	AC_CHECK_FUNCS(strdup)
+fi
 
 dnl Add -Wall for GCC...
 if test -n "$GCC"; then
 	CFLAGS="-Wall $CFLAGS"
+
+	if test "x$use_ansi" = xyes; then
+		CFLAGS="-ansi -pedantic $CFLAGS"
+	fi
 fi
 
 dnl Fix "prefix" variable if it hasn't been specified...
@@ -149,5 +161,5 @@ dnl Output the makefile, etc...
 AC_OUTPUT(Makefile mxml.list)
 
 dnl
-dnl End of "$Id: configure.in,v 1.6 2003/07/20 13:41:17 mike Exp $".
+dnl End of "$Id: configure.in,v 1.7 2003/07/27 23:11:40 mike Exp $".
 dnl

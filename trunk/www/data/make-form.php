@@ -83,6 +83,14 @@ print("    html_footer();\n");
 print("    exit();\n");
 print("  }\n");
 print("\n");
+print("  if ((\$op == 'D' || \$op == 'M') && \$LOGIN_USER == \"\")\n");
+print("  {\n");
+print("    html_header(\"$tname Error\");\n");
+print("    print(\"<p>Command '\$op' requires a login!\\n\");\n");
+print("    html_footer();\n");
+print("    exit();\n");
+print("  }\n");
+print("\n");
 print("  if (\$op == 'N' && \$id)\n");
 print("  {\n");
 print("    html_header(\"$tname Error\");\n");
@@ -214,8 +222,11 @@ while ($row = sqlite_fetch_array($result))
     default :
 	$name = ucwords(str_replace('_', ' ', $row['name']));
 
-        print("        \$temp = htmlspecialchars(\$row['$row[name]']);\n");
-        print("        print(\"<tr><th align='right'>$name:</th>"
+        if ($row['type'] == "TEXT")
+          print("        \$temp = format_text(\$row['$row[name]']);\n");
+        else
+          print("        \$temp = htmlspecialchars(\$row['$row[name]']);\n");
+        print("        print(\"<tr><th align='right' valign='top'>$name:</th>"
 	     ."<td class='left'>\$temp</td></tr>\\n\");\n");
 	print("\n");
         break;
@@ -245,30 +256,32 @@ print("	  html_footer();\n");
 print("	  exit();\n");
 print("	}\n");
 print("\n");
-print("        html_start_table(array(");
+print("        html_start_table(array(\"ID\"");
 
 sqlite_seek($result, 0);
-$firsttime = 1;
+
+$list_columns = 0;
 while ($row = sqlite_fetch_array($result))
   switch ($row['name'])
   {
     case "id" :
     case "create_date" :
     case "create_user" :
-    case "modify_date" :
     case "modify_user" :
     case "is_published" :
+    case "abstract" :
+    case "contents" :
+        break;
+
+    case "modify_date" :
+	print(",\"Last Modified\"");
+	$list_columns ++;
         break;
 
     default :
 	$name = ucwords(str_replace('_', ' ', $row['name']));
-	if ($firsttime)
-	{
-	  print("\"$name\"");
-	  $firsttime = 0;
-	}
-	else
-	  print(",\"$name\"");
+	print(",\"$name\"");
+	$list_columns ++;
         break;
   }
 
@@ -285,18 +298,31 @@ while ($row = sqlite_fetch_array($result))
   {
     case "id" :
         print("          \$id = \$row['id'];\n\n");
+	print("          print(\"<td align='center'><a href='\$PHP_SELF?L\$id' \"\n");
+	print("	       .\"alt='$tname #\$id'>\"\n");
+	print("	       .\"\$id</a></td>\");\n");
+        print("\n");
+        break;
+
+    case "modify_date" :
+	print("          \$temp = date(\"M d, Y\", \$row['modify_date']);\n");
+	print("          print(\"<td align='center'><a href='\$PHP_SELF?L\$id' \"\n");
+	print("	       .\"alt='$tname #\$id'>\"\n");
+	print("	       .\"\$temp</a></td>\");\n");
+        print("\n");
         break;
 
     case "create_date" :
     case "create_user" :
-    case "modify_date" :
     case "modify_user" :
     case "is_published" :
+    case "contents" :
+    case "abstract" :
         break;
 
     default :
 	print("          \$temp = htmlspecialchars(\$row['$row[name]']);\n");
-	print("          print(\"<td class='center'><a href='\$PHP_SELF?L\$id' \"\n");
+	print("          print(\"<td align='center'><a href='\$PHP_SELF?L\$id' \"\n");
 	print("	       .\"alt='$tname #\$id'>\"\n");
 	print("	       .\"\$temp</a></td>\");\n");
         print("\n");
@@ -304,6 +330,18 @@ while ($row = sqlite_fetch_array($result))
   }
 
 print("          html_end_row();\n");
+
+sqlite_seek($result, 0);
+while ($row = sqlite_fetch_array($result))
+  if ($row['name'] == "abstract")
+  {
+    print("\n");
+    print("          html_start_row();\n");
+    print("          \$temp = htmlspecialchars(\$row['abstract']);\n");
+    print("          print(\"<td></td><td colspan='$list_columns'>\$temp</td>\");\n");
+    print("          html_end_row();\n");
+  }
+
 print("	}\n");
 print("\n");
 print("        html_end_table();\n");
@@ -499,9 +537,14 @@ print("      print(\"<h1>New $tname</h1>\\n\");\n");
 print("      print(\"<form method='post' action='\$PHP_SELF?N'>\"\n");
 print("	   .\"<p><table width='100%' cellpadding='5' cellspacing='0' border='0'>\\n\");\n");
 print("\n");
-print("      print(\"<tr><th align='right'>Published:</th><td>\");\n");
-print("      select_is_published();\n");
-print("      print(\"</td></tr>\\n\");\n");
+print("      if (\$LOGIN_USER != \"\")\n");
+print("      {\n");
+print("        print(\"<tr><th align='right'>Published:</th><td>\");\n");
+print("        select_is_published();\n");
+print("        print(\"</td></tr>\\n\");\n");
+print("      }\n");
+print("      else\n");
+print("        print(\"<input type='hidden' name='IS_PUBLISHED' value='0'/>\\n\");\n");
 print("\n");
 
 sqlite_seek($result, 0);

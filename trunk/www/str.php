@@ -1,6 +1,6 @@
 <?php
 //
-// "$Id: str.php,v 1.5 2004/05/18 01:39:00 mike Exp $"
+// "$Id: str.php,v 1.6 2004/05/18 19:58:34 mike Exp $"
 //
 // Software Trouble Report page...
 //
@@ -780,10 +780,13 @@ switch ($op)
 		 ."'>Previous&nbsp;$STR_PAGE_MAX</a>&nbsp;]");
           print("</td><td align='right'>");
 	  if ($end < $count)
+	  {
+	    $next_count = min($STR_PAGE_MAX, $count - $end);
 	    print("[&nbsp;<a href='$PHP_SELF?L+P$priority+S$status+C$scope+I$next+"
 		 ."E$femail+Q"
 		 . urlencode($search)
-		 ."'>Next&nbsp;$STR_PAGE_MAX</a>&nbsp;]");
+		 ."'>Next&nbsp;$next_count</a>&nbsp;]");
+          }
           print("</td></tr>\n");
 	  print("</table></p>\n");
         }
@@ -801,28 +804,28 @@ switch ($op)
 	  $prtext   = $priority_text[$row['priority']];
           $sttext   = $status_text[$row['status']];
           $sctext   = $scope_text[$row['scope']];
+	  $link     = "<a href='$PHP_SELF?L$row[id]$options' "
+	             ."alt='STR #$row[id]: $summary'>";
 
           html_start_row();
 
           print("<td nowrap>");
           if ($LOGIN_USER)
 	    print("<input type='checkbox' name='ID_$row[id]'>");
-	  print("<a href='$PHP_SELF?L$row[id]$options' alt='STR #$row[id]: $summary'>"
-	       ."$row[id]</a></td>"
-	       ."<td align='center'>$prtext</td>"
-	       ."<td align='center'>$sttext</td>"
-	       ."<td align='center'>$sctext</td>"
-	       ."<td align='center'><a href='$PHP_SELF?L$row[id]$options' "
-	       ."alt='STR #$row[id]: $summary'>$summabbr</a></td>"
-	       ."<td align='center'>$row[str_version]</td>"
-	       ."<td align='center'>$date</td>");
+	  print("$link$row[id]</a></td>"
+	       ."<td align='center'>$link$prtext</a></td>"
+	       ."<td align='center'>$link$sttext</a></td>"
+	       ."<td align='center'>$link$sctext</a></td>"
+	       ."<td align='center'>$link$summabbr</a></td>"
+	       ."<td align='center'>$link$row[str_version]</a></td>"
+	       ."<td align='center'>$link$date</a></td>");
 
 	  if ($row['manager_email'] != "")
 	    $email = sanitize_email($row['manager_email']);
 	  else
 	    $email = "<i>Unassigned</i>";
 
-	  print("<td align='center'>$email</td>");
+	  print("<td align='center'>$link$email</a></td>");
 
 	  html_end_row();
 
@@ -911,10 +914,13 @@ switch ($op)
 		 ."'>Previous&nbsp;$STR_PAGE_MAX</a>&nbsp;]");
           print("</td><td align='right'>");
 	  if ($end < $count)
+	  {
+	    $next_count = min($STR_PAGE_MAX, $count - $end);
 	    print("[&nbsp;<a href='$PHP_SELF?L+P$priority+S$status+C$scope+I$next+"
 		 ."E$femail+Q"
 		 . urlencode($search)
-		 ."'>Next&nbsp;$STR_PAGE_MAX</a>&nbsp;]");
+		 ."'>Next&nbsp;$next_count</a>&nbsp;]");
+          }
           print("</td></tr>\n");
 	  print("</table></p>\n");
         }
@@ -1842,6 +1848,6 @@ switch ($op)
 }
 
 //
-// End of "$Id: str.php,v 1.5 2004/05/18 01:39:00 mike Exp $".
+// End of "$Id: str.php,v 1.6 2004/05/18 19:58:34 mike Exp $".
 //
 ?>

@@ -1,14 +1,15 @@
 <?
 //
-// "$Id: auth.php,v 1.7 2004/05/19 21:17:47 mike Exp $"
+// "$Id: auth.php,v 1.8 2004/05/20 02:04:45 mike Exp $"
 //
 // Authentication functions for PHP pages...
 //
 // Contents:
 //
-//   auth_current() - Return the currently logged in user...
-//   auth_login()   - Log a user into the system.
-//   auth_logout()  - Logout of the current user by clearing the session ID.
+//   auth_current()    - Return the currently logged in user...
+//   auth_login()      - Log a user into the system.
+//   auth_logout()     - Logout of the current user by clearing the session ID.
+//   auth_user_email() - Return the email address of a user...
 //
 
 //
@@ -154,6 +155,29 @@ auth_logout()
 
 
 //
-// End of "$Id: auth.php,v 1.7 2004/05/19 21:17:47 mike Exp $".
+// 'auth_user_email()' - Return the email address of a user...
+//
+
+function				// O - Email address
+auth_user_email($username)		// I - Username
+{
+  $result = db_query("SELECT * FROM users WHERE "
+                    ."name = '" . db_escape($username) . "'");
+  if (db_count($result) == 1)
+  {
+    $row = db_next($result);
+    $email = $row["email"];
+  }
+  else
+    $email = "";
+
+  db_free($result);
+
+  return ($email);
+}
+
+
+//
+// End of "$Id: auth.php,v 1.8 2004/05/20 02:04:45 mike Exp $".
 //
 ?>

@@ -1,6 +1,6 @@
 <?php
 //
-// "$Id: account.php,v 1.8 2004/05/19 14:02:38 mike Exp $"
+// "$Id: account.php,v 1.9 2004/05/20 02:04:44 mike Exp $"
 //
 // Account management page...
 //
@@ -194,11 +194,13 @@ switch ($op)
 
 	html_footer();
       }
-      else if ($data == "disable")
+      else if ($data == "batch")
       {
-        // Disable accounts...
-	if ($REQUEST_METHOD == "POST")
+        // Disable/enable/expire/etc. accounts...
+	if ($REQUEST_METHOD == "POST" && array_key_exists("OP", $_POST))
 	{
+	  $op = $_POST["OP"];
+
           db_query("BEGIN TRANSACTION");
 
           reset($_POST);
@@ -207,7 +209,10 @@ switch ($op)
 	    {
 	      $id = (int)substr($key, 3);
 
-              db_query("UPDATE users SET is_published = 0 WHERE id = $id");
+              if ($op == "disable")
+        	db_query("UPDATE users SET is_published = 0 WHERE id = $id");
+              else if ($op == "enable")
+        	db_query("UPDATE users SET is_published = 1 WHERE id = $id");
 	    }
 
           db_query("COMMIT TRANSACTION");
@@ -367,7 +372,7 @@ switch ($op)
 
 	$result = db_query("SELECT * FROM users ORDER BY name");
 
-        print("<form method='POST' action='$PHP_SELF?Adisable'>\n");
+        print("<form method='POST' action='$PHP_SELF?Abatch'>\n");
 
         html_start_table(array("Username", "EMail", "Level"));
 
@@ -392,8 +397,11 @@ switch ($op)
 	}
 
         html_start_row("header");
-	print("<td align='center' colspan='3'>&nbsp;<br /><input type='submit' "
-	     ."value='Disable Checked Accounts'/></td>");
+	print("<td align='center' colspan='3'>&nbsp;<br /><select name='OP'>"
+	     ."<option value='disable'>Disable</option>"
+	     ."<option value='enable'>Enable</option>"
+	     ."</select>"
+	     ."<input type='submit' value='Checked Accounts'/></td>");
 	html_end_row();
 
 	html_end_table();
@@ -604,6 +612,6 @@ switch ($op)
 
 
 //
-// End of "$Id: account.php,v 1.8 2004/05/19 14:02:38 mike Exp $".
+// End of "$Id: account.php,v 1.9 2004/05/20 02:04:44 mike Exp $".
 //
 ?>

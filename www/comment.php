@@ -1,6 +1,6 @@
 <?php
 //
-// "$Id: comment.php,v 1.6 2004/05/19 16:34:54 mike Exp $"
+// "$Id: comment.php,v 1.7 2004/05/20 02:04:44 mike Exp $"
 //
 // Comment and moderation interface for PHP pages...
 //
@@ -51,7 +51,7 @@ for ($i = 0; $i < $argc; $i ++)
 	break;
 
     case 'p' : // Set path
-        $path = substr($argv[$i], 1);
+        $path = urldecode(substr($argv[$i], 1));
 	break;
   }
 }
@@ -86,7 +86,9 @@ else
 
         if ($REQUEST_METHOD == "POST")
 	{
-	  if (array_key_exists("AUTHOR", $_POST))
+	  if ($LOGIN_USER != "" && $LOGIN_LEVEL < AUTH_DEVEL)
+	    $create_user = $LOGIN_USER;
+	  else if (array_key_exists("AUTHOR", $_POST))
             $create_user = trim($_POST["AUTHOR"]);
 	  else
 	    $create_user = "";
@@ -106,10 +108,10 @@ else
 	  else
 	    $contents = "";
 
-          if (strpos($contents, "http:") === false &&
-	      strpos($contents, "https:") === false &&
-	      strpos($contents, "ftp:") === false &&
-	      strpos($contents, "mailto:") === false &&
+          if (strpos($contents, "http:") === FALSE &&
+	      strpos($contents, "https:") === FALSE &&
+	      strpos($contents, "ftp:") === FALSE &&
+	      strpos($contents, "mailto:") === FALSE &&
               $contents != "" && $create_user != "" && $file != "")
 	    $havedata = 1;
 
@@ -130,7 +132,9 @@ else
 	    }
 	    else
 	    {
-	      if (array_key_exists("FROM", $_COOKIE))
+	      if ($LOGIN_USER != "")
+	        $create_user = $LOGIN_USER;
+	      else if (array_key_exists("FROM", $_COOKIE))
         	$create_user = $_COOKIE["FROM"];
 	      else
 		$create_user = "Anonymous <anonymous@easysw.com>";
@@ -143,7 +147,9 @@ else
 	  }
 	  else
 	  {
-	    if (array_key_exists("FROM", $_COOKIE))
+	    if ($LOGIN_USER != "")
+	      $create_user = $LOGIN_USER;
+	    else if (array_key_exists("FROM", $_COOKIE))
               $create_user = $_COOKIE["FROM"];
 	    else
 	      $create_user = "Anonymous <anonymous@easysw.com>";
@@ -367,6 +373,6 @@ else
 }
 
 //
-// End of "$Id: comment.php,v 1.6 2004/05/19 16:34:54 mike Exp $".
+// End of "$Id: comment.php,v 1.7 2004/05/20 02:04:44 mike Exp $".
 //
 ?>

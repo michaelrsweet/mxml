@@ -28,46 +28,46 @@ PRE { font-family: monospace }
 <A HREF="3MoreMiniXMLProgrammingTechniques.html">Next</A>
 <HR NOSHADE>
 <H3><A NAME="3_3_1">Finding and Iterating Nodes</A></H3>
-<P>The <A href="reference.html#mxmlWalkPrev"><TT>mxmlWalkPrev()</TT></A>
- and <A href="reference.html#mxmlWalkNext"><TT>mxmlWalkNext()</TT></A>
+<P>The <A href="mxmlWalkPrev.html#mxmlWalkPrev"><TT>mxmlWalkPrev()</TT></A>
+ and <A href="mxmlWalkNext.html#mxmlWalkNext"><TT>mxmlWalkNext()</TT></A>
 functions can be used to iterate through the XML node tree:</P>
 <PRE>
-    <A href="reference.html#mxml_node_t">mxml_node_t</A> *node = <A href="reference.html#mxmlWalkPrev">mxmlWalkPrev</A>(current, tree, MXML_DESCEND);
+    <A href="mxmlnodet.html#mxml_node_t">mxml_node_t</A> *node = <A href="mxmlWalkPrev.html#mxmlWalkPrev">mxmlWalkPrev</A>(current, tree, MXML_DESCEND);
 
-    <A href="reference.html#mxml_node_t">mxml_node_t</A> *node = <A href="reference.html#mxmlWalkNext">mxmlWalkNext</A>(current, tree, MXML_DESCEND);
+    <A href="mxmlnodet.html#mxml_node_t">mxml_node_t</A> *node = <A href="mxmlWalkNext.html#mxmlWalkNext">mxmlWalkNext</A>(current, tree, MXML_DESCEND);
 </PRE>
-<P>In addition, you can find a named element/node using the <A href="reference.html#mxmlFindElement">
+<P>In addition, you can find a named element/node using the <A href="mxmlFindElement.html#mxmlFindElement">
 <TT>mxmlFindElement()</TT></A> function:</P>
 <PRE>
-    <A href="reference.html#mxml_node_t">mxml_node_t</A> *node = <A href="reference.html#mxmlFindElement">mxmlFindElement</A>(tree, tree, &quot;name&quot;, &quot;attr&quot;,
+    <A href="mxmlnodet.html#mxml_node_t">mxml_node_t</A> *node = <A href="mxmlFindElement.html#mxmlFindElement">mxmlFindElement</A>(tree, tree, &quot;name&quot;, &quot;attr&quot;,
                                 	&quot;value&quot;, MXML_DESCEND);
 </PRE>
 <P>The <TT>name</TT>, <TT>attr</TT>, and <TT>value</TT> arguments can be
  passed as <TT>NULL</TT> to act as wildcards, e.g.:</P>
 <PRE>
     /* Find the first &quot;a&quot; element */
-    node = <A href="reference.html#mxmlFindElement">mxmlFindElement</A>(tree, tree, &quot;a&quot;, NULL, NULL, MXML_DESCEND);
+    node = <A href="mxmlFindElement.html#mxmlFindElement">mxmlFindElement</A>(tree, tree, &quot;a&quot;, NULL, NULL, MXML_DESCEND);
 
     /* Find the first &quot;a&quot; element with &quot;href&quot; attribute */
-    node = <A href="reference.html#mxmlFindElement">mxmlFindElement</A>(tree, tree, &quot;a&quot;, &quot;href&quot;, NULL, MXML_DESCEND);
+    node = <A href="mxmlFindElement.html#mxmlFindElement">mxmlFindElement</A>(tree, tree, &quot;a&quot;, &quot;href&quot;, NULL, MXML_DESCEND);
 
     /* Find the first &quot;a&quot; element with &quot;href&quot; to a URL */
-    node = <A href="reference.html#mxmlFindElement">mxmlFindElement</A>(tree, tree, &quot;a&quot;, &quot;href&quot;,
+    node = <A href="mxmlFindElement.html#mxmlFindElement">mxmlFindElement</A>(tree, tree, &quot;a&quot;, &quot;href&quot;,
                 	   &quot;http://www.easysw.com/~mike/mxml/&quot;, MXML_DESCEND);
 
     /* Find the first element with a &quot;src&quot; attribute*/
-    node = <A href="reference.html#mxmlFindElement">mxmlFindElement</A>(tree, tree, NULL, &quot;src&quot;, NULL, MXML_DESCEND);
+    node = <A href="mxmlFindElement.html#mxmlFindElement">mxmlFindElement</A>(tree, tree, NULL, &quot;src&quot;, NULL, MXML_DESCEND);
 
     /* Find the first element with a &quot;src&quot; = &quot;foo.jpg&quot; */
-    node = <A href="reference.html#mxmlFindElement">mxmlFindElement</A>(tree, tree, NULL, &quot;src&quot;, &quot;foo.jpg&quot;, MXML_DESCEND);
+    node = <A href="mxmlFindElement.html#mxmlFindElement">mxmlFindElement</A>(tree, tree, NULL, &quot;src&quot;, &quot;foo.jpg&quot;, MXML_DESCEND);
 </PRE>
 <P>You can also iterate with the same function:</P>
 <PRE>
-    <A href="reference.html#mxml_node_t">mxml_node_t</A> *node;
+    <A href="mxmlnodet.html#mxml_node_t">mxml_node_t</A> *node;
 
-    for (node = <A href="reference.html#mxmlFindElement">mxmlFindElement</A>(tree, tree, &quot;name&quot;, NULL, NULL, MXML_DESCEND);
+    for (node = <A href="mxmlFindElement.html#mxmlFindElement">mxmlFindElement</A>(tree, tree, &quot;name&quot;, NULL, NULL, MXML_DESCEND);
          node != NULL;
-         node = <A href="reference.html#mxmlFindElement">mxmlFindElement</A>(node, tree, &quot;name&quot;, NULL, NULL, MXML_DESCEND))
+         node = <A href="mxmlFindElement.html#mxmlFindElement">mxmlFindElement</A>(node, tree, &quot;name&quot;, NULL, NULL, MXML_DESCEND))
     {
       ... do something ...
     }

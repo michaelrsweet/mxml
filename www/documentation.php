@@ -1,6 +1,6 @@
 <?php
 //
-// "$Id: documentation.php,v 1.2 2004/05/19 16:34:54 mike Exp $"
+// "$Id: documentation.php,v 1.3 2004/05/20 02:04:44 mike Exp $"
 //
 // Mini-XML documentation page...
 //
@@ -108,10 +108,10 @@ if (array_key_exists("PATH_INFO", $_SERVER) &&
 
       print("<hr noshade/>\n"
            ."<h2><a name='_USER_COMMENTS'>User Comments</a> [&nbsp;"
-	   ."<a href='comment.php?r0+p$path'>Add&nbsp;Comment</a>"
+	   ."<a href='../comment.php?r0+pdocumentation.php$path'>Add&nbsp;Comment</a>"
 	   ."&nbsp;]</h2>\n");
 
-      $num_comments = show_comments("documentation.php$path");
+      $num_comments = show_comments("documentation.php$path", "../");
 
       if ($num_comments == 0)
         print("<p>No comments for this page.</p>\n");
@@ -195,6 +195,6 @@ formats on-line:</p>
 }
 
 //
-// End of "$Id: documentation.php,v 1.2 2004/05/19 16:34:54 mike Exp $".
+// End of "$Id: documentation.php,v 1.3 2004/05/20 02:04:44 mike Exp $".
 //
 ?>

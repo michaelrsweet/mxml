@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# makedist - make a source distribution of mxml.
+# makesrcdist - make a source distribution of mxml.
 #
 
 echo "Getting distribution..."
@@ -22,7 +22,7 @@ rm -rf mxml-$version
 mv mxml mxml-$version
 cd mxml-$version
 
-if test x$version != snapshot; then
+if test x$version != xsnapshot; then
 	echo "Tagging release..."
 
 	tag=`echo v$version | tr '.' '_'`

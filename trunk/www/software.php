@@ -1,6 +1,6 @@
 <?php
 //
-// "$Id: software.php,v 1.3 2004/05/19 14:02:38 mike Exp $"
+// "$Id: software.php,v 1.4 2004/05/19 22:45:23 mike Exp $"
 //
 // Software download page.
 //
@@ -58,10 +58,6 @@ fclose($fp);
 // Show files...
 html_header("Download");
 
-print("<h1>Download</h1>");
-
-html_start_table(array("Version", "Filename", "Size", "MD5 Sum"));
-$curversion = "";
 reset($files);
 
 if ($argc >= 1)
@@ -69,6 +65,25 @@ if ($argc >= 1)
 else
   $firstversion = current($files);
 
+html_start_links(1);
+html_link("CVS", "#CVS");
+
+$curversion = "";
+while (list($file, $version) = each($files))
+  if ($version != $curversion)
+  {
+    $curversion = $version;
+    html_link("v$version", "$PHP_SELF?$version");
+  }
+
+html_end_links();
+
+print("<h1>Download</h1>");
+
+html_start_table(array("Version", "Filename", "Size", "MD5 Sum"));
+
+reset($files);
+$curversion = "";
 while (list($file, $version) = each($files))
 {
   html_start_row();
@@ -111,9 +126,22 @@ while (list($file, $version) = each($files))
 
 html_end_table();
 
+print("<h2><a name='CVS'>CVS Access</a></h2>\n"
+     ."<p>The $PROJECT_NAME software is available via anonymous CVS "
+     ."using the following CVS root:</p>\n"
+     ."<pre>\n"
+     ."    :pserver:anonymous@cvs.easysw.com:/home/anoncvs\n"
+     ."</pre>\n"
+     ."<p>The module name is <tt>$PROJECT_MODULE</tt>. The following "
+     ."command can be used to checkout the $PROJECT_NAME source from "
+     ."CVS:</p>\n"
+     ."<pre>\n"
+     ."    <kbd>cvs -d:pserver:anonymous@cvs.easysw.com:/home/anoncvs get $PROJECT_MODULE</kbd>\n"
+     ."</pre>\n");
+
 html_footer();
 
 //
-// End of "$Id: software.php,v 1.3 2004/05/19 14:02:38 mike Exp $".
+// End of "$Id: software.php,v 1.4 2004/05/19 22:45:23 mike Exp $".
 //
 ?>

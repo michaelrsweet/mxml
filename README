@@ -1,11 +1,11 @@
-README - 07/20/2003
+README - 07/21/2003
 -------------------
 
 
 INTRODUCTION
 
     This README file describes the Mini-XML library version
-    1.1.
+    1.1.1.
 
     Mini-XML is a small XML parsing library that you can use to
     read XML and XML-like data files in your application without

@@ -1,5 +1,5 @@
 /*
- * "$Id: mxml-file.c,v 1.26 2003/12/19 02:56:11 mike Exp $"
+ * "$Id: mxml-file.c,v 1.27 2003/12/21 15:01:15 mike Exp $"
  *
  * File loading code for mini-XML, a small XML-like file parsing library.
  *
@@ -24,7 +24,9 @@
  *   mxmlSaveString()       - Save an XML node tree to a string.
  *   mxmlSetErrorCallback() - Set the error message callback.
  *   mxml_add_char()        - Add a character to a buffer, expanding as needed.
+ *   mxml_get_entity()      - Get the character corresponding to an entity...
  *   mxml_file_getc()       - Get a character from a file.
+ *   mxml_file_putc()       - Write a character to a file.
  *   mxml_load_data()       - Load data into an XML node tree.
  *   mxml_parse_element()   - Parse an element for any attributes...
  *   mxml_string_getc()     - Get a character from a string.
@@ -43,11 +45,20 @@
 
 
 /*
+ * Global error handler...
+ */
+
+extern void	(*mxml_error_cb)(const char *);
+
+
+/*
  * Local functions...
  */
 
 static int		mxml_add_char(int ch, char **ptr, char **buffer,
 			              int *bufsize);
+static int		mxml_get_entity(mxml_node_t *parent, void *p,
+					int (*getc_cb)(void *));
 static int		mxml_file_getc(void *p);
 static int		mxml_file_putc(int ch, void *p);
 static mxml_node_t	*mxml_load_data(mxml_node_t *top, void *p,
@@ -268,8 +279,6 @@ mxmlSaveString(mxml_node_t *node,	/* I - Node to write */
  * 'mxmlSetErrorCallback()' - Set the error message callback.
  */
 
-extern void	(*mxml_error_cb)(const char *);
-
 void
 mxmlSetErrorCallback(void (*cb)(const char *))
 					/* I - Error callback function */
@@ -291,7 +300,7 @@ mxml_add_char(int  ch,			/* I  - Character to add */
   char	*newbuffer;			/* New buffer value */
 
 
-  if (*bufptr >= (*buffer + *bufsize - 1))
+  if (*bufptr >= (*buffer + *bufsize - 4))
   {
    /*
     * Increase the size of the buffer...
@@ -315,9 +324,99 @@ mxml_add_char(int  ch,			/* I  - Character to add */
     *buffer = newbuffer;
   }
 
-  *(*bufptr)++ = ch;
+  if (ch < 128)
+  {
+   /*
+    * Single byte ASCII...
+    */
+
+    *(*bufptr)++ = ch;
+  }
+  else if (ch < 2048)
+  {
+   /*
+    * Two-byte UTF-8...
+    */
+
+    *(*bufptr)++ = 0xc0 | (ch >> 6);
+    *(*bufptr)++ = 0x80 | (ch & 0x3f);
+  }
+  else if (ch < 65536)
+  {
+   /*
+    * Three-byte UTF-8...
+    */
+
+    *(*bufptr)++ = 0xe0 | (ch >> 12);
+    *(*bufptr)++ = 0x80 | ((ch >> 6) & 0x3f);
+    *(*bufptr)++ = 0x80 | (ch & 0x3f);
+  }
+  else
+  {
+   /*
+    * Four-byte UTF-8...
+    */
+
+    *(*bufptr)++ = 0xf0 | (ch >> 18);
+    *(*bufptr)++ = 0x80 | ((ch >> 12) & 0x3f);
+    *(*bufptr)++ = 0x80 | ((ch >> 6) & 0x3f);
+    *(*bufptr)++ = 0x80 | (ch & 0x3f);
+  }
 
   return (0);
+}
+
+
+/*
+ * 'mxml_get_entity()' - Get the character corresponding to an entity...
+ */
+
+static int				/* O - Character value or EOF on error */
+mxml_get_entity(mxml_node_t *parent,	/* I - Parent node */
+		void        *p,		/* I - Pointer to source */
+                int         (*getc_cb)(void *))
+					/* I - Get character function */
+{
+  int	ch;				/* Current character */
+  char	entity[64],			/* Entity string */
+	*entptr;			/* Pointer into entity */
+
+
+  entptr = entity;
+
+  while ((ch = (*getc_cb)(p)) != EOF)
+    if (!isalnum(ch) && ch != '#')
+      break;
+    else if (entptr < (entity + sizeof(entity) - 1))
+      *entptr++ = ch;
+    else
+    {
+      mxml_error("Entity name too long under parent <%s>!",
+	         parent ? parent->value.element.name : "null");
+      break;
+    }
+
+  *entptr = '\0';
+
+  if (ch != ';')
+  {
+    mxml_error("Character entity \"%s\" not terminated under parent <%s>!",
+	       entity, parent ? parent->value.element.name : "null");
+    return (EOF);
+  }
+
+  if (entity[1] == '#')
+  {
+    if (entity[2] == 'x')
+      ch = strtol(entity + 3, NULL, 16);
+    else
+      ch = strtol(entity + 2, NULL, 10);
+  }
+  else if ((ch = mxmlEntityGetValue(entity)) < 0)
+    mxml_error("Entity name \"%s;\" not supported under parent <%s>!",
+	       entity, parent ? parent->value.element.name : "null");
+
+  return (ch);
 }
 
 
@@ -328,7 +427,77 @@ mxml_add_char(int  ch,			/* I  - Character to add */
 static int				/* O - Character or EOF */
 mxml_file_getc(void *p)			/* I - Pointer to file */
 {
-  return (getc((FILE *)p));
+  int	ch,				/* Character from file */
+	temp;				/* Temporary character */
+  FILE	*fp;				/* Pointer to file */
+
+
+ /*
+  * Read a character from the file and see if it is EOF or ASCII...
+  */
+
+  fp = (FILE *)p;
+  ch = getc(fp);
+
+  if (ch == EOF || !(ch & 0x80))
+    return (ch);
+
+ /*
+  * Got a UTF-8 character; convert UTF-8 to Unicode and return...
+  */
+
+  if ((ch & 0xe0) == 0xc0)
+  {
+   /*
+    * Two-byte value...
+    */
+
+    if ((temp = getc(fp)) == EOF || (temp & 0xc0) != 0x80)
+      return (EOF);
+
+    ch = ((ch & 0x1f) << 6) | (temp & 0x3f);
+  }
+  else if ((ch & 0xf0) == 0xe0)
+  {
+   /*
+    * Three-byte value...
+    */
+
+    if ((temp = getc(fp)) == EOF || (temp & 0xc0) != 0x80)
+      return (EOF);
+
+    ch = ((ch & 0x0f) << 6) | (temp & 0x3f);
+
+    if ((temp = getc(fp)) == EOF || (temp & 0xc0) != 0x80)
+      return (EOF);
+
+    ch = (ch << 6) | (temp & 0x3f);
+  }
+  else if ((ch & 0xf8) == 0xf0)
+  {
+   /*
+    * Four-byte value...
+    */
+
+    if ((temp = getc(fp)) == EOF || (temp & 0xc0) != 0x80)
+      return (EOF);
+
+    ch = ((ch & 0x07) << 6) | (temp & 0x3f);
+
+    if ((temp = getc(fp)) == EOF || (temp & 0xc0) != 0x80)
+      return (EOF);
+
+    ch = (ch << 6) | (temp & 0x3f);
+
+    if ((temp = getc(fp)) == EOF || (temp & 0xc0) != 0x80)
+      return (EOF);
+
+    ch = (ch << 6) | (temp & 0x3f);
+  }
+  else
+    return (EOF);
+
+  return (ch);
 }
 
 
@@ -340,7 +509,47 @@ static int				/* O - 0 on success, -1 on failure */
 mxml_file_putc(int  ch,			/* I - Character to write */
                void *p)			/* I - Pointer to file */
 {
-  return (putc(ch, (FILE *)p));
+  if (ch < 128)
+    return (putc(ch, (FILE *)p));
+  else if (ch < 2048)
+  {
+   /*
+    * Two-byte UTF-8 character...
+    */
+
+    if (putc(0xc0 | (ch >> 6), (FILE *)p) < 0)
+      return (-1);
+    else
+      return (putc(0x80 | (ch & 0x3f), (FILE *)p));
+  }
+  else if (ch < 65536)
+  {
+   /*
+    * Three-byte UTF-8 character...
+    */
+
+    if (putc(0xe0 | (ch >> 12), (FILE *)p) < 0)
+      return (-1);
+    else if (putc(0x80 | ((ch >> 6) & 0x3f), (FILE *)p) < 0)
+      return (-1);
+    else
+      return (putc(0x80 | (ch & 0x3f), (FILE *)p));
+  }
+  else
+  {
+   /*
+    * Four-byte UTF-8 character...
+    */
+
+    if (putc(0xf0 | (ch >> 18), (FILE *)p) < 0)
+      return (-1);
+    else if (putc(0x80 | ((ch >> 12) & 0x3f), (FILE *)p) < 0)
+      return (-1);
+    else if (putc(0x80 | ((ch >> 6) & 0x3f), (FILE *)p) < 0)
+      return (-1);
+    else
+      return (putc(0x80 | (ch & 0x3f), (FILE *)p));
+  }
 }
 
 
@@ -470,11 +679,16 @@ mxml_load_data(mxml_node_t *top,	/* I - Top node */
       while ((ch = (*getc_cb)(p)) != EOF)
         if (isspace(ch) || ch == '>' || (ch == '/' && bufptr > buffer))
 	  break;
-	else if (mxml_add_char(ch, &bufptr, &buffer, &bufsize))
+	else if (ch == '&')
 	{
-          free(buffer);
-	  return (NULL);
+	  if ((ch = mxml_get_entity(parent, p, getc_cb)) == EOF)
+	    goto error;
+
+	  if (mxml_add_char(ch, &bufptr, &buffer, &bufsize))
+	    goto error;
 	}
+	else if (mxml_add_char(ch, &bufptr, &buffer, &bufsize))
+	  goto error;
 	else if ((bufptr - buffer) == 3 && !strncmp(buffer, "!--", 3))
 	  break;
 
@@ -491,10 +705,14 @@ mxml_load_data(mxml_node_t *top,	/* I - Top node */
 	  if (ch == '>' && bufptr > (buffer + 4) &&
 	      !strncmp(bufptr - 2, "--", 2))
 	    break;
-	  else if (mxml_add_char(ch, &bufptr, &buffer, &bufsize))
+	  else
 	  {
-            free(buffer);
-	    return (NULL);
+            if (ch == '&')
+	      if ((ch = mxml_get_entity(parent, p, getc_cb)) == EOF)
+		goto error;
+
+	    if (mxml_add_char(ch, &bufptr, &buffer, &bufsize))
+	      goto error;
 	  }
 	}
 
@@ -532,10 +750,14 @@ mxml_load_data(mxml_node_t *top,	/* I - Top node */
 	{
 	  if (ch == '>')
 	    break;
-	  else if (mxml_add_char(ch, &bufptr, &buffer, &bufsize))
+	  else
 	  {
-            free(buffer);
-	    return (NULL);
+            if (ch == '&')
+	      if ((ch = mxml_get_entity(parent, p, getc_cb)) == EOF)
+		goto error;
+
+	    if (mxml_add_char(ch, &bufptr, &buffer, &bufsize))
+	      goto error;
 	  }
 	}
         while ((ch = (*getc_cb)(p)) != EOF);
@@ -661,125 +883,14 @@ mxml_load_data(mxml_node_t *top,	/* I - Top node */
     else if (ch == '&')
     {
      /*
-      * Add character entity to current buffer...  Currently we only
-      * support &lt;, &amp;, &gt;, &nbsp;, &quot;, &#nnn;, and &#xXXXX;...
+      * Add character entity to current buffer...
       */
 
-      char	entity[64],		/* Entity string */
-		*entptr;		/* Pointer into entity */
+      if ((ch = mxml_get_entity(parent, p, getc_cb)) == EOF)
+	goto error;
 
-
-      entity[0] = ch;
-      entptr    = entity + 1;
-
-      while ((ch = (*getc_cb)(p)) != EOF)
-        if (!isalnum(ch) && ch != '#')
-	  break;
-	else if (entptr < (entity + sizeof(entity) - 1))
-	  *entptr++ = ch;
-	else
-	{
-	  mxml_error("Entity name too long under parent <%s>!",
-	             parent ? parent->value.element.name : "null");
-          break;
-	}
-
-      *entptr = '\0';
-
-      if (ch != ';')
-      {
-	mxml_error("Entity name \"%s\" not terminated under parent <%s>!",
-	           entity, parent ? parent->value.element.name : "null");
-        break;
-      }
-
-      if (entity[1] == '#')
-      {
-	if (entity[2] == 'x')
-	  ch = strtol(entity + 3, NULL, 16);
-	else
-	  ch = strtol(entity + 2, NULL, 10);
-      }
-      else if ((ch = mxmlEntityGetValue(entity)) < 0)
-      {
-	mxml_error("Entity name \"%s;\" not supported under parent <%s>!",
-	           entity, parent ? parent->value.element.name : "null");
-        break;
-      }
-
-      if (ch < 128)
-      {
-       /*
-        * Plain ASCII doesn't need special encoding...
-	*/
-
-	if (mxml_add_char(ch, &bufptr, &buffer, &bufsize))
-	{
-          free(buffer);
-	  return (NULL);
-	}
-      }
-      else
-      {
-       /*
-        * Use UTF-8 encoding for the Unicode char...
-	*/
-
-	if (ch < 2048)
-	{
-	  if (mxml_add_char(0xc0 | (ch >> 6), &bufptr, &buffer, &bufsize))
-	  {
-            free(buffer);
-	    return (NULL);
-	  }
-	  if (mxml_add_char(0x80 | (ch & 63), &bufptr, &buffer, &bufsize))
-	  {
-            free(buffer);
-	    return (NULL);
-	  }
-        }
-	else if (ch < 65536)
-	{
-	  if (mxml_add_char(0xe0 | (ch >> 12), &bufptr, &buffer, &bufsize))
-	  {
-            free(buffer);
-	    return (NULL);
-	  }
-	  if (mxml_add_char(0x80 | ((ch >> 6) & 63), &bufptr, &buffer, &bufsize))
-	  {
-            free(buffer);
-	    return (NULL);
-	  }
-	  if (mxml_add_char(0x80 | (ch & 63), &bufptr, &buffer, &bufsize))
-	  {
-            free(buffer);
-	    return (NULL);
-	  }
-	}
-	else
-	{
-	  if (mxml_add_char(0xf0 | (ch >> 18), &bufptr, &buffer, &bufsize))
-	  {
-            free(buffer);
-	    return (NULL);
-	  }
-	  if (mxml_add_char(0x80 | ((ch >> 12) & 63), &bufptr, &buffer, &bufsize))
-	  {
-            free(buffer);
-	    return (NULL);
-	  }
-	  if (mxml_add_char(0x80 | ((ch >> 6) & 63), &bufptr, &buffer, &bufsize))
-	  {
-            free(buffer);
-	    return (NULL);
-	  }
-	  if (mxml_add_char(0x80 | (ch & 63), &bufptr, &buffer, &bufsize))
-	  {
-            free(buffer);
-	    return (NULL);
-	  }
-	}
-      }
+      if (mxml_add_char(ch, &bufptr, &buffer, &bufsize))
+	goto error;
     }
     else if (type == MXML_OPAQUE || !isspace(ch))
     {
@@ -788,10 +899,7 @@ mxml_load_data(mxml_node_t *top,	/* I - Top node */
       */
 
       if (mxml_add_char(ch, &bufptr, &buffer, &bufsize))
-      {
-        free(buffer);
-	return (NULL);
-      }
+	goto error;
     }
   }
 
@@ -812,6 +920,16 @@ mxml_load_data(mxml_node_t *top,	/* I - Top node */
   }
 
   return (parent);
+
+ /*
+  * Common error return...
+  */
+
+error:
+
+  free(buffer);
+
+  return (NULL);
 }
 
 
@@ -832,8 +950,6 @@ mxml_parse_element(mxml_node_t *node,	/* I - Element node */
 	*ptr;				/* Pointer into name/value */
   int	namesize,			/* Size of name string */
 	valsize;			/* Size of value string */
-  char	entity[64],			/* Entity string */
-	*entptr;			/* Pointer into entity */
 
 
 
@@ -917,12 +1033,12 @@ mxml_parse_element(mxml_node_t *node,	/* I - Element node */
 
       while ((ch = (*getc_cb)(p)) != EOF)
       {
+        if (ch == '&')
+	  if ((ch = mxml_get_entity(node, p, getc_cb)) == EOF)
+	    goto error;
+
 	if (mxml_add_char(ch, &ptr, &name, &namesize))
-	{
-          free(name);
-	  free(value);
-	  return (EOF);
-	}
+	  goto error;
 
 	if (ch == quote)
           break;
@@ -937,11 +1053,14 @@ mxml_parse_element(mxml_node_t *node,	/* I - Element node */
       while ((ch = (*getc_cb)(p)) != EOF)
 	if (isspace(ch) || ch == '=' || ch == '/' || ch == '>' || ch == '?')
           break;
-	else if (mxml_add_char(ch, &ptr, &name, &namesize))
+	else
 	{
-          free(name);
-	  free(value);
-	  return (EOF);
+          if (ch == '&')
+	    if ((ch = mxml_get_entity(node, p, getc_cb)) == EOF)
+	      goto error;
+
+	  if (mxml_add_char(ch, &ptr, &name, &namesize))
+	    goto error;
 	}
     }
 
@@ -972,129 +1091,14 @@ mxml_parse_element(mxml_node_t *node,	/* I - Element node */
         while ((ch = (*getc_cb)(p)) != EOF)
 	  if (ch == quote)
 	    break;
-	  else if (ch == '&')
+	  else
 	  {
-	   /*
-	    * Add character entity to current buffer...
-	    */
-
-	    entity[0] = ch;
-	    entptr    = entity + 1;
-
-	    while ((ch = (*getc_cb)(p)) != EOF)
-              if (!isalnum(ch) && ch != '#')
-		break;
-	      else if (entptr < (entity + sizeof(entity) - 1))
-		*entptr++ = ch;
-	      else
-	      {
-		mxml_error("Entity name too long under node <%s>!",
-	        	   node ? node->value.element.name : "null");
-        	break;
-	      }
-
-	    *entptr = '\0';
-
-	    if (ch != ';')
-	    {
-	      mxml_error("Entity name \"%s\" not terminated under node <%s>!",
-	        	 entity, node ? node->value.element.name : "null");
-              break;
-	    }
-
-	    if (entity[1] == '#')
-	    {
-	      if (entity[2] == 'x')
-		ch = strtol(entity + 3, NULL, 16);
-	      else
-		ch = strtol(entity + 2, NULL, 10);
-	    }
-	    else if ((ch = mxmlEntityGetValue(entity)) < 0)
-	    {
-	      mxml_error("Entity name \"%s;\" not supported under node <%s>!",
-	        	 entity, node ? node->value.element.name : "null");
-              break;
-	    }
-
-	    if (ch < 128)
-	    {
-	     /*
-              * Plain ASCII doesn't need special encoding...
-	      */
-
-	      if (mxml_add_char(ch, &ptr, &value, &valsize))
-	      {
-        	free(value);
-		return (NULL);
-	      }
-	    }
-	    else
-	    {
-	     /*
-              * Use UTF-8 encoding for the Unicode char...
-	      */
-
-	      if (ch < 2048)
-	      {
-		if (mxml_add_char(0xc0 | (ch >> 6), &ptr, &value, &valsize))
-		{
-        	  free(value);
-		  return (NULL);
-		}
-		if (mxml_add_char(0x80 | (ch & 63), &ptr, &value, &valsize))
-		{
-        	  free(value);
-		  return (NULL);
-		}
-              }
-	      else if (ch < 65536)
-	      {
-		if (mxml_add_char(0xe0 | (ch >> 12), &ptr, &value, &valsize))
-		{
-        	  free(value);
-		  return (NULL);
-		}
-		if (mxml_add_char(0x80 | ((ch >> 6) & 63), &ptr, &value, &valsize))
-		{
-        	  free(value);
-		  return (NULL);
-		}
-		if (mxml_add_char(0x80 | (ch & 63), &ptr, &value, &valsize))
-		{
-        	  free(value);
-		  return (NULL);
-		}
-	      }
-	      else
-	      {
-		if (mxml_add_char(0xf0 | (ch >> 18), &ptr, &value, &valsize))
-		{
-        	  free(value);
-		  return (NULL);
-		}
-		if (mxml_add_char(0x80 | ((ch >> 12) & 63), &ptr, &value, &valsize))
-		{
-        	  free(value);
-		  return (NULL);
-		}
-		if (mxml_add_char(0x80 | ((ch >> 6) & 63), &ptr, &value, &valsize))
-		{
-        	  free(value);
-		  return (NULL);
-		}
-		if (mxml_add_char(0x80 | (ch & 63), &ptr, &value, &valsize))
-		{
-        	  free(value);
-		  return (NULL);
-		}
-	      }
-	    }
-	  }
-	  else if (mxml_add_char(ch, &ptr, &value, &valsize))
-	  {
-            free(name);
-	    free(value);
-	    return (EOF);
+	    if (ch == '&')
+	      if ((ch = mxml_get_entity(node, p, getc_cb)) == EOF)
+	        goto error;
+	      
+	    if (mxml_add_char(ch, &ptr, &value, &valsize))
+	      goto error;
 	  }
 
         *ptr = '\0';
@@ -1111,129 +1115,14 @@ mxml_parse_element(mxml_node_t *node,	/* I - Element node */
 	while ((ch = (*getc_cb)(p)) != EOF)
 	  if (isspace(ch) || ch == '=' || ch == '/' || ch == '>')
             break;
-	  else if (ch == '&')
+	  else
 	  {
-	   /*
-	    * Add character entity to current buffer...
-	    */
-
-	    entity[0] = ch;
-	    entptr    = entity + 1;
-
-	    while ((ch = (*getc_cb)(p)) != EOF)
-              if (!isalnum(ch) && ch != '#')
-		break;
-	      else if (entptr < (entity + sizeof(entity) - 1))
-		*entptr++ = ch;
-	      else
-	      {
-		mxml_error("Entity name too long under node <%s>!",
-	        	   node ? node->value.element.name : "null");
-        	break;
-	      }
-
-	    *entptr = '\0';
-
-	    if (ch != ';')
-	    {
-	      mxml_error("Entity name \"%s\" not terminated under node <%s>!",
-	        	 entity, node ? node->value.element.name : "null");
-              break;
-	    }
-
-	    if (entity[1] == '#')
-	    {
-	      if (entity[2] == 'x')
-		ch = strtol(entity + 3, NULL, 16);
-	      else
-		ch = strtol(entity + 2, NULL, 10);
-	    }
-	    else if ((ch = mxmlEntityGetValue(entity)) < 0)
-	    {
-	      mxml_error("Entity name \"%s;\" not supported under node <%s>!",
-	        	 entity, node ? node->value.element.name : "null");
-              break;
-	    }
-
-	    if (ch < 128)
-	    {
-	     /*
-              * Plain ASCII doesn't need special encoding...
-	      */
-
-	      if (mxml_add_char(ch, &ptr, &value, &valsize))
-	      {
-        	free(value);
-		return (NULL);
-	      }
-	    }
-	    else
-	    {
-	     /*
-              * Use UTF-8 encoding for the Unicode char...
-	      */
-
-	      if (ch < 2048)
-	      {
-		if (mxml_add_char(0xc0 | (ch >> 6), &ptr, &value, &valsize))
-		{
-        	  free(value);
-		  return (NULL);
-		}
-		if (mxml_add_char(0x80 | (ch & 63), &ptr, &value, &valsize))
-		{
-        	  free(value);
-		  return (NULL);
-		}
-              }
-	      else if (ch < 65536)
-	      {
-		if (mxml_add_char(0xe0 | (ch >> 12), &ptr, &value, &valsize))
-		{
-        	  free(value);
-		  return (NULL);
-		}
-		if (mxml_add_char(0x80 | ((ch >> 6) & 63), &ptr, &value, &valsize))
-		{
-        	  free(value);
-		  return (NULL);
-		}
-		if (mxml_add_char(0x80 | (ch & 63), &ptr, &value, &valsize))
-		{
-        	  free(value);
-		  return (NULL);
-		}
-	      }
-	      else
-	      {
-		if (mxml_add_char(0xf0 | (ch >> 18), &ptr, &value, &valsize))
-		{
-        	  free(value);
-		  return (NULL);
-		}
-		if (mxml_add_char(0x80 | ((ch >> 12) & 63), &ptr, &value, &valsize))
-		{
-        	  free(value);
-		  return (NULL);
-		}
-		if (mxml_add_char(0x80 | ((ch >> 6) & 63), &ptr, &value, &valsize))
-		{
-        	  free(value);
-		  return (NULL);
-		}
-		if (mxml_add_char(0x80 | (ch & 63), &ptr, &value, &valsize))
-		{
-        	  free(value);
-		  return (NULL);
-		}
-	      }
-	    }
-	  }
-	  else if (mxml_add_char(ch, &ptr, &value, &valsize))
-	  {
-            free(name);
-	    free(value);
-	    return (EOF);
+	    if (ch == '&')
+	      if ((ch = mxml_get_entity(node, p, getc_cb)) == EOF)
+	        goto error;
+	      
+	    if (mxml_add_char(ch, &ptr, &value, &valsize))
+	      goto error;
 	  }
 
         *ptr = '\0';
@@ -1287,6 +1176,17 @@ mxml_parse_element(mxml_node_t *node,	/* I - Element node */
   free(value);
 
   return (ch);
+
+ /*
+  * Common error return point...
+  */
+
+error:
+
+  free(name);
+  free(value);
+
+  return (EOF);
 }
 
 
@@ -1305,8 +1205,65 @@ mxml_string_getc(void *p)		/* I - Pointer to file */
 
   if ((ch = *s[0]) != 0)
   {
+   /*
+    * Got character; convert UTF-8 to integer and return...
+    */
+
     (*s)++;
-    return (ch);
+
+    if (!(ch & 0x80))
+      return (ch);
+    else if ((ch & 0xe0) == 0xc0)
+    {
+     /*
+      * Two-byte value...
+      */
+
+      if ((*s[0] & 0xc0) != 0x80)
+        return (EOF);
+
+      ch = ((ch & 0x1f) << 6) | (*s[0] & 0x3f);
+
+      (*s)++;
+
+      return (ch);
+    }
+    else if ((ch & 0xf0) == 0xe0)
+    {
+     /*
+      * Three-byte value...
+      */
+
+      if ((*s[0] & 0xc0) != 0x80 ||
+          (*s[1] & 0xc0) != 0x80)
+        return (EOF);
+
+      ch = ((((ch & 0x0f) << 6) | (*s[0] & 0x3f)) << 6) | (*s[1] & 0x3f);
+
+      (*s) += 2;
+
+      return (ch);
+    }
+    else if ((ch & 0xf8) == 0xf0)
+    {
+     /*
+      * Four-byte value...
+      */
+
+      if ((*s[0] & 0xc0) != 0x80 ||
+          (*s[1] & 0xc0) != 0x80 ||
+          (*s[2] & 0xc0) != 0x80)
+        return (EOF);
+
+      ch = ((((((ch & 0x07) << 6) | (*s[0] & 0x3f)) << 6) |
+             (*s[1] & 0x3f)) << 6) | (*s[2] & 0x3f);
+
+      (*s) += 3;
+
+      return (ch);
+    }
+    else
+      return (EOF);
   }
   else
     return (EOF);
@@ -1326,10 +1283,62 @@ mxml_string_putc(int  ch,		/* I - Character to write */
 
   pp = (char **)p;
 
-  if (pp[0] < pp[1])
-    pp[0][0] = ch;
+  if (ch < 128)
+  {
+   /*
+    * Plain ASCII doesn't need special encoding...
+    */
 
-  pp[0] ++;
+    if (pp[0] < pp[1])
+      pp[0][0] = ch;
+
+    pp[0] ++;
+  }
+  else if (ch < 2048)
+  {
+   /*
+    * Two-byte UTF-8 character...
+    */
+
+    if ((pp[0] + 1) < pp[1])
+    {
+      pp[0][0] = 0xc0 | (ch >> 6);
+      pp[0][1] = 0x80 | (ch & 0x3f);
+    }
+
+    pp[0] += 2;
+  }
+  else if (ch < 65536)
+  {
+   /*
+    * Three-byte UTF-8 character...
+    */
+
+    if ((pp[0] + 2) < pp[1])
+    {
+      pp[0][0] = 0xe0 | (ch >> 12);
+      pp[0][1] = 0x80 | ((ch >> 6) & 0x3f);
+      pp[0][2] = 0x80 | (ch & 0x3f);
+    }
+
+    pp[0] += 3;
+  }
+  else
+  {
+   /*
+    * Four-byte UTF-8 character...
+    */
+
+    if ((pp[0] + 2) < pp[1])
+    {
+      pp[0][0] = 0xf0 | (ch >> 18);
+      pp[0][1] = 0x80 | ((ch >> 12) & 0x3f);
+      pp[0][2] = 0x80 | ((ch >> 6) & 0x3f);
+      pp[0][3] = 0x80 | (ch & 0x3f);
+    }
+
+    pp[0] += 4;
+  }
 
   return (0);
 }
@@ -1720,5 +1729,5 @@ mxml_write_ws(mxml_node_t *node,	/* I - Current node */
 
 
 /*
- * End of "$Id: mxml-file.c,v 1.26 2003/12/19 02:56:11 mike Exp $".
+ * End of "$Id: mxml-file.c,v 1.27 2003/12/21 15:01:15 mike Exp $".
  */

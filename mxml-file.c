@@ -1,5 +1,5 @@
 /*
- * "$Id: mxml-file.c,v 1.35 2004/10/26 21:04:32 mike Exp $"
+ * "$Id: mxml-file.c,v 1.36 2004/10/28 01:07:00 mike Exp $"
  *
  * File loading code for Mini-XML, a small XML-like file parsing library.
  *
@@ -470,7 +470,7 @@ mxml_add_char(int  ch,			/* I  - Character to add */
     *buffer = newbuffer;
   }
 
-  if (ch < 128)
+  if (ch < 0x80)
   {
    /*
     * Single byte ASCII...
@@ -478,7 +478,7 @@ mxml_add_char(int  ch,			/* I  - Character to add */
 
     *(*bufptr)++ = ch;
   }
-  else if (ch < 2048)
+  else if (ch < 0x800)
   {
    /*
     * Two-byte UTF-8...
@@ -487,7 +487,7 @@ mxml_add_char(int  ch,			/* I  - Character to add */
     *(*bufptr)++ = 0xc0 | (ch >> 6);
     *(*bufptr)++ = 0x80 | (ch & 0x3f);
   }
-  else if (ch < 65536)
+  else if (ch < 0x10000)
   {
    /*
     * Three-byte UTF-8...
@@ -601,6 +601,9 @@ mxml_fd_getc(void *p,			/* I  - File descriptor buffer */
 	    return (EOF);
 
 	  ch = ((ch & 0x1f) << 6) | (temp & 0x3f);
+
+	  if (ch < 0x80)
+	    return (EOF);
 	}
 	else if ((ch & 0xf0) == 0xe0)
 	{
@@ -629,6 +632,9 @@ mxml_fd_getc(void *p,			/* I  - File descriptor buffer */
 	    return (EOF);
 
 	  ch = (ch << 6) | (temp & 0x3f);
+
+	  if (ch < 0x800)
+	    return (EOF);
 	}
 	else if ((ch & 0xf8) == 0xf0)
 	{
@@ -668,6 +674,9 @@ mxml_fd_getc(void *p,			/* I  - File descriptor buffer */
 	    return (EOF);
 
 	  ch = (ch << 6) | (temp & 0x3f);
+
+	  if (ch < 0x10000)
+	    return (EOF);
 	}
 	else
 	  return (EOF);
@@ -784,7 +793,7 @@ mxml_fd_putc(int  ch,			/* I - Character */
     if (mxml_fd_write(buf) < 0)
       return (-1);
 
-  if (ch < 128)
+  if (ch < 0x80)
   {
    /*
     * Write ASCII character directly...
@@ -792,7 +801,7 @@ mxml_fd_putc(int  ch,			/* I - Character */
 
     *(buf->current)++ = ch;
   }
-  else if (ch < 2048)
+  else if (ch < 0x800)
   {
    /*
     * Two-byte UTF-8 character...
@@ -801,7 +810,7 @@ mxml_fd_putc(int  ch,			/* I - Character */
     *(buf->current)++ = 0xc0 | (ch >> 6);
     *(buf->current)++ = 0x80 | (ch & 0x3f);
   }
-  else if (ch < 65536)
+  else if (ch < 0x10000)
   {
    /*
     * Three-byte UTF-8 character...
@@ -983,6 +992,9 @@ mxml_file_getc(void *p,			/* I  - Pointer to file */
 	    return (EOF);
 
 	  ch = ((ch & 0x1f) << 6) | (temp & 0x3f);
+
+	  if (ch < 0x80)
+	    return (EOF);
 	}
 	else if ((ch & 0xf0) == 0xe0)
 	{
@@ -999,6 +1011,9 @@ mxml_file_getc(void *p,			/* I  - Pointer to file */
 	    return (EOF);
 
 	  ch = (ch << 6) | (temp & 0x3f);
+
+	  if (ch < 0x800)
+	    return (EOF);
 	}
 	else if ((ch & 0xf8) == 0xf0)
 	{
@@ -1020,6 +1035,9 @@ mxml_file_getc(void *p,			/* I  - Pointer to file */
 	    return (EOF);
 
 	  ch = (ch << 6) | (temp & 0x3f);
+
+	  if (ch < 0x10000)
+	    return (EOF);
 	}
 	else
 	  return (EOF);
@@ -1087,12 +1105,12 @@ mxml_file_putc(int  ch,			/* I - Character to write */
   int	buflen;				/* Number of bytes to write */
 
 
-  if (ch < 128)
+  if (ch < 0x80)
     return (putc(ch, (FILE *)p) == EOF ? -1 : 0);
 
   bufptr = buffer;
 
-  if (ch < 2048)
+  if (ch < 0x800)
   {
    /*
     * Two-byte UTF-8 character...
@@ -1101,7 +1119,7 @@ mxml_file_putc(int  ch,			/* I - Character to write */
     *bufptr++ = 0xc0 | (ch >> 6);
     *bufptr++ = 0x80 | (ch & 0x3f);
   }
-  else if (ch < 65536)
+  else if (ch < 0x10000)
   {
    /*
     * Three-byte UTF-8 character...
@@ -1892,6 +1910,9 @@ mxml_string_getc(void *p,		/* I  - Pointer to file */
 
 	    (*s)++;
 
+	    if (ch < 0x80)
+	      return (EOF);
+
 	    return (ch);
 	  }
 	  else if ((ch & 0xf0) == 0xe0)
@@ -1907,6 +1928,9 @@ mxml_string_getc(void *p,		/* I  - Pointer to file */
 	    ch = ((((ch & 0x0f) << 6) | ((*s)[0] & 0x3f)) << 6) | ((*s)[1] & 0x3f);
 
 	    (*s) += 2;
+
+	    if (ch < 0x800)
+	      return (EOF);
 
 	    return (ch);
 	  }
@@ -1925,6 +1949,9 @@ mxml_string_getc(void *p,		/* I  - Pointer to file */
         	   ((*s)[1] & 0x3f)) << 6) | ((*s)[2] & 0x3f);
 
 	    (*s) += 3;
+
+	    if (ch < 0x10000)
+	      return (EOF);
 
 	    return (ch);
 	  }
@@ -2019,7 +2046,7 @@ mxml_string_putc(int  ch,		/* I - Character to write */
 
   pp = (char **)p;
 
-  if (ch < 128)
+  if (ch < 0x80)
   {
    /*
     * Plain ASCII doesn't need special encoding...
@@ -2030,7 +2057,7 @@ mxml_string_putc(int  ch,		/* I - Character to write */
 
     pp[0] ++;
   }
-  else if (ch < 2048)
+  else if (ch < 0x800)
   {
    /*
     * Two-byte UTF-8 character...
@@ -2044,7 +2071,7 @@ mxml_string_putc(int  ch,		/* I - Character to write */
 
     pp[0] += 2;
   }
-  else if (ch < 65536)
+  else if (ch < 0x10000)
   {
    /*
     * Three-byte UTF-8 character...
@@ -2470,5 +2497,5 @@ mxml_write_ws(mxml_node_t *node,	/* I - Current node */
 
 
 /*
- * End of "$Id: mxml-file.c,v 1.35 2004/10/26 21:04:32 mike Exp $".
+ * End of "$Id: mxml-file.c,v 1.36 2004/10/28 01:07:00 mike Exp $".
  */

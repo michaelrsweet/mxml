@@ -1,5 +1,5 @@
 /*
- * "$Id: mxml-file.c,v 1.16 2003/07/21 12:41:47 mike Exp $"
+ * "$Id: mxml-file.c,v 1.17 2003/07/22 10:29:19 mike Exp $"
  *
  * File loading code for mini-XML, a small XML-like file parsing library.
  *
@@ -17,18 +17,19 @@
  *
  * Contents:
  *
- *   mxmlLoadFile()       - Load a file into an XML node tree.
- *   mxmlLoadString()     - Load a string into an XML node tree.
- *   mxmlSaveFile()       - Save an XML tree to a file.
- *   mxmlSaveString()     - Save an XML node tree to a string.
- *   mxml_add_char()      - Add a character to a buffer, expanding as needed.
- *   mxml_file_getc()     - Get a character from a file.
- *   mxml_load_data()     - Load data into an XML node tree.
- *   mxml_parse_element() - Parse an element for any attributes...
- *   mxml_string_getc()   - Get a character from a string.
- *   mxml_write_node()    - Save an XML node to a file.
- *   mxml_write_string()  - Write a string, escaping & and < as needed.
- *   mxml_write_ws()      - Do whitespace callback...
+ *   mxmlLoadFile()        - Load a file into an XML node tree.
+ *   mxmlLoadString()      - Load a string into an XML node tree.
+ *   mxmlSaveAllocString() - Save an XML node tree to an allocated string.
+ *   mxmlSaveFile()        - Save an XML tree to a file.
+ *   mxmlSaveString()      - Save an XML node tree to a string.
+ *   mxml_add_char()       - Add a character to a buffer, expanding as needed.
+ *   mxml_file_getc()      - Get a character from a file.
+ *   mxml_load_data()      - Load data into an XML node tree.
+ *   mxml_parse_element()  - Parse an element for any attributes...
+ *   mxml_string_getc()    - Get a character from a string.
+ *   mxml_write_node()     - Save an XML node to a file.
+ *   mxml_write_string()   - Write a string, escaping & and < as needed.
+ *   mxml_write_ws()       - Do whitespace callback...
  */
 
 /*
@@ -104,6 +105,63 @@ mxmlLoadString(mxml_node_t *top,	/* I - Top node */
 					/* I - Callback function or MXML_NO_CALLBACK */
 {
   return (mxml_load_data(top, &s, cb, mxml_string_getc));
+}
+
+
+/*
+ * 'mxmlSaveAllocString()' - Save an XML node tree to an allocated string.
+ *
+ * This function returns a pointer to a string containing the textual
+ * representation of the XML node tree.  The string should be freed
+ * using the free() function when you are done with it.  NULL is returned
+ * if the node would produce an empty string or if the string cannot be
+ * allocated.
+ */
+
+char *					/* O - Allocated string or NULL */
+mxmlSaveAllocString(mxml_node_t *node,	/* I - Node to write */
+                    int         (*cb)(mxml_node_t *, int))
+					/* I - Whitespace callback or MXML_NO_CALLBACK */
+{
+  int	bytes;				/* Required bytes */
+  char	buffer[8192];			/* Temporary buffer */
+  char	*s;				/* Allocated string */
+
+
+ /*
+  * Write the node to the temporary buffer...
+  */
+
+  bytes = mxmlSaveString(node, buffer, sizeof(buffer), cb);
+
+  if (bytes <= 0)
+    return (NULL);
+
+  if (bytes < (int)(sizeof(buffer) - 1))
+  {
+   /*
+    * Node fit inside the buffer, so just duplicate that string and
+    * return...
+    */
+
+    return (strdup(buffer));
+  }
+
+ /*
+  * Allocate a buffer of the required size and save the node to the
+  * new buffer...
+  */
+
+  if ((s = malloc(bytes + 1)) == NULL)
+    return (NULL);
+
+  mxmlSaveString(node, s, bytes + 1, cb);
+
+ /*
+  * Return the allocated string...
+  */
+
+  return (s);
 }
 
 
@@ -1374,5 +1432,5 @@ mxml_write_ws(mxml_node_t *node,	/* I - Current node */
 
 
 /*
- * End of "$Id: mxml-file.c,v 1.16 2003/07/21 12:41:47 mike Exp $".
+ * End of "$Id: mxml-file.c,v 1.17 2003/07/22 10:29:19 mike Exp $".
  */

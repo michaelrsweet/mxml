@@ -1,4 +1,4 @@
-README - 07/21/2003
+README - 07/22/2003
 -------------------
 
 CHANGES IN Mini-XML 1.1.1
@@ -9,6 +9,8 @@ CHANGES IN Mini-XML 1.1.1
 	- The private mxml_write_ws() function called putc()
 	  instead of using the proper callback which could cause
 	  a crash when using mxmlSaveString().
+	- Added a mxmlSaveAllocString() convenience function for
+	  saving an XML node tree to an allocated string.
 
 
 CHANGES IN Mini-XML 1.1

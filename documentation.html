@@ -49,6 +49,7 @@
 	<li><a href="#mxmlNewReal"><tt>mxmlNewReal()</tt></a></li>
 	<li><a href="#mxmlNewText"><tt>mxmlNewText()</tt></a></li>
 	<li><a href="#mxmlRemove"><tt>mxmlRemove()</tt></a></li>
+	<li><a href="#mxmlSaveAllocString"><tt>mxmlSaveAllocString()</tt></a></li>
 	<li><a href="#mxmlSaveFile"><tt>mxmlSaveFile()</tt></a></li>
 	<li><a href="#mxmlSaveString"><tt>mxmlSaveString()</tt></a></li>
 	<li><a href="#mxmlWalkNext"><tt>mxmlWalkNext()</tt></a></li>
@@ -385,6 +386,31 @@ mxmlRemove(
 </tbody></table></p>
 <h3>Returns</h3>
 <p>Nothing.</p>
+<hr noshade/>
+<h2><a name="mxmlSaveAllocString">mxmlSaveAllocString()</a></h2>
+<p>Save an XML node tree to an allocated string.
+
+This function returns a pointer to a string containing the textual
+representation of the XML node tree.  The string should be freed
+using the free() function when you are done with it.  NULL is returned
+if the node would produce an empty string or if the string cannot be
+allocated.</p>
+<h3>Syntax</h3>
+<pre>
+char *
+mxmlSaveAllocString(
+    <a href="#mxml_node_t">mxml_node_t</a> * node,
+    int (*cb)(mxml_node_t *int));
+</pre>
+<h3>Arguments</h3>
+<p class="table"><table align="center" border="1" width="80%">
+<thead><tr><th>Name</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><tt>node</tt></td><td>Node to write</td></tr>
+<tr><td><tt>(*cb)(mxml_node_t *int)</tt></td><td>Whitespace callback or MXML_NO_CALLBACK</td></tr>
+</tbody></table></p>
+<h3>Returns</h3>
+<p>Allocated string or NULL</p>
 <hr noshade/>
 <h2><a name="mxmlSaveFile">mxmlSaveFile()</a></h2>
 <p>Save an XML tree to a file.

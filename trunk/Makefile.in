@@ -1,5 +1,5 @@
 #
-# "$Id: Makefile.in,v 1.4 2003/06/04 16:30:39 mike Exp $"
+# "$Id: Makefile.in,v 1.5 2003/06/05 13:49:14 mike Exp $"
 #
 # Makefile for mini-XML, a small XML-like file parsing library.
 #
@@ -54,7 +54,7 @@ libdir		=	@libdir@
 
 LIBOBJS		=	mxml-attr.o mxml-file.o mxml-node.o mxml-search.o
 OBJS		=	mxmldoc.o testmxml.o $(LIBOBJS)
-TARGETS		=	libmxml.a mxmldoc testmxml
+TARGETS		=	libmxml.a mxmldoc testmxml mxml.xml
 
 
 #
@@ -159,6 +159,15 @@ testmxml.o:	mxml.h
 
 
 #
+# mxml.xml
+#
+
+mxml.xml:	mxmldoc mxml.h $(LIBOBJS:.o=.c)
+	rm -f mxml.xml
+	./mxmldoc mxml.xml mxml.h $(LIBOBJS:.o=.c) >documentation.html
+
+
+#
 # All object files depend on the makefile...
 #
 
@@ -166,5 +175,5 @@ $(OBJS):	Makefile
 
 
 #
-# End of "$Id: Makefile.in,v 1.4 2003/06/04 16:30:39 mike Exp $".
+# End of "$Id: Makefile.in,v 1.5 2003/06/05 13:49:14 mike Exp $".
 #

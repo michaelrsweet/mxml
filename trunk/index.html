@@ -5,7 +5,8 @@
 	<style><!--
 	h1, h2, h3, p { font-family: sans-serif; text-align: justify; }
 	h1.title, p.title { font-family: sans-serif; text-align: center; }
-	tt, pre, pre a:link, pre a:visited, tt a:link, tt a:visited { font-weight: bold; color: #7f0000; }
+	tt, pre a:link, pre a:visited, tt a:link, tt a:visited { font-weight: bold; color: #7f0000; }
+	pre { font-weight: bold; color: #7f0000; margin-left: 5em; }
 	--></style>
 </head>
 <body>
@@ -57,23 +58,22 @@ not a conforming XML consumer/client.</p>
 type the following command to get things going:</p>
 
 <pre>
-    ./configure
+./configure
 </pre>
 
 <p>The default install prefix is /usr/local, which can be
 overridden using the --prefix option:</p>
 
 <pre>
-    ./configure --prefix=/foo
+./configure --prefix=/foo
 </pre>
 
 <p>Once you have configured the software, type "make" to do the
-build and then run the test program to verify that things are
+build and run the test program to verify that things are
 working, as follows:</p>
 
 <pre>
-    make
-    ./testmxml test.xml
+make
 </pre>
 
 <h2>Installing Mini-XML</h2>
@@ -82,7 +82,7 @@ working, as follows:</p>
 include directories:</p>
 
 <pre>
-    make install
+make install
 </pre>
 
 <p>Once you have installed it, use the "-lmxml" option to link
@@ -90,57 +90,71 @@ your application against it.</p>
 
 <h2>Documentation</h2>
 
-<p>The documentation is currently just in this page.  At some
-point I'll probably do some proper documentation, but for now
-just read here and look at the <tt><a
-href="testmxml.c">testmxml.c</a></tt> source file for an
-example of reading and printing the contents of an XML file to
-stdout.</p>
+<p>The documentation is currently a work in progress. Aside from
+the information that follows, the <a
+href="documentation.html">documentation</a> page provides a
+handy reference and is automatically generated using Mini-XML.
+You can also look at the <tt><a
+href="testmxml.c">testmxml.c</a></tt> and <tt><a
+href="mxmldoc.c">mxmldoc.c</a></tt> source files for examples of
+using Mini-XML.</p>
 
 <p>Mini-XML provides a single header file which you include:</p>
 
 <pre>
-    <a href="mxml.h">#include &lt;mxml.h></a>
+<a href="mxml.h">#include &lt;mxml.h></a>
 </pre>
 
 <p>Nodes are defined by the <tt>mxml_node_t</tt> structure; the
 <tt>type</tt> member defines the node type (element, integer,
 opaque, real, or text) which determines which value you want to
 look at in the <tt>value</tt> union.  New nodes can be created
-using the <tt>mxmlNewElement()</tt>, <tt>mxmlNewInteger()</tt>,
-<tt>mxmlNewOpaque()</tt>, <tt>mxmlNewReal()</tt>, and
-<tt>mxmlNewText()</tt> functions. Only elements can have child
-nodes, and the top node must be an element, usually "?xml".</p>
+using the <a
+href="documentation.html#mxmlNewElement"><tt>mxmlNewElement()</tt></a>,
+<a
+href="documentation.html#mxmlNewInteger"><tt>mxmlNewInteger()</tt></a>,
+<a
+href="documentation.html#mxmlNewOpaque"><tt>mxmlNewOpaque()</tt></a>,
+<a
+href="documentation.html#mxmlNewReal"><tt>mxmlNewReal()</tt></a>,
+and <a
+href="documentation.html#mxmlNewText"><tt>mxmlNewText()</tt></a>
+functions. Only elements can have child nodes, and the top node
+must be an element, usually "?xml".</p>
 
-<p>You load an XML file using the <tt>mxmlLoadFile()</tt> function:</p>
-
-<pre>
-    FILE *fp;
-    mxml_node_t *tree;
-
-    fp = fopen("filename.xml", "r");
-    tree = mxmlLoadFile(NULL, fp, MXML_NO_CALLBACK);
-    fclose(fp);
-</pre>
-
-<p>Similarly, you save an XML file using the <tt>mxmlSaveFile()</tt>
+<p>You load an XML file using the <a
+href="documentation.html#mxmlLoadFile"><tt>mxmlLoadFile()</tt></a>
 function:</p>
 
 <pre>
-    FILE *fp;
-    mxml_node_t *tree;
+FILE *fp;
+mxml_node_t *tree;
 
-    fp = fopen("filename.xml", "w");
-    mxmlSaveFile(tree, fp, MXML_NO_CALLBACK);
-    fclose(fp);
+fp = fopen("filename.xml", "r");
+tree = mxmlLoadFile(NULL, fp, MXML_NO_CALLBACK);
+fclose(fp);
 </pre>
 
-<p>You can find a named element/node using the
-<tt>mxmlFindElement()</tt> function:</p>
+<p>Similarly, you save an XML file using the <a
+href="documentation.html#mxmlSaveFile"><tt>mxmlSaveFile()</tt></a>
+function:</p>
 
 <pre>
-    mxml_node_t *node = mxmlFindElement(tree, tree, "name", "attr",
-                                        "value", MXML_DESCEND);
+FILE *fp;
+mxml_node_t *tree;
+
+fp = fopen("filename.xml", "w");
+mxmlSaveFile(tree, fp, MXML_NO_CALLBACK);
+fclose(fp);
+</pre>
+
+<p>You can find a named element/node using the <a
+href="documentation.html#mxmlFindElement"><tt>mxmlFindElement()</tt></a>
+function:</p>
+
+<pre>
+mxml_node_t *node = mxmlFindElement(tree, tree, "name", "attr",
+                                    "value", MXML_DESCEND);
 </pre>
 
 <p>The <tt>name</tt>, <tt>attr</tt>, and <tt>value</tt>
@@ -148,42 +162,43 @@ arguments can be passed as <tt>NULL</tt> to act as wildcards,
 e.g.:</p>
 
 <pre>
-    /* Find the first "a" element */
-    node = mxmlFindElement(tree, tree, "a", NULL, NULL, MXML_DESCEND);
+/* Find the first "a" element */
+node = mxmlFindElement(tree, tree, "a", NULL, NULL, MXML_DESCEND);
 
-    /* Find the first "a" element with "href" attribute */
-    node = mxmlFindElement(tree, tree, "a", "href", NULL, MXML_DESCEND);
+/* Find the first "a" element with "href" attribute */
+node = mxmlFindElement(tree, tree, "a", "href", NULL, MXML_DESCEND);
 
-    /* Find the first "a" element with "href" to a URL */
-    node = mxmlFindElement(tree, tree, "a", "href",
-                           "http://www.easysw.com/~mike/mxml/", MXML_DESCEND);
+/* Find the first "a" element with "href" to a URL */
+node = mxmlFindElement(tree, tree, "a", "href",
+                       "http://www.easysw.com/~mike/mxml/", MXML_DESCEND);
 
-    /* Find the first element with a "src" attribute*/
-    node = mxmlFindElement(tree, tree, NULL, "src", NULL, MXML_DESCEND);
+/* Find the first element with a "src" attribute*/
+node = mxmlFindElement(tree, tree, NULL, "src", NULL, MXML_DESCEND);
 
-    /* Find the first element with a "src" = "foo.jpg" */
-    node = mxmlFindElement(tree, tree, NULL, "src", "foo.jpg", MXML_DESCEND);
+/* Find the first element with a "src" = "foo.jpg" */
+node = mxmlFindElement(tree, tree, NULL, "src", "foo.jpg", MXML_DESCEND);
 </pre>
 
 <p>You can also iterate with the same function:</p>
 
 <pre>
-    mxml_node_t *node;
+mxml_node_t *node;
 
-    for (node = mxmlFindElement(tree, tree, "name", NULL, NULL, MXML_DESCEND);
-	 node != NULL;
-	 node = mxmlFindElement(node, tree, "name", NULL, NULL, MXML_DESCEND))
-    {
-      ... do something ...
-    }
+for (node = mxmlFindElement(tree, tree, "name", NULL, NULL, MXML_DESCEND);
+     node != NULL;
+     node = mxmlFindElement(node, tree, "name", NULL, NULL, MXML_DESCEND))
+{
+  ... do something ...
+}
 </pre>
 
-<p>Finally, once you are done with the XML data, use the
-<tt>mxmlDelete()</tt> function to recursively free the memory
-that is used for a particular node or the entire tree:</p>
+<p>Finally, once you are done with the XML data, use the <a
+href="documentation.html#mxmlDelete"><tt>mxmlDelete()</tt></a>
+function to recursively free the memory that is used for a
+particular node or the entire tree:</p>
 
 <pre>
-    mxmlDelete(tree);
+mxmlDelete(tree);
 </pre>
 
 <h2>Getting Help and Reporting Problems</h2>

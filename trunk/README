@@ -1,4 +1,4 @@
-README - 06/04/2003
+README - 06/05/2003
 -------------------
 
 
@@ -49,11 +49,10 @@ BUILDING Mini-XML
         ./configure --prefix=/foo
 
     Once you have configured the software, type "make" to do the
-    build and then run the test program to verify that things
-    are working, as follows:
+    build and run the test program to verify that things are
+    working, as follows:
 
         make
-	./testmxml test.xml
 
 
 INSTALLING Mini-XML
@@ -69,11 +68,12 @@ INSTALLING Mini-XML
 
 DOCUMENTATION
 
-    The documentation is currently just in this README file.  At
-    some point I'll probably do some proper documentation, but
-    for now just read here and look at the testmxml.c source
-    file for an example of reading and printing the contents of
-    an XML file to stdout.
+    The documentation is currently a work in progress. Aside
+    from the information that follows, the "documentation.html"
+    page provides a handy reference and is automatically
+    generated using Mini-XML. You can also look at the
+    "testmxml.c" and "mxmldoc.c" source files for examples of
+    using Mini-XML.
 
     Mini-XML provides a single header file which you include:
 

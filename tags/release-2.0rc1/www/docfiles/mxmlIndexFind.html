@@ -1,0 +1,64 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML>
+<HEAD>
+<TITLE>Mini-XML Programmers Manual, Version 2.0</TITLE>
+<META NAME="author" CONTENT="Michael Sweet">
+<META NAME="copyright" CONTENT="Copyright 2003-2004">
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; CHARSET=iso-iso-8859-1">
+<LINK REL="Start" HREF="index.html">
+<LINK REL="Contents" HREF="toc.html">
+<LINK REL="Prev" HREF="mxmlIndexEnum.html">
+<LINK REL="Next" HREF="mxmlIndexNew.html">
+<STYLE TYPE="text/css"><!--
+BODY { font-family: serif }
+H1 { font-family: sans-serif }
+H2 { font-family: sans-serif }
+H3 { font-family: sans-serif }
+H4 { font-family: sans-serif }
+H5 { font-family: sans-serif }
+H6 { font-family: sans-serif }
+SUB { font-size: smaller }
+SUP { font-size: smaller }
+PRE { font-family: monospace }
+--></STYLE>
+</HEAD>
+<BODY>
+<A HREF="toc.html">Contents</A>
+<A HREF="mxmlIndexEnum.html">Previous</A>
+<A HREF="mxmlIndexNew.html">Next</A>
+<HR NOSHADE>
+<H3><A name="mxmlIndexFind">mxmlIndexFind()</A></H3>
+<HR noshade/>
+<H4>Description</H4>
+<P>Find the next matching node. You should call mxmlIndexReset() prior
+ to using this function for the first time with a particular set of
+ &quot;element&quot; and &quot;value&quot; strings. Passing NULL for both &quot;element&quot; and
+ &quot;value&quot; is equivalent to calling mxmlIndexEnum().</P>
+<H4>Syntax</H4>
+<PRE>
+<A href="mxmlnodet.html#mxml_node_t">mxml_node_t</A> *
+mxmlIndexFind(
+    <A href="mxmlindext.html#mxml_index_t">mxml_index_t</A> * ind,
+    const char * element,
+    const char * value);
+</PRE>
+<H4>Arguments</H4>
+<P class="table"></P>
+<TABLE align="center" border="1" cellpadding="5" cellspacing="0" width="80%">
+<THEAD></THEAD>
+<TR bgcolor="#cccccc"><TH>Name</TH><TH>Description</TH></TR>
+<TBODY></TBODY>
+<TR><TD><TT>ind</TT></TD><TD>Index to search</TD></TR>
+<TR><TD><TT>element</TT></TD><TD>Element name to find, if any</TD></TR>
+<TR><TD><TT>value</TT></TD><TD>Attribute value, if any</TD></TR>
+</TABLE>
+<H4>Returns</H4>
+<P>Node or NULL if none found</P>
+
+<!-- NEW PAGE -->
+<HR NOSHADE>
+<A HREF="toc.html">Contents</A>
+<A HREF="mxmlIndexEnum.html">Previous</A>
+<A HREF="mxmlIndexNew.html">Next</A>
+</BODY>
+</HTML>

@@ -1,6 +1,6 @@
-Mini-XML 2.1 is now available for download from:
+Mini-XML 2.2 is now available for download from:
 
     http://www.easysw.com/~mike/mxml/software.php
 
-Mini-XML 2.1 adds support for custom data types and fixes a
-number of small bugs.
+Mini-XML 2.2 adds support for CDATA elements and shared
+libraries, and fixes some XML conformance bugs.

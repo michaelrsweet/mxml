@@ -1,6 +1,6 @@
 <?
 //
-// "$Id: common.php,v 1.8 2004/05/19 16:34:54 mike Exp $"
+// "$Id: common.php,v 1.9 2004/05/19 21:17:47 mike Exp $"
 //
 // Common utility functions for PHP pages...
 //
@@ -88,13 +88,18 @@ count_comments($url,			// I - URL for comment
 {
   $result = db_query("SELECT * FROM comment WHERE "
                     ."url = '" . db_escape($url) ."' "
-                    ."AND status > 0 AND parent_id = $parent_id "
+                    ."AND parent_id = $parent_id "
 		    ."ORDER BY id");
 
-  $num_comments = db_count($result);
+  $num_comments = 0;
 
   while ($row = db_next($result))
+  {
+    if ($row["status"] > 0)
+      $num_comments ++;
+
     $num_comments += count_comments($url, $row['id']);
+  }
 
   db_free($result);
 
@@ -577,7 +582,7 @@ show_comments($url,			// I - URL for comment
 
   $result = db_query("SELECT * FROM comment WHERE "
                     ."url = '" . db_escape($url) ."' "
-                    ."AND status > 0 AND parent_id = $parent_id "
+                    ."AND parent_id = $parent_id "
 		    ."ORDER BY id");
 
   if (array_key_exists("MODPOINTS", $_COOKIE))
@@ -593,42 +598,49 @@ show_comments($url,			// I - URL for comment
 
   $safeurl      = urlencode($url);
   $num_comments = 0;
+  $div          = 0;
 
   while ($row = db_next($result))
   {
-    if ($heading > 3 && $num_comments == 0)
-      print("<div style='margin-left: 3em;'>\n");
-
-    $num_comments ++;
-
-    $create_date = date("H:i M d, Y", $row['create_date']);
-    $create_user = sanitize_email($row['create_user']);
-    $contents    = format_text($row['contents']);
-
-    print("<h$heading><a name='_USER_COMMENT_$row[id]'>From</a> "
-         ."$create_user, $create_date (score=$row[status])</h$heading>\n"
-	 ."$contents\n");
-
-    html_start_links();
-    html_link("Reply", "${path}comment.php?r$row[id]+p$safeurl");
-
-    if ($modpoints > 0)
+    if ($row["status"] > 0)
     {
-      if ($row['status'] > 0)
-        html_link("Moderate Down", "${path}comment.php?md$row[id]+p$safeurl");
+      if ($heading > 3 && !$div)
+      {
+	print("<div style='margin-left: 3em;'>\n");
+	$div = 1;
+      }
 
-      if ($row['status'] < 5)
-        html_link("Moderate Up", "${path}comment.php?mu$row[id]+p$safeurl");
+      $num_comments ++;
+
+      $create_date = date("H:i M d, Y", $row['create_date']);
+      $create_user = sanitize_email($row['create_user']);
+      $contents    = format_text($row['contents']);
+
+      print("<h$heading><a name='_USER_COMMENT_$row[id]'>From</a> "
+           ."$create_user, $create_date (score=$row[status])</h$heading>\n"
+	   ."$contents\n");
+
+      html_start_links();
+      html_link("Reply", "${path}comment.php?r$row[id]+p$safeurl");
+
+      if ($modpoints > 0)
+      {
+	if ($row['status'] > 0)
+          html_link("Moderate Down", "${path}comment.php?md$row[id]+p$safeurl");
+
+	if ($row['status'] < 5)
+          html_link("Moderate Up", "${path}comment.php?mu$row[id]+p$safeurl");
+      }
+
+      html_end_links();
     }
-
-    html_end_links();
 
     $num_comments += show_comments($url, $path, $row['id'], $heading + 1);
   }
 
   db_free($result);
 
-  if ($num_comments > 0 && $heading > 3)
+  if ($div)
     print("</div>\n");
 
   return ($num_comments);
@@ -636,6 +648,6 @@ show_comments($url,			// I - URL for comment
 
 
 //
-// End of "$Id: common.php,v 1.8 2004/05/19 16:34:54 mike Exp $".
+// End of "$Id: common.php,v 1.9 2004/05/19 21:17:47 mike Exp $".
 //
 ?>

@@ -1,6 +1,6 @@
 <?php
 //
-// "$Id: globals.php,v 1.3 2004/05/19 14:02:38 mike Exp $"
+// "$Id: globals.php,v 1.4 2004/05/19 21:17:47 mike Exp $"
 //
 // Global PHP constants and variables...
 //
@@ -11,8 +11,8 @@
 // Global vars...
 //
 
-$PROJECT = "Mini-XML";			// Title of project
-$EMAIL = "mxml@easysw.com";		// Default notification address
+$PROJECT_NAME = "Mini-XML";		// Title of project
+$PROJECT_EMAIL = "mxml@easysw.com";	// Default notification address
 $PAGE_MAX = 10; 			// Max items per page
 
 
@@ -28,8 +28,12 @@ $PHP_SELF       = $_SERVER["PHP_SELF"];
 $REQUEST_METHOD = $_SERVER["REQUEST_METHOD"];
 $SERVER_NAME    = $_SERVER["SERVER_NAME"];
 
+if (array_key_exists("ISHTTPS", $_SERVER))
+  $PHP_URL = "https://$_SERVER[SERVER_NAME]:$_SERVER[SERVER_PORT]$_SERVER[PHP_SELF]";
+else
+  $PHP_URL = "http://$_SERVER[SERVER_NAME]:$_SERVER[SERVER_PORT]$_SERVER[PHP_SELF]";
 
 //
-// End of "$Id: globals.php,v 1.3 2004/05/19 14:02:38 mike Exp $".
+// End of "$Id: globals.php,v 1.4 2004/05/19 21:17:47 mike Exp $".
 //
 ?>

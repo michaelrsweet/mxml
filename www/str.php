@@ -1,6 +1,6 @@
 <?php
 //
-// "$Id: str.php,v 1.9 2004/05/19 14:02:38 mike Exp $"
+// "$Id: str.php,v 1.10 2004/05/19 21:17:47 mike Exp $"
 //
 // Software Trouble Report page...
 //
@@ -88,7 +88,7 @@ notify_creator($id,			// I - STR #
   global $priority_long;
   global $scope_long;
   global $status_long;
-  global $PHP_SELF, $EMAIL, $PROJECT;
+  global $PHP_URL, $PROJECT_EMAIL, $PROJECT_NAME;
 
 
   $result = db_query("SELECT * FROM str WHERE id = $id");
@@ -112,12 +112,12 @@ notify_creator($id,			// I - STR #
 
     if ($row['create_user'] != $row['modify_user'] &&
         $row['create_user'] != $manager)
-      mail($row['create_user'], "$PROJECT STR #$id $what",
+      mail($row['create_user'], "$PROJECT_NAME STR #$id $what",
 	   "Your software trouble report #$id has been $what.  You can check\n"
 	  ."the status of the report and add additional comments and/or files\n"
 	  ."at the following URL:\n"
 	  ."\n"
-	  ."    $PHP_SELF?L$id\n"
+	  ."    $PHP_URL?L$id\n"
 	  ."\n"
 	  ."    Summary: $row[summary]\n"
 	  ."    Version: $row[str_version]\n"
@@ -128,7 +128,7 @@ notify_creator($id,			// I - STR #
 	  ."Fix Version: $fix_version\n"
 	  ."\n$contents"
 	  ."________________________________________________________________\n"
-	  ."Thank you for using the $PROJECT Software Trouble Report page!",
+	  ."Thank you for using the $PROJECT_NAME Software Trouble Report page!",
 	   "From: noreply@easysw.com\r\n");
 
     $ccresult = db_query("SELECT email FROM strcc WHERE str_id = $id");
@@ -136,12 +136,12 @@ notify_creator($id,			// I - STR #
     {
       while ($ccrow = db_next($ccresult))
       {
-	mail($ccrow->email, "$PROJECT STR #$id $what",
+	mail($ccrow->email, "$PROJECT_NAME STR #$id $what",
 	     "Software trouble report #$id has been $what.  You can check\n"
 	    ."the status of the report and add additional comments and/or files\n"
 	    ."at the following URL:\n"
 	    ."\n"
-	    ."    $PHP_SELF?L$id\n"
+	    ."    $PHP_URL?L$id\n"
 	    ."\n"
 	    ."    Summary: $row[summary]\n"
 	    ."    Version: $row[str_version]\n"
@@ -152,7 +152,7 @@ notify_creator($id,			// I - STR #
 	    ."Fix Version: $fix_version\n"
 	    ."\n$contents"
 	    ."________________________________________________________________\n"
-	    ."Thank you for using the $PROJECT Software Trouble Report page!",
+	    ."Thank you for using the $PROJECT_NAME Software Trouble Report page!",
 	     "From: noreply@easysw.com\r\n");
       }
 
@@ -162,15 +162,15 @@ notify_creator($id,			// I - STR #
     if ($row['manager_email'] != "")
       $manager = $row['manager_email'];
     else
-      $manager = "$EMAIL";
+      $manager = "$PROJECT_EMAIL";
 
     if ($row['modify_user'] != $manager)
-      mail($manager, "$PROJECT STR #$id $what",
+      mail($manager, "$PROJECT_NAME STR #$id $what",
 	   "The software trouble report #$id assigned to you has been $what.\n"
 	  ."You can manage the report and add additional comments and/or files\n"
 	  ."at the following URL:\n"
 	  ."\n"
-	  ."    $PHP_SELF?L$id\n"
+	  ."    $PHP_URL?L$id\n"
 	  ."\n"
 	  ."    Summary: $row[summary]\n"
 	  ."    Version: $row[str_version]\n"
@@ -185,6 +185,7 @@ notify_creator($id,			// I - STR #
     db_free($result);
   }
 }
+
 
 // Get command-line options...
 //
@@ -660,7 +661,8 @@ switch ($op)
 
         if ($LOGIN_LEVEL < AUTH_DEVEL)
 	{
-	  $query .= "${prefix}is_published = 1";
+	  $query .= "${prefix}(is_published = 1 OR create_user = '"
+	           . db_escape($LOGIN_USER) . "')";
 	  $prefix = " AND ";
 	}
 
@@ -947,8 +949,9 @@ switch ($op)
 	print("<p>"
 	     ."MACH = Machine, "
 	     ."OS = Operating System, "
-	     ."STR = Software Trouble Report"
-	     ."</p>\n");
+	     ."STR = Software Trouble Report, "
+	     ."<img src='images/private.gif' width='16' height='16' "
+	     ."align='middle' alt='private'/> = hidden from public view</p>\n");
       }
 
       html_footer();
@@ -1553,7 +1556,9 @@ switch ($op)
 	$version   = $_POST["VERSION"];
 	$contents  = $_POST["CONTENTS"];
 
-	if (array_key_exists("EMAIL", $_POST))
+	if ($LOGIN_USER != "" && $LOGIN_LEVEL < AUTH_DEVEL)
+	  $email = $LOGIN_USER;
+	else if (array_key_exists("EMAIL", $_POST))
 	{
 	  $email = $_POST["EMAIL"];
 	  setcookie("FROM", "$email", time() + 90 * 86400, "/");
@@ -1578,7 +1583,9 @@ switch ($op)
       }
       else
       {
-	if (array_key_exists("FROM", $_COOKIE))
+	if ($LOGIN_USER != "")
+	  $email = $LOGIN_USER;
+	else if (array_key_exists("FROM", $_COOKIE))
           $email = $_COOKIE["FROM"];
 	else
 	  $email = "";
@@ -1673,11 +1680,11 @@ switch ($op)
 	else
 	{
 	  print("<p>Please use this form to report all bugs and request "
-	       ."features in the $PROJECT software. Be sure to include "
+	       ."features in the $PROJECT_NAME software. Be sure to include "
 	       ."the operating system, compiler, sample programs and/or "
 	       ."files, and any other information you can about your "
 	       ."problem. <i>Thank you</i> for helping us to improve "
-	       ."$PROJECT!</p><hr noshade/>\n");
+	       ."$PROJECT_NAME!</p><hr noshade/>\n");
 
 	  $hstart = "";
 	  $hend   = "";
@@ -1865,6 +1872,6 @@ switch ($op)
 }
 
 //
-// End of "$Id: str.php,v 1.9 2004/05/19 14:02:38 mike Exp $".
+// End of "$Id: str.php,v 1.10 2004/05/19 21:17:47 mike Exp $".
 //
 ?>

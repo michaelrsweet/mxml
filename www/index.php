@@ -1,6 +1,6 @@
 <?php
 //
-// "$Id: index.php,v 1.3 2004/05/19 14:02:38 mike Exp $"
+// "$Id: index.php,v 1.4 2004/05/19 21:17:47 mike Exp $"
 //
 // Mini-XML home page...
 //
@@ -62,11 +62,12 @@ else
 {
   while ($row = db_next($result))
   {
-    $id       = $row['id'];
-    $title    = htmlspecialchars($row['title'], ENT_QUOTES);
-    $abstract = htmlspecialchars($row['abstract'], ENT_QUOTES);
-    $date     = date("H:i M d, Y", $row['modify_date']);
-    $count    = count_comments("articles.php_L$id");
+    $id          = $row['id'];
+    $title       = htmlspecialchars($row['title'], ENT_QUOTES);
+    $abstract    = htmlspecialchars($row['abstract'], ENT_QUOTES);
+    $create_user = sanitize_email($row['create_user']);
+    $date        = date("H:i M d, Y", $row['modify_date']);
+    $count       = count_comments("articles.php_L$id");
 
     if ($count == 1)
       $count .= " comment";
@@ -74,7 +75,7 @@ else
       $count .= " comments";
 
     print("<h3><a href='articles.php?L$id'>$title</a></h3>\n"
-         ."<p><i>$date, $count</i><br />$abstract [&nbsp;"
+         ."<p><i>$date by $create_user, $count</i><br />$abstract [&nbsp;"
 	 ."<a href='articles.php?L$id'>Read</a>&nbsp;]</p>\n");
   }
 }
@@ -87,6 +88,6 @@ print("</td></tr>\n"
 html_footer();
 
 //
-// End of "$Id: index.php,v 1.3 2004/05/19 14:02:38 mike Exp $".
+// End of "$Id: index.php,v 1.4 2004/05/19 21:17:47 mike Exp $".
 //
 ?>

@@ -1,6 +1,6 @@
 <?php
 //
-// "$Id: index.php,v 1.8 2004/06/26 03:08:11 mike Exp $"
+// "$Id: index.php,v 1.9 2004/11/13 18:26:32 mike Exp $"
 //
 // Mini-XML home page...
 //
@@ -21,8 +21,8 @@ html_start_table(array("Quick Info"), "100%", "100%");
 html_start_row();
 print("<td>"
      ."<p align='center'>"
-     ."Stable Release: <a href='software.php?2.0'>v2.0</a><br />"
-     ."<!--Test Release: <a href='software.php?2.1rc1'>v2.1rc1</a>--></p>\n"
+     ."Stable Release: <a href='software.php?2.0'>v2.1</a><br />"
+     ."<!--Test Release: <a href='software.php?2.2rc1'>v2.2rc1</a>--></p>\n"
      ."<small><p>Mini-XML is a small XML parsing library that you can use to "
      ."read XML and XML-like data files in your application without "
      ."requiring large non-standard libraries. Mini-XML only requires "
@@ -101,6 +101,6 @@ print("</td></tr>\n"
 html_footer();
 
 //
-// End of "$Id: index.php,v 1.8 2004/06/26 03:08:11 mike Exp $".
+// End of "$Id: index.php,v 1.9 2004/11/13 18:26:32 mike Exp $".
 //
 ?>

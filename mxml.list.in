@@ -1,5 +1,5 @@
 #
-# "$Id: mxml.list.in,v 1.13 2004/05/02 16:04:40 mike Exp $"
+# "$Id: mxml.list.in,v 1.14 2004/05/21 03:05:19 mike Exp $"
 #
 # EPM software list file for Mini-XML, a small XML-like file parsing library.
 #
@@ -40,8 +40,8 @@ XML and XML-like data files in your application without
 requiring large non-standard libraries.  Mini-XML provides the
 following functionality:
 
-    - Reading and writing of UTF-8 encoded XML files and
-      strings.
+    - Reading of UTF-8 and UTF-16 and writing of UTF-8 encoded
+      XML files and strings.
     - Data is stored in a linked-list tree structure, preserving
       the XML data hierarchy.
     - Supports arbitrary element names, attributes, and
@@ -91,5 +91,5 @@ f 0444 root sys ${mandir}/cat3/mxml.$CAT3EXT $srcdir/mxml.$CAT3EXT
 f 0444 root sys ${mandir}/man3/mxml.$MAN3EXT $srcdir/mxml.man
 
 #
-# End of "$Id: mxml.list.in,v 1.13 2004/05/02 16:04:40 mike Exp $".
+# End of "$Id: mxml.list.in,v 1.14 2004/05/21 03:05:19 mike Exp $".
 #

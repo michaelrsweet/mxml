@@ -1,5 +1,5 @@
 /*
- * "$Id: mxml-file.c,v 1.13 2003/06/19 04:25:12 mike Exp $"
+ * "$Id: mxml-file.c,v 1.14 2003/07/20 13:19:08 mike Exp $"
  *
  * File loading code for mini-XML, a small XML-like file parsing library.
  *
@@ -786,7 +786,9 @@ mxml_parse_element(mxml_node_t *node,	/* I - Element node */
 
   while ((ch = (*getc_cb)(p)) != EOF)
   {
-    printf("parse_element: ch='%c'\n", ch);
+#ifdef DEBUG
+    fprintf(stderr, "parse_element: ch='%c'\n", ch);
+#endif /* DEBUG */
 
    /*
     * Skip leading whitespace...
@@ -1060,8 +1062,12 @@ mxml_write_node(mxml_node_t *node,	/* I - Node to write */
 
 	    if (node->value.element.name[0] == '?')
 	    {
-	      if (mxml_write_string("?>\n", p, putc_cb) < 0)
-	        return (-1);
+              if ((*putc_cb)('?', p) < 0)
+		return (-1);
+              if ((*putc_cb)('>', p) < 0)
+		return (-1);
+              if ((*putc_cb)('\n', p) < 0)
+		return (-1);
 
               col = 0;
             }
@@ -1103,10 +1109,13 @@ mxml_write_node(mxml_node_t *node,	/* I - Node to write */
 
             col = mxml_write_ws(node, p, cb, MXML_WS_AFTER_OPEN, col, putc_cb);
           }
-	  else if (mxml_write_string("/>", p, putc_cb) < 0)
-	    return (-1);
 	  else
 	  {
+            if ((*putc_cb)('/', p) < 0)
+	      return (-1);
+            if ((*putc_cb)('>', p) < 0)
+	      return (-1);
+
 	    col += 2;
 
             col = mxml_write_ws(node, p, cb, MXML_WS_AFTER_OPEN, col, putc_cb);
@@ -1363,5 +1372,5 @@ mxml_write_ws(mxml_node_t *node,	/* I - Current node */
 
 
 /*
- * End of "$Id: mxml-file.c,v 1.13 2003/06/19 04:25:12 mike Exp $".
+ * End of "$Id: mxml-file.c,v 1.14 2003/07/20 13:19:08 mike Exp $".
  */

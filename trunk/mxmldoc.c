@@ -1,5 +1,6 @@
+/*#define DEBUG 2*/
 /*
- * "$Id: mxmldoc.c,v 1.26 2004/04/06 01:47:20 mike Exp $"
+ * "$Id: mxmldoc.c,v 1.27 2004/04/29 20:48:52 mike Exp $"
  *
  * Documentation generator using mini-XML, a small XML-like file parsing
  * library.
@@ -172,9 +173,10 @@ main(int  argc,				/* I - Number of command-line args */
 
     if (!doc)
     {
-      fprintf(stderr, "Unable to read the XML documentation file \"%s\"!\n",
+      fprintf(stderr, "mxmldoc: Unable to read the XML documentation file \"%s\"!\n",
               argv[1]);
-      return (1);
+      doc = mxmlNewElement(NULL, "?xml");
+      mxmlElementSetAttr(doc, "version", "1.0");
     }
   }
   else
@@ -373,6 +375,11 @@ scan_file(const char  *filename,	/* I - Filename */
 		};
 #endif /* DEBUG > 1 */
 
+
+#ifdef DEBUG
+  fprintf(stderr, "scan_file(filename=\"%s\", fp=%p, tree=%p)\n", filename,
+          fp, tree);
+#endif // DEBUG
 
  /*
   * Initialize the finite state machine...
@@ -967,6 +974,7 @@ scan_file(const char  *filename,	/* I - Filename */
       case STATE_CXX_COMMENT :		/* Inside a C++ comment */
           if (ch == '\n')
 	  {
+	    state = STATE_NONE;
 	    *bufptr = '\0';
 
             if (comment->child != comment->last_child)
@@ -1487,7 +1495,8 @@ write_documentation(mxml_node_t *doc)	/* I - XML documentation */
 		*arg,			/* Current argument */
 		*description,		/* Description of function/var */
 		*type;			/* Type for argument */
-  const char	*name;			/* Name of function/type */
+  const char	*name,			/* Name of function/type */
+		*cname;			/* Class name */
   char		prefix;			/* Prefix character */
 
 
@@ -1559,9 +1568,9 @@ write_documentation(mxml_node_t *doc)	/* I - XML documentation */
 	 scut = mxmlFindElement(scut, doc, "class", NULL, NULL,
                         	MXML_NO_DESCEND))
     {
-      name = mxmlElementGetAttr(scut, "name");
+      cname = mxmlElementGetAttr(scut, "name");
       puts("<!-- NEW PAGE -->");
-      printf("<h3><a name='%s'>%s</a></h3>\n", name, name);
+      printf("<h3><a name='%s'>%s</a></h3>\n", cname, cname);
       puts("<hr noshade/>");
 
       description = mxmlFindElement(scut, scut, "description", NULL,
@@ -1577,7 +1586,7 @@ write_documentation(mxml_node_t *doc)	/* I - XML documentation */
       puts("<h4>Definition</h4>");
       puts("<pre>");
 
-      printf("struct %s\n{\n", name);
+      printf("class %s\n{\n", name);
       for (arg = mxmlFindElement(scut, scut, "variable", NULL, NULL,
                         	 MXML_DESCEND_FIRST);
 	   arg;
@@ -1588,6 +1597,50 @@ write_documentation(mxml_node_t *doc)	/* I - XML documentation */
 	write_element(doc, mxmlFindElement(arg, arg, "type", NULL,
                                            NULL, MXML_DESCEND_FIRST));
 	printf(" %s;\n", mxmlElementGetAttr(arg, "name"));
+      }
+
+      for (function = mxmlFindElement(scut, scut, "function", NULL, NULL,
+                                      MXML_DESCEND_FIRST);
+	   function;
+	   function = mxmlFindElement(function, scut, "function", NULL, NULL,
+                                      MXML_NO_DESCEND))
+      {
+        name = mxmlElementGetAttr(function, "name");
+
+        printf("  ");
+
+	arg = mxmlFindElement(function, function, "returnvalue", NULL,
+                              NULL, MXML_DESCEND_FIRST);
+
+	if (arg)
+	{
+	  if (arg->child->value.text.string)
+	    write_element(doc, mxmlFindElement(arg, arg, "type", NULL,
+                                               NULL, MXML_DESCEND_FIRST));
+	}
+	else
+	  fputs("void ", stdout);
+
+	printf("<a href='#%s.%s'>%s</a>", cname, name, name);
+
+	for (arg = mxmlFindElement(function, function, "argument", NULL, NULL,
+                        	   MXML_DESCEND_FIRST), prefix = '(';
+	     arg;
+	     arg = mxmlFindElement(arg, function, "argument", NULL, NULL,
+                        	   MXML_NO_DESCEND), prefix = ',')
+	{
+	  type = mxmlFindElement(arg, arg, "type", NULL, NULL,
+	                	 MXML_DESCEND_FIRST);
+
+	  printf("%c", prefix);
+	  write_element(doc, type);
+	  printf("%s%s", type->child ? " " : "", mxmlElementGetAttr(arg, "name"));
+	}
+
+	if (prefix == '(')
+	  puts("(void);");
+	else
+	  puts(");");
       }
 
       puts("};\n</pre>");
@@ -1613,7 +1666,37 @@ write_documentation(mxml_node_t *doc)	/* I - XML documentation */
 	puts("</td></tr>");
       }
 
+      for (function = mxmlFindElement(scut, scut, "function", NULL, NULL,
+                                      MXML_DESCEND_FIRST);
+	   function;
+	   function = mxmlFindElement(function, scut, "function", NULL, NULL,
+                                      MXML_NO_DESCEND))
+      {
+	name = mxmlElementGetAttr(function, "name");
+
+	printf("<tr><td><tt><a name='%s.%s'>%s()</a></tt></td><td>",
+	       cname, name, name);
+
+	description = mxmlFindElement(function, function, "description", NULL,
+                                      NULL, MXML_DESCEND_FIRST);
+	if (description)
+	  write_element(NULL, description);
+
+	arg = mxmlFindElement(function, function, "returnvalue", NULL,
+                              NULL, MXML_DESCEND_FIRST);
+
+	if (arg)
+	{
+	  fputs("\n<i>Returns:</i> ", stdout);
+	  write_element(NULL, mxmlFindElement(arg, arg, "description", NULL,
+                                              NULL, MXML_DESCEND_FIRST));
+	}
+
+	puts("</td></tr>");
+      }
+
       puts("</tbody></table></p>");
+
     }
   }
 
@@ -2222,5 +2305,5 @@ ws_cb(mxml_node_t *node,		/* I - Element node */
 
 
 /*
- * End of "$Id: mxmldoc.c,v 1.26 2004/04/06 01:47:20 mike Exp $".
+ * End of "$Id: mxmldoc.c,v 1.27 2004/04/29 20:48:52 mike Exp $".
  */

@@ -1,5 +1,5 @@
 /*
- * "$Id: mxml-file.c,v 1.3 2003/06/04 01:23:21 mike Exp $"
+ * "$Id: mxml-file.c,v 1.4 2003/06/04 01:26:34 mike Exp $"
  *
  * File loading code for mini-XML, a small XML-like file parsing library.
  *
@@ -251,7 +251,7 @@ mxmlLoadFile(mxml_node_t *top,		/* I - Top node */
     {
      /*
       * Add character entity to current buffer...  Currently we only
-      * support &lt;, &amp;, &#nnn;, and &#xXXXX;...
+      * support &lt;, &amp;, &gt;, &nbsp;, &#nnn;, and &#xXXXX;...
       */
 
       char	entity[64],		/* Entity string */
@@ -289,10 +289,14 @@ mxmlLoadFile(mxml_node_t *top,		/* I - Top node */
 	else
 	  ch = strtol(entity + 2, NULL, 10);
       }
-      else if (!strcmp(entity, "&lt"))
-        ch = '<';
       else if (!strcmp(entity, "&amp"))
         ch = '&';
+      else if (!strcmp(entity, "&gt"))
+        ch = '>';
+      else if (!strcmp(entity, "&lt"))
+        ch = '<';
+      else if (!strcmp(entity, "&nbsp"))
+        ch = 0xa0;
       else
       {
 	fprintf(stderr, "Entity name \"%s;\" not supported under parent <%s>!\n",
@@ -668,5 +672,5 @@ mxml_write_string(const char *s,	/* I - String to write */
 
 
 /*
- * End of "$Id: mxml-file.c,v 1.3 2003/06/04 01:23:21 mike Exp $".
+ * End of "$Id: mxml-file.c,v 1.4 2003/06/04 01:26:34 mike Exp $".
  */

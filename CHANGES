@@ -5,6 +5,8 @@ README - 06/03/2003
 CHANGES IN Mini-XML 0.93
 
 	- mxmlLoadFile() now correctly handles comments.
+	- mxmlLoadFile() now supports the "gt" and "nbsp"
+	  character entities.
 
 
 CHANGES IN Mini-XML 0.92

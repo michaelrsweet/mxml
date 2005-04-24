@@ -211,8 +211,7 @@ main(int  argc,				/* I - Number of command-line args */
     * Create an empty XML documentation file...
     */
 
-    doc = mxmlNewElement(NULL, "?xml");
-    mxmlElementSetAttr(doc, "version", "1.0");
+    doc = mxmlNewElement(NULL, "?xml version=\"1.0\"?");
 
     mxmldoc = mxmlNewElement(doc, "mxmldoc");
 

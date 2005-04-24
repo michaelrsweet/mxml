@@ -1,5 +1,12 @@
-CHANGES - 02/25/2005
+CHANGES - 04/24/2005
 --------------------
+
+CHANGES IN Mini-XML 2.2.1
+
+	- Fixed an XML output bug in mxmldoc.
+	- The "make install" target now uses the install command
+	  to set the proper permissions on UNIX/Linux/OSX.
+
 
 CHANGES IN Mini-XML 2.2
 

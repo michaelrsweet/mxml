@@ -33,8 +33,11 @@
 #  include <io.h>
 #else
 #  include <unistd.h>
-#  include <fcntl.h>
 #endif /* WIN32 */
+#include <fcntl.h>
+#ifndef O_BINARY
+#  define O_BINARY 0
+#endif /* !O_BINARY */
 
 
 /*
@@ -403,7 +406,7 @@ main(int  argc,				/* I - Number of command-line args */
 
   if (argv[1][0] == '<')
     tree = mxmlLoadString(NULL, argv[1], type_cb);
-  else if ((fp = fopen(argv[1], "r")) == NULL)
+  else if ((fp = fopen(argv[1], "rb")) == NULL)
   {
     perror(argv[1]);
     return (1);
@@ -478,7 +481,7 @@ main(int  argc,				/* I - Number of command-line args */
     * Open the file again...
     */
 
-    if ((fd = open(argv[1], O_RDONLY)) < 0)
+    if ((fd = open(argv[1], O_RDONLY | O_BINARY)) < 0)
     {
       perror(argv[1]);
       return (1);
@@ -498,7 +501,7 @@ main(int  argc,				/* I - Number of command-line args */
 
     snprintf(buffer, sizeof(buffer), "%sfd", argv[1]);
 
-    if ((fd = open(buffer, O_WRONLY | O_CREAT | O_TRUNC, 0666)) < 0)
+    if ((fd = open(buffer, O_WRONLY | O_CREAT | O_TRUNC | O_BINARY, 0666)) < 0)
     {
       perror(buffer);
       mxmlDelete(tree);

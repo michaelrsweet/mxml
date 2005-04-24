@@ -23,7 +23,7 @@ dnl Set the name of the config header file...
 AC_CONFIG_HEADER(config.h)
 
 dnl Version number...
-VERSION=2.2
+VERSION=2.2.1
 AC_SUBST(VERSION)
 AC_DEFINE_UNQUOTED(MXML_VERSION, "Mini-XML v$VERSION")
 
@@ -67,6 +67,11 @@ fi
 dnl Checks for programs...
 AC_PROG_CC
 AC_PROG_CXX
+AC_PROG_INSTALL
+if test "$INSTALL" = "$ac_install_sh"; then
+	# Use full path to install-sh script...
+	INSTALL="`pwd`/install-sh -c"
+fi
 AC_PROG_RANLIB
 AC_PATH_PROG(AR,ar)
 AC_PATH_PROG(CP,cp)

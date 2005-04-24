@@ -1,5 +1,4 @@
-<?xml
-version="1.0"><mxmldoc>
+<?xml version="1.0"?><mxmldoc>
   <function name="mxmlAdd">
     <description>Add a node to a tree.
 

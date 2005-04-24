@@ -28,6 +28,7 @@ CP		=	@CP@
 DSO		=	@DSO@
 DSOFLAGS	=	@DSOFLAGS@
 LDFLAGS		=	$(OPTIM) @LDFLAGS@
+INSTALL		=	@INSTALL@
 LIBMXML		=	@LIBMXML@
 LN		=	@LN@ -s
 MKDIR		=	@MKDIR@
@@ -60,6 +61,18 @@ CAT1EXT		=	@CAT1EXT@
 CAT3EXT		=	@CAT3EXT@
 MAN1EXT		=	@MAN1EXT@
 MAN3EXT		=	@MAN3EXT@
+
+
+#
+# Install commands...
+#
+
+INSTALL_BIN	=	$(LIBTOOL) $(INSTALL) -m 755 -s
+INSTALL_DATA	=	$(INSTALL) -m 644
+INSTALL_DIR	=	$(INSTALL) -d
+INSTALL_LIB	=	$(LIBTOOL) $(INSTALL) -m 755
+INSTALL_MAN	=	$(INSTALL) -m 644
+INSTALL_SCRIPT	=	$(INSTALL) -m 755
 
 
 #
@@ -112,44 +125,46 @@ clean:
 #
 
 install:	$(TARGETS) install-$(LIBMXML) install-libmxml.a
-	-$(MKDIR) -p $(BUILDROOT)$(bindir)
-	$(CP) mxmldoc $(BUILDROOT)$(bindir) 
-	-$(MKDIR) -p $(BUILDROOT)$(docdir)
-	$(CP) $(DOCFILES) $(BUILDROOT)$(docdir)
-	-$(MKDIR) -p $(BUILDROOT)$(includedir)
-	$(CP) mxml.h $(BUILDROOT)$(includedir)
-	-$(MKDIR) -p $(BUILDROOT)$(libdir)/pkgconfig
-	$(CP) mxml.pc $(BUILDROOT)$(libdir)/pkgconfig
-	-$(MKDIR) -p $(BUILDROOT)$(mandir)/cat1
-	$(CP) doc/mxmldoc.$(CAT1EXT) $(BUILDROOT)$(mandir)/cat1/mxmldoc.$(CAT1EXT)
-	-$(MKDIR) -p $(BUILDROOT)$(mandir)/cat3
-	$(CP) doc/mxml.$(CAT3EXT) $(BUILDROOT)$(mandir)/cat3/mxml.$(CAT3EXT)
-	-$(MKDIR) -p $(BUILDROOT)$(mandir)/man1
-	$(CP) doc/mxmldoc.man $(BUILDROOT)$(mandir)/man1/mxmldoc.$(MAN1EXT)
-	-$(MKDIR) -p $(BUILDROOT)$(mandir)/man3
-	$(CP) doc/mxml.man $(BUILDROOT)$(mandir)/man3/mxml.$(MAN3EXT)
+	$(INSTALL_DIR) $(BUILDROOT)$(bindir)
+	$(INSTALL_BIN) mxmldoc $(BUILDROOT)$(bindir) 
+	$(INSTALL_DIR) $(BUILDROOT)$(docdir)
+	for file in $(DOCFILES); do \
+		$(INSTALL_MAN) $$file $(BUILDROOT)$(docdir); \
+	done
+	$(INSTALL_DIR) $(BUILDROOT)$(includedir)
+	$(INSTALL_DATA) mxml.h $(BUILDROOT)$(includedir)
+	$(INSTALL_DIR) $(BUILDROOT)$(libdir)/pkgconfig
+	$(INSTALL_DATA) mxml.pc $(BUILDROOT)$(libdir)/pkgconfig
+	$(INSTALL_DIR) $(BUILDROOT)$(mandir)/cat1
+	$(INSTALL_MAN) doc/mxmldoc.$(CAT1EXT) $(BUILDROOT)$(mandir)/cat1/mxmldoc.$(CAT1EXT)
+	$(INSTALL_DIR) $(BUILDROOT)$(mandir)/cat3
+	$(INSTALL_MAN) doc/mxml.$(CAT3EXT) $(BUILDROOT)$(mandir)/cat3/mxml.$(CAT3EXT)
+	$(INSTALL_DIR) $(BUILDROOT)$(mandir)/man1
+	$(INSTALL_MAN) doc/mxmldoc.man $(BUILDROOT)$(mandir)/man1/mxmldoc.$(MAN1EXT)
+	$(INSTALL_DIR) $(BUILDROOT)$(mandir)/man3
+	$(INSTALL_MAN) doc/mxml.man $(BUILDROOT)$(mandir)/man3/mxml.$(MAN3EXT)
 
 install-libmxml.a:
-	-$(MKDIR) -p $(BUILDROOT)$(libdir)
-	$(CP) libmxml.a $(BUILDROOT)$(libdir)
+	$(INSTALL_DIR) $(BUILDROOT)$(libdir)
+	$(INSTALL_LIB) libmxml.a $(BUILDROOT)$(libdir)
 
 install-libmxml.so.1.0:
-	-$(MKDIR) -p $(BUILDROOT)$(libdir)
-	$(CP) libmxml.so.1.0 $(BUILDROOT)$(libdir)
+	$(INSTALL_DIR) $(BUILDROOT)$(libdir)
+	$(INSTALL_LIB) libmxml.so.1.0 $(BUILDROOT)$(libdir)
 	$(RM) $(BUILDROOT)$(libdir)/libmxml.so
 	$(LN) libmxml.so.1.0 $(BUILDROOT)$(libdir)/libmxml.so
 	$(RM) $(BUILDROOT)$(libdir)/libmxml.so.1
 	$(LN) libmxml.so.1.0 $(BUILDROOT)$(libdir)/libmxml.so.1
 
 install-libmxml.sl.1:
-	-$(MKDIR) -p $(BUILDROOT)$(libdir)
-	$(CP) libmxml.sl.1 $(BUILDROOT)$(libdir)
+	$(INSTALL_DIR) $(BUILDROOT)$(libdir)
+	$(INSTALL_LIB) libmxml.sl.1 $(BUILDROOT)$(libdir)
 	$(RM) $(BUILDROOT)$(libdir)/libmxml.so
 	$(LN) libmxml.sl.1 $(BUILDROOT)$(libdir)/libmxml.sl
 
 install-libmxml.1.dylib:
-	-$(MKDIR) -p $(BUILDROOT)$(libdir)
-	$(CP) libmxml.1.dylib $(BUILDROOT)$(libdir)
+	$(INSTALL_DIR) $(BUILDROOT)$(libdir)
+	$(INSTALL_LIB) libmxml.1.dylib $(BUILDROOT)$(libdir)
 	$(RM) $(BUILDROOT)$(libdir)/libmxml.dylib
 	$(LN) libmxml.1.dylib $(BUILDROOT)$(libdir)/libmxml.dylib
 

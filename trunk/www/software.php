@@ -19,6 +19,7 @@ $sitelist = array(
 //  "http://ftp2.easysw.com/pub" => "Maryland, USA via HTTP",
   "ftp://ftp2.easysw.com/pub" => "Maryland, USA via FTP",
   "ftp://ftp3.easysw.com/pub" => "California, USA via FTP",
+  "http://www.nu6.org/_/mirror/ftp.easysw.com/pub" => "Ostergotlands, Finland via HTTP",
   "http://ftp.funet.fi/pub/mirrors/ftp.easysw.com/pub" => "Espoo, Finland via HTTP",
   "ftp://ftp.funet.fi/pub/mirrors/ftp.easysw.com/pub" => "Espoo, Finland via FTP",
 );

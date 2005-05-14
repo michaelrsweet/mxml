@@ -366,13 +366,6 @@ mxmlNewInteger(mxml_node_t *parent,	/* I - Parent node or MXML_NO_PARENT */
 #endif /* DEBUG */
 
  /*
-  * Range check input...
-  */
-
-  if (!parent)
-    return (NULL);
-
- /*
   * Create the node and set the element name...
   */
 
@@ -408,7 +401,7 @@ mxmlNewOpaque(mxml_node_t *parent,	/* I - Parent node or MXML_NO_PARENT */
   * Range check input...
   */
 
-  if (!parent || !opaque)
+  if (!opaque)
     return (NULL);
 
  /*
@@ -440,13 +433,6 @@ mxmlNewReal(mxml_node_t *parent,	/* I - Parent node or MXML_NO_PARENT */
 #ifdef DEBUG
   fprintf(stderr, "mxmlNewReal(parent=%p, real=%g)\n", parent, real);
 #endif /* DEBUG */
-
- /*
-  * Range check input...
-  */
-
-  if (!parent)
-    return (NULL);
 
  /*
   * Create the node and set the element name...
@@ -486,7 +472,7 @@ mxmlNewText(mxml_node_t *parent,	/* I - Parent node or MXML_NO_PARENT */
   * Range check input...
   */
 
-  if (!parent || !string)
+  if (!string)
     return (NULL);
 
  /*
@@ -532,7 +518,7 @@ mxmlNewTextf(mxml_node_t *parent,	/* I - Parent node or MXML_NO_PARENT */
   * Range check input...
   */
 
-  if (!parent || !format)
+  if (!format)
     return (NULL);
 
  /*

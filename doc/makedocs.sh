@@ -21,7 +21,7 @@ htmldoc --verbose --batch mxml.book --no-embedfonts -f mxml.pdf
 
 htmldoc --verbose --batch mxml.book -f mxml.html
 
-htmldoc --verbose --batch mxml.book --no-embedfonts -f mxml.ps
+htmldoc --verbose --batch mxml.book --gray --no-embedfonts -f mxml.ps
 rm -f mxml.ps.gz
 gzip -v9 mxml.ps
 

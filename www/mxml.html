@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
 <HTML>
 <HEAD>
-<TITLE>Mini-XML Programmers Manual, Version 2.2</TITLE>
+<TITLE>Mini-XML Programmers Manual, Version 2.2.1</TITLE>
 <META NAME="author" CONTENT="Michael Sweet">
 <META NAME="copyright" CONTENT="Copyright 2003-2005">
 <META HTTP-EQUIV="Content-Type" CONTENT="text/html; CHARSET=iso-iso-8859-1">
@@ -19,8 +19,8 @@ PRE { font-family: monospace }
 --></STYLE>
 </HEAD>
 <BODY>
-<CENTER><A HREF="#CONTENTS"><IMG SRC="logo.png" BORDER="0" WIDTH="222" HEIGHT="181" ALT="Mini-XML Programmers Manual, Version 2.2"><BR>
-<H1>Mini-XML Programmers Manual, Version 2.2</H1></A><BR>
+<CENTER><A HREF="#CONTENTS"><IMG SRC="logo.png" BORDER="0" WIDTH="256" HEIGHT="256" ALT="Mini-XML Programmers Manual, Version 2.2.1"><BR>
+<H1>Mini-XML Programmers Manual, Version 2.2.1</H1></A><BR>
 Michael Sweet<BR>
 Copyright 2003-2005<BR>
 </CENTER>
@@ -83,19 +83,20 @@ Copyright 2003-2005<BR>
 </UL>
 <B><A HREF="#RELNOTES">B - Release Notes</A></B>
 <UL>
-<LI><A HREF="#7_1">Changes in Mini-XML 2.2</A></LI>
-<LI><A HREF="#7_2">Changes in Mini-XML 2.1</A></LI>
-<LI><A HREF="#7_3">Changes in Mini-XML 2.0</A></LI>
-<LI><A HREF="#7_4">Changes in Mini-XML 1.3</A></LI>
-<LI><A HREF="#7_5">Changes in Mini-XML 1.2</A></LI>
-<LI><A HREF="#7_6">Changes in Mini-XML 1.1.2</A></LI>
-<LI><A HREF="#7_7">Changes in Mini-XML 1.1.1</A></LI>
-<LI><A HREF="#7_8">Changes in Mini-XML 1.1</A></LI>
-<LI><A HREF="#7_9">Changes in Mini-XML 1.0</A></LI>
-<LI><A HREF="#7_10">Changes in Mini-XML 0.93</A></LI>
-<LI><A HREF="#7_11">Changes in Mini-XML 0.92</A></LI>
-<LI><A HREF="#7_12">Changes in Mini-XML 0.91</A></LI>
-<LI><A HREF="#7_13">Changes in Mini-XML 0.9</A></LI>
+<LI><A HREF="#7_1">Changes in Mini-XML 2.2.1</A></LI>
+<LI><A HREF="#7_2">Changes in Mini-XML 2.2</A></LI>
+<LI><A HREF="#7_3">Changes in Mini-XML 2.1</A></LI>
+<LI><A HREF="#7_4">Changes in Mini-XML 2.0</A></LI>
+<LI><A HREF="#7_5">Changes in Mini-XML 1.3</A></LI>
+<LI><A HREF="#7_6">Changes in Mini-XML 1.2</A></LI>
+<LI><A HREF="#7_7">Changes in Mini-XML 1.1.2</A></LI>
+<LI><A HREF="#7_8">Changes in Mini-XML 1.1.1</A></LI>
+<LI><A HREF="#7_9">Changes in Mini-XML 1.1</A></LI>
+<LI><A HREF="#7_10">Changes in Mini-XML 1.0</A></LI>
+<LI><A HREF="#7_11">Changes in Mini-XML 0.93</A></LI>
+<LI><A HREF="#7_12">Changes in Mini-XML 0.92</A></LI>
+<LI><A HREF="#7_13">Changes in Mini-XML 0.91</A></LI>
+<LI><A HREF="#7_14">Changes in Mini-XML 0.9</A></LI>
 </UL>
 <B><A HREF="#REFERENCE">C - Library Reference</A></B>
 <UL>
@@ -179,7 +180,7 @@ Copyright 2003-2005<BR>
 </UL>
 <HR NOSHADE>
 <H1 align="right"><A name="INTRO">Introduction</A></H1>
-<P>This programmers manual describes Mini-XML version 2.2, a small XML
+<P>This programmers manual describes Mini-XML version 2.2.1, a small XML
  parsing library that you can use to read and write XML and XML-like
  data files in your application without requiring large non-standard
  libraries. Mini-XML only requires an ANSI C compatible compiler (GCC
@@ -1825,7 +1826,16 @@ Ty Coon, President of Vice
 <P>That's all there is to it!</P>
 <HR NOSHADE>
 <H1 align="right"><A name="RELNOTES">B - Release Notes</A></H1>
-<H2><A NAME="7_1">Changes in Mini-XML 2.2</A></H2>
+<H2><A NAME="7_1">Changes in Mini-XML 2.2.1</A></H2>
+<UL>
+<LI>mxmlNewInteger(), mxmlNewOpaque(), mxmlNewReal(), mxmlNewText(), and
+ mxmlNewTextf() incorrectly required a parent node (STR #22)</LI>
+<LI>Fixed an XML output bug in mxmldoc.</LI>
+<LI>The &quot;make install&quot; target now uses the install command to set the
+ proper permissions on UNIX/Linux/OSX.</LI>
+<LI>Fixed a MingW/Cygwin compilation problem (STR #18)</LI>
+</UL>
+<H2><A NAME="7_2">Changes in Mini-XML 2.2</A></H2>
 <UL>
 <LI>Added shared library support (STR #17)</LI>
 <LI>mxmlLoad*() now returns an error when an XML stream contains illegal
@@ -1839,7 +1849,7 @@ Ty Coon, President of Vice
 <LI>Added checking for invalid comment termination (&quot;---&gt;&quot; is not
  allowed)</LI>
 </UL>
-<H2><A NAME="7_2">Changes in Mini-XML 2.1</A></H2>
+<H2><A NAME="7_3">Changes in Mini-XML 2.1</A></H2>
 <UL>
 <LI>Added support for custom data nodes (STR #6)</LI>
 <LI>Now treat UTF-8 sequences which are longer than necessary as an
@@ -1850,7 +1860,7 @@ Ty Coon, President of Vice
 <LI>Added mxmlLoadFd() and mxmlSaveFd() functions.</LI>
 <LI>Fixed multi-word UTF-16 handling.</LI>
 </UL>
-<H2><A NAME="7_3">Changes in Mini-XML 2.0</A></H2>
+<H2><A NAME="7_4">Changes in Mini-XML 2.0</A></H2>
 <UL>
 <LI>New programmers manual.</LI>
 <LI>Added Visual C++ project files for Microsoft Windows users.</LI>
@@ -1883,7 +1893,7 @@ Ty Coon, President of Vice
  destination path and install path. This caused problems when building
  and installing with MingW.</LI>
 </UL>
-<H2><A NAME="7_4">Changes in Mini-XML 1.3</A></H2>
+<H2><A NAME="7_5">Changes in Mini-XML 1.3</A></H2>
 <UL>
 <LI>Fixes for mxmldoc.</LI>
 <LI>Added support for reading standard HTML entity names.</LI>
@@ -1899,7 +1909,7 @@ Ty Coon, President of Vice
 <LI>The load and save functions now properly handle quoted element and
  attribute name strings properly, e.g. for !DOCTYPE declarations.</LI>
 </UL>
-<H2><A NAME="7_5">Changes in Mini-XML 1.2</A></H2>
+<H2><A NAME="7_6">Changes in Mini-XML 1.2</A></H2>
 <UL>
 <LI>Added new &quot;set&quot; methods to set the value of a node.</LI>
 <LI>Added new formatted text methods mxmlNewTextf() and mxmlSetTextf()
@@ -1912,13 +1922,13 @@ Ty Coon, President of Vice
 <LI>Added --with/without-snprintf configure option to control the
  snprintf() and vsnprintf() function checks.</LI>
 </UL>
-<H2><A NAME="7_6">Changes in Mini-XML 1.1.2</A></H2>
+<H2><A NAME="7_7">Changes in Mini-XML 1.1.2</A></H2>
 <UL>
 <LI>The mxml(3) man page wasn't updated for the string functions.</LI>
 <LI>mxmlSaveString() returned the wrong number of characters.</LI>
 <LI>mxml_add_char() updated the buffer pointer in the wrong place.</LI>
 </UL>
-<H2><A NAME="7_7">Changes in Mini-XML 1.1.1</A></H2>
+<H2><A NAME="7_8">Changes in Mini-XML 1.1.1</A></H2>
 <UL>
 <LI>The private mxml_add_ch() function did not update the
  start-of-buffer pointer which could cause a crash when using
@@ -1929,7 +1939,7 @@ Ty Coon, President of Vice
 <LI>Added a mxmlSaveAllocString() convenience function for saving an XML
  node tree to an allocated string.</LI>
 </UL>
-<H2><A NAME="7_8">Changes in Mini-XML 1.1</A></H2>
+<H2><A NAME="7_9">Changes in Mini-XML 1.1</A></H2>
 <UL>
 <LI>The mxmlLoadFile() function now uses dynamically allocated string
  buffers for element names, attribute names, and attribute values.
@@ -1941,7 +1951,7 @@ Ty Coon, President of Vice
 <LI>Add emulation of strdup() if the local platform does not provide the
  function.</LI>
 </UL>
-<H2><A NAME="7_9">Changes in Mini-XML 1.0</A></H2>
+<H2><A NAME="7_10">Changes in Mini-XML 1.0</A></H2>
 <UL>
 <LI>The mxmldoc program now handles function arguments, structures,
  unions, enumerations, classes, and typedefs properly.</LI>
@@ -1949,7 +1959,7 @@ Ty Coon, President of Vice
  code.</LI>
 <LI>Added man pages and packaging files.</LI>
 </UL>
-<H2><A NAME="7_10">Changes in Mini-XML 0.93</A></H2>
+<H2><A NAME="7_11">Changes in Mini-XML 0.93</A></H2>
 <UL>
 <LI>New mxmldoc example program that is also used to create and update
  code documentation using XML and produce HTML reference pages.</LI>
@@ -1974,15 +1984,15 @@ Ty Coon, President of Vice
 <LI>mxmlSaveFile() now supports a whitespace callback to provide more
  human-readable XML output under program control.</LI>
 </UL>
-<H2><A NAME="7_11">Changes in Mini-XML 0.92</A></H2>
+<H2><A NAME="7_12">Changes in Mini-XML 0.92</A></H2>
 <UL>
 <LI>mxmlSaveFile() didn't return a value on success.</LI>
 </UL>
-<H2><A NAME="7_12">Changes in Mini-XML 0.91</A></H2>
+<H2><A NAME="7_13">Changes in Mini-XML 0.91</A></H2>
 <UL>
 <LI>mxmlWalkNext() would go into an infinite loop.</LI>
 </UL>
-<H2><A NAME="7_13">Changes in Mini-XML 0.9</A></H2>
+<H2><A NAME="7_14">Changes in Mini-XML 0.9</A></H2>
 <UL>
 <LI>Initial public release.</LI>
 </UL>

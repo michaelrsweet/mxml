@@ -90,7 +90,9 @@ html_header($title = "",		// I - Additional document title
        ."  <meta http-equiv='Pragma' content='no-cache'/>\n"
        ."  <meta http-equiv='Content-Type' content='text/html; "
        ."charset=iso-8859-1'/>\n"
-       ."  <link rel='stylesheet' type='text/css' href='${path}style.css'/>\n");
+       ."  <link rel='stylesheet' type='text/css' href='${path}style.css'/>\n"
+       ."  <link rel='shortcut icon' href='${path}favicon.ico' "
+       ."type='image/x-icon'/>\n");
 
   // If refresh URL is specified, add the META tag...
   if ($refresh != "")
@@ -116,7 +118,7 @@ html_header($title = "",		// I - Additional document title
        ."<tr class='header' height='40'>"
        ."<td valign='top'><img src='${path}images/top-left.gif' width='15' "
        ."height='15' alt=''/></td>"
-       ."<td><img src='${path}images/logo.gif' width='39' height='32' "
+       ."<td><img src='${path}images/logo.jpg' width='32' height='32' "
        ."alt='Mini-XML' align='middle'/>&nbsp;&nbsp;&nbsp;</td>"
        ."<td width='100%'>[&nbsp;<a href='${path}index.php'>Home</a> | "
        ."<a href='${path}articles.php'>Articles</a> | "

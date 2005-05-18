@@ -1,8 +1,10 @@
-CHANGES - 05/14/2005
+CHANGES - 05/17/2005
 --------------------
 
 CHANGES IN Mini-XML 2.2.1
 
+	- mxmlLoadFd(), mxmlLoadFile(), and mxmlLoadString() now
+	  correctly return NULL on error (STR #21)
 	- mxmlNewInteger(), mxmlNewOpaque(), mxmlNewReal(),
 	  mxmlNewText(), and mxmlNewTextf() incorrectly required
 	  a parent node (STR #22)

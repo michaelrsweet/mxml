@@ -1828,6 +1828,8 @@ Ty Coon, President of Vice
 <H1 align="right"><A name="RELNOTES">B - Release Notes</A></H1>
 <H2><A NAME="7_1">Changes in Mini-XML 2.2.1</A></H2>
 <UL>
+<LI>mxmlLoadFd(), mxmlLoadFile(), and mxmlLoadString() now correctly
+ return NULL on error (STR #21)</LI>
 <LI>mxmlNewInteger(), mxmlNewOpaque(), mxmlNewReal(), mxmlNewText(), and
  mxmlNewTextf() incorrectly required a parent node (STR #22)</LI>
 <LI>Fixed an XML output bug in mxmldoc.</LI>

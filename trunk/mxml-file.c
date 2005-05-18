@@ -1318,6 +1318,7 @@ mxml_load_data(mxml_node_t *top,	/* I - Top node */
 					/* I - Read function */
 {
   mxml_node_t	*node,			/* Current node */
+		*first,			/* First node added */
 		*parent;		/* Current parent node */
   int		ch,			/* Character from file */
 		whitespace;		/* Non-zero if whitespace seen */
@@ -1326,6 +1327,15 @@ mxml_load_data(mxml_node_t *top,	/* I - Top node */
   int		bufsize;		/* Size of buffer */
   mxml_type_t	type;			/* Current node type */
   int		encoding;		/* Character encoding */
+  static const char * const types[] =	/* Type strings... */
+		{
+		  "MXML_ELEMENT",	/* XML element with attributes */
+		  "MXML_INTEGER",	/* Integer value */
+		  "MXML_OPAQUE",	/* Opaque string */
+		  "MXML_REAL",		/* Real value */
+		  "MXML_TEXT",		/* Text fragment */
+		  "MXML_CUSTOM"		/* Custom data */
+		};
 
 
  /*
@@ -1341,6 +1351,7 @@ mxml_load_data(mxml_node_t *top,	/* I - Top node */
   bufsize    = 64;
   bufptr     = buffer;
   parent     = top;
+  first      = NULL;
   whitespace = 0;
   encoding   = ENCODE_UTF8;
 
@@ -1395,7 +1406,6 @@ mxml_load_data(mxml_node_t *top,	/* I - Top node */
 		mxmlDelete(node);
 		node = NULL;
 	      }
-
 	      break;
 	    }
 
@@ -1422,13 +1432,16 @@ mxml_load_data(mxml_node_t *top,	/* I - Top node */
       if (!node)
       {
        /*
-	* Just print error for now...
+	* Print error and return...
 	*/
 
-	mxml_error("Unable to add value node of type %d to parent <%s>!",
-	           type, parent ? parent->value.element.name : "null");
-	break;
+	mxml_error("Unable to add value node of type %s to parent <%s>!",
+	           types[type], parent ? parent->value.element.name : "null");
+	goto error;
       }
+
+      if (!first)
+        first = node;
     }
     else if (isspace(ch) && type == MXML_TEXT)
       whitespace = 1;
@@ -1492,7 +1505,15 @@ mxml_load_data(mxml_node_t *top,	/* I - Top node */
 	*/
 
         if (ch != '>')
-	  break;
+	{
+	 /*
+	  * Print error and return...
+	  */
+
+	  mxml_error("Early EOF in comment node!");
+	  goto error;
+	}
+
 
        /*
         * Otherwise add this as an element under the current parent...
@@ -1530,7 +1551,15 @@ mxml_load_data(mxml_node_t *top,	/* I - Top node */
 	*/
 
         if (ch != '>')
-	  break;
+	{
+	 /*
+	  * Print error and return...
+	  */
+
+	  mxml_error("Early EOF in CDATA node!");
+	  goto error;
+	}
+
 
        /*
         * Otherwise add this as an element under the current parent...
@@ -1541,12 +1570,12 @@ mxml_load_data(mxml_node_t *top,	/* I - Top node */
 	if (!mxmlNewElement(parent, buffer))
 	{
 	 /*
-	  * Just print error for now...
+	  * Print error and return...
 	  */
 
-	  mxml_error("Unable to add comment node to parent <%s>!",
+	  mxml_error("Unable to add CDATA node to parent <%s>!",
 	             parent ? parent->value.element.name : "null");
-	  break;
+	  goto error;
 	}
       }
       else if (buffer[0] == '?')
@@ -1564,11 +1593,19 @@ mxml_load_data(mxml_node_t *top,	/* I - Top node */
 	}
 
        /*
-        * Error out if we didn't get the whole comment...
+        * Error out if we didn't get the whole processing instruction...
 	*/
 
         if (ch != '>')
-	  break;
+	{
+	 /*
+	  * Print error and return...
+	  */
+
+	  mxml_error("Early EOF in processing instruction node!");
+	  goto error;
+	}
+
 
        /*
         * Otherwise add this as an element under the current parent...
@@ -1579,12 +1616,12 @@ mxml_load_data(mxml_node_t *top,	/* I - Top node */
 	if (!(parent = mxmlNewElement(parent, buffer)))
 	{
 	 /*
-	  * Just print error for now...
+	  * Print error and return...
 	  */
 
-	  mxml_error("Unable to add comment node to parent <%s>!",
+	  mxml_error("Unable to add processing instruction node to parent <%s>!",
 	             parent ? parent->value.element.name : "null");
-	  break;
+	  goto error;
 	}
 
 	if (cb)
@@ -1617,7 +1654,14 @@ mxml_load_data(mxml_node_t *top,	/* I - Top node */
 	*/
 
         if (ch != '>')
-	  break;
+	{
+	 /*
+	  * Print error and return...
+	  */
+
+	  mxml_error("Early EOF in declaration node!");
+	  goto error;
+	}
 
        /*
         * Otherwise add this as an element under the current parent...
@@ -1629,12 +1673,12 @@ mxml_load_data(mxml_node_t *top,	/* I - Top node */
 	if (!node)
 	{
 	 /*
-	  * Just print error for now...
+	  * Print error and return...
 	  */
 
 	  mxml_error("Unable to add declaration node to parent <%s>!",
 	             parent ? parent->value.element.name : "null");
-	  break;
+	  goto error;
 	}
 
        /*
@@ -1660,7 +1704,7 @@ mxml_load_data(mxml_node_t *top,	/* I - Top node */
 
 	  mxml_error("Mismatched close tag <%s> under parent <%s>!",
 	             buffer, parent->value.element.name);
-          break;
+          goto error;
 	}
 
        /*
@@ -1695,7 +1739,7 @@ mxml_load_data(mxml_node_t *top,	/* I - Top node */
 
 	  mxml_error("Unable to add element node to parent <%s>!",
 	             parent ? parent->value.element.name : "null");
-	  break;
+	  goto error;
 	}
 
         if (isspace(ch))
@@ -1706,7 +1750,7 @@ mxml_load_data(mxml_node_t *top,	/* I - Top node */
 	  {
 	    mxml_error("Expected > but got '%c' instead for element <%s/>!",
 	               ch, buffer);
-            break;
+            goto error;
 	  }
 
 	  ch = '/';
@@ -1776,6 +1820,8 @@ mxml_load_data(mxml_node_t *top,	/* I - Top node */
   */
 
 error:
+
+  mxmlDelete(first);
 
   free(buffer);
 

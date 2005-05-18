@@ -21,7 +21,7 @@ html_start_table(array("Quick Info"), "100%", "100%");
 html_start_row();
 print("<td>"
      ."<p align='center'>"
-     ."Stable Release: <a href='software.php?2.2.1'>v2.2.1</a><br />"
+     ."Stable Release: <a href='software.php?2.2.1'>v2.2.1</a></p>"
      ."<small><p>Mini-XML is a small XML parsing library that you can use to "
      ."read XML and XML-like data files in your application without "
      ."requiring large non-standard libraries. Mini-XML only requires "

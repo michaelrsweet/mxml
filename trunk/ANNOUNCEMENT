@@ -1,6 +1,7 @@
-Mini-XML 2.2 is now available for download from:
+Mini-XML 2.2.1 is now available for download from:
 
     http://www.easysw.com/~mike/mxml/software.php
 
-Mini-XML 2.2 adds support for CDATA elements and shared
-libraries, and fixes some XML conformance bugs.
+Mini-XML 2.2.1 fixes some makefile bugs, changes the load
+functions to return NULL on error, and updates the node creation
+functions to conform to the documentation.

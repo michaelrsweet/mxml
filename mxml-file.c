@@ -1786,7 +1786,7 @@ mxml_load_data(mxml_node_t *top,	/* I - Top node */
       if (mxml_add_char(ch, &bufptr, &buffer, &bufsize))
 	goto error;
     }
-    else if (type == MXML_OPAQUE || !isspace(ch))
+    else if (type == MXML_OPAQUE || type == MXML_CUSTOM || !isspace(ch))
     {
      /*
       * Add character to current buffer...

@@ -1,5 +1,11 @@
-CHANGES - 05/17/2005
+CHANGES - 05/19/2005
 --------------------
+
+CHANGES IN Mini-XML 2.2.2
+
+	- mxmlLoad*() did not treat custom data as opaque, so
+	  whitespace characters would be lost.
+
 
 CHANGES IN Mini-XML 2.2.1
 

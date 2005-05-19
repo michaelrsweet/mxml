@@ -1,0 +1,378 @@
+<html>
+<body>
+
+<h1 align='right'><a name='MXMLDOC'>4 - Using the mxmldoc
+Utility</a></h1>
+
+<p>This chapter describes how to use the <tt>mxmldoc(1)</tt>
+utility that comes with Mini-XML to automatically generate
+documentation for your programs.</p>
+
+<h2>The Basics</h2>
+
+<p>The <tt>mxmldoc</tt> utility scans C and C++ source and
+header files and produces an XML file describing the library
+interface and an XHTML file providing a human-readable reference
+to the code. Each source and header file must conform to some
+simple code commenting conventions so that <tt>mxmldoc</tt> can
+extract the necessary descriptive text.</p>
+
+<p>The <tt>mxmldoc</tt> command requires the name of an XML file
+to store the code information; this file is created and updated
+as necessary. The XML file is optionally followed by a list of
+source files to scan. After scanning any source files on the
+command-line, <tt>mxmldoc</tt> writes XHTML documentation to the
+standard output, which can be redirected to the file using the
+<kbd>&gt;filename</kbd> syntax:</p>
+
+<pre>
+    <kbd>mxmldoc myfile.xml >myfile.html ENTER</kbd>
+    <kbd>mxmldoc myfile.xml file1.c file2.cxx file3.h >myfile.html ENTER</kbd>
+</pre>
+
+<p>If no source files are provided on the command-line, the
+current contents of the XML file are converted to XHTML.</p>
+
+<h2>Code Documentation Conventions</h2>
+
+<p>As noted previously, source code must be commented properly
+for <tt>mxmldoc</tt> to generate correct documentation for the
+code. Single line comments can use the C++ <tt>//</tt> comment
+sequence, however all multi-line comments must use the C <tt>/*
+... */</tt> comment sequence.</p>
+
+<h3>Functions and Methods</h3>
+
+<p>All implementations of functions and methods must begin with
+a comment header describing what the function does, the possible
+input limits (if any), and the possible output values (if any),
+and any special information needed, as follows:</p>
+
+<pre>
+    /*
+     * 'do_this()' - Compute y = this(x).
+     *
+     * Notes: none.
+     */
+
+    float            /* O - Inverse power value, 0.0 &lt;= y &lt;= 1.1 */
+    do_this(float x) /* I - Power value (0.0 &lt;= x &lt;= 1.1) */
+    {
+      ...
+      return (y);
+    }
+</pre>
+
+<p>Return/output values are indicated using an "O" prefix, input
+values are indicated using the "I" prefix, and values that are
+both input and output use the "IO" prefix for the corresponding
+in-line comment.</p>
+
+<h3>Variables and Class/Structure/Union Members</h3>
+
+<p>Each variable or member must be declared on a separate line
+and must be immediately followed by a comment describing the
+variable or member, as follows:</p>
+
+<pre>
+    int this_variable;   /* The current state of this */
+    int that_variable;   /* The current state of that */
+</pre>
+
+<h3>Types</h3>
+
+<p>Each type must have a comment block immediately before the
+typedef, as follows:</p>
+
+<pre>
+    /*
+     * This type is for foobar options.
+     */
+    typedef int this_type_t;
+</pre>
+
+<!-- NEED 5in -->
+<h3>Classes, Structures, and Unions</h3>
+
+<p>Each class, structure, and union must have a comment block
+immediately before the definition, and each member must be documented
+in accordance with the function and variable documentation
+requirements, as follows:</p>
+
+<pre>
+    /*
+     * This structure is for foobar options.
+     */
+    struct this_struct_s
+    {
+      int this_member;   /* Current state for this */
+      int that_member;   /* Current state for that */
+    };
+
+    /*
+     * This class is for barfoo options.
+     */
+    class this_class_c
+    {
+      int this_member;   /* Current state for this */
+      int that_member;   /* Current state for that */
+
+      /*
+       * 'get_this()' - Get the current state for this.
+       */
+      int                /* O - Current state for this */
+      get_this()
+      {
+        return (this_member);
+      }
+    };
+</pre>
+
+<h3>Enumerations</h3>
+
+<p>Each enumeration must have a comment block immediately before
+the definition describing what the enumeration is for, and each
+enumeration value must have a comment immediately after the
+value, as follows:</p>
+
+<pre>
+   /*
+    * Enumeration of media trays.
+    */
+    enum this_enum_e
+    {
+      THIS_TRAY,   /* This tray */
+      THAT_TRAY    /* That tray */
+    };
+</pre>
+
+<!-- NEW PAGE -->
+<h2>XML Schema</h2>
+
+<p>Listing 4-1 shows the XML schema file <var>mxmldoc.xsd</var>
+which is included with Mini-XML. This schema file can be used to
+convert the XML files produced by <tt>mxmldoc</tt> into other
+formats.</p>
+
+<center><table border='1' width='80%' bgcolor='#cccccc' cellpadding='5' cellspacing='0'>
+<caption align='bottom'><i>Listing 4-1, XML Schema File "mxmldoc.xsd"</i></caption>
+<tr><td>
+<pre>
+&lt;xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;
+  &lt;xsd:annotation&gt;
+    &lt;xsd:documentation xml:lang="en"&gt;
+      Mini-XML 2.2 documentation schema for mxmldoc output.
+      Copyright 2003-2005 by Michael Sweet.
+
+      This program is free software; you can redistribute it and/or
+      modify it under the terms of the GNU Library General Public
+      License as published by the Free Software Foundation; either
+      version 2, or (at your option) any later version.
+
+      This program is distributed in the hope that it will be useful,
+      but WITHOUT ANY WARRANTY; without even the implied warranty of
+      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+      GNU General Public License for more details.
+    &lt;/xsd:documentation&gt;
+  &lt;/xsd:annotation&gt;
+
+  &lt;!-- basic element definitions --&gt;
+  &lt;xsd:element name="argument" type="argumentType"/&gt;
+  &lt;xsd:element name="class" type="classType"/&gt;
+  &lt;xsd:element name="constant" type="constantType"/&gt;
+  &lt;xsd:element name="description" type="xsd:string"/&gt;
+  &lt;xsd:element name="enumeration" type="enumerationType"/&gt;
+  &lt;xsd:element name="function" type="functionType"/&gt;
+  &lt;xsd:element name="mxmldoc" type="mxmldocType"/&gt;
+  &lt;xsd:element name="namespace" type="namespaceType"/&gt;
+  &lt;xsd:element name="returnvalue" type="returnvalueType"/&gt;
+  &lt;xsd:element name="seealso" type="identifierList"/&gt;
+  &lt;xsd:element name="struct" type="structType"/&gt;
+  &lt;xsd:element name="typedef" type="typedefType"/&gt;
+  &lt;xsd:element name="type" type="xsd:string"/&gt;
+  &lt;xsd:element name="union" type="unionType"/&gt;
+  &lt;xsd:element name="variable" type="variableType"/&gt;
+
+  &lt;!-- descriptions of complex elements --&gt;
+  &lt;xsd:complexType name="argumentType"&gt;
+    &lt;xsd:sequence&gt;
+      &lt;xsd:element ref="type" minOccurs="1" maxOccurs="1"/&gt;
+      &lt;xsd:element ref="description" minOccurs="0" maxOccurs="1"/&gt;
+    &lt;/xsd:sequence&gt;
+    &lt;xsd:attribute name="default" type="xsd:string" use="optional"/&gt;
+    &lt;xsd:attribute name="name" type="identifier" use="required"/&gt;
+    &lt;xsd:attribute name="direction" type="direction" use="optional" default="I"/&gt;
+  &lt;/xsd:complexType&gt;
+
+  &lt;xsd:complexType name="classType"&gt;
+    &lt;xsd:sequence&gt;
+      &lt;xsd:element ref="description" minOccurs="0" maxOccurs="1"/&gt;
+      &lt;xsd:choice minOccurs="0" maxOccurs="unbounded"&gt;
+	&lt;xsd:element ref="class"/&gt;
+</pre>
+</td></tr>
+</table></center>
+<!-- NEW PAGE -->
+<center><table border='1' width='80%' bgcolor='#cccccc' cellpadding='5' cellspacing='0'>
+<caption align='bottom'><i>Listing 4-1, XML Schema File "mxmldoc.xsd" (con't)</i></caption>
+<tr><td>
+<pre>
+	&lt;xsd:element ref="enumeration"/&gt;
+	&lt;xsd:element ref="function"/&gt;
+	&lt;xsd:element ref="struct"/&gt;
+	&lt;xsd:element ref="typedef"/&gt;
+	&lt;xsd:element ref="union"/&gt;
+	&lt;xsd:element ref="variable"/&gt;
+      &lt;/xsd:choice&gt;
+    &lt;/xsd:sequence&gt;
+    &lt;xsd:attribute name="name" type="identifier" use="required"/&gt;
+    &lt;xsd:attribute name="parent" type="xsd:string" use="optional"/&gt;
+  &lt;/xsd:complexType&gt;
+
+  &lt;xsd:complexType name="constantType"&gt;
+    &lt;xsd:sequence&gt;
+      &lt;xsd:element ref="description" minOccurs="0" maxOccurs="1"/&gt;
+    &lt;/xsd:sequence&gt;
+    &lt;xsd:attribute name="name" type="identifier" use="required"/&gt;
+  &lt;/xsd:complexType&gt;
+
+  &lt;xsd:complexType name="enumerationType"&gt;
+    &lt;xsd:sequence&gt;
+      &lt;xsd:element ref="description" minOccurs="0" maxOccurs="1"/&gt;
+      &lt;xsd:element ref="constant" minOccurs="1" maxOccurs="unbounded"/&gt;
+    &lt;/xsd:sequence&gt;
+    &lt;xsd:attribute name="name" type="identifier" use="required"/&gt;
+  &lt;/xsd:complexType&gt;
+
+  &lt;xsd:complexType name="functionType"&gt;
+    &lt;xsd:sequence&gt;
+      &lt;xsd:element ref="returnvalue" minOccurs="0" maxOccurs="1"/&gt;
+      &lt;xsd:element ref="description" minOccurs="0" maxOccurs="1"/&gt;
+      &lt;xsd:element ref="argument" minOccurs="1" maxOccurs="unbounded"/&gt;
+      &lt;xsd:element ref="seealso" minOccurs="0" maxOccurs="1"/&gt;
+    &lt;/xsd:sequence&gt;
+    &lt;xsd:attribute name="name" type="identifier" use="required"/&gt;
+    &lt;xsd:attribute name="scope" type="scope" use="optional"/&gt;
+  &lt;/xsd:complexType&gt;
+
+  &lt;xsd:complexType name="mxmldocType"&gt;
+    &lt;xsd:choice minOccurs="0" maxOccurs="unbounded"&gt;
+      &lt;xsd:element ref="class"/&gt;
+      &lt;xsd:element ref="enumeration"/&gt;
+      &lt;xsd:element ref="function"/&gt;
+      &lt;xsd:element ref="namespace"/&gt;
+      &lt;xsd:element ref="struct"/&gt;
+      &lt;xsd:element ref="typedef"/&gt;
+      &lt;xsd:element ref="union"/&gt;
+      &lt;xsd:element ref="variable"/&gt;
+    &lt;/xsd:choice&gt;
+  &lt;/xsd:complexType&gt;
+
+  &lt;xsd:complexType name="namespaceType"&gt;
+    &lt;xsd:sequence&gt;
+      &lt;xsd:element ref="description" minOccurs="0" maxOccurs="1"/&gt;
+      &lt;xsd:choice minOccurs="0" maxOccurs="unbounded"&gt;
+	&lt;xsd:element ref="class"/&gt;
+	&lt;xsd:element ref="enumeration"/&gt;
+	&lt;xsd:element ref="function"/&gt;
+</pre>
+</td></tr>
+</table></center>
+<!-- NEW PAGE -->
+<center><table border='1' width='80%' bgcolor='#cccccc' cellpadding='5' cellspacing='0'>
+<caption align='bottom'><i>Listing 4-1, XML Schema File "mxmldoc.xsd" (con't)</i></caption>
+<tr><td>
+<pre>
+	&lt;xsd:element ref="struct"/&gt;
+	&lt;xsd:element ref="typedef"/&gt;
+	&lt;xsd:element ref="union"/&gt;
+	&lt;xsd:element ref="variable"/&gt;
+      &lt;/xsd:choice&gt;
+    &lt;/xsd:sequence&gt;
+    &lt;xsd:attribute name="name" type="identifier" use="required"/&gt;
+  &lt;/xsd:complexType&gt;
+
+  &lt;xsd:complexType name="returnvalueType"&gt;
+    &lt;xsd:sequence&gt;
+      &lt;xsd:element ref="type" minOccurs="1" maxOccurs="1"/&gt;
+      &lt;xsd:element ref="description" minOccurs="0" maxOccurs="1"/&gt;
+    &lt;/xsd:sequence&gt;
+  &lt;/xsd:complexType&gt;
+
+  &lt;xsd:complexType name="structType"&gt;
+    &lt;xsd:sequence&gt;
+      &lt;xsd:element ref="description" minOccurs="0" maxOccurs="1"/&gt;
+      &lt;xsd:choice minOccurs="0" maxOccurs="unbounded"&gt;
+	&lt;xsd:element ref="variable"/&gt;
+	&lt;xsd:element ref="function"/&gt;
+      &lt;/xsd:choice&gt;
+    &lt;/xsd:sequence&gt;
+    &lt;xsd:attribute name="name" type="identifier" use="required"/&gt;
+  &lt;/xsd:complexType&gt;
+
+  &lt;xsd:complexType name="typedefType"&gt;
+    &lt;xsd:sequence&gt;
+      &lt;xsd:element ref="type" minOccurs="1" maxOccurs="1"/&gt;
+      &lt;xsd:element ref="description" minOccurs="0" maxOccurs="1"/&gt;
+    &lt;/xsd:sequence&gt;
+    &lt;xsd:attribute name="name" type="identifier" use="required"/&gt;
+  &lt;/xsd:complexType&gt;
+
+  &lt;xsd:complexType name="unionType"&gt;
+    &lt;xsd:sequence&gt;
+      &lt;xsd:element ref="description" minOccurs="0" maxOccurs="1"/&gt;
+      &lt;xsd:element ref="variable" minOccurs="0" maxOccurs="unbounded"/&gt;
+    &lt;/xsd:sequence&gt;
+    &lt;xsd:attribute name="name" type="identifier" use="required"/&gt;
+  &lt;/xsd:complexType&gt;
+
+  &lt;xsd:complexType name="variableType"&gt;
+    &lt;xsd:sequence&gt;
+      &lt;xsd:element ref="type" minOccurs="1" maxOccurs="1"/&gt;
+      &lt;xsd:element ref="description" minOccurs="0" maxOccurs="1"/&gt;
+    &lt;/xsd:sequence&gt;
+    &lt;xsd:attribute name="name" type="identifier" use="required"/&gt;
+  &lt;/xsd:complexType&gt;
+
+  &lt;!-- data types --&gt;
+  &lt;xsd:simpleType name="direction"&gt;
+    &lt;xsd:restriction base="xsd:string"&gt;
+      &lt;xsd:enumeration value="I"/&gt;
+      &lt;xsd:enumeration value="O"/&gt;
+      &lt;xsd:enumeration value="IO"/&gt;
+    &lt;/xsd:restriction&gt;
+</pre>
+</td></tr>
+</table></center>
+<!-- NEW PAGE -->
+<center><table border='1' width='80%' bgcolor='#cccccc' cellpadding='5' cellspacing='0'>
+<caption align='bottom'><i>Listing 4-1, XML Schema File "mxmldoc.xsd" (con't)</i></caption>
+<tr><td>
+<pre>
+  &lt;/xsd:simpleType&gt;
+
+  &lt;xsd:simpleType name="identifier"&gt;
+    &lt;xsd:restriction base="xsd:string"&gt;
+      &lt;xsd:pattern value="[a-zA-Z_(.]([a-zA-Z_(.,)* 0-9])*"/&gt;
+    &lt;/xsd:restriction&gt;
+  &lt;/xsd:simpleType&gt;
+
+  &lt;xsd:simpleType name="identifierList"&gt;
+    &lt;xsd:list itemType="identifier"/&gt;
+  &lt;/xsd:simpleType&gt;
+
+  &lt;xsd:simpleType name="scope"&gt;
+    &lt;xsd:restriction base="xsd:string"&gt;
+      &lt;xsd:enumeration value=""/&gt;
+      &lt;xsd:enumeration value="private"/&gt;
+      &lt;xsd:enumeration value="protected"/&gt;
+      &lt;xsd:enumeration value="public"/&gt;
+    &lt;/xsd:restriction&gt;
+  &lt;/xsd:simpleType&gt;
+&lt;/xsd:schema&gt;
+</pre>
+</td></tr>
+</table></center>
+
+</body>
+</html>

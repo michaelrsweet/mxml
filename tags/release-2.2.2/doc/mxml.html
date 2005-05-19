@@ -1,0 +1,3518 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML>
+<HEAD>
+<TITLE>Mini-XML Programmers Manual, Version 2.2.1</TITLE>
+<META NAME="author" CONTENT="Michael Sweet">
+<META NAME="copyright" CONTENT="Copyright 2003-2005">
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; CHARSET=iso-iso-8859-1">
+<STYLE TYPE="text/css"><!--
+BODY { font-family: serif }
+H1 { font-family: sans-serif }
+H2 { font-family: sans-serif }
+H3 { font-family: sans-serif }
+H4 { font-family: sans-serif }
+H5 { font-family: sans-serif }
+H6 { font-family: sans-serif }
+SUB { font-size: smaller }
+SUP { font-size: smaller }
+PRE { font-family: monospace }
+--></STYLE>
+</HEAD>
+<BODY>
+<CENTER><A HREF="#CONTENTS"><IMG SRC="logo.png" BORDER="0" WIDTH="256" HEIGHT="256" ALT="Mini-XML Programmers Manual, Version 2.2.1"><BR>
+<H1>Mini-XML Programmers Manual, Version 2.2.1</H1></A><BR>
+Michael Sweet<BR>
+Copyright 2003-2005<BR>
+</CENTER>
+<HR NOSHADE>
+<H1 ALIGN="CENTER"><A NAME="CONTENTS">Table of Contents</A></H1>
+<BR>
+<BR><B><A HREF="#INTRO">Introduction</A></B>
+<UL>
+<LI><A HREF="#1_1">Legal Stuff</A></LI>
+<LI><A HREF="#1_2">History</A></LI>
+<LI><A HREF="#1_3">Organization of This Document</A></LI>
+<LI><A HREF="#1_4">Notation Conventions</A></LI>
+<LI><A HREF="#1_5">Abbreviations</A></LI>
+<LI><A HREF="#1_6">Other References</A></LI>
+</UL>
+<B><A HREF="#INSTALL">1 - Building, Installing, and Packaging Mini-XML</A>
+</B>
+<UL>
+<LI><A HREF="#2_1">Compiling Mini-XML</A></LI>
+<LI><A HREF="#2_2">Installing Mini-XML</A></LI>
+<LI><A HREF="#2_3">Creating Mini-XML Packages</A></LI>
+</UL>
+<B><A HREF="#BASICS">2 - Getting Started with Mini-XML</A></B>
+<UL>
+<LI><A HREF="#3_1">The Basics</A></LI>
+<LI><A HREF="#3_2">Nodes</A></LI>
+<LI><A HREF="#3_3">Loading XML</A></LI>
+<LI><A HREF="#3_4">Saving XML</A>
+<UL>
+<LI><A HREF="#3_4_1">Finding and Iterating Nodes</A></LI>
+</UL>
+</LI>
+</UL>
+<B><A HREF="#ADVANCED">3 - More Mini-XML Programming Techniques</A></B>
+<UL>
+<LI><A HREF="#LOAD_CALLBACKS">Load Callbacks</A></LI>
+<LI><A HREF="#SAVE_CALLBACKS">Save Callbacks</A></LI>
+<LI><A HREF="#4_3">Custom Data Types</A></LI>
+<LI><A HREF="#4_4">Changing Node Values</A></LI>
+<LI><A HREF="#4_5">Formatted Text</A></LI>
+<LI><A HREF="#4_6">Indexing</A></LI>
+</UL>
+<B><A HREF="#MXMLDOC">4 - Using the mxmldoc Utility</A></B>
+<UL>
+<LI><A HREF="#5_1">The Basics</A></LI>
+<LI><A HREF="#5_2">Code Documentation Conventions</A>
+<UL>
+<LI><A HREF="#5_2_1">Functions and Methods</A></LI>
+<LI><A HREF="#5_2_2">Variables and Class/Structure/Union Members</A></LI>
+<LI><A HREF="#5_2_3">Types</A></LI>
+<LI><A HREF="#5_2_4">Classes, Structures, and Unions</A></LI>
+<LI><A HREF="#5_2_5">Enumerations</A></LI>
+</UL>
+</LI>
+<LI><A HREF="#5_3">XML Schema</A></LI>
+</UL>
+<B><A HREF="#LICENSE">A - GNU Library General Public License</A></B>
+<UL>
+<LI><A HREF="#6_1">How to Apply These Terms to Your New Libraries</A></LI>
+</UL>
+<B><A HREF="#RELNOTES">B - Release Notes</A></B>
+<UL>
+<LI><A HREF="#7_1">Changes in Mini-XML 2.2.2</A></LI>
+<LI><A HREF="#7_2">Changes in Mini-XML 2.2.1</A></LI>
+<LI><A HREF="#7_3">Changes in Mini-XML 2.2</A></LI>
+<LI><A HREF="#7_4">Changes in Mini-XML 2.1</A></LI>
+<LI><A HREF="#7_5">Changes in Mini-XML 2.0</A></LI>
+<LI><A HREF="#7_6">Changes in Mini-XML 1.3</A></LI>
+<LI><A HREF="#7_7">Changes in Mini-XML 1.2</A></LI>
+<LI><A HREF="#7_8">Changes in Mini-XML 1.1.2</A></LI>
+<LI><A HREF="#7_9">Changes in Mini-XML 1.1.1</A></LI>
+<LI><A HREF="#7_10">Changes in Mini-XML 1.1</A></LI>
+<LI><A HREF="#7_11">Changes in Mini-XML 1.0</A></LI>
+<LI><A HREF="#7_12">Changes in Mini-XML 0.93</A></LI>
+<LI><A HREF="#7_13">Changes in Mini-XML 0.92</A></LI>
+<LI><A HREF="#7_14">Changes in Mini-XML 0.91</A></LI>
+<LI><A HREF="#7_15">Changes in Mini-XML 0.9</A></LI>
+</UL>
+<B><A HREF="#REFERENCE">C - Library Reference</A></B>
+<UL>
+<LI><A HREF="#8_1">Contents</A></LI>
+<LI><A HREF="#_enumerations">Enumerations</A>
+<UL>
+<LI><A HREF="#mxml_type_e">mxml_type_e</A></LI>
+</UL>
+</LI>
+<LI><A HREF="#_functions">Functions</A>
+<UL>
+<LI><A HREF="#mxmlAdd">mxmlAdd()</A></LI>
+<LI><A HREF="#mxmlDelete">mxmlDelete()</A></LI>
+<LI><A HREF="#mxmlElementGetAttr">mxmlElementGetAttr()</A></LI>
+<LI><A HREF="#mxmlElementSetAttr">mxmlElementSetAttr()</A></LI>
+<LI><A HREF="#mxmlEntityAddCallback">mxmlEntityAddCallback()</A></LI>
+<LI><A HREF="#mxmlEntityGetName">mxmlEntityGetName()</A></LI>
+<LI><A HREF="#mxmlEntityGetValue">mxmlEntityGetValue()</A></LI>
+<LI><A HREF="#mxmlEntityRemoveCallback">mxmlEntityRemoveCallback()</A></LI>
+<LI><A HREF="#mxmlFindElement">mxmlFindElement()</A></LI>
+<LI><A HREF="#mxmlIndexDelete">mxmlIndexDelete()</A></LI>
+<LI><A HREF="#mxmlIndexEnum">mxmlIndexEnum()</A></LI>
+<LI><A HREF="#mxmlIndexFind">mxmlIndexFind()</A></LI>
+<LI><A HREF="#mxmlIndexNew">mxmlIndexNew()</A></LI>
+<LI><A HREF="#mxmlIndexReset">mxmlIndexReset()</A></LI>
+<LI><A HREF="#mxmlLoadFd">mxmlLoadFd()</A></LI>
+<LI><A HREF="#mxmlLoadFile">mxmlLoadFile()</A></LI>
+<LI><A HREF="#mxmlLoadString">mxmlLoadString()</A></LI>
+<LI><A HREF="#mxmlNewCustom">mxmlNewCustom()</A></LI>
+<LI><A HREF="#mxmlNewElement">mxmlNewElement()</A></LI>
+<LI><A HREF="#mxmlNewInteger">mxmlNewInteger()</A></LI>
+<LI><A HREF="#mxmlNewOpaque">mxmlNewOpaque()</A></LI>
+<LI><A HREF="#mxmlNewReal">mxmlNewReal()</A></LI>
+<LI><A HREF="#mxmlNewText">mxmlNewText()</A></LI>
+<LI><A HREF="#mxmlNewTextf">mxmlNewTextf()</A></LI>
+<LI><A HREF="#mxmlRemove">mxmlRemove()</A></LI>
+<LI><A HREF="#mxmlSaveAllocString">mxmlSaveAllocString()</A></LI>
+<LI><A HREF="#mxmlSaveFd">mxmlSaveFd()</A></LI>
+<LI><A HREF="#mxmlSaveFile">mxmlSaveFile()</A></LI>
+<LI><A HREF="#mxmlSaveString">mxmlSaveString()</A></LI>
+<LI><A HREF="#mxmlSetCustom">mxmlSetCustom()</A></LI>
+<LI><A HREF="#mxmlSetCustomHandlers">mxmlSetCustomHandlers()</A></LI>
+<LI><A HREF="#mxmlSetElement">mxmlSetElement()</A></LI>
+<LI><A HREF="#mxmlSetErrorCallback">mxmlSetErrorCallback()</A></LI>
+<LI><A HREF="#mxmlSetInteger">mxmlSetInteger()</A></LI>
+<LI><A HREF="#mxmlSetOpaque">mxmlSetOpaque()</A></LI>
+<LI><A HREF="#mxmlSetReal">mxmlSetReal()</A></LI>
+<LI><A HREF="#mxmlSetText">mxmlSetText()</A></LI>
+<LI><A HREF="#mxmlSetTextf">mxmlSetTextf()</A></LI>
+<LI><A HREF="#mxmlWalkNext">mxmlWalkNext()</A></LI>
+<LI><A HREF="#mxmlWalkPrev">mxmlWalkPrev()</A></LI>
+</UL>
+</LI>
+<LI><A HREF="#_structures">Structures</A>
+<UL>
+<LI><A HREF="#mxml_attr_s">mxml_attr_s</A></LI>
+<LI><A HREF="#mxml_custom_s">mxml_custom_s</A></LI>
+<LI><A HREF="#mxml_index_s">mxml_index_s</A></LI>
+<LI><A HREF="#mxml_node_s">mxml_node_s</A></LI>
+<LI><A HREF="#mxml_text_s">mxml_text_s</A></LI>
+<LI><A HREF="#mxml_value_s">mxml_value_s</A></LI>
+</UL>
+</LI>
+<LI><A HREF="#_types">Types</A>
+<UL>
+<LI><A HREF="#mxml_attr_t">mxml_attr_t</A></LI>
+<LI><A HREF="#mxml_custom_t">mxml_custom_t</A></LI>
+<LI><A HREF="#mxml_element_t">mxml_element_t</A></LI>
+<LI><A HREF="#mxml_index_t">mxml_index_t</A></LI>
+<LI><A HREF="#mxml_node_t">mxml_node_t</A></LI>
+<LI><A HREF="#mxml_text_t">mxml_text_t</A></LI>
+<LI><A HREF="#mxml_type_t">mxml_type_t</A></LI>
+<LI><A HREF="#mxml_value_t">mxml_value_t</A></LI>
+</UL>
+</LI>
+<LI><A HREF="#_unions">Unions</A>
+<UL>
+<LI><A HREF="#mxml_value_u">mxml_value_u</A></LI>
+</UL>
+</LI>
+</UL>
+<HR NOSHADE>
+<H1 align="right"><A name="INTRO">Introduction</A></H1>
+<P>This programmers manual describes Mini-XML version 2.2.1, a small XML
+ parsing library that you can use to read and write XML and XML-like
+ data files in your application without requiring large non-standard
+ libraries. Mini-XML only requires an ANSI C compatible compiler (GCC
+ works, as do most vendors' ANSI C compilers) and a &quot;make&quot; program.</P>
+<P>Mini-XML provides the following functionality:</P>
+<UL>
+<LI>Reading of UTF-8 and UTF-16 encoded XML files and strings.</LI>
+<LI>Writing of UTF-8 encoded XML files and strings.</LI>
+<LI>Data is stored in a linked-list tree structure, preserving the XML
+ data hierarchy.</LI>
+<LI>Supports arbitrary element names, attributes, and attribute values
+ with no preset limits, just available memory.</LI>
+<LI>Supports integer, real, opaque (&quot;cdata&quot;), and text data types in
+ &quot;leaf&quot; nodes.</LI>
+<LI>Functions for creating and managing trees of data.</LI>
+<LI>&quot;Find&quot; and &quot;walk&quot; functions for easily locating and navigating trees
+ of data.</LI>
+</UL>
+<P>Mini-XML doesn't do validation or other types of processing on the
+ data based upon schema files or other sources of definition
+ information, nor does it support character entities other than those
+ required by the XML specification.</P>
+
+<!-- NEED 4in -->
+<H2><A NAME="1_1">Legal Stuff</A></H2>
+<P>The Mini-XML library is copyright 2003-2005 by Michael Sweet.</P>
+<P>This library is free software; you can redistribute it and/or modify
+ it under the terms of the <A href="#LICENSE">GNU Library General Public
+ License</A> as published by the Free Software Foundation; either
+ version 2 of the License, or (at your option) any later version.</P>
+<P>This library is distributed in the hope that it will be useful, but
+ WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ Library General Public License for more details.</P>
+
+<!-- NEED 4in -->
+<H2><A NAME="1_2">History</A></H2>
+<P>Mini-XML was initially developed for the <A href="http://gimp-print.sf.net/">
+Gimp-Print</A> project to replace the rather large and unwieldy <TT>
+libxml2</TT> library with something substantially smaller and
+ easier-to-use. It all began one morning in June of 2003 when Robert
+ posted the following sentence to the developer's list:</P>
+<BLOCKQUOTE>It's bad enough that we require libxml2, but rolling our own
+ XML parser is a bit more than we can handle.</BLOCKQUOTE>
+<P>I then replied with:</P>
+<BLOCKQUOTE>Given the limited scope of what you use in XML, it should be
+ trivial to code a mini-XML API in a few hundred lines of code.</BLOCKQUOTE>
+<P>I took my own challenge and coded furiously for two days to produced
+ the initial public release of Mini-XML, total lines of code: 696.
+ Robert promptly integrated Mini-XML into Gimp-Print and removed
+ libxml2.</P>
+<P>Thanks to lots of feedback and support from various developers,
+ Mini-XML has evolved since then to provide a more complete XML
+ implementation and now stands at a whopping 2,974 lines of code,
+ compared to 103,893 lines of code for libxml2 version 2.6.9. Aside from
+ Gimp-Print, Mini-XML is used for the following projects/software
+ applications:</P>
+<UL>
+<LI><A href="http://www.cups.org/">Common UNIX Printing System</A></LI>
+<LI><A href="http://www.cups.org/ddk/">CUPS Driver Development Kit</A></LI>
+<LI><A href="http://www.easysw.com/printpro/">ESP Print Pro</A></LI>
+<LI><A href="http://zynaddsubfx.sourceforge.net">ZynAddSubFX</A></LI>
+</UL>
+<P>Please email me (mxml @ easysw . com) if you would like your project
+ added or removed from this list, or if you have any comments/quotes you
+ would like me to publish about your experiences with Mini-XML.</P>
+
+<!-- NEED 3in -->
+<H2><A NAME="1_3">Organization of This Document</A></H2>
+<P>This manual is organized into the following chapters and appendices:</P>
+<UL>
+<LI>Chapter 1, &quot;<A href="#INSTALL">Building, Installing, and Packaging
+ Mini-XML</A>&quot;, provides compilation, installation, and packaging
+ instructions for Mini-XML.</LI>
+<LI>Chapter 2, &quot;<A href="#BASICS">Getting Started with Mini-XML</A>&quot;,
+ shows how to use the Mini-XML library in your programs.</LI>
+<LI>Chapter 3, &quot;<A href="#ADVANCED">More Mini-XML Programming Techniques</A>
+&quot;, shows additional ways to use the Mini-XML library.</LI>
+<LI>Chapter 4, &quot;<A href="#MXMLDOC">Using the mxmldoc Utility</A>&quot;,
+ describes how to use the <TT>mxmldoc(1)</TT> program to generate
+ software documentation.</LI>
+<LI>Appendix A, &quot;<A href="#LICENSE">GNU Library General Public License</A>
+&quot;, provides the terms and conditions for using and distributing
+ Mini-XML.</LI>
+<LI>Appendix B, &quot;<A href="#RELNOTES">Release Notes</A>&quot;, lists the
+ changes in each release of Mini-XML.</LI>
+<LI>Appendix C, &quot;<A href="#REFERENCE">Library Reference</A>&quot;, contains a
+ complete reference for Mini-XML, generated by <TT>mxmldoc</TT>.</LI>
+</UL>
+
+<!-- NEED 4in -->
+<H2><A NAME="1_4">Notation Conventions</A></H2>
+<P>Various font and syntax conventions are used in this guide. Examples
+ and their meanings and uses are explained below:</P>
+<CENTER>
+<TABLE width="80%">
+<TR><TH>Example</TH><TD>&nbsp;&nbsp;&nbsp;</TD><TH>Description</TH></TR>
+<TR><TD colspan="3">&nbsp;</TD></TR>
+<TR valign="top"><TD><CODE>lpstat</CODE>
+<BR> <CODE>lpstat(1)</CODE></TD><TD>&nbsp;&nbsp;&nbsp;</TD><TD>The names of commands;
+ the first mention of a command or function in a chapter is followed by
+ a manual page section number.</TD></TR>
+<TR><TD colspan="3">&nbsp;</TD></TR>
+<TR valign="top"><TD><VAR>/var</VAR>
+<BR><VAR> /usr/share/cups/data/testprint.ps</VAR></TD><TD>&nbsp;&nbsp;&nbsp;</TD><TD>
+File and directory names.</TD></TR>
+<TR><TD colspan="3">&nbsp;</TD></TR>
+<TR valign="top"><TD nowrap><TT>Request ID is Printer-123</TT></TD><TD>
+&nbsp;&nbsp;&nbsp;</TD><TD>Screen output.</TD></TR>
+<TR><TD colspan="3">&nbsp;</TD></TR>
+<TR valign="top"><TD nowrap><KBD>lp -d printer filename ENTER</KBD></TD><TD>
+&nbsp;&nbsp;&nbsp;</TD><TD>Literal user input; special keys like <KBD>ENTER</KBD> are
+ in ALL CAPS.</TD></TR>
+<TR><TD colspan="3">&nbsp;</TD></TR>
+<TR valign="top"><TD>12.3</TD><TD>&nbsp;&nbsp;&nbsp;</TD><TD>Numbers in the text are
+ written using the period (.) to indicate the decimal point.</TD></TR>
+</TABLE>
+</CENTER>
+
+<!-- NEED 4in -->
+<H2><A NAME="1_5">Abbreviations</A></H2>
+<P>The following abbreviations are used throughout this manual:</P>
+<BLOCKQUOTE>
+<DL>
+<DT>Gb</DT>
+<DD>Gigabytes, or 1073741824 bytes
+<BR>&nbsp;</DD>
+<DT>kb</DT>
+<DD>Kilobytes, or 1024 bytes
+<BR>&nbsp;</DD>
+<DT>Mb</DT>
+<DD>Megabytes, or 1048576 bytes
+<BR>&nbsp;</DD>
+<DT>UTF-8, UTF-16</DT>
+<DD>Unicode Transformation Format, 8-bit or 16-bit
+<BR>&nbsp;</DD>
+<DT>W3C</DT>
+<DD>World Wide Web Consortium
+<BR>&nbsp;</DD>
+<DT>XML</DT>
+<DD>Extensible Markup Language
+<BR>&nbsp;</DD>
+</DL>
+</BLOCKQUOTE>
+<H2><A NAME="1_6">Other References</A></H2>
+<BLOCKQUOTE>
+<DL>
+<DT>The Unicode Standard, Version 4.0, Addison-Wesley, ISBN
+ 0-321-18578-1</DT>
+<DD>The definition of the Unicode character set which is used for XML.
+<BR>&nbsp;</DD>
+<DT><A href="http://www.w3.org/TR/2004/REC-xml-20040204/">Extensible
+ Markup Language (XML) 1.0 (Third Edition)</A></DT>
+<DD>The XML specification from the World Wide Web Consortium (W3C)
+<BR>&nbsp;</DD>
+</DL>
+</BLOCKQUOTE><HR NOSHADE>
+<H1 align="right"><A name="INSTALL">1 - Building, Installing, and
+ Packaging Mini-XML</A></H1>
+<P>This chapter describes how to build, install, and package Mini-XML on
+ your system.</P>
+<H2><A NAME="2_1">Compiling Mini-XML</A></H2>
+<P>Mini-XML comes with an autoconf-based configure script; just type the
+ following command to get things going:</P>
+<PRE>
+    <KBD>./configure ENTER</KBD>
+</PRE>
+<P>The default install prefix is<VAR> /usr/local</VAR>, which can be
+ overridden using the <KBD>--prefix</KBD> option:</P>
+<PRE>
+    <KBD>./configure --prefix=/foo ENTER</KBD>
+</PRE>
+<P>Other configure options can be found using the <KBD>--help</KBD>
+ option:</P>
+<PRE>
+    <KBD>./configure --help ENTER</KBD>
+</PRE>
+<P>Once you have configured the software, use the <TT>make(1)</TT>
+ program to do the build and run the test program to verify that things
+ are working, as follows:</P>
+<PRE>
+    <KBD>make ENTER</KBD>
+</PRE>
+<H2><A NAME="2_2">Installing Mini-XML</A></H2>
+<P>Use the <TT>make</TT> command with the <KBD>install</KBD> target to
+ install Mini-XML in the configured directories:</P>
+<PRE>
+    <KBD>make install ENTER</KBD>
+</PRE>
+<P>If you are using Mini-XML under Microsoft Windows with Visual C++,
+ use the included project files in the<VAR> vcnet</VAR> subdirectory to
+ build the library instead.</P>
+<H2><A NAME="2_3">Creating Mini-XML Packages</A></H2>
+<P>Mini-XML includes two files that can be used to create binary
+ packages. The first file is<VAR> mxml.spec</VAR> which is used by the <TT>
+rpmbuild(8)</TT> software to create Red Hat Package Manager (&quot;RPM&quot;)
+ packages which are commonly used on Linux. Since <TT>rpmbuild</TT>
+ wants to compile the software on its own, you can provide it with the
+ Mini-XML tar file to build the package:</P>
+<PRE>
+    <KBD>rpmbuild -ta mxml-<I>version</I>.tar.gz ENTER</KBD>
+</PRE>
+<P>The second file is<VAR> mxml.list</VAR> which is used by the <TT>
+epm(1)</TT> program to create software packages in a variety of formats.
+ The <TT>epm</TT> program is available from the following URL:</P>
+<PRE>
+    <A href="http://www.easysw.com/epm/">http://www.easysw.com/epm/</A>
+</PRE>
+<P>Use the <TT>make</TT> command with the <KBD>epm</KBD> target to
+ create portable and native packages for your system:</P>
+<PRE>
+    <KBD>make epm ENTER</KBD>
+</PRE>
+<P>The packages are stored in a subdirectory named<VAR> dist</VAR> for
+ your convenience. The portable packages utilize scripts and tar files
+ to install the software on the target system; this is especially useful
+ when installing on systems with different Linux distributions. Use the<VAR>
+ mxml.install</VAR> script to install the software and<VAR> mxml.remove</VAR>
+ script to remove the software.</P>
+<P>The native packages will be in the local OS's native format: RPM for
+ Red Hat Linux, DPKG for Debian Linux, PKG for Solaris, and so forth.
+ Use the corresponding commands to install the native packages.</P>
+<HR NOSHADE>
+<H1 align="right"><A name="BASICS">2 - Getting Started with Mini-XML</A></H1>
+<P>This chapter describes how to write programs that use Mini-XML to
+ access data in an XML file.</P>
+<H2><A NAME="3_1">The Basics</A></H2>
+<P>Mini-XML provides a single header file which you include:</P>
+<PRE>
+    #include &lt;mxml.h&gt;
+</PRE>
+<P>The Mini-XML library is included with your program using the <KBD>
+-lmxml</KBD> option:</P>
+<PRE>
+    <KBD>gcc -o myprogram myprogram.c -lmxml ENTER</KBD>
+</PRE>
+<P>If you have the <TT>pkg-config(1)</TT> software installed, you can
+ use it to determine the proper compiler and linker options for your
+ installation:</P>
+<PRE>
+    <KBD>pkg-config --cflags mxml ENTER</KBD>
+    <KBD>pkg-config --libs mxml ENTER</KBD>
+</PRE>
+<H2><A NAME="3_2">Nodes</A></H2>
+<P>Every piece of information in an XML file (elements, text, numbers)
+ is stored in memory in &quot;nodes&quot;. Nodes are defined by the <A href="#mxml_node_t">
+<TT>mxml_node_t</TT></A> structure. The <A href="#mxml_type_t"><TT>type</TT>
+</A> member defines the node type (element, integer, opaque, real, or
+ text) which determines which value you want to look at in the <A href="#mxml_value_t">
+<TT>value</TT></A> union.</P>
+<P>New nodes can be created using the <A href="#mxmlNewElement"><TT>
+mxmlNewElement()</TT></A>, <A href="#mxmlNewInteger"><TT>
+mxmlNewInteger()</TT></A>, <A href="#mxmlNewOpaque"><TT>mxmlNewOpaque()</TT>
+</A>, <A href="#mxmlNewReal"><TT>mxmlNewReal()</TT></A>, and <A href="#mxmlNewText">
+<TT>mxmlNewText()</TT></A> functions. Only elements can have child
+ nodes, and the top node must be an element, usually &quot;?xml&quot;.</P>
+<P>Each node has pointers for the node above (<TT>parent</TT>), below (<TT>
+child</TT>), to the left (<TT>prev</TT>), and to the right (<TT>next</TT>
+) of the current node. If you have an XML file like the following:</P>
+<PRE>
+    &lt;?xml version=&quot;1.0&quot;?&gt;
+    &lt;data&gt;
+        &lt;node&gt;val1&lt;/node&gt;
+        &lt;node&gt;val2&lt;/node&gt;
+        &lt;node&gt;val3&lt;/node&gt;
+        &lt;group&gt;
+            &lt;node&gt;val4&lt;/node&gt;
+            &lt;node&gt;val5&lt;/node&gt;
+            &lt;node&gt;val6&lt;/node&gt;
+        &lt;/group&gt;
+        &lt;node&gt;val7&lt;/node&gt;
+        &lt;node&gt;val8&lt;/node&gt;
+        &lt;node&gt;val9&lt;/node&gt;
+    &lt;/data&gt;
+</PRE>
+<P>the node tree returned by <TT>mxmlLoadFile()</TT> would look like the
+ following in memory:</P>
+<PRE>
+    ?xml
+      |
+    data
+      |
+    node - node - node - group - node - node - node
+      |      |      |      |       |      |      |
+    val1   val2   val3     |     val7   val8   val9
+                           |
+                         node - node - node
+                           |      |      |
+                         val4   val5   val6
+</PRE>
+<P>where &quot;-&quot; is a pointer to the next node and &quot;|&quot; is a pointer to the
+ first child node.</P>
+<P>Once you are done with the XML data, use the <A href="#mxmlDelete"><TT>
+mxmlDelete()</TT></A> function to recursively free the memory that is
+ used for a particular node or the entire tree:</P>
+<PRE>
+    mxmlDelete(tree);
+</PRE>
+<H2><A NAME="3_3">Loading XML</A></H2>
+<P>You load an XML file using the <A href="#mxmlLoadFile"><TT>
+mxmlLoadFile()</TT></A> function:</P>
+<PRE>
+    FILE *fp;
+    <A href="#mxml_node_t">mxml_node_t</A> *tree;
+
+    fp = fopen(&quot;filename.xml&quot;, &quot;r&quot;);
+    tree = <A href="#mxmlLoadFile">mxmlLoadFile</A>(NULL, fp, MXML_NO_CALLBACK);
+    fclose(fp);
+</PRE>
+<P>The first argument specifies an existing XML parent node, if any.
+ Normally you will pass <TT>NULL</TT> for this argument unless you are
+ combining multiple XML sources. The XML file must contain a complete
+ XML document including the <TT>?xml</TT> element if the parent node is <TT>
+NULL</TT>.</P>
+<P>The second argument specifies the stdio file to read from, as opened
+ by <TT>fopen()</TT> or <TT>popen()</TT>. You can also use <TT>stdin</TT>
+ if you are implementing an XML filter program.</P>
+<P>The third argument specifies a callback function which returns the
+ value type of the immediate children for a new element node: <TT>
+MXML_INTEGER</TT>, <TT>MXML_OPAQUE</TT>, <TT>MXML_REAL</TT>, or <TT>
+MXML_TEXT</TT>. Load callbacks are described in detail in <A href="#LOAD_CALLBACKS">
+Chapter 3</A>. The example code uses the <TT>MXML_NO_CALLBACK</TT>
+ constant which specifies that all data nodes in the document contain
+ whitespace-separated text values.</P>
+<P>The <A href="#mxmlLoadString"><TT>mxmlLoadString()</TT></A> function
+ loads XML node trees from a string:</P>
+<PRE>
+    char buffer[8192];
+    <A href="#mxml_node_t">mxml_node_t</A> *tree;
+
+    ...
+    tree = <A href="#mxmlLoadString">mxmlLoadString</A>(NULL, buffer, MXML_NO_CALLBACK);
+</PRE>
+<P>The first and third arguments are the same as used for <TT>
+mxmlLoadFile()</TT>. The second argument specifies the string or
+ character buffer to load and must be a complete XML document including
+ the <TT>?xml</TT> element if the parent node is <TT>NULL</TT>.</P>
+<H2><A NAME="3_4">Saving XML</A></H2>
+<P>You save an XML file using the <A href="#mxmlSaveFile"><TT>
+mxmlSaveFile()</TT></A> function:</P>
+<PRE>
+    FILE *fp;
+    <A href="#mxml_node_t">mxml_node_t</A> *tree;
+
+    fp = fopen(&quot;filename.xml&quot;, &quot;w&quot;);
+    <A href="#mxmlSaveFile">mxmlSaveFile</A>(tree, fp, MXML_NO_CALLBACK);
+    fclose(fp);
+</PRE>
+<P>The first argument is the XML node tree to save. It should normally
+ be a pointer to the top-level <TT>?xml</TT> node in your XML document.</P>
+<P>The second argument is the stdio file to write to, as opened by <TT>
+fopen()</TT> or <TT>popen()</TT>. You can also use <TT>stdout</TT> if
+ you are implementing an XML filter program.</P>
+<P>The third argument is the whitespace callback to use when saving the
+ file. Whitespace callbacks are covered in detail in <A href="SAVE_CALLBACKS">
+Chapter 3</A>. The example code above uses the <TT>MXML_NO_CALLBACK</TT>
+ constant to specify that no special whitespace handling is required.</P>
+<P>The <A href="#mxmlSaveAllocString"><TT>mxmlSaveAllocString()</TT></A>
+, and <A href="#mxmlSaveString"><TT>mxmlSaveString()</TT></A> functions
+ save XML node trees to strings:</P>
+<PRE>
+    char buffer[8192];
+    char *ptr;
+    <A href="#mxml_node_t">mxml_node_t</A> *tree;
+
+    ...
+    <A href="#mxmlSaveString">mxmlSaveString</A>(tree, buffer, sizeof(buffer), MXML_NO_CALLBACK);
+
+    ...
+    ptr = <A href="#mxmlSaveAllocString">mxmlSaveAllocString</A>(tree, MXML_NO_CALLBACK);
+</PRE>
+<P>The first and last arguments are the same as used for <TT>
+mxmlSaveFile()</TT>. The <TT>mxmlSaveString()</TT> function takes
+ pointer and size arguments for saving the XML document to a fixed-size
+ buffer, while <TT>mxmlSaveAllocString()</TT> returns a string buffer
+ that was allocated using <TT>malloc()</TT>.</P>
+<H3><A NAME="3_4_1">Finding and Iterating Nodes</A></H3>
+<P>The <A href="#mxmlWalkPrev"><TT>mxmlWalkPrev()</TT></A> and <A href="#mxmlWalkNext">
+<TT>mxmlWalkNext()</TT></A>functions can be used to iterate through the
+ XML node tree:</P>
+<PRE>
+    <A href="#mxml_node_t">mxml_node_t</A> *node = <A href="#mxmlWalkPrev">mxmlWalkPrev</A>(current, tree, MXML_DESCEND);
+
+    <A href="#mxml_node_t">mxml_node_t</A> *node = <A href="#mxmlWalkNext">mxmlWalkNext</A>(current, tree, MXML_DESCEND);
+</PRE>
+<P>In addition, you can find a named element/node using the <A href="#mxmlFindElement">
+<TT>mxmlFindElement()</TT></A> function:</P>
+<PRE>
+    <A href="#mxml_node_t">mxml_node_t</A> *node = <A href="#mxmlFindElement">mxmlFindElement</A>(tree, tree, &quot;name&quot;, &quot;attr&quot;,
+                                	&quot;value&quot;, MXML_DESCEND);
+</PRE>
+<P>The <TT>name</TT>, <TT>attr</TT>, and <TT>value</TT> arguments can be
+ passed as <TT>NULL</TT> to act as wildcards, e.g.:</P>
+<PRE>
+    /* Find the first &quot;a&quot; element */
+    node = <A href="#mxmlFindElement">mxmlFindElement</A>(tree, tree, &quot;a&quot;, NULL, NULL, MXML_DESCEND);
+
+    /* Find the first &quot;a&quot; element with &quot;href&quot; attribute */
+    node = <A href="#mxmlFindElement">mxmlFindElement</A>(tree, tree, &quot;a&quot;, &quot;href&quot;, NULL, MXML_DESCEND);
+
+    /* Find the first &quot;a&quot; element with &quot;href&quot; to a URL */
+    node = <A href="#mxmlFindElement">mxmlFindElement</A>(tree, tree, &quot;a&quot;, &quot;href&quot;,
+                	   &quot;http://www.easysw.com/~mike/mxml/&quot;, MXML_DESCEND);
+
+    /* Find the first element with a &quot;src&quot; attribute*/
+    node = <A href="#mxmlFindElement">mxmlFindElement</A>(tree, tree, NULL, &quot;src&quot;, NULL, MXML_DESCEND);
+
+    /* Find the first element with a &quot;src&quot; = &quot;foo.jpg&quot; */
+    node = <A href="#mxmlFindElement">mxmlFindElement</A>(tree, tree, NULL, &quot;src&quot;, &quot;foo.jpg&quot;, MXML_DESCEND);
+</PRE>
+<P>You can also iterate with the same function:</P>
+<PRE>
+    <A href="#mxml_node_t">mxml_node_t</A> *node;
+
+    for (node = <A href="#mxmlFindElement">mxmlFindElement</A>(tree, tree, &quot;name&quot;, NULL, NULL, MXML_DESCEND);
+         node != NULL;
+         node = <A href="#mxmlFindElement">mxmlFindElement</A>(node, tree, &quot;name&quot;, NULL, NULL, MXML_DESCEND))
+    {
+      ... do something ...
+    }
+</PRE>
+<P>The <TT>MXML_DESCEND</TT> argument can actually be one of three
+ constants:</P>
+<UL>
+<LI><TT>MXML_NO_DESCEND</TT> means to not to look at any child nodes in
+ the element hierarchy, just look at siblings at the same level or
+ parent nodes until the top node or top-of-tree is reached. The previous
+ node from &quot;group&quot; would be the &quot;node&quot; element to the left, while the
+ next node from &quot;group&quot; would be the &quot;node&quot; element to the right.</LI>
+<LI><TT>MXML_DESCEND_FIRST</TT> means that it is OK to descend to the
+ first child of a node, but not to descend further when searching.
+ You'll normally use this when iterating through direct children of a
+ parent node, e.g. all of the &quot;node&quot; elements under the &quot;?xml&quot; parent
+ node in the example above. This mode is only applicable to the search
+ function; the walk functions treat this as <TT>MXML_DESCEND</TT> since
+ every call is a first time.</LI>
+<LI><TT>MXML_DESCEND</TT> means to keep descending until you hit the
+ bottom of the tree. The previous node from &quot;group&quot; would be the &quot;val3&quot;
+ node and the next node would be the first node element under &quot;group&quot;.
+ If you were to walk from the root node &quot;?xml&quot; to the end of the tree
+ with <TT>mxmlWalkNext()</TT>, the order would be:
+<PRE>
+    ?xml
+    data
+    node
+    val1
+    node
+    val2
+    node
+    val3
+    group
+    node
+    val4
+    node
+    val5
+    node
+    val6
+    node
+    val7
+    node
+    val8
+    node
+    val9
+</PRE>
+<P>If you started at &quot;val9&quot; and walked using <TT>mxmlWalkPrev()</TT>,
+ the order would be reversed, ending at &quot;?xml&quot;.</P>
+</LI>
+</UL>
+<HR NOSHADE>
+<H1 align="right"><A name="ADVANCED">3 - More Mini-XML Programming
+ Techniques</A></H1>
+<P>This chapter shows additional ways to use the Mini-XML library in
+ your programs.</P>
+<H2><A name="LOAD_CALLBACKS">Load Callbacks</A></H2>
+<P><A href="#LOAD_XML">Chapter 2</A> introduced the <A href="#mxmlLoadFile">
+<TT>mxmlLoadFile()</TT></A> and <A href="#mxmlLoadString"><TT>
+mxmlLoadString()</TT></A> functions. The last argument to these
+ functions is a callback function which is used to determine the value
+ type of each data node in an XML document.</P>
+<P>Mini-XML defines several standard callbacks for simple XML data
+ files:</P>
+<UL>
+<LI><TT>MXML_INTEGER_CALLBACK</TT> - All data nodes contain
+ whitespace-separated integers.</LI>
+<LI><TT>MXML_OPAQUE_CALLBACK</TT> - All data nodes contain opaque
+ strings (&quot;CDATA&quot;).</LI>
+<LI><TT>MXML_REAL_CALLBACK</TT> - All data nodes contain
+ whitespace-separated floating-point numbers.</LI>
+<LI><TT>MXML_TEXT_CALLBACK</TT> - All data nodes contain
+ whitespace-separated strings.</LI>
+</UL>
+<P>You can provide your own callback functions for more complex XML
+ documents. Your callback function will receive a pointer to the current
+ element node and must return the value type of the immediate children
+ for that element node: <TT>MXML_INTEGER</TT>, <TT>MXML_OPAQUE</TT>, <TT>
+MXML_REAL</TT>, or <TT>MXML_TEXT</TT>. The function is called<I> after</I>
+ the element and its attributes have been read, so you can look at the
+ element name, attributes, and attribute values to determine the proper
+ value type to return.</P>
+
+<!-- NEED 2in -->
+<P>The following callback function looks for an attribute named &quot;type&quot;
+ or the element name to determine the value type for its child nodes:</P>
+<PRE>
+    /*
+     * 'type_cb()' - XML data type callback for mxmlLoadFile()...
+     */
+
+    mxml_type_t                             /* O - Data type */
+    type_cb(mxml_node_t *node)              /* I - Element node */
+    {
+      const char    *type;                  /* Type string */
+
+
+     /*
+      * You can lookup attributes and/or use the element name, hierarchy, etc...
+      */
+
+      if ((type = mxmlElementGetAttr(node, &quot;type&quot;)) == NULL)
+	type = node-&gt;value.element.name;
+
+      if (!strcmp(type, &quot;integer&quot;))
+	return (MXML_INTEGER);
+      else if (!strcmp(type, &quot;opaque&quot;))
+	return (MXML_OPAQUE);
+      else if (!strcmp(type, &quot;real&quot;))
+	return (MXML_REAL);
+      else
+	return (MXML_TEXT);
+    }
+</PRE>
+<P>To use this callback function, simply use the name when you call any
+ of the load functions:</P>
+<PRE>
+    FILE *fp;
+    <A href="#mxml_node_t">mxml_node_t</A> *tree;
+
+    fp = fopen(&quot;filename.xml&quot;, &quot;r&quot;);
+    tree = <A href="#mxmlLoadFile">mxmlLoadFile</A>(NULL, fp, <B>type_cb</B>);
+    fclose(fp);
+</PRE>
+<H2><A name="SAVE_CALLBACKS">Save Callbacks</A></H2>
+<P><A href="#LOAD_XML">Chapter 2</A> also introduced the <A href="#mxmlSaveFile">
+<TT>mxmlSaveFile()</TT></A>, <A href="#mxmlSaveString"><TT>
+mxmlSaveString()</TT></A>, and <A href="#mxmlSaveAllocString"><TT>
+mxmlSaveAllocString()</TT></A> functions. The last argument to these
+ functions is a callback function which is used to automatically insert
+ whitespace in an XML document.</P>
+<P>Your callback function will be called up to four times for each
+ element node with a pointer to the node and a &quot;where&quot; value of <TT>
+MXML_WS_BEFORE_OPEN</TT>, <TT>MXML_WS_AFTER_OPEN</TT>, <TT>
+MXML_WS_BEFORE_CLOSE</TT>, or <TT>MXML_WS_AFTER_CLOSE</TT>. The callback
+ function should return <TT>NULL</TT> if no whitespace should be added
+ and the string to insert (spaces, tabs, carriage returns, and newlines)
+ otherwise. The following whitespace callback can be used to add
+ whitespace to XHTML output to make it more readable in a standard text
+ editor:</P>
+
+<!-- NEW PAGE -->
+<PRE>
+    /*
+     * 'whitespace_cb()' - Let the mxmlSaveFile() function know when to insert
+     *                     newlines and tabs...
+     */
+
+    const char *                            /* O - Whitespace string or NULL */
+    whitespace_cb(mxml_node_t *node,        /* I - Element node */
+        	  int         where)        /* I - Open or close tag? */
+    {
+      const char *name;                     /* Name of element */
+
+     /*
+      * We can conditionally break to a new line before or after any element.
+      * These are just common HTML elements...
+      */
+
+      name = node-&gt;value.element.name;
+
+      if (!strcmp(name, &quot;html&quot;) || !strcmp(name, &quot;head&quot;) || !strcmp(name, &quot;body&quot;) ||
+	  !strcmp(name, &quot;pre&quot;) || !strcmp(name, &quot;p&quot;) ||
+	  !strcmp(name, &quot;h1&quot;) || !strcmp(name, &quot;h2&quot;) || !strcmp(name, &quot;h3&quot;) ||
+	  !strcmp(name, &quot;h4&quot;) || !strcmp(name, &quot;h5&quot;) || !strcmp(name, &quot;h6&quot;))
+      {
+       /*
+	* Newlines before open and after close...
+	*/
+
+	if (where == MXML_WS_BEFORE_OPEN || where == MXML_WS_AFTER_CLOSE)
+	  return (&quot;\n&quot;);
+      }
+      else if (!strcmp(name, &quot;dl&quot;) || !strcmp(name, &quot;ol&quot;) || !strcmp(name, &quot;ul&quot;))
+      {
+       /*
+	* Put a newline before and after list elements...
+	*/
+
+	return (&quot;\n&quot;);
+      }
+      else if (!strcmp(name, &quot;dd&quot;) || !strcmp(name, &quot;dt&quot;) || !strcmp(name, &quot;li&quot;))
+      {
+       /*
+	* Put a tab before &lt;li&gt;'s, &lt;dd&gt;'s, and &lt;dt&gt;'s, and a newline after them...
+	*/
+
+	if (where == MXML_WS_BEFORE_OPEN)
+	  return (&quot;\t&quot;);
+	else if (where == MXML_WS_AFTER_CLOSE)
+	  return (&quot;\n&quot;);
+      }
+
+     /*
+      * Return NULL for no added whitespace...
+      */
+
+      return (NULL);
+    }
+</PRE>
+
+<!-- NEW PAGE -->
+<P>To use this callback function, simply use the name when you call any
+ of the save functions:</P>
+<PRE>
+    FILE *fp;
+    <A href="#mxml_node_t">mxml_node_t</A> *tree;
+
+    fp = fopen(&quot;filename.xml&quot;, &quot;w&quot;);
+    <A href="#mxmlSaveFile">mxmlSaveFile</A>(tree, fp, whitespace_cb);
+    fclose(fp);
+</PRE>
+<H2><A NAME="4_3">Custom Data Types</A></H2>
+<P>Mini-XML supports custom data types via global load and save
+ callbacks. Only a single set of callbacks can be active at any time,
+ however your callbacks can store additional information in order to
+ support multiple custom data types as needed. The <TT>MXML_CUSTOM</TT>
+ node type identifies custom data nodes.</P>
+<P>The load callback receives a pointer to the current data node and a
+ string of opaque character data from the XML source with character
+ entities converted to the corresponding UTF-8 characters. For example,
+ if we wanted to support a custom date/time type whose value is encoded
+ as &quot;yyyy-mm-ddThh:mm:ssZ&quot; (ISO format), the load callback would look
+ like the following:</P>
+<PRE>
+    typedef struct
+    {
+      unsigned      year,                   /* Year */
+                    month,                  /* Month */
+                    day,                    /* Day */
+                    hour,                   /* Hour */
+                    minute,                 /* Minute */
+                    second;                 /* Second */
+      time_t        unix;                   /* UNIX time value */
+    } iso_date_time_t;
+
+    int                                     /* I - 0 on success, -1 on error */
+    load_custom(mxml_node_t *node,          /* I - Node */
+                const char  *data)          /* I - Value */
+    {
+      iso_date_time_t *dt;                  /* Date/time value */
+      struct tm       tmdata;               /* UNIX time data */
+
+
+     /*
+      * Allocate data structure...
+      */
+
+      dt = calloc(1, sizeof(iso_date_time_t));
+
+     /*
+      * Try reading 6 unsigned integers from the data string...
+      */
+
+      if (sscanf(data, &quot;%u-%u-%uT%u:%u:%uZ&quot;,
+                 &amp;(dt-&gt;year), &amp;(dt-&gt;month), &amp;(dt-&gt;day),
+                 &amp;(dt-&gt;hour), &amp;(dt-&gt;minute), &amp;(dt-&gt;second)) != 6)
+      {
+       /*
+        * Unable to read numbers, free the data structure and return an
+        * error...
+        */
+
+        free(dt);
+
+        return (-1);
+      }
+
+     /*
+      * Range check values...
+      */
+
+      if (dt-&gt;month &lt;1 || dt-&gt;month &gt; 12 ||
+          dt-&gt;day  &lt;1 || dt-&gt;day &gt; 31 ||
+          dt-&gt;hour  &lt;0 || dt-&gt;hour &gt; 23 ||
+          dt-&gt;minute  &lt;0 || dt-&gt;minute &gt; 59 ||
+          dt-&gt;second  &lt;0 || dt-&gt;second &gt; 59)
+      {
+       /*
+        * Date information is out of range...
+        */
+
+        free(dt);
+
+        return (-1);
+      }
+
+     /*
+      * Convert ISO time to UNIX time in seconds...
+      */
+
+      tmdata.tm_year = dt-&gt;year - 1900;
+      tmdata.tm_mon  = dt-&gt;month - 1;
+      tmdata.tm_day  = dt-&gt;day;
+      tmdata.tm_hour = dt-&gt;hour;
+      tmdata.tm_min  = dt-&gt;minute;
+      tmdata.tm_sec  = dt-&gt;second;
+
+      dt-&gt;unix = gmtime(&amp;tmdata);
+
+     /*
+      * Assign custom node data and destroy function pointers...
+      */
+
+      node-&gt;value.custom.data    = dt;
+      node-&gt;value.custom.destroy = free;
+
+     /*
+      * Return with no errors...
+      */
+
+      return (0);
+    }
+</PRE>
+<P>The function itself can return 0 on success or -1 if it is unable to
+ decode the custom data or the data contains an error. Custom data nodes
+ contain a <TT>void</TT> pointer to the allocated custom data for the
+ node and a pointer to a destructor function which will free the custom
+ data when the node is deleted.</P>
+
+<!-- NEED 3in -->
+<P>The save callback receives the node pointer and returns an allocated
+ string containing the custom data value. The following save callback
+ could be used for our ISO date/time type:</P>
+<PRE>
+    char *                                  /* I - Allocated string */
+    save_custom(mxml_node_t *node)          /* I - Node */
+    {
+      char            data[255];            /* Data string */
+      iso_date_time_t *dt;                  /* ISO date/time pointer */
+
+
+      dt = (iso_date_time_t *)node-&gt;custom.data;
+
+      snprintf(data, sizeof(data), &quot;%04u-%02u-%02uT%02u:%02u:%02uZ&quot;,
+               dt-&gt;year, dt-&gt;month, dt-&gt;day, dt-&gt;hour,
+               dt-&gt;minute, dt-&gt;second);
+
+      return (strdup(data));
+    }
+</PRE>
+<P>You register the callback functions using the <A href="#mxmlSetCustomHandlers">
+<TT>mxmlSetCustomHandlers()</TT></A> function:</P>
+<PRE>
+    mxmlSetCustomHandlers(load_custom, save_custom);
+</PRE>
+<H2><A NAME="4_4">Changing Node Values</A></H2>
+<P>All of the examples so far have concentrated on creating and loading
+ new XML data nodes. Many applications, however, need to manipulate or
+ change the nodes during their operation, so Mini-XML provides functions
+ to change node values safely and without leaking memory.</P>
+<P>Existing nodes can be changed using the <A href="#mxmlSetElement"><TT>
+mxmlSetElement()</TT></A>, <A href="#mxmlSetInteger"><TT>
+mxmlSetInteger()</TT></A>, <A href="#mxmlSetOpaque"><TT>mxmlSetOpaque()</TT>
+</A>, <A href="#mxmlSetReal"><TT>mxmlSetReal()</TT></A>, and <A href="#mxmlSetText">
+<TT>mxmlSetText()</TT></A> functions. For example, use the following
+ function call to change a text node to contain the text &quot;new&quot; with
+ leading whitespace:</P>
+<PRE>
+    <A href="#mxml_node_t">mxml_node_t</A> *node;
+
+    <A href="#mxmlSetText">mxmlSetText</A>(node, 1, &quot;new&quot;);
+</PRE>
+<H2><A NAME="4_5">Formatted Text</A></H2>
+<P>The <A href="#mxmlNewTextf"><TT>mxmlNewTextf()</TT></A> and <A href="#mxmlSetTextf">
+<TT>mxmlSetTextf()</TT></A> functions create and change text nodes,
+ respectively, using <TT>printf</TT>-style format strings and arguments.
+ For example, use the following function call to create a new text node:</P>
+<PRE>
+    <A href="#mxml_node_t">mxml_node_t</A> *node;
+
+    node = <A href="#mxmlNewTextf">mxmlNewTextf</A>(node, 1, &quot;%s/%s&quot;,
+                        path, filename);
+</PRE>
+<H2><A NAME="4_6">Indexing</A></H2>
+<P>Mini-XML provides functions for managing indices of nodes. The
+ current implementation provides the same functionality as the <A href="#mxmlFindElement">
+<TT>mxmlFindElement()</TT></A>. The advantage of using an index is that
+ searching and enumeration of elements is significantly faster. The only
+ disadvantage is that each index is a static snapshot of the XML
+ document, so indices are not well suited to XML data that is updated
+ more often than it is searched. The overhead of creating an index is
+ approximately equal to walking the XML document tree. Nodes in the
+ index are sorted by element name and attribute value.</P>
+<P>Indices are stored in <A href="#mxml_index_t"><TT>mxml_index_t</TT></A>
+ structures. The <A href="#mxmlIndexNew"><TT>mxmlIndexNew()</TT></A>
+ function creates a new index:</P>
+<PRE>
+    <A href="#mxml_node_t">mxml_node_t</A> *tree;
+    <A href="#mxml_index_t">mxml_index_t</A> *ind;
+
+    ind = <A href="#mxmlIndexNew">mxmlIndexNew</A>(tree, &quot;element&quot;, &quot;attribute&quot;);
+</PRE>
+<P>The first argument is the XML node tree to index. Normally this will
+ be a pointer to the <TT>?xml</TT> element.</P>
+<P>The second argument contains the element to index; passing <TT>NULL</TT>
+ indexes all element nodes alphabetically.</P>
+<P>The third argument contains the attribute to index; passing <TT>NULL</TT>
+ causes only the element name to be indexed.</P>
+<P>Once the index is created, the <A href="#mxmlIndexEnum"><TT>
+mxmlIndexEnum()</TT></A>, <A href="#mxmlIndexFind"><TT>mxmlIndexFind()</TT>
+</A>, and <A href="#mxmlIndexReset"><TT>mxmlIndexReset()</TT></A>
+ functions are used to access the nodes in the index. The <A href="#mxmlIndexReset">
+<TT>mxmlIndexReset()</TT></A> function resets the &quot;current&quot; node pointer
+ in the index, allowing you to do new searches and enumerations on the
+ same index. Typically you will call this function prior to your calls
+ to <A href="#mxmlIndexEnum"><TT>mxmlIndexEnum()</TT></A> and <A href="#mxmlIndexFind">
+<TT>mxmlIndexFind()</TT></A>.</P>
+<P>The <A href="#mxmlIndexEnum"><TT>mxmlIndexEnum()</TT></A> function
+ enumerates each of the nodes in the index and can be used in a loop as
+ follows:</P>
+<PRE>
+    <A href="#mxml_node_t">mxml_node_t</A> *node;
+    <A href="#mxml_index_t">mxml_index_t</A> *ind;
+
+    mxmlIndexReset(ind);
+
+    while ((node = mxmlIndexEnum(ind)) != NULL)
+    {
+      // do something with node
+    }
+</PRE>
+<P>The <A href="#mxmlIndexFind"><TT>mxmlIndexFind()</TT></A> function
+ locates the next occurrence of the named element and attribute value in
+ the index. It can be used to find all matching elements in an index, as
+ follows:</P>
+<PRE>
+    <A href="#mxml_node_t">mxml_node_t</A> *node;
+    <A href="#mxml_index_t">mxml_index_t</A> *ind;
+
+    mxmlIndexReset(ind);
+
+    while ((node = mxmlIndexFind(ind, &quot;element&quot;, &quot;attr-value&quot;)) != NULL)
+    {
+      // do something with node
+    }
+</PRE>
+<P>The second and third arguments represent the element name and
+ attribute value, respectively. A <TT>NULL</TT> pointer is used to
+ return all elements or attributes in the index. Passing <TT>NULL</TT>
+ for both the element name and attribute value is equivalent to calling <TT>
+mxmlIndexEnum</TT>.</P>
+
+<!-- NEED 2in -->
+<P>When you are done using the index, delete it using the <A href="#mxmlIndexDelete()">
+<TT>mxmlIndexDelete()</TT></A> function:</P>
+<PRE>
+    <A href="#mxml_index_t">mxml_index_t</A> *ind;
+
+    mxmlIndexDelete(ind);
+</PRE>
+<HR NOSHADE>
+<H1 align="right"><A name="MXMLDOC">4 - Using the mxmldoc Utility</A></H1>
+<P>This chapter describes how to use the <TT>mxmldoc(1)</TT> utility
+ that comes with Mini-XML to automatically generate documentation for
+ your programs.</P>
+<H2><A NAME="5_1">The Basics</A></H2>
+<P>The <TT>mxmldoc</TT> utility scans C and C++ source and header files
+ and produces an XML file describing the library interface and an XHTML
+ file providing a human-readable reference to the code. Each source and
+ header file must conform to some simple code commenting conventions so
+ that <TT>mxmldoc</TT> can extract the necessary descriptive text.</P>
+<P>The <TT>mxmldoc</TT> command requires the name of an XML file to
+ store the code information; this file is created and updated as
+ necessary. The XML file is optionally followed by a list of source
+ files to scan. After scanning any source files on the command-line, <TT>
+mxmldoc</TT> writes XHTML documentation to the standard output, which
+ can be redirected to the file using the <KBD>&gt;filename</KBD> syntax:</P>
+<PRE>
+    <KBD>mxmldoc myfile.xml &gt;myfile.html ENTER</KBD>
+    <KBD>mxmldoc myfile.xml file1.c file2.cxx file3.h &gt;myfile.html ENTER</KBD>
+</PRE>
+<P>If no source files are provided on the command-line, the current
+ contents of the XML file are converted to XHTML.</P>
+<H2><A NAME="5_2">Code Documentation Conventions</A></H2>
+<P>As noted previously, source code must be commented properly for <TT>
+mxmldoc</TT> to generate correct documentation for the code. Single line
+ comments can use the C++ <TT>//</TT> comment sequence, however all
+ multi-line comments must use the C <TT>/* ... */</TT> comment sequence.</P>
+<H3><A NAME="5_2_1">Functions and Methods</A></H3>
+<P>All implementations of functions and methods must begin with a
+ comment header describing what the function does, the possible input
+ limits (if any), and the possible output values (if any), and any
+ special information needed, as follows:</P>
+<PRE>
+    /*
+     * 'do_this()' - Compute y = this(x).
+     *
+     * Notes: none.
+     */
+
+    float            /* O - Inverse power value, 0.0 &lt;= y &lt;= 1.1 */
+    do_this(float x) /* I - Power value (0.0 &lt;= x &lt;= 1.1) */
+    {
+      ...
+      return (y);
+    }
+</PRE>
+<P>Return/output values are indicated using an &quot;O&quot; prefix, input values
+ are indicated using the &quot;I&quot; prefix, and values that are both input and
+ output use the &quot;IO&quot; prefix for the corresponding in-line comment.</P>
+<H3><A NAME="5_2_2">Variables and Class/Structure/Union Members</A></H3>
+<P>Each variable or member must be declared on a separate line and must
+ be immediately followed by a comment describing the variable or member,
+ as follows:</P>
+<PRE>
+    int this_variable;   /* The current state of this */
+    int that_variable;   /* The current state of that */
+</PRE>
+<H3><A NAME="5_2_3">Types</A></H3>
+<P>Each type must have a comment block immediately before the typedef,
+ as follows:</P>
+<PRE>
+    /*
+     * This type is for foobar options.
+     */
+    typedef int this_type_t;
+</PRE>
+
+<!-- NEED 5in -->
+<H3><A NAME="5_2_4">Classes, Structures, and Unions</A></H3>
+<P>Each class, structure, and union must have a comment block
+ immediately before the definition, and each member must be documented
+ in accordance with the function and variable documentation
+ requirements, as follows:</P>
+<PRE>
+    /*
+     * This structure is for foobar options.
+     */
+    struct this_struct_s
+    {
+      int this_member;   /* Current state for this */
+      int that_member;   /* Current state for that */
+    };
+
+    /*
+     * This class is for barfoo options.
+     */
+    class this_class_c
+    {
+      int this_member;   /* Current state for this */
+      int that_member;   /* Current state for that */
+
+      /*
+       * 'get_this()' - Get the current state for this.
+       */
+      int                /* O - Current state for this */
+      get_this()
+      {
+        return (this_member);
+      }
+    };
+</PRE>
+<H3><A NAME="5_2_5">Enumerations</A></H3>
+<P>Each enumeration must have a comment block immediately before the
+ definition describing what the enumeration is for, and each enumeration
+ value must have a comment immediately after the value, as follows:</P>
+<PRE>
+   /*
+    * Enumeration of media trays.
+    */
+    enum this_enum_e
+    {
+      THIS_TRAY,   /* This tray */
+      THAT_TRAY    /* That tray */
+    };
+</PRE>
+
+<!-- NEW PAGE -->
+<H2><A NAME="5_3">XML Schema</A></H2>
+<P>Listing 4-1 shows the XML schema file<VAR> mxmldoc.xsd</VAR> which is
+ included with Mini-XML. This schema file can be used to convert the XML
+ files produced by <TT>mxmldoc</TT> into other formats.</P>
+<CENTER>
+<TABLE bgcolor="#cccccc" border="1" cellpadding="5" cellspacing="0" width="80%">
+<CAPTION align="bottom"><I> Listing 4-1, XML Schema File &quot;mxmldoc.xsd&quot;</I>
+</CAPTION>
+<TR><TD>
+<PRE>
+&lt;xsd:schema xmlns:xsd=&quot;http://www.w3.org/2001/XMLSchema&quot;&gt;
+  &lt;xsd:annotation&gt;
+    &lt;xsd:documentation xml:lang=&quot;en&quot;&gt;
+      Mini-XML 2.2 documentation schema for mxmldoc output.
+      Copyright 2003-2005 by Michael Sweet.
+
+      This program is free software; you can redistribute it and/or
+      modify it under the terms of the GNU Library General Public
+      License as published by the Free Software Foundation; either
+      version 2, or (at your option) any later version.
+
+      This program is distributed in the hope that it will be useful,
+      but WITHOUT ANY WARRANTY; without even the implied warranty of
+      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+      GNU General Public License for more details.
+    &lt;/xsd:documentation&gt;
+  &lt;/xsd:annotation&gt;
+
+  &lt;!-- basic element definitions --&gt;
+  &lt;xsd:element name=&quot;argument&quot; type=&quot;argumentType&quot;/&gt;
+  &lt;xsd:element name=&quot;class&quot; type=&quot;classType&quot;/&gt;
+  &lt;xsd:element name=&quot;constant&quot; type=&quot;constantType&quot;/&gt;
+  &lt;xsd:element name=&quot;description&quot; type=&quot;xsd:string&quot;/&gt;
+  &lt;xsd:element name=&quot;enumeration&quot; type=&quot;enumerationType&quot;/&gt;
+  &lt;xsd:element name=&quot;function&quot; type=&quot;functionType&quot;/&gt;
+  &lt;xsd:element name=&quot;mxmldoc&quot; type=&quot;mxmldocType&quot;/&gt;
+  &lt;xsd:element name=&quot;namespace&quot; type=&quot;namespaceType&quot;/&gt;
+  &lt;xsd:element name=&quot;returnvalue&quot; type=&quot;returnvalueType&quot;/&gt;
+  &lt;xsd:element name=&quot;seealso&quot; type=&quot;identifierList&quot;/&gt;
+  &lt;xsd:element name=&quot;struct&quot; type=&quot;structType&quot;/&gt;
+  &lt;xsd:element name=&quot;typedef&quot; type=&quot;typedefType&quot;/&gt;
+  &lt;xsd:element name=&quot;type&quot; type=&quot;xsd:string&quot;/&gt;
+  &lt;xsd:element name=&quot;union&quot; type=&quot;unionType&quot;/&gt;
+  &lt;xsd:element name=&quot;variable&quot; type=&quot;variableType&quot;/&gt;
+
+  &lt;!-- descriptions of complex elements --&gt;
+  &lt;xsd:complexType name=&quot;argumentType&quot;&gt;
+    &lt;xsd:sequence&gt;
+      &lt;xsd:element ref=&quot;type&quot; minOccurs=&quot;1&quot; maxOccurs=&quot;1&quot;/&gt;
+      &lt;xsd:element ref=&quot;description&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;1&quot;/&gt;
+    &lt;/xsd:sequence&gt;
+    &lt;xsd:attribute name=&quot;default&quot; type=&quot;xsd:string&quot; use=&quot;optional&quot;/&gt;
+    &lt;xsd:attribute name=&quot;name&quot; type=&quot;identifier&quot; use=&quot;required&quot;/&gt;
+    &lt;xsd:attribute name=&quot;direction&quot; type=&quot;direction&quot; use=&quot;optional&quot; default=&quot;I&quot;/&gt;
+  &lt;/xsd:complexType&gt;
+
+  &lt;xsd:complexType name=&quot;classType&quot;&gt;
+    &lt;xsd:sequence&gt;
+      &lt;xsd:element ref=&quot;description&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;1&quot;/&gt;
+      &lt;xsd:choice minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot;&gt;
+	&lt;xsd:element ref=&quot;class&quot;/&gt;
+</PRE>
+</TD></TR>
+</TABLE>
+</CENTER>
+
+<!-- NEW PAGE -->
+<CENTER>
+<TABLE bgcolor="#cccccc" border="1" cellpadding="5" cellspacing="0" width="80%">
+<CAPTION align="bottom"><I> Listing 4-1, XML Schema File &quot;mxmldoc.xsd&quot;
+ (con't)</I></CAPTION>
+<TR><TD>
+<PRE>
+	&lt;xsd:element ref=&quot;enumeration&quot;/&gt;
+	&lt;xsd:element ref=&quot;function&quot;/&gt;
+	&lt;xsd:element ref=&quot;struct&quot;/&gt;
+	&lt;xsd:element ref=&quot;typedef&quot;/&gt;
+	&lt;xsd:element ref=&quot;union&quot;/&gt;
+	&lt;xsd:element ref=&quot;variable&quot;/&gt;
+      &lt;/xsd:choice&gt;
+    &lt;/xsd:sequence&gt;
+    &lt;xsd:attribute name=&quot;name&quot; type=&quot;identifier&quot; use=&quot;required&quot;/&gt;
+    &lt;xsd:attribute name=&quot;parent&quot; type=&quot;xsd:string&quot; use=&quot;optional&quot;/&gt;
+  &lt;/xsd:complexType&gt;
+
+  &lt;xsd:complexType name=&quot;constantType&quot;&gt;
+    &lt;xsd:sequence&gt;
+      &lt;xsd:element ref=&quot;description&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;1&quot;/&gt;
+    &lt;/xsd:sequence&gt;
+    &lt;xsd:attribute name=&quot;name&quot; type=&quot;identifier&quot; use=&quot;required&quot;/&gt;
+  &lt;/xsd:complexType&gt;
+
+  &lt;xsd:complexType name=&quot;enumerationType&quot;&gt;
+    &lt;xsd:sequence&gt;
+      &lt;xsd:element ref=&quot;description&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;1&quot;/&gt;
+      &lt;xsd:element ref=&quot;constant&quot; minOccurs=&quot;1&quot; maxOccurs=&quot;unbounded&quot;/&gt;
+    &lt;/xsd:sequence&gt;
+    &lt;xsd:attribute name=&quot;name&quot; type=&quot;identifier&quot; use=&quot;required&quot;/&gt;
+  &lt;/xsd:complexType&gt;
+
+  &lt;xsd:complexType name=&quot;functionType&quot;&gt;
+    &lt;xsd:sequence&gt;
+      &lt;xsd:element ref=&quot;returnvalue&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;1&quot;/&gt;
+      &lt;xsd:element ref=&quot;description&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;1&quot;/&gt;
+      &lt;xsd:element ref=&quot;argument&quot; minOccurs=&quot;1&quot; maxOccurs=&quot;unbounded&quot;/&gt;
+      &lt;xsd:element ref=&quot;seealso&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;1&quot;/&gt;
+    &lt;/xsd:sequence&gt;
+    &lt;xsd:attribute name=&quot;name&quot; type=&quot;identifier&quot; use=&quot;required&quot;/&gt;
+    &lt;xsd:attribute name=&quot;scope&quot; type=&quot;scope&quot; use=&quot;optional&quot;/&gt;
+  &lt;/xsd:complexType&gt;
+
+  &lt;xsd:complexType name=&quot;mxmldocType&quot;&gt;
+    &lt;xsd:choice minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot;&gt;
+      &lt;xsd:element ref=&quot;class&quot;/&gt;
+      &lt;xsd:element ref=&quot;enumeration&quot;/&gt;
+      &lt;xsd:element ref=&quot;function&quot;/&gt;
+      &lt;xsd:element ref=&quot;namespace&quot;/&gt;
+      &lt;xsd:element ref=&quot;struct&quot;/&gt;
+      &lt;xsd:element ref=&quot;typedef&quot;/&gt;
+      &lt;xsd:element ref=&quot;union&quot;/&gt;
+      &lt;xsd:element ref=&quot;variable&quot;/&gt;
+    &lt;/xsd:choice&gt;
+  &lt;/xsd:complexType&gt;
+
+  &lt;xsd:complexType name=&quot;namespaceType&quot;&gt;
+    &lt;xsd:sequence&gt;
+      &lt;xsd:element ref=&quot;description&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;1&quot;/&gt;
+      &lt;xsd:choice minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot;&gt;
+	&lt;xsd:element ref=&quot;class&quot;/&gt;
+	&lt;xsd:element ref=&quot;enumeration&quot;/&gt;
+	&lt;xsd:element ref=&quot;function&quot;/&gt;
+</PRE>
+</TD></TR>
+</TABLE>
+</CENTER>
+
+<!-- NEW PAGE -->
+<CENTER>
+<TABLE bgcolor="#cccccc" border="1" cellpadding="5" cellspacing="0" width="80%">
+<CAPTION align="bottom"><I> Listing 4-1, XML Schema File &quot;mxmldoc.xsd&quot;
+ (con't)</I></CAPTION>
+<TR><TD>
+<PRE>
+	&lt;xsd:element ref=&quot;struct&quot;/&gt;
+	&lt;xsd:element ref=&quot;typedef&quot;/&gt;
+	&lt;xsd:element ref=&quot;union&quot;/&gt;
+	&lt;xsd:element ref=&quot;variable&quot;/&gt;
+      &lt;/xsd:choice&gt;
+    &lt;/xsd:sequence&gt;
+    &lt;xsd:attribute name=&quot;name&quot; type=&quot;identifier&quot; use=&quot;required&quot;/&gt;
+  &lt;/xsd:complexType&gt;
+
+  &lt;xsd:complexType name=&quot;returnvalueType&quot;&gt;
+    &lt;xsd:sequence&gt;
+      &lt;xsd:element ref=&quot;type&quot; minOccurs=&quot;1&quot; maxOccurs=&quot;1&quot;/&gt;
+      &lt;xsd:element ref=&quot;description&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;1&quot;/&gt;
+    &lt;/xsd:sequence&gt;
+  &lt;/xsd:complexType&gt;
+
+  &lt;xsd:complexType name=&quot;structType&quot;&gt;
+    &lt;xsd:sequence&gt;
+      &lt;xsd:element ref=&quot;description&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;1&quot;/&gt;
+      &lt;xsd:choice minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot;&gt;
+	&lt;xsd:element ref=&quot;variable&quot;/&gt;
+	&lt;xsd:element ref=&quot;function&quot;/&gt;
+      &lt;/xsd:choice&gt;
+    &lt;/xsd:sequence&gt;
+    &lt;xsd:attribute name=&quot;name&quot; type=&quot;identifier&quot; use=&quot;required&quot;/&gt;
+  &lt;/xsd:complexType&gt;
+
+  &lt;xsd:complexType name=&quot;typedefType&quot;&gt;
+    &lt;xsd:sequence&gt;
+      &lt;xsd:element ref=&quot;type&quot; minOccurs=&quot;1&quot; maxOccurs=&quot;1&quot;/&gt;
+      &lt;xsd:element ref=&quot;description&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;1&quot;/&gt;
+    &lt;/xsd:sequence&gt;
+    &lt;xsd:attribute name=&quot;name&quot; type=&quot;identifier&quot; use=&quot;required&quot;/&gt;
+  &lt;/xsd:complexType&gt;
+
+  &lt;xsd:complexType name=&quot;unionType&quot;&gt;
+    &lt;xsd:sequence&gt;
+      &lt;xsd:element ref=&quot;description&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;1&quot;/&gt;
+      &lt;xsd:element ref=&quot;variable&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot;/&gt;
+    &lt;/xsd:sequence&gt;
+    &lt;xsd:attribute name=&quot;name&quot; type=&quot;identifier&quot; use=&quot;required&quot;/&gt;
+  &lt;/xsd:complexType&gt;
+
+  &lt;xsd:complexType name=&quot;variableType&quot;&gt;
+    &lt;xsd:sequence&gt;
+      &lt;xsd:element ref=&quot;type&quot; minOccurs=&quot;1&quot; maxOccurs=&quot;1&quot;/&gt;
+      &lt;xsd:element ref=&quot;description&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;1&quot;/&gt;
+    &lt;/xsd:sequence&gt;
+    &lt;xsd:attribute name=&quot;name&quot; type=&quot;identifier&quot; use=&quot;required&quot;/&gt;
+  &lt;/xsd:complexType&gt;
+
+  &lt;!-- data types --&gt;
+  &lt;xsd:simpleType name=&quot;direction&quot;&gt;
+    &lt;xsd:restriction base=&quot;xsd:string&quot;&gt;
+      &lt;xsd:enumeration value=&quot;I&quot;/&gt;
+      &lt;xsd:enumeration value=&quot;O&quot;/&gt;
+      &lt;xsd:enumeration value=&quot;IO&quot;/&gt;
+    &lt;/xsd:restriction&gt;
+</PRE>
+</TD></TR>
+</TABLE>
+</CENTER>
+
+<!-- NEW PAGE -->
+<CENTER>
+<TABLE bgcolor="#cccccc" border="1" cellpadding="5" cellspacing="0" width="80%">
+<CAPTION align="bottom"><I> Listing 4-1, XML Schema File &quot;mxmldoc.xsd&quot;
+ (con't)</I></CAPTION>
+<TR><TD>
+<PRE>
+  &lt;/xsd:simpleType&gt;
+
+  &lt;xsd:simpleType name=&quot;identifier&quot;&gt;
+    &lt;xsd:restriction base=&quot;xsd:string&quot;&gt;
+      &lt;xsd:pattern value=&quot;[a-zA-Z_(.]([a-zA-Z_(.,)* 0-9])*&quot;/&gt;
+    &lt;/xsd:restriction&gt;
+  &lt;/xsd:simpleType&gt;
+
+  &lt;xsd:simpleType name=&quot;identifierList&quot;&gt;
+    &lt;xsd:list itemType=&quot;identifier&quot;/&gt;
+  &lt;/xsd:simpleType&gt;
+
+  &lt;xsd:simpleType name=&quot;scope&quot;&gt;
+    &lt;xsd:restriction base=&quot;xsd:string&quot;&gt;
+      &lt;xsd:enumeration value=&quot;&quot;/&gt;
+      &lt;xsd:enumeration value=&quot;private&quot;/&gt;
+      &lt;xsd:enumeration value=&quot;protected&quot;/&gt;
+      &lt;xsd:enumeration value=&quot;public&quot;/&gt;
+    &lt;/xsd:restriction&gt;
+  &lt;/xsd:simpleType&gt;
+&lt;/xsd:schema&gt;
+</PRE>
+</TD></TR>
+</TABLE>
+</CENTER>
+<HR NOSHADE>
+<H1 align="right"><A name="LICENSE">A - GNU Library General Public
+ License</A></H1>
+<P align="center">Version 2, June 1991
+<BR> Copyright (C) 1991 Free Software Foundation, Inc.
+<BR> 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA
+<BR> Everyone is permitted to copy and distribute verbatim copies of
+ this license document, but changing it is not allowed.
+<BR> [This is the first released version of the library GPL. It is
+ numbered 2 because it goes with version 2 of the ordinary GPL.]</P>
+<P><BIG>Preamble</BIG></P>
+<P>The licenses for most software are designed to take away your freedom
+ to share and change it. By contrast, the GNU General Public Licenses
+ are intended to guarantee your freedom to share and change free
+ software--to make sure the software is free for all its users.</P>
+<P>This license, the Library General Public License, applies to some
+ specially designated Free Software Foundation software, and to any
+ other libraries whose authors decide to use it. You can use it for your
+ libraries, too.</P>
+<P>When we speak of free software, we are referring to freedom, not
+ price. Our General Public Licenses are designed to make sure that you
+ have the freedom to distribute copies of free software (and charge for
+ this service if you wish), that you receive source code or can get it
+ if you want it, that you can change the software or use pieces of it in
+ new free programs; and that you know you can do these things.</P>
+<P>To protect your rights, we need to make restrictions that forbid
+ anyone to deny you these rights or to ask you to surrender the rights.
+ These restrictions translate to certain responsibilities for you if you
+ distribute copies of the library, or if you modify it.</P>
+<P>For example, if you distribute copies of the library, whether gratis
+ or for a fee, you must give the recipients all the rights that we gave
+ you. You must make sure that they, too, receive or can get the source
+ code. If you link a program with the library, you must provide complete
+ object files to the recipients so that they can relink them with the
+ library, after making changes to the library and recompiling it. And
+ you must show them these terms so they know their rights.</P>
+<P>Our method of protecting your rights has two steps: (1) copyright the
+ library, and (2) offer you this license which gives you legal
+ permission to copy, distribute and/or modify the library.</P>
+<P>Also, for each distributor's protection, we want to make certain that
+ everyone understands that there is no warranty for this free library.
+ If the library is modified by someone else and passed on, we want its
+ recipients to know that what they have is not the original version, so
+ that any problems introduced by others will not reflect on the original
+ authors' reputations.</P>
+<P>Finally, any free program is threatened constantly by software
+ patents. We wish to avoid the danger that companies distributing free
+ software will individually obtain patent licenses, thus in effect
+ transforming the program into proprietary software. To prevent this, we
+ have made it clear that any patent must be licensed for everyone's free
+ use or not licensed at all.</P>
+<P>Most GNU software, including some libraries, is covered by the
+ ordinary GNU General Public License, which was designed for utility
+ programs. This license, the GNU Library General Public License, applies
+ to certain designated libraries. This license is quite different from
+ the ordinary one; be sure to read it in full, and don't assume that
+ anything in it is the same as in the ordinary license.</P>
+<P>The reason we have a separate public license for some libraries is
+ that they blur the distinction we usually make between modifying or
+ adding to a program and simply using it. Linking a program with a
+ library, without changing the library, is in some sense simply using
+ the library, and is analogous to running a utility program or
+ application program. However, in a textual and legal sense, the linked
+ executable is a combined work, a derivative of the original library,
+ and the ordinary General Public License treats it as such.</P>
+<P>Because of this blurred distinction, using the ordinary General
+ Public License for libraries did not effectively promote software
+ sharing, because most developers did not use the libraries. We
+ concluded that weaker conditions might promote sharing better.</P>
+<P>However, unrestricted linking of non-free programs would deprive the
+ users of those programs of all benefit from the free status of the
+ libraries themselves. This Library General Public License is intended
+ to permit developers of non-free programs to use free libraries, while
+ preserving your freedom as a user of such programs to change the free
+ libraries that are incorporated in them. (We have not seen how to
+ achieve this as regards changes in header files, but we have achieved
+ it as regards changes in the actual functions of the Library.) The hope
+ is that this will lead to faster development of free libraries.</P>
+<P>The precise terms and conditions for copying, distribution and
+ modification follow. Pay close attention to the difference between a
+ &quot;work based on the libary&quot; and a &quot;work that uses the library&quot;. The
+ former contains code derived from the library, while the latter only
+ works together with the library.</P>
+<P>Note that it is possible for a library to be covered by the ordinary
+ General Public License rather than by this special one.</P>
+<P align="center"><BIG>TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION
+ AND MODIFICATION</BIG></P>
+<P><STRONG>0.</STRONG> This License Agreement applies to any software
+ library which contains a notice placed by the copyright holder or other
+ authorized party saying it may be distributed under the terms of this
+ Library General Public License (also called &quot;this License&quot;). Each
+ licensee is addressed as &quot;you&quot;.</P>
+<P>A &quot;library&quot; means a collection of software functions and/or data
+ prepared so as to be conveniently linked with application programs
+ (which use some of those functions and data) to form executables.</P>
+<P>The &quot;Library&quot;, below, refers to any such software library or work
+ which has been distributed under these terms. A &quot;work based on the
+ Library&quot; means either the Library or any derivative work under
+ copyright law: that is to say, a work containing the Library or a
+ portion of it, either verbatim or with modifications and/or translated
+ straightforwardly into another language. (Hereinafter, translation is
+ included without limitation in the term &quot;modification&quot;.)</P>
+<P>&quot;Source code&quot; for a work means the preferred form of the work for
+ making modifications to it. For a library, complete source code means
+ all the source code for all modules it contains, plus any associated
+ interface definition files, plus the scripts used to control
+ compilation and installation of the library.</P>
+<P>Activities other than copying, distribution and modification are not
+ covered by this License; they are outside its scope. The act of running
+ a program using the Library is not restricted, and output from such a
+ program is covered only if its contents constitute a work based on the
+ Library (independent of the use of the Library in a tool for writing
+ it). Whether that is true depends on what the Library does and what the
+ program that uses the Library does.</P>
+<P><STRONG>1.</STRONG> You may copy and distribute verbatim copies of
+ the Library's complete source code as you receive it, in any medium,
+ provided that you conspicuously and appropriately publish on each copy
+ an appropriate copyright notice and disclaimer of warranty; keep intact
+ all the notices that refer to this License and to the absence of any
+ warranty; and distribute a copy of this License along with the Library.</P>
+<P>You may charge a fee for the physical act of transferring a copy, and
+ you may at your option offer warranty protection in exchange for a fee.</P>
+<P><STRONG>2.</STRONG> You may modify your copy or copies of the Library
+ or any portion of it, thus forming a work based on the Library, and
+ copy and distribute such modifications or work under the terms of
+ Section 1 above, provided that you also meet all of these conditions:</P>
+<BLOCKQUOTE>
+<P><STRONG>a)</STRONG> The modified work must itself be a software
+ library.</P>
+<P><STRONG>b)</STRONG> You must cause the files modified to carry
+ prominent notices stating that you changed the files and the date of
+ any change.</P>
+<P><STRONG>c)</STRONG> You must cause the whole of the work to be
+ licensed at no charge to all third parties under the terms of this
+ License.</P>
+<P><STRONG>d)</STRONG> If a facility in the modified Library refers to a
+ function or a table of data to be supplied by an application program
+ that uses the facility, other than as an argument passed when the
+ facility is invoked, then you must make a good faith effort to ensure
+ that, in the event an application does not supply such function or
+ table, the facility still operates, and performs whatever part of its
+ purpose remains meaningful.</P>
+<P>(For example, a function in a library to compute square roots has a
+ purpose that is entirely well-defined independent of the application.
+ Therefore, Subsection 2d requires that any application-supplied
+ function or table used by this function must be optional: if the
+ application does not supply it, the square root function must still
+ compute square roots.)</P>
+</BLOCKQUOTE>
+<P>These requirements apply to the modified work as a whole. If
+ identifiable sections of that work are not derived from the Library,
+ and can be reasonably considered independent and separate works in
+ themselves, then this License, and its terms, do not apply to those
+ sections when you distribute them as separate works. But when you
+ distribute the same sections as part of a whole which is a work based
+ on the Library, the distribution of the whole must be on the terms of
+ this License, whose permissions for other licensees extend to the
+ entire whole, and thus to each and every part regardless of who wrote
+ it.</P>
+<P>Thus, it is not the intent of this section to claim rights or contest
+ your rights to work written entirely by you; rather, the intent is to
+ exercise the right to control the distribution of derivative or
+ collective works based on the Library.</P>
+<P>In addition, mere aggregation of another work not based on the
+ Library with the Library (or with a work based on the Library) on a
+ volume of a storage or distribution medium does not bring the other
+ work under the scope of this License.</P>
+<P><STRONG>3.</STRONG> You may opt to apply the terms of the ordinary
+ GNU General Public License instead of this License to a given copy of
+ the Library. To do this, you must alter all the notices that refer to
+ this License, so that they refer to the ordinary GNU General Public
+ License, version 2, instead of to this License. (If a newer version
+ than version 2 of the ordinary GNU General Public License has appeared,
+ then you can specify that version instead if you wish.) Do not make any
+ other change in these notices.</P>
+<P>Once this change is made in a given copy, it is irreversible for that
+ copy, so the ordinary GNU General Public License applies to all
+ subsequent copies and derivative works made from that copy.</P>
+<P>This option is useful when you wish to copy part of the code of the
+ Library into a program that is not a library.</P>
+<P><STRONG>4.</STRONG> You may copy and distribute the Library (or a
+ portion or derivative of it, under Section 2) in object code or
+ executable form under the terms of Sections 1 and 2 above provided that
+ you accompany it with the complete corresponding machine-readable
+ source code, which must be distributed under the terms of Sections 1
+ and 2 above on a medium customarily used for software interchange.</P>
+<P>If distribution of object code is made by offering access to copy
+ from a designated place, then offering equivalent access to copy the
+ source code from the same place satisfies the requirement to distribute
+ the source code, even though third parties are not compelled to copy
+ the source along with the object code.</P>
+<P><STRONG>5.</STRONG> A program that contains no derivative of any
+ portion of the Library, but is designed to work with the Library by
+ being compiled or linked with it, is called a &quot;work that uses the
+ Library&quot;. Such a work, in isolation, is not a derivative work of the
+ Library, and therefore falls outside the scope of this License.</P>
+<P>However, linking a &quot;work that uses the Library&quot; with the Library
+ creates an executable that is a derivative of the Library (because it
+ contains portions of the Library), rather than a &quot;work that uses the
+ library&quot;. The executable is therefore covered by this License. Section
+ 6 states terms for distribution of such executables.</P>
+<P>When a &quot;work that uses the Library&quot; uses material from a header file
+ that is part of the Library, the object code for the work may be a
+ derivative work of the Library even though the source code is not.
+ Whether this is true is especially significant if the work can be
+ linked without the Library, or if the work is itself a library. The
+ threshold for this to be true is not precisely defined by law.</P>
+<P>If such an object file uses only numerical parameters, data structure
+ layouts and accessors, and small macros and small inline functions (ten
+ lines or less in length), then the use of the object file is
+ unrestricted, regardless of whether it is legally a derivative work.
+ (Executables containing this object code plus portions of the Library
+ will still fall under Section 6.)</P>
+<P>Otherwise, if the work is a derivative of the Library, you may
+ distribute the object code for the work under the terms of Section 6.
+ Any executables containing that work also fall under Section 6, whether
+ or not they are linked directly with the Library itself.</P>
+<P><STRONG>6.</STRONG> As an exception to the Sections above, you may
+ also compile or link a &quot;work that uses the Library&quot; with the Library to
+ produce a work containing portions of the Library, and distribute that
+ work under terms of your choice, provided that the terms permit
+ modification of the work for the customer's own use and reverse
+ engineering for debugging such modifications.</P>
+<P>You must give prominent notice with each copy of the work that the
+ Library is used in it and that the Library and its use are covered by
+ this License. You must supply a copy of this License. If the work
+ during execution displays copyright notices, you must include the
+ copyright notice for the Library among them, as well as a reference
+ directing the user to the copy of this License. Also, you must do one
+ of these things:</P>
+<BLOCKQUOTE><STRONG> a)</STRONG> Accompany the work with the complete
+ corresponding machine-readable source code for the Library including
+ whatever changes were used in the work (which must be distributed under
+ Sections 1 and 2 above); and, if the work is an executable linked with
+ the Library, with the complete machine-readable &quot;work that uses the
+ Library&quot;, as object code and/or source code, so that the user can
+ modify the Library and then relink to produce a modified executable
+ containing the modified Library. (It is understood that the user who
+ changes the contents of definitions files in the Library will not
+ necessarily be able to recompile the application to use the modified
+ definitions.)
+<P><STRONG>b)</STRONG> Accompany the work with a written offer, valid
+ for at least three years, to give the same user the materials specified
+ in Subsection 6a, above, for a charge no more than the cost of
+ performing this distribution.</P>
+<P><STRONG>c)</STRONG> If distribution of the work is made by offering
+ access to copy from a designated place, offer equivalent access to copy
+ the above specified materials from the same place.</P>
+<P><STRONG>d)</STRONG> Verify that the user has already received a copy
+ of these materials or that you have already sent this user a copy.</P>
+</BLOCKQUOTE>
+<P>For an executable, the required form of the &quot;work that uses the
+ Library&quot; must include any data and utility programs needed for
+ reproducing the executable from it. However, as a special exception,
+ the source code distributed need not include anything that is normally
+ distributed (in either source or binary form) with the major components
+ (compiler, kernel, and so on) of the operating system on which the
+ executable runs, unless that component itself accompanies the
+ executable.</P>
+<P>It may happen that this requirement contradicts the license
+ restrictions of other proprietary libraries that do not normally
+ accompany the operating system. Such a contradiction means you cannot
+ use both them and the Library together in an executable that you
+ distribute.</P>
+<P><STRONG>7.</STRONG> You may place library facilities that are a work
+ based on the Library side-by-side in a single library together with
+ other library facilities not covered by this License, and distribute
+ such a combined library, provided that the separate distribution of the
+ work based on the Library and of the other library facilities is
+ otherwise permitted, and provided that you do these two things:</P>
+<BLOCKQUOTE><STRONG> a)</STRONG> Accompany the combined library with a
+ copy of the same work based on the Library, uncombined with any other
+ library facilities. This must be distributed under the terms of the
+ Sections above.
+<P><STRONG>b)</STRONG> Give prominent notice with the combined library
+ of the fact that part of it is a work based on the Library, and
+ explaining where to find the accompanying uncombined form of the same
+ work.</P>
+</BLOCKQUOTE>
+<P><STRONG>8.</STRONG> You may not copy, modify, sublicense, link with,
+ or distribute the Library except as expressly provided under this
+ License. Any attempt otherwise to copy, modify, sublicense, link with,
+ or distribute the Library is void, and will automatically terminate
+ your rights under this License. However, parties who have received
+ copies, or rights, from you under this License will not have their
+ licenses terminated so long as such parties remain in full compliance.</P>
+<P><STRONG>9.</STRONG> You are not required to accept this License,
+ since you have not signed it. However, nothing else grants you
+ permission to modify or distribute the Library or its derivative works.
+ These actions are prohibited by law if you do not accept this License.
+ Therefore, by modifying or distributing the Library (or any work based
+ on the Library), you indicate your acceptance of this License to do so,
+ and all its terms and conditions for copying, distributing or modifying
+ the Library or works based on it.</P>
+<P><STRONG>10.</STRONG> Each time you redistribute the Library (or any
+ work based on the Library), the recipient automatically receives a
+ license from the original licensor to copy, distribute, link with or
+ modify the Library subject to these terms and conditions. You may not
+ impose any further restrictions on the recipients' exercise of the
+ rights granted herein. You are not responsible for enforcing compliance
+ by third parties to this License.</P>
+<P><STRONG>11.</STRONG> If, as a consequence of a court judgment or
+ allegation of patent infringement or for any other reason (not limited
+ to patent issues), conditions are imposed on you (whether by court
+ order, agreement or otherwise) that contradict the conditions of this
+ License, they do not excuse you from the conditions of this License. If
+ you cannot distribute so as to satisfy simultaneously your obligations
+ under this License and any other pertinent obligations, then as a
+ consequence you may not distribute the Library at all. For example, if
+ a patent license would not permit royalty-free redistribution of the
+ Library by all those who receive copies directly or indirectly through
+ you, then the only way you could satisfy both it and this License would
+ be to refrain entirely from distribution of the Library.</P>
+<P>If any portion of this section is held invalid or unenforceable under
+ any particular circumstance, the balance of the section is intended to
+ apply, and the section as a whole is intended to apply in other
+ circumstances.</P>
+<P>It is not the purpose of this section to induce you to infringe any
+ patents or other property right claims or to contest validity of any
+ such claims; this section has the sole purpose of protecting the
+ integrity of the free software distribution system which is implemented
+ by public license practices. Many people have made generous
+ contributions to the wide range of software distributed through that
+ system in reliance on consistent application of that system; it is up
+ to the author/donor to decide if he or she is willing to distribute
+ software through any other system and a licensee cannot impose that
+ choice.</P>
+<P>This section is intended to make thoroughly clear what is believed to
+ be a consequence of the rest of this License.</P>
+<P><STRONG>12.</STRONG> If the distribution and/or use of the Library is
+ restricted in certain countries either by patents or by copyrighted
+ interfaces, the original copyright holder who places the Library under
+ this License may add an explicit geographical distribution limitation
+ excluding those countries, so that distribution is permitted only in or
+ among countries not thus excluded. In such case, this License
+ incorporates the limitation as if written in the body of this License.</P>
+<P><STRONG>13.</STRONG> The Free Software Foundation may publish revised
+ and/or new versions of the Library General Public License from time to
+ time. Such new versions will be similar in spirit to the present
+ version, but may differ in detail to address new problems or concerns.</P>
+<P>Each version is given a distinguishing version number. If the Library
+ specifies a version number of this License which applies to it and &quot;any
+ later version&quot;, you have the option of following the terms and
+ conditions either of that version or of any later version published by
+ the Free Software Foundation. If the Library does not specify a license
+ version number, you may choose any version ever published by the Free
+ Software Foundation.</P>
+<P><STRONG>14.</STRONG> If you wish to incorporate parts of the Library
+ into other free programs whose distribution conditions are incompatible
+ with these, write to the author to ask for permission. For software
+ which is copyrighted by the Free Software Foundation, write to the Free
+ Software Foundation; we sometimes make exceptions for this. Our
+ decision will be guided by the two goals of preserving the free status
+ of all derivatives of our free software and of promoting the sharing
+ and reuse of software generally.</P>
+<P align="center"><BIG>NO WARRANTY</BIG></P>
+<P><STRONG>15.</STRONG> BECAUSE THE LIBRARY IS LICENSED FREE OF CHARGE,
+ THERE IS NO WARRANTY FOR THE LIBRARY, TO THE EXTENT PERMITTED BY
+ APPLICABLE LAW. EXCEPT WHEN OTHERWISE STATED IN WRITING THE COPYRIGHT
+ HOLDERS AND/OR OTHER PARTIES PROVIDE THE LIBRARY &quot;AS IS&quot; WITHOUT
+ WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING, BUT NOT
+ LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+ PARTICULAR PURPOSE. THE ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE
+ OF THE LIBRARY IS WITH YOU. SHOULD THE LIBRARY PROVE DEFECTIVE, YOU
+ ASSUME THE COST OF ALL NECESSARY SERVICING, REPAIR OR CORRECTION.</P>
+<P><STRONG>16.</STRONG> IN NO EVENT UNLESS REQUIRED BY APPLICABLE LAW OR
+ AGREED TO IN WRITING WILL ANY COPYRIGHT HOLDER, OR ANY OTHER PARTY WHO
+ MAY MODIFY AND/OR REDISTRIBUTE THE LIBRARY AS PERMITTED ABOVE, BE
+ LIABLE TO YOU FOR DAMAGES, INCLUDING ANY GENERAL, SPECIAL, INCIDENTAL
+ OR CONSEQUENTIAL DAMAGES ARISING OUT OF THE USE OR INABILITY TO USE THE
+ LIBRARY (INCLUDING BUT NOT LIMITED TO LOSS OF DATA OR DATA BEING
+ RENDERED INACCURATE OR LOSSES SUSTAINED BY YOU OR THIRD PARTIES OR A
+ FAILURE OF THE LIBRARY TO OPERATE WITH ANY OTHER SOFTWARE), EVEN IF
+ SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH
+ DAMAGES.</P>
+<P align="center"><BIG>END OF TERMS AND CONDITIONS</BIG></P>
+<H2><A NAME="6_1">How to Apply These Terms to Your New Libraries</A></H2>
+<P>If you develop a new library, and you want it to be of the greatest
+ possible use to the public, we recommend making it free software that
+ everyone can redistribute and change. You can do so by permitting
+ redistribution under these terms (or, alternatively, under the terms of
+ the ordinary General Public License).</P>
+<P>To apply these terms, attach the following notices to the library. It
+ is safest to attach them to the start of each source file to most
+ effectively convey the exclusion of warranty; and each file should have
+ at least the &quot;copyright&quot; line and a pointer to where the full notice is
+ found.</P>
+<PRE>
+<VAR>one line to give the library's name and an idea of what it does.</VAR>
+Copyright (C) <VAR>year</VAR>  <VAR>name of author</VAR>
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+</PRE>
+<P>Also add information on how to contact you by electronic and paper
+ mail.</P>
+<P>You should also get your employer (if you work as a programmer) or
+ your school, if any, to sign a &quot;copyright disclaimer&quot; for the library,
+ if necessary. Here is a sample; alter the names:</P>
+<PRE>
+Yoyodyne, Inc., hereby disclaims all copyright interest in
+the library `Frob' (a library for tweaking knobs) written
+by James Random Hacker.
+
+<VAR>signature of Ty Coon</VAR>, 1 April 1990
+Ty Coon, President of Vice
+</PRE>
+<P>That's all there is to it!</P>
+<HR NOSHADE>
+<H1 align="right"><A name="RELNOTES">B - Release Notes</A></H1>
+<H2><A NAME="7_1">Changes in Mini-XML 2.2.2</A></H2>
+<UL>
+<LI>mxmlLoad*() did not treat custom data as opaque, so whitespace
+ characters would be lost.</LI>
+</UL>
+<H2><A NAME="7_2">Changes in Mini-XML 2.2.1</A></H2>
+<UL>
+<LI>mxmlLoadFd(), mxmlLoadFile(), and mxmlLoadString() now correctly
+ return NULL on error (STR #21)</LI>
+<LI>mxmlNewInteger(), mxmlNewOpaque(), mxmlNewReal(), mxmlNewText(), and
+ mxmlNewTextf() incorrectly required a parent node (STR #22)</LI>
+<LI>Fixed an XML output bug in mxmldoc.</LI>
+<LI>The &quot;make install&quot; target now uses the install command to set the
+ proper permissions on UNIX/Linux/OSX.</LI>
+<LI>Fixed a MingW/Cygwin compilation problem (STR #18)</LI>
+</UL>
+<H2><A NAME="7_3">Changes in Mini-XML 2.2</A></H2>
+<UL>
+<LI>Added shared library support (STR #17)</LI>
+<LI>mxmlLoad*() now returns an error when an XML stream contains illegal
+ control characters (STR #10)</LI>
+<LI>mxmlLoad*() now returns an error when an element contains two
+ attributes with the same name in conformance with the XML spec (STR
+ #16)</LI>
+<LI>Added support for CDATA (STR #14, STR #15)</LI>
+<LI>Updated comment and processing instruction handling - no entity
+ support per XML specification.</LI>
+<LI>Added checking for invalid comment termination (&quot;---&gt;&quot; is not
+ allowed)</LI>
+</UL>
+<H2><A NAME="7_4">Changes in Mini-XML 2.1</A></H2>
+<UL>
+<LI>Added support for custom data nodes (STR #6)</LI>
+<LI>Now treat UTF-8 sequences which are longer than necessary as an
+ error (STR #4)</LI>
+<LI>Fixed entity number support (STR #8)</LI>
+<LI>Fixed mxmlLoadString() bug with UTF-8 (STR #7)</LI>
+<LI>Fixed entity lookup bug (STR #5)</LI>
+<LI>Added mxmlLoadFd() and mxmlSaveFd() functions.</LI>
+<LI>Fixed multi-word UTF-16 handling.</LI>
+</UL>
+<H2><A NAME="7_5">Changes in Mini-XML 2.0</A></H2>
+<UL>
+<LI>New programmers manual.</LI>
+<LI>Added Visual C++ project files for Microsoft Windows users.</LI>
+<LI>Added optimizations to mxmldoc, mxmlSaveFile(), and mxmlIndexNew()
+ (STR #2)</LI>
+<LI>mxmlEntityAddCallback() now returns an integer status (STR #2)</LI>
+<LI>Added UTF-16 support (input only; all output is UTF-8)</LI>
+<LI>Added index functions to build a searchable index of XML nodes.</LI>
+<LI>Added character entity callback interface to support additional
+ character entities beyond those defined in the XHTML specification.</LI>
+<LI>Added support for XHTML character entities.</LI>
+<LI>The mxmldoc utility now produces XML output which conforms to an
+ updated XML schema, described in the file &quot;doc/mxmldoc.xsd&quot;.</LI>
+<LI>Changed the whitespace callback interface to return strings instead
+ of a single character, allowing for greater control over the formatting
+ of XML files written using Mini-XML. THIS CHANGE WILL REQUIRE CHANGES
+ TO YOUR 1.x CODE IF YOU USE WHITESPACE CALLBACKS.</LI>
+<LI>The mxmldoc utility now produces XML output which conforms to an
+ updated XML schema, described in the file &quot;doc/mxmldoc.xsd&quot;.</LI>
+<LI>Changed the whitespace callback interface to return strings instead
+ of a single character, allowing for greater control over the formatting
+ of XML files written using Mini-XML. THIS CHANGE WILL REQUIRE CHANGES
+ TO YOUR 1.x CODE IF YOU USE WHITESPACE CALLBACKS.</LI>
+<LI>The mxmldoc utility is now capable of documenting C++ classes,
+ functions, and structures, and correctly handles C++ comments.</LI>
+<LI>Added new modular tests for mxmldoc.</LI>
+<LI>Updated the mxmldoc output to be more compatible with embedding in
+ manuals produced with HTMLDOC.</LI>
+<LI>The makefile incorrectly included a &quot;/&quot; separator between the
+ destination path and install path. This caused problems when building
+ and installing with MingW.</LI>
+</UL>
+<H2><A NAME="7_6">Changes in Mini-XML 1.3</A></H2>
+<UL>
+<LI>Fixes for mxmldoc.</LI>
+<LI>Added support for reading standard HTML entity names.</LI>
+<LI>mxmlLoadString/File() did not decode character entities in element
+ names, attribute names, or attribute values.</LI>
+<LI>mxmlLoadString/File() would crash when loading non- conformant XML
+ data under an existing parent (top) node.</LI>
+<LI>Fixed several bugs in the mxmldoc utility.</LI>
+<LI>Added new error callback function to catch a variety of errors and
+ log them to someplace other than stderr.</LI>
+<LI>The mxmlElementSetAttr() function now allows for NULL attribute
+ values.</LI>
+<LI>The load and save functions now properly handle quoted element and
+ attribute name strings properly, e.g. for !DOCTYPE declarations.</LI>
+</UL>
+<H2><A NAME="7_7">Changes in Mini-XML 1.2</A></H2>
+<UL>
+<LI>Added new &quot;set&quot; methods to set the value of a node.</LI>
+<LI>Added new formatted text methods mxmlNewTextf() and mxmlSetTextf()
+ to create/set a text node value using printf-style formats.</LI>
+<LI>Added new standard callbacks for use with the mxmlLoad functions.</LI>
+<LI>Updated the HTML documentation to include examples of the walk and
+ load function output.</LI>
+<LI>Added --with/without-ansi configure option to control the strdup()
+ function check.</LI>
+<LI>Added --with/without-snprintf configure option to control the
+ snprintf() and vsnprintf() function checks.</LI>
+</UL>
+<H2><A NAME="7_8">Changes in Mini-XML 1.1.2</A></H2>
+<UL>
+<LI>The mxml(3) man page wasn't updated for the string functions.</LI>
+<LI>mxmlSaveString() returned the wrong number of characters.</LI>
+<LI>mxml_add_char() updated the buffer pointer in the wrong place.</LI>
+</UL>
+<H2><A NAME="7_9">Changes in Mini-XML 1.1.1</A></H2>
+<UL>
+<LI>The private mxml_add_ch() function did not update the
+ start-of-buffer pointer which could cause a crash when using
+ mxmlSaveString().</LI>
+<LI>The private mxml_write_ws() function called putc() instead of using
+ the proper callback which could cause a crash when using
+ mxmlSaveString().</LI>
+<LI>Added a mxmlSaveAllocString() convenience function for saving an XML
+ node tree to an allocated string.</LI>
+</UL>
+<H2><A NAME="7_10">Changes in Mini-XML 1.1</A></H2>
+<UL>
+<LI>The mxmlLoadFile() function now uses dynamically allocated string
+ buffers for element names, attribute names, and attribute values.
+ Previously they were capped at 16383, 255, and 255 bytes, respectively.</LI>
+<LI>Added a new mxmlLoadString() function for loading an XML node tree
+ from a string.</LI>
+<LI>Added a new mxmlSaveString() function for saving an XML node tree to
+ a string.</LI>
+<LI>Add emulation of strdup() if the local platform does not provide the
+ function.</LI>
+</UL>
+<H2><A NAME="7_11">Changes in Mini-XML 1.0</A></H2>
+<UL>
+<LI>The mxmldoc program now handles function arguments, structures,
+ unions, enumerations, classes, and typedefs properly.</LI>
+<LI>Documentation provided via mxmldoc and more in-line comments in the
+ code.</LI>
+<LI>Added man pages and packaging files.</LI>
+</UL>
+<H2><A NAME="7_12">Changes in Mini-XML 0.93</A></H2>
+<UL>
+<LI>New mxmldoc example program that is also used to create and update
+ code documentation using XML and produce HTML reference pages.</LI>
+<LI>Added mxmlAdd() and mxmlRemove() functions to add and remove nodes
+ from a tree. This provides more flexibility over where the nodes are
+ inserted and allows nodes to be moved within the tree as needed.</LI>
+<LI>mxmlLoadFile() now correctly handles comments.</LI>
+<LI>mxmlLoadFile() now supports the required &quot;gt&quot;, &quot;quot&quot;, and &quot;nbsp&quot;
+ character entities.</LI>
+<LI>mxmlSaveFile() now uses newlines as whitespace when valid to do so.</LI>
+<LI>mxmlFindElement() now also takes attribute name and attribute value
+ string arguments to limit the search to specific elements with
+ attributes and/or values.</LI>
+ NULL pointers can be used as &quot;wildcards&quot;.
+<LI>Added uninstall target to makefile, and auto-reconfig if Makefile.in
+ or configure.in are changed.</LI>
+<LI>mxmlFindElement(), mxmlWalkNext(), and mxmlWalkPrev() now all
+ provide &quot;descend&quot; arguments to control whether they descend into child
+ nodes in the tree.</LI>
+<LI>Fixed some whitespace issues in mxmlLoadFile().</LI>
+<LI>Fixed Unicode output and whitespace issues in mxmlSaveFile().</LI>
+<LI>mxmlSaveFile() now supports a whitespace callback to provide more
+ human-readable XML output under program control.</LI>
+</UL>
+<H2><A NAME="7_13">Changes in Mini-XML 0.92</A></H2>
+<UL>
+<LI>mxmlSaveFile() didn't return a value on success.</LI>
+</UL>
+<H2><A NAME="7_14">Changes in Mini-XML 0.91</A></H2>
+<UL>
+<LI>mxmlWalkNext() would go into an infinite loop.</LI>
+</UL>
+<H2><A NAME="7_15">Changes in Mini-XML 0.9</A></H2>
+<UL>
+<LI>Initial public release.</LI>
+</UL>
+<HR NOSHADE>
+<H1 align="right"><A name="REFERENCE">C - Library Reference</A></H1>
+<H2><A NAME="8_1">Contents</A></H2>
+<UL>
+<LI><A href="#_enumerations">Enumerations</A></LI>
+<LI><A href="#_functions">Functions</A></LI>
+<LI><A href="#_structures">Structures</A></LI>
+<LI><A href="#_types">Types</A></LI>
+<LI><A href="#_unions">Unions</A></LI>
+</UL>
+
+<!-- NEW PAGE -->
+<H2><A name="_enumerations">Enumerations</A></H2>
+<UL>
+<LI><A href="#mxml_type_e"><TT>mxml_type_e</TT></A></LI>
+</UL>
+
+<!-- NEW PAGE -->
+<H3><A name="mxml_type_e">mxml_type_e</A></H3>
+<HR noshade/>
+<H4>Description</H4>
+<P>The XML node type.</P>
+<H4>Values</H4>
+<P class="table"></P>
+<TABLE align="center" border="1" cellpadding="5" cellspacing="0" width="80%">
+<THEAD></THEAD>
+<TR bgcolor="#cccccc"><TH>Name</TH><TH>Description</TH></TR>
+<TBODY></TBODY>
+<TR><TD><TT>MXML_CUSTOM</TT></TD><TD>Custom data</TD></TR>
+<TR><TD><TT>MXML_ELEMENT</TT></TD><TD>XML element with attributes</TD></TR>
+<TR><TD><TT>MXML_INTEGER</TT></TD><TD>Integer value</TD></TR>
+<TR><TD><TT>MXML_OPAQUE</TT></TD><TD>Opaque string</TD></TR>
+<TR><TD><TT>MXML_REAL</TT></TD><TD>Real value</TD></TR>
+<TR><TD><TT>MXML_TEXT</TT></TD><TD>Text fragment</TD></TR>
+</TABLE>
+
+<!-- NEW PAGE -->
+<H2><A name="_functions">Functions</A></H2>
+<UL>
+<LI><A href="#mxmlAdd"><TT>mxmlAdd()</TT></A></LI>
+<LI><A href="#mxmlDelete"><TT>mxmlDelete()</TT></A></LI>
+<LI><A href="#mxmlElementGetAttr"><TT>mxmlElementGetAttr()</TT></A></LI>
+<LI><A href="#mxmlElementSetAttr"><TT>mxmlElementSetAttr()</TT></A></LI>
+<LI><A href="#mxmlEntityAddCallback"><TT>mxmlEntityAddCallback()</TT></A>
+</LI>
+<LI><A href="#mxmlEntityGetName"><TT>mxmlEntityGetName()</TT></A></LI>
+<LI><A href="#mxmlEntityGetValue"><TT>mxmlEntityGetValue()</TT></A></LI>
+<LI><A href="#mxmlEntityRemoveCallback"><TT>mxmlEntityRemoveCallback()</TT>
+</A></LI>
+<LI><A href="#mxmlFindElement"><TT>mxmlFindElement()</TT></A></LI>
+<LI><A href="#mxmlIndexDelete"><TT>mxmlIndexDelete()</TT></A></LI>
+<LI><A href="#mxmlIndexEnum"><TT>mxmlIndexEnum()</TT></A></LI>
+<LI><A href="#mxmlIndexFind"><TT>mxmlIndexFind()</TT></A></LI>
+<LI><A href="#mxmlIndexNew"><TT>mxmlIndexNew()</TT></A></LI>
+<LI><A href="#mxmlIndexReset"><TT>mxmlIndexReset()</TT></A></LI>
+<LI><A href="#mxmlLoadFd"><TT>mxmlLoadFd()</TT></A></LI>
+<LI><A href="#mxmlLoadFile"><TT>mxmlLoadFile()</TT></A></LI>
+<LI><A href="#mxmlLoadString"><TT>mxmlLoadString()</TT></A></LI>
+<LI><A href="#mxmlNewCustom"><TT>mxmlNewCustom()</TT></A></LI>
+<LI><A href="#mxmlNewElement"><TT>mxmlNewElement()</TT></A></LI>
+<LI><A href="#mxmlNewInteger"><TT>mxmlNewInteger()</TT></A></LI>
+<LI><A href="#mxmlNewOpaque"><TT>mxmlNewOpaque()</TT></A></LI>
+<LI><A href="#mxmlNewReal"><TT>mxmlNewReal()</TT></A></LI>
+<LI><A href="#mxmlNewText"><TT>mxmlNewText()</TT></A></LI>
+<LI><A href="#mxmlNewTextf"><TT>mxmlNewTextf()</TT></A></LI>
+<LI><A href="#mxmlRemove"><TT>mxmlRemove()</TT></A></LI>
+<LI><A href="#mxmlSaveAllocString"><TT>mxmlSaveAllocString()</TT></A></LI>
+<LI><A href="#mxmlSaveFd"><TT>mxmlSaveFd()</TT></A></LI>
+<LI><A href="#mxmlSaveFile"><TT>mxmlSaveFile()</TT></A></LI>
+<LI><A href="#mxmlSaveString"><TT>mxmlSaveString()</TT></A></LI>
+<LI><A href="#mxmlSetCustom"><TT>mxmlSetCustom()</TT></A></LI>
+<LI><A href="#mxmlSetCustomHandlers"><TT>mxmlSetCustomHandlers()</TT></A>
+</LI>
+<LI><A href="#mxmlSetElement"><TT>mxmlSetElement()</TT></A></LI>
+<LI><A href="#mxmlSetErrorCallback"><TT>mxmlSetErrorCallback()</TT></A></LI>
+<LI><A href="#mxmlSetInteger"><TT>mxmlSetInteger()</TT></A></LI>
+<LI><A href="#mxmlSetOpaque"><TT>mxmlSetOpaque()</TT></A></LI>
+<LI><A href="#mxmlSetReal"><TT>mxmlSetReal()</TT></A></LI>
+<LI><A href="#mxmlSetText"><TT>mxmlSetText()</TT></A></LI>
+<LI><A href="#mxmlSetTextf"><TT>mxmlSetTextf()</TT></A></LI>
+<LI><A href="#mxmlWalkNext"><TT>mxmlWalkNext()</TT></A></LI>
+<LI><A href="#mxmlWalkPrev"><TT>mxmlWalkPrev()</TT></A></LI>
+</UL>
+
+<!-- NEW PAGE -->
+<H3><A name="mxmlAdd">mxmlAdd()</A></H3>
+<HR noshade/>
+<H4>Description</H4>
+<P>Add a node to a tree. Adds the specified node to the parent. If the
+ child argument is not NULL, puts the new node before or after the
+ specified child depending on the value of the where argument. If the
+ child argument is NULL, puts the new node at the beginning of the child
+ list (MXML_ADD_BEFORE) or at the end of the child list
+ (MXML_ADD_AFTER). The constant MXML_ADD_TO_PARENT can be used to
+ specify a NULL child pointer.</P>
+<H4>Syntax</H4>
+<PRE>
+void
+mxmlAdd(
+    <A href="#mxml_node_t">mxml_node_t</A> * parent,
+    int where,
+    <A href="#mxml_node_t">mxml_node_t</A> * child,
+    <A href="#mxml_node_t">mxml_node_t</A> * node);
+</PRE>
+<H4>Arguments</H4>
+<P class="table"></P>
+<TABLE align="center" border="1" cellpadding="5" cellspacing="0" width="80%">
+<THEAD></THEAD>
+<TR bgcolor="#cccccc"><TH>Name</TH><TH>Description</TH></TR>
+<TBODY></TBODY>
+<TR><TD><TT>parent</TT></TD><TD>Parent node</TD></TR>
+<TR><TD><TT>where</TT></TD><TD>Where to add, MXML_ADD_BEFORE or
+ MXML_ADD_AFTER</TD></TR>
+<TR><TD><TT>child</TT></TD><TD>Child node for where or
+ MXML_ADD_TO_PARENT</TD></TR>
+<TR><TD><TT>node</TT></TD><TD>Node to add</TD></TR>
+</TABLE>
+<H4>Returns</H4>
+<P>Nothing.</P>
+
+<!-- NEW PAGE -->
+<H3><A name="mxmlDelete">mxmlDelete()</A></H3>
+<HR noshade/>
+<H4>Description</H4>
+<P>Delete a node and all of its children. If the specified node has a
+ parent, this function first removes the node from its parent using the
+ mxmlRemove() function.</P>
+<H4>Syntax</H4>
+<PRE>
+void
+mxmlDelete(
+    <A href="#mxml_node_t">mxml_node_t</A> * node);
+</PRE>
+<H4>Arguments</H4>
+<P class="table"></P>
+<TABLE align="center" border="1" cellpadding="5" cellspacing="0" width="80%">
+<THEAD></THEAD>
+<TR bgcolor="#cccccc"><TH>Name</TH><TH>Description</TH></TR>
+<TBODY></TBODY>
+<TR><TD><TT>node</TT></TD><TD>Node to delete</TD></TR>
+</TABLE>
+<H4>Returns</H4>
+<P>Nothing.</P>
+
+<!-- NEW PAGE -->
+<H3><A name="mxmlElementGetAttr">mxmlElementGetAttr()</A></H3>
+<HR noshade/>
+<H4>Description</H4>
+<P>Get an attribute. This function returns NULL if the node is not an
+ element or the named attribute does not exist.</P>
+<H4>Syntax</H4>
+<PRE>
+const char *
+mxmlElementGetAttr(
+    <A href="#mxml_node_t">mxml_node_t</A> * node,
+    const char * name);
+</PRE>
+<H4>Arguments</H4>
+<P class="table"></P>
+<TABLE align="center" border="1" cellpadding="5" cellspacing="0" width="80%">
+<THEAD></THEAD>
+<TR bgcolor="#cccccc"><TH>Name</TH><TH>Description</TH></TR>
+<TBODY></TBODY>
+<TR><TD><TT>node</TT></TD><TD>Element node</TD></TR>
+<TR><TD><TT>name</TT></TD><TD>Name of attribute</TD></TR>
+</TABLE>
+<H4>Returns</H4>
+<P>Attribute value or NULL</P>
+
+<!-- NEW PAGE -->
+<H3><A name="mxmlElementSetAttr">mxmlElementSetAttr()</A></H3>
+<HR noshade/>
+<H4>Description</H4>
+<P>Set an attribute. If the named attribute already exists, the value of
+ the attribute is replaced by the new string value. The string value is
+ copied into the element node. This function does nothing if the node is
+ not an element.</P>
+<H4>Syntax</H4>
+<PRE>
+void
+mxmlElementSetAttr(
+    <A href="#mxml_node_t">mxml_node_t</A> * node,
+    const char * name,
+    const char * value);
+</PRE>
+<H4>Arguments</H4>
+<P class="table"></P>
+<TABLE align="center" border="1" cellpadding="5" cellspacing="0" width="80%">
+<THEAD></THEAD>
+<TR bgcolor="#cccccc"><TH>Name</TH><TH>Description</TH></TR>
+<TBODY></TBODY>
+<TR><TD><TT>node</TT></TD><TD>Element node</TD></TR>
+<TR><TD><TT>name</TT></TD><TD>Name of attribute</TD></TR>
+<TR><TD><TT>value</TT></TD><TD>Attribute value</TD></TR>
+</TABLE>
+<H4>Returns</H4>
+<P>Nothing.</P>
+
+<!-- NEW PAGE -->
+<H3><A name="mxmlEntityAddCallback">mxmlEntityAddCallback()</A></H3>
+<HR noshade/>
+<H4>Description</H4>
+<P>Add a callback to convert entities to Unicode.</P>
+<H4>Syntax</H4>
+<PRE>
+int
+mxmlEntityAddCallback(
+    int (*cb)(const char *name));
+</PRE>
+<H4>Arguments</H4>
+<P class="table"></P>
+<TABLE align="center" border="1" cellpadding="5" cellspacing="0" width="80%">
+<THEAD></THEAD>
+<TR bgcolor="#cccccc"><TH>Name</TH><TH>Description</TH></TR>
+<TBODY></TBODY>
+<TR><TD><TT>(*cb)(const char *name)</TT></TD><TD>Callback function to
+ add</TD></TR>
+</TABLE>
+<H4>Returns</H4>
+<P>0 on success, -1 on failure</P>
+
+<!-- NEW PAGE -->
+<H3><A name="mxmlEntityGetName">mxmlEntityGetName()</A></H3>
+<HR noshade/>
+<H4>Description</H4>
+<P>Get the name that corresponds to the character value. If val does not
+ need to be represented by a named entity, NULL is returned.</P>
+<H4>Syntax</H4>
+<PRE>
+const char *
+mxmlEntityGetName(
+    int val);
+</PRE>
+<H4>Arguments</H4>
+<P class="table"></P>
+<TABLE align="center" border="1" cellpadding="5" cellspacing="0" width="80%">
+<THEAD></THEAD>
+<TR bgcolor="#cccccc"><TH>Name</TH><TH>Description</TH></TR>
+<TBODY></TBODY>
+<TR><TD><TT>val</TT></TD><TD>Character value</TD></TR>
+</TABLE>
+<H4>Returns</H4>
+<P>Entity name or NULL</P>
+
+<!-- NEW PAGE -->
+<H3><A name="mxmlEntityGetValue">mxmlEntityGetValue()</A></H3>
+<HR noshade/>
+<H4>Description</H4>
+<P>Get the character corresponding to a named entity. The entity name
+ can also be a numeric constant. -1 is returned if the name is not
+ known.</P>
+<H4>Syntax</H4>
+<PRE>
+int
+mxmlEntityGetValue(
+    const char * name);
+</PRE>
+<H4>Arguments</H4>
+<P class="table"></P>
+<TABLE align="center" border="1" cellpadding="5" cellspacing="0" width="80%">
+<THEAD></THEAD>
+<TR bgcolor="#cccccc"><TH>Name</TH><TH>Description</TH></TR>
+<TBODY></TBODY>
+<TR><TD><TT>name</TT></TD><TD>Entity name</TD></TR>
+</TABLE>
+<H4>Returns</H4>
+<P>Character value or -1 on error</P>
+
+<!-- NEW PAGE -->
+<H3><A name="mxmlEntityRemoveCallback">mxmlEntityRemoveCallback()</A></H3>
+<HR noshade/>
+<H4>Description</H4>
+<P>Remove a callback.</P>
+<H4>Syntax</H4>
+<PRE>
+void
+mxmlEntityRemoveCallback(
+    int (*cb)(const char *name));
+</PRE>
+<H4>Arguments</H4>
+<P class="table"></P>
+<TABLE align="center" border="1" cellpadding="5" cellspacing="0" width="80%">
+<THEAD></THEAD>
+<TR bgcolor="#cccccc"><TH>Name</TH><TH>Description</TH></TR>
+<TBODY></TBODY>
+<TR><TD><TT>(*cb)(const char *name)</TT></TD><TD>Callback function to
+ remove</TD></TR>
+</TABLE>
+<H4>Returns</H4>
+<P>Nothing.</P>
+
+<!-- NEW PAGE -->
+<H3><A name="mxmlFindElement">mxmlFindElement()</A></H3>
+<HR noshade/>
+<H4>Description</H4>
+<P>Find the named element. The search is constrained by the name,
+ attribute name, and value; any NULL names or values are treated as
+ wildcards, so different kinds of searches can be implemented by looking
+ for all elements of a given name or all elements with a specific
+ attribute. The descend argument determines whether the search descends
+ into child nodes; normally you will use MXML_DESCEND_FIRST for the
+ initial search and MXML_NO_DESCEND to find additional direct
+ descendents of the node. The top node argument constrains the search to
+ a particular node's children.</P>
+<H4>Syntax</H4>
+<PRE>
+<A href="#mxml_node_t">mxml_node_t</A> *
+mxmlFindElement(
+    <A href="#mxml_node_t">mxml_node_t</A> * node,
+    <A href="#mxml_node_t">mxml_node_t</A> * top,
+    const char * name,
+    const char * attr,
+    const char * value,
+    int descend);
+</PRE>
+<H4>Arguments</H4>
+<P class="table"></P>
+<TABLE align="center" border="1" cellpadding="5" cellspacing="0" width="80%">
+<THEAD></THEAD>
+<TR bgcolor="#cccccc"><TH>Name</TH><TH>Description</TH></TR>
+<TBODY></TBODY>
+<TR><TD><TT>node</TT></TD><TD>Current node</TD></TR>
+<TR><TD><TT>top</TT></TD><TD>Top node</TD></TR>
+<TR><TD><TT>name</TT></TD><TD>Element name or NULL for any</TD></TR>
+<TR><TD><TT>attr</TT></TD><TD>Attribute name, or NULL for none</TD></TR>
+<TR><TD><TT>value</TT></TD><TD>Attribute value, or NULL for any</TD></TR>
+<TR><TD><TT>descend</TT></TD><TD>Descend into tree - MXML_DESCEND,
+ MXML_NO_DESCEND, or MXML_DESCEND_FIRST</TD></TR>
+</TABLE>
+<H4>Returns</H4>
+<P>Element node or NULL</P>
+
+<!-- NEW PAGE -->
+<H3><A name="mxmlIndexDelete">mxmlIndexDelete()</A></H3>
+<HR noshade/>
+<H4>Description</H4>
+<P>Delete an index.</P>
+<H4>Syntax</H4>
+<PRE>
+void
+mxmlIndexDelete(
+    <A href="#mxml_index_t">mxml_index_t</A> * ind);
+</PRE>
+<H4>Arguments</H4>
+<P class="table"></P>
+<TABLE align="center" border="1" cellpadding="5" cellspacing="0" width="80%">
+<THEAD></THEAD>
+<TR bgcolor="#cccccc"><TH>Name</TH><TH>Description</TH></TR>
+<TBODY></TBODY>
+<TR><TD><TT>ind</TT></TD><TD>Index to delete</TD></TR>
+</TABLE>
+<H4>Returns</H4>
+<P>Nothing.</P>
+
+<!-- NEW PAGE -->
+<H3><A name="mxmlIndexEnum">mxmlIndexEnum()</A></H3>
+<HR noshade/>
+<H4>Description</H4>
+<P>Return the next node in the index. Nodes are returned in the sorted
+ order of the index.</P>
+<H4>Syntax</H4>
+<PRE>
+<A href="#mxml_node_t">mxml_node_t</A> *
+mxmlIndexEnum(
+    <A href="#mxml_index_t">mxml_index_t</A> * ind);
+</PRE>
+<H4>Arguments</H4>
+<P class="table"></P>
+<TABLE align="center" border="1" cellpadding="5" cellspacing="0" width="80%">
+<THEAD></THEAD>
+<TR bgcolor="#cccccc"><TH>Name</TH><TH>Description</TH></TR>
+<TBODY></TBODY>
+<TR><TD><TT>ind</TT></TD><TD>Index to enumerate</TD></TR>
+</TABLE>
+<H4>Returns</H4>
+<P>Next node or NULL if there is none</P>
+
+<!-- NEW PAGE -->
+<H3><A name="mxmlIndexFind">mxmlIndexFind()</A></H3>
+<HR noshade/>
+<H4>Description</H4>
+<P>Find the next matching node. You should call mxmlIndexReset() prior
+ to using this function for the first time with a particular set of
+ &quot;element&quot; and &quot;value&quot; strings. Passing NULL for both &quot;element&quot; and
+ &quot;value&quot; is equivalent to calling mxmlIndexEnum().</P>
+<H4>Syntax</H4>
+<PRE>
+<A href="#mxml_node_t">mxml_node_t</A> *
+mxmlIndexFind(
+    <A href="#mxml_index_t">mxml_index_t</A> * ind,
+    const char * element,
+    const char * value);
+</PRE>
+<H4>Arguments</H4>
+<P class="table"></P>
+<TABLE align="center" border="1" cellpadding="5" cellspacing="0" width="80%">
+<THEAD></THEAD>
+<TR bgcolor="#cccccc"><TH>Name</TH><TH>Description</TH></TR>
+<TBODY></TBODY>
+<TR><TD><TT>ind</TT></TD><TD>Index to search</TD></TR>
+<TR><TD><TT>element</TT></TD><TD>Element name to find, if any</TD></TR>
+<TR><TD><TT>value</TT></TD><TD>Attribute value, if any</TD></TR>
+</TABLE>
+<H4>Returns</H4>
+<P>Node or NULL if none found</P>
+
+<!-- NEW PAGE -->
+<H3><A name="mxmlIndexNew">mxmlIndexNew()</A></H3>
+<HR noshade/>
+<H4>Description</H4>
+<P>Create a new index. The index will contain all nodes that contain the
+ named element and/or attribute. If both &quot;element&quot; and &quot;attr&quot; are NULL,
+ then the index will contain a sorted list of the elements in the node
+ tree. Nodes are sorted by element name and optionally by attribute
+ value if the &quot;attr&quot; argument is not NULL.</P>
+<H4>Syntax</H4>
+<PRE>
+<A href="#mxml_index_t">mxml_index_t</A> *
+mxmlIndexNew(
+    <A href="#mxml_node_t">mxml_node_t</A> * node,
+    const char * element,
+    const char * attr);
+</PRE>
+<H4>Arguments</H4>
+<P class="table"></P>
+<TABLE align="center" border="1" cellpadding="5" cellspacing="0" width="80%">
+<THEAD></THEAD>
+<TR bgcolor="#cccccc"><TH>Name</TH><TH>Description</TH></TR>
+<TBODY></TBODY>
+<TR><TD><TT>node</TT></TD><TD>XML node tree</TD></TR>
+<TR><TD><TT>element</TT></TD><TD>Element to index or NULL for all</TD></TR>
+<TR><TD><TT>attr</TT></TD><TD>Attribute to index or NULL for none</TD></TR>
+</TABLE>
+<H4>Returns</H4>
+<P>New index</P>
+
+<!-- NEW PAGE -->
+<H3><A name="mxmlIndexReset">mxmlIndexReset()</A></H3>
+<HR noshade/>
+<H4>Description</H4>
+<P>Reset the enumeration/find pointer in the index and return the first
+ node in the index. This function should be called prior to using
+ mxmlIndexEnum() or mxmlIndexFind() for the first time.</P>
+<H4>Syntax</H4>
+<PRE>
+<A href="#mxml_node_t">mxml_node_t</A> *
+mxmlIndexReset(
+    <A href="#mxml_index_t">mxml_index_t</A> * ind);
+</PRE>
+<H4>Arguments</H4>
+<P class="table"></P>
+<TABLE align="center" border="1" cellpadding="5" cellspacing="0" width="80%">
+<THEAD></THEAD>
+<TR bgcolor="#cccccc"><TH>Name</TH><TH>Description</TH></TR>
+<TBODY></TBODY>
+<TR><TD><TT>ind</TT></TD><TD>Index to reset</TD></TR>
+</TABLE>
+<H4>Returns</H4>
+<P>First node or NULL if there is none</P>
+
+<!-- NEW PAGE -->
+<H3><A name="mxmlLoadFd">mxmlLoadFd()</A></H3>
+<HR noshade/>
+<H4>Description</H4>
+<P>Load a file descriptor into an XML node tree. The nodes in the
+ specified file are added to the specified top node. If no top node is
+ provided, the XML file MUST be well-formed with a single parent node
+ like &lt;?xml&gt; for the entire file. The callback function returns the
+ value type that should be used for child nodes. If MXML_NO_CALLBACK is
+ specified then all child nodes will be either MXML_ELEMENT or MXML_TEXT
+ nodes. The constants MXML_INTEGER_CALLBACK, MXML_OPAQUE_CALLBACK,
+ MXML_REAL_CALLBACK, and MXML_TEXT_CALLBACK are defined for loading
+ child nodes of the specified type.</P>
+<H4>Syntax</H4>
+<PRE>
+<A href="#mxml_node_t">mxml_node_t</A> *
+mxmlLoadFd(
+    <A href="#mxml_node_t">mxml_node_t</A> * top,
+    int fd,
+    <A href="#mxml_type_t">mxml_type_t</A> (*cb)(mxml_node_t *node));
+</PRE>
+<H4>Arguments</H4>
+<P class="table"></P>
+<TABLE align="center" border="1" cellpadding="5" cellspacing="0" width="80%">
+<THEAD></THEAD>
+<TR bgcolor="#cccccc"><TH>Name</TH><TH>Description</TH></TR>
+<TBODY></TBODY>
+<TR><TD><TT>top</TT></TD><TD>Top node</TD></TR>
+<TR><TD><TT>fd</TT></TD><TD>File descriptor to read from</TD></TR>
+<TR><TD><TT>(*cb)(mxml_node_t *node)</TT></TD><TD>Callback function or
+ MXML_NO_CALLBACK</TD></TR>
+</TABLE>
+<H4>Returns</H4>
+<P>First node or NULL if the file could not be read.</P>
+
+<!-- NEW PAGE -->
+<H3><A name="mxmlLoadFile">mxmlLoadFile()</A></H3>
+<HR noshade/>
+<H4>Description</H4>
+<P>Load a file into an XML node tree. The nodes in the specified file
+ are added to the specified top node. If no top node is provided, the
+ XML file MUST be well-formed with a single parent node like &lt;?xml&gt; for
+ the entire file. The callback function returns the value type that
+ should be used for child nodes. If MXML_NO_CALLBACK is specified then
+ all child nodes will be either MXML_ELEMENT or MXML_TEXT nodes. The
+ constants MXML_INTEGER_CALLBACK, MXML_OPAQUE_CALLBACK,
+ MXML_REAL_CALLBACK, and MXML_TEXT_CALLBACK are defined for loading
+ child nodes of the specified type.</P>
+<H4>Syntax</H4>
+<PRE>
+<A href="#mxml_node_t">mxml_node_t</A> *
+mxmlLoadFile(
+    <A href="#mxml_node_t">mxml_node_t</A> * top,
+    FILE * fp,
+    <A href="#mxml_type_t">mxml_type_t</A> (*cb)(mxml_node_t *node));
+</PRE>
+<H4>Arguments</H4>
+<P class="table"></P>
+<TABLE align="center" border="1" cellpadding="5" cellspacing="0" width="80%">
+<THEAD></THEAD>
+<TR bgcolor="#cccccc"><TH>Name</TH><TH>Description</TH></TR>
+<TBODY></TBODY>
+<TR><TD><TT>top</TT></TD><TD>Top node</TD></TR>
+<TR><TD><TT>fp</TT></TD><TD>File to read from</TD></TR>
+<TR><TD><TT>(*cb)(mxml_node_t *node)</TT></TD><TD>Callback function or
+ MXML_NO_CALLBACK</TD></TR>
+</TABLE>
+<H4>Returns</H4>
+<P>First node or NULL if the file could not be read.</P>
+
+<!-- NEW PAGE -->
+<H3><A name="mxmlLoadString">mxmlLoadString()</A></H3>
+<HR noshade/>
+<H4>Description</H4>
+<P>Load a string into an XML node tree. The nodes in the specified
+ string are added to the specified top node. If no top node is provided,
+ the XML string MUST be well-formed with a single parent node like
+ &lt;?xml&gt; for the entire string. The callback function returns the value
+ type that should be used for child nodes. If MXML_NO_CALLBACK is
+ specified then all child nodes will be either MXML_ELEMENT or MXML_TEXT
+ nodes. The constants MXML_INTEGER_CALLBACK, MXML_OPAQUE_CALLBACK,
+ MXML_REAL_CALLBACK, and MXML_TEXT_CALLBACK are defined for loading
+ child nodes of the specified type.</P>
+<H4>Syntax</H4>
+<PRE>
+<A href="#mxml_node_t">mxml_node_t</A> *
+mxmlLoadString(
+    <A href="#mxml_node_t">mxml_node_t</A> * top,
+    const char * s,
+    <A href="#mxml_type_t">mxml_type_t</A> (*cb)(mxml_node_t *node));
+</PRE>
+<H4>Arguments</H4>
+<P class="table"></P>
+<TABLE align="center" border="1" cellpadding="5" cellspacing="0" width="80%">
+<THEAD></THEAD>
+<TR bgcolor="#cccccc"><TH>Name</TH><TH>Description</TH></TR>
+<TBODY></TBODY>
+<TR><TD><TT>top</TT></TD><TD>Top node</TD></TR>
+<TR><TD><TT>s</TT></TD><TD>String to load</TD></TR>
+<TR><TD><TT>(*cb)(mxml_node_t *node)</TT></TD><TD>Callback function or
+ MXML_NO_CALLBACK</TD></TR>
+</TABLE>
+<H4>Returns</H4>
+<P>First node or NULL if the string has errors.</P>
+
+<!-- NEW PAGE -->
+<H3><A name="mxmlNewCustom">mxmlNewCustom()</A></H3>
+<HR noshade/>
+<H4>Description</H4>
+<P>Create a new custom data node. The new custom node is added to the
+ end of the specified parent's child list. The constant MXML_NO_PARENT
+ can be used to specify that the new element node has no parent. NULL
+ can be passed when the data in the node is not dynamically allocated or
+ is separately managed.</P>
+<H4>Syntax</H4>
+<PRE>
+<A href="#mxml_node_t">mxml_node_t</A> *
+mxmlNewCustom(
+    <A href="#mxml_node_t">mxml_node_t</A> * parent,
+    void * data,
+    void (*destroy)(void *));
+</PRE>
+<H4>Arguments</H4>
+<P class="table"></P>
+<TABLE align="center" border="1" cellpadding="5" cellspacing="0" width="80%">
+<THEAD></THEAD>
+<TR bgcolor="#cccccc"><TH>Name</TH><TH>Description</TH></TR>
+<TBODY></TBODY>
+<TR><TD><TT>parent</TT></TD><TD>Parent node or MXML_NO_PARENT</TD></TR>
+<TR><TD><TT>data</TT></TD><TD>Pointer to data</TD></TR>
+<TR><TD><TT>(*destroy)(void *)</TT></TD><TD>Function to destroy data</TD>
+</TR>
+</TABLE>
+<H4>Returns</H4>
+<P>New node</P>
+
+<!-- NEW PAGE -->
+<H3><A name="mxmlNewElement">mxmlNewElement()</A></H3>
+<HR noshade/>
+<H4>Description</H4>
+<P>Create a new element node. The new element node is added to the end
+ of the specified parent's child list. The constant MXML_NO_PARENT can
+ be used to specify that the new element node has no parent.</P>
+<H4>Syntax</H4>
+<PRE>
+<A href="#mxml_node_t">mxml_node_t</A> *
+mxmlNewElement(
+    <A href="#mxml_node_t">mxml_node_t</A> * parent,
+    const char * name);
+</PRE>
+<H4>Arguments</H4>
+<P class="table"></P>
+<TABLE align="center" border="1" cellpadding="5" cellspacing="0" width="80%">
+<THEAD></THEAD>
+<TR bgcolor="#cccccc"><TH>Name</TH><TH>Description</TH></TR>
+<TBODY></TBODY>
+<TR><TD><TT>parent</TT></TD><TD>Parent node or MXML_NO_PARENT</TD></TR>
+<TR><TD><TT>name</TT></TD><TD>Name of element</TD></TR>
+</TABLE>
+<H4>Returns</H4>
+<P>New node</P>
+
+<!-- NEW PAGE -->
+<H3><A name="mxmlNewInteger">mxmlNewInteger()</A></H3>
+<HR noshade/>
+<H4>Description</H4>
+<P>Create a new integer node. The new integer node is added to the end
+ of the specified parent's child list. The constant MXML_NO_PARENT can
+ be used to specify that the new integer node has no parent.</P>
+<H4>Syntax</H4>
+<PRE>
+<A href="#mxml_node_t">mxml_node_t</A> *
+mxmlNewInteger(
+    <A href="#mxml_node_t">mxml_node_t</A> * parent,
+    int integer);
+</PRE>
+<H4>Arguments</H4>
+<P class="table"></P>
+<TABLE align="center" border="1" cellpadding="5" cellspacing="0" width="80%">
+<THEAD></THEAD>
+<TR bgcolor="#cccccc"><TH>Name</TH><TH>Description</TH></TR>
+<TBODY></TBODY>
+<TR><TD><TT>parent</TT></TD><TD>Parent node or MXML_NO_PARENT</TD></TR>
+<TR><TD><TT>integer</TT></TD><TD>Integer value</TD></TR>
+</TABLE>
+<H4>Returns</H4>
+<P>New node</P>
+
+<!-- NEW PAGE -->
+<H3><A name="mxmlNewOpaque">mxmlNewOpaque()</A></H3>
+<HR noshade/>
+<H4>Description</H4>
+<P>Create a new opaque string. The new opaque node is added to the end
+ of the specified parent's child list. The constant MXML_NO_PARENT can
+ be used to specify that the new opaque node has no parent. The opaque
+ string must be nul-terminated and is copied into the new node.</P>
+<H4>Syntax</H4>
+<PRE>
+<A href="#mxml_node_t">mxml_node_t</A> *
+mxmlNewOpaque(
+    <A href="#mxml_node_t">mxml_node_t</A> * parent,
+    const char * opaque);
+</PRE>
+<H4>Arguments</H4>
+<P class="table"></P>
+<TABLE align="center" border="1" cellpadding="5" cellspacing="0" width="80%">
+<THEAD></THEAD>
+<TR bgcolor="#cccccc"><TH>Name</TH><TH>Description</TH></TR>
+<TBODY></TBODY>
+<TR><TD><TT>parent</TT></TD><TD>Parent node or MXML_NO_PARENT</TD></TR>
+<TR><TD><TT>opaque</TT></TD><TD>Opaque string</TD></TR>
+</TABLE>
+<H4>Returns</H4>
+<P>New node</P>
+
+<!-- NEW PAGE -->
+<H3><A name="mxmlNewReal">mxmlNewReal()</A></H3>
+<HR noshade/>
+<H4>Description</H4>
+<P>Create a new real number node. The new real number node is added to
+ the end of the specified parent's child list. The constant
+ MXML_NO_PARENT can be used to specify that the new real number node has
+ no parent.</P>
+<H4>Syntax</H4>
+<PRE>
+<A href="#mxml_node_t">mxml_node_t</A> *
+mxmlNewReal(
+    <A href="#mxml_node_t">mxml_node_t</A> * parent,
+    double real);
+</PRE>
+<H4>Arguments</H4>
+<P class="table"></P>
+<TABLE align="center" border="1" cellpadding="5" cellspacing="0" width="80%">
+<THEAD></THEAD>
+<TR bgcolor="#cccccc"><TH>Name</TH><TH>Description</TH></TR>
+<TBODY></TBODY>
+<TR><TD><TT>parent</TT></TD><TD>Parent node or MXML_NO_PARENT</TD></TR>
+<TR><TD><TT>real</TT></TD><TD>Real number value</TD></TR>
+</TABLE>
+<H4>Returns</H4>
+<P>New node</P>
+
+<!-- NEW PAGE -->
+<H3><A name="mxmlNewText">mxmlNewText()</A></H3>
+<HR noshade/>
+<H4>Description</H4>
+<P>Create a new text fragment node. The new text node is added to the
+ end of the specified parent's child list. The constant MXML_NO_PARENT
+ can be used to specify that the new text node has no parent. The
+ whitespace parameter is used to specify whether leading whitespace is
+ present before the node. The text string must be nul-terminated and is
+ copied into the new node.</P>
+<H4>Syntax</H4>
+<PRE>
+<A href="#mxml_node_t">mxml_node_t</A> *
+mxmlNewText(
+    <A href="#mxml_node_t">mxml_node_t</A> * parent,
+    int whitespace,
+    const char * string);
+</PRE>
+<H4>Arguments</H4>
+<P class="table"></P>
+<TABLE align="center" border="1" cellpadding="5" cellspacing="0" width="80%">
+<THEAD></THEAD>
+<TR bgcolor="#cccccc"><TH>Name</TH><TH>Description</TH></TR>
+<TBODY></TBODY>
+<TR><TD><TT>parent</TT></TD><TD>Parent node or MXML_NO_PARENT</TD></TR>
+<TR><TD><TT>whitespace</TT></TD><TD>1 = leading whitespace, 0 = no
+ whitespace</TD></TR>
+<TR><TD><TT>string</TT></TD><TD>String</TD></TR>
+</TABLE>
+<H4>Returns</H4>
+<P>New node</P>
+
+<!-- NEW PAGE -->
+<H3><A name="mxmlNewTextf">mxmlNewTextf()</A></H3>
+<HR noshade/>
+<H4>Description</H4>
+<P>Create a new formatted text fragment node. The new text node is added
+ to the end of the specified parent's child list. The constant
+ MXML_NO_PARENT can be used to specify that the new text node has no
+ parent. The whitespace parameter is used to specify whether leading
+ whitespace is present before the node. The format string must be
+ nul-terminated and is formatted into the new node.</P>
+<H4>Syntax</H4>
+<PRE>
+<A href="#mxml_node_t">mxml_node_t</A> *
+mxmlNewTextf(
+    <A href="#mxml_node_t">mxml_node_t</A> * parent,
+    int whitespace,
+    const char * format,
+    ...);
+</PRE>
+<H4>Arguments</H4>
+<P class="table"></P>
+<TABLE align="center" border="1" cellpadding="5" cellspacing="0" width="80%">
+<THEAD></THEAD>
+<TR bgcolor="#cccccc"><TH>Name</TH><TH>Description</TH></TR>
+<TBODY></TBODY>
+<TR><TD><TT>parent</TT></TD><TD>Parent node or MXML_NO_PARENT</TD></TR>
+<TR><TD><TT>whitespace</TT></TD><TD>1 = leading whitespace, 0 = no
+ whitespace</TD></TR>
+<TR><TD><TT>format</TT></TD><TD>Printf-style frmat string</TD></TR>
+<TR><TD><TT>...</TT></TD><TD>Additional args as needed</TD></TR>
+</TABLE>
+<H4>Returns</H4>
+<P>New node</P>
+
+<!-- NEW PAGE -->
+<H3><A name="mxmlRemove">mxmlRemove()</A></H3>
+<HR noshade/>
+<H4>Description</H4>
+<P>Remove a node from its parent. Does not free memory used by the node
+ - use mxmlDelete() for that. This function does nothing if the node has
+ no parent.</P>
+<H4>Syntax</H4>
+<PRE>
+void
+mxmlRemove(
+    <A href="#mxml_node_t">mxml_node_t</A> * node);
+</PRE>
+<H4>Arguments</H4>
+<P class="table"></P>
+<TABLE align="center" border="1" cellpadding="5" cellspacing="0" width="80%">
+<THEAD></THEAD>
+<TR bgcolor="#cccccc"><TH>Name</TH><TH>Description</TH></TR>
+<TBODY></TBODY>
+<TR><TD><TT>node</TT></TD><TD>Node to remove</TD></TR>
+</TABLE>
+<H4>Returns</H4>
+<P>Nothing.</P>
+
+<!-- NEW PAGE -->
+<H3><A name="mxmlSaveAllocString">mxmlSaveAllocString()</A></H3>
+<HR noshade/>
+<H4>Description</H4>
+<P>Save an XML node tree to an allocated string. This function returns a
+ pointer to a string containing the textual representation of the XML
+ node tree. The string should be freed using the free() function when
+ you are done with it. NULL is returned if the node would produce an
+ empty string or if the string cannot be allocated. The callback
+ argument specifies a function that returns a whitespace string or NULL
+ before and after each element. If MXML_NO_CALLBACK is specified,
+ whitespace will only be added before MXML_TEXT nodes with leading
+ whitespace and before attribute names inside opening element tags.</P>
+<H4>Syntax</H4>
+<PRE>
+char *
+mxmlSaveAllocString(
+    <A href="#mxml_node_t">mxml_node_t</A> * node,
+    const char * (*cb)(mxml_node_t *node, int ws));
+</PRE>
+<H4>Arguments</H4>
+<P class="table"></P>
+<TABLE align="center" border="1" cellpadding="5" cellspacing="0" width="80%">
+<THEAD></THEAD>
+<TR bgcolor="#cccccc"><TH>Name</TH><TH>Description</TH></TR>
+<TBODY></TBODY>
+<TR><TD><TT>node</TT></TD><TD>Node to write</TD></TR>
+<TR><TD><TT>(*cb)(mxml_node_t *node, int ws)</TT></TD><TD>Whitespace
+ callback or MXML_NO_CALLBACK</TD></TR>
+</TABLE>
+<H4>Returns</H4>
+<P>Allocated string or NULL</P>
+
+<!-- NEW PAGE -->
+<H3><A name="mxmlSaveFd">mxmlSaveFd()</A></H3>
+<HR noshade/>
+<H4>Description</H4>
+<P>Save an XML tree to a file descriptor. The callback argument
+ specifies a function that returns a whitespace string or NULL before
+ and after each element. If MXML_NO_CALLBACK is specified, whitespace
+ will only be added before MXML_TEXT nodes with leading whitespace and
+ before attribute names inside opening element tags.</P>
+<H4>Syntax</H4>
+<PRE>
+int
+mxmlSaveFd(
+    <A href="#mxml_node_t">mxml_node_t</A> * node,
+    int fd,
+    const char * (*cb)(mxml_node_t *node, int ws));
+</PRE>
+<H4>Arguments</H4>
+<P class="table"></P>
+<TABLE align="center" border="1" cellpadding="5" cellspacing="0" width="80%">
+<THEAD></THEAD>
+<TR bgcolor="#cccccc"><TH>Name</TH><TH>Description</TH></TR>
+<TBODY></TBODY>
+<TR><TD><TT>node</TT></TD><TD>Node to write</TD></TR>
+<TR><TD><TT>fd</TT></TD><TD>File descriptor to write to</TD></TR>
+<TR><TD><TT>(*cb)(mxml_node_t *node, int ws)</TT></TD><TD>Whitespace
+ callback or MXML_NO_CALLBACK</TD></TR>
+</TABLE>
+<H4>Returns</H4>
+<P>0 on success, -1 on error.</P>
+
+<!-- NEW PAGE -->
+<H3><A name="mxmlSaveFile">mxmlSaveFile()</A></H3>
+<HR noshade/>
+<H4>Description</H4>
+<P>Save an XML tree to a file. The callback argument specifies a
+ function that returns a whitespace string or NULL before and after each
+ element. If MXML_NO_CALLBACK is specified, whitespace will only be
+ added before MXML_TEXT nodes with leading whitespace and before
+ attribute names inside opening element tags.</P>
+<H4>Syntax</H4>
+<PRE>
+int
+mxmlSaveFile(
+    <A href="#mxml_node_t">mxml_node_t</A> * node,
+    FILE * fp,
+    const char * (*cb)(mxml_node_t *node, int ws));
+</PRE>
+<H4>Arguments</H4>
+<P class="table"></P>
+<TABLE align="center" border="1" cellpadding="5" cellspacing="0" width="80%">
+<THEAD></THEAD>
+<TR bgcolor="#cccccc"><TH>Name</TH><TH>Description</TH></TR>
+<TBODY></TBODY>
+<TR><TD><TT>node</TT></TD><TD>Node to write</TD></TR>
+<TR><TD><TT>fp</TT></TD><TD>File to write to</TD></TR>
+<TR><TD><TT>(*cb)(mxml_node_t *node, int ws)</TT></TD><TD>Whitespace
+ callback or MXML_NO_CALLBACK</TD></TR>
+</TABLE>
+<H4>Returns</H4>
+<P>0 on success, -1 on error.</P>
+
+<!-- NEW PAGE -->
+<H3><A name="mxmlSaveString">mxmlSaveString()</A></H3>
+<HR noshade/>
+<H4>Description</H4>
+<P>Save an XML node tree to a string. This function returns the total
+ number of bytes that would be required for the string but only copies
+ (bufsize - 1) characters into the specified buffer. The callback
+ argument specifies a function that returns a whitespace string or NULL
+ before and after each element. If MXML_NO_CALLBACK is specified,
+ whitespace will only be added before MXML_TEXT nodes with leading
+ whitespace and before attribute names inside opening element tags.</P>
+<H4>Syntax</H4>
+<PRE>
+int
+mxmlSaveString(
+    <A href="#mxml_node_t">mxml_node_t</A> * node,
+    char * buffer,
+    int bufsize,
+    const char * (*cb)(mxml_node_t *node, int ws));
+</PRE>
+<H4>Arguments</H4>
+<P class="table"></P>
+<TABLE align="center" border="1" cellpadding="5" cellspacing="0" width="80%">
+<THEAD></THEAD>
+<TR bgcolor="#cccccc"><TH>Name</TH><TH>Description</TH></TR>
+<TBODY></TBODY>
+<TR><TD><TT>node</TT></TD><TD>Node to write</TD></TR>
+<TR><TD><TT>buffer</TT></TD><TD>String buffer</TD></TR>
+<TR><TD><TT>bufsize</TT></TD><TD>Size of string buffer</TD></TR>
+<TR><TD><TT>(*cb)(mxml_node_t *node, int ws)</TT></TD><TD>Whitespace
+ callback or MXML_NO_CALLBACK</TD></TR>
+</TABLE>
+<H4>Returns</H4>
+<P>Size of string</P>
+
+<!-- NEW PAGE -->
+<H3><A name="mxmlSetCustom">mxmlSetCustom()</A></H3>
+<HR noshade/>
+<H4>Description</H4>
+<P>Set the data and destructor of a custom data node. The node is not
+ changed if it is not a custom node.</P>
+<H4>Syntax</H4>
+<PRE>
+int
+mxmlSetCustom(
+    <A href="#mxml_node_t">mxml_node_t</A> * node,
+    void * data,
+    void (*destroy)(void *));
+</PRE>
+<H4>Arguments</H4>
+<P class="table"></P>
+<TABLE align="center" border="1" cellpadding="5" cellspacing="0" width="80%">
+<THEAD></THEAD>
+<TR bgcolor="#cccccc"><TH>Name</TH><TH>Description</TH></TR>
+<TBODY></TBODY>
+<TR><TD><TT>node</TT></TD><TD>Node to set</TD></TR>
+<TR><TD><TT>data</TT></TD><TD>New data pointer</TD></TR>
+<TR><TD><TT>(*destroy)(void *)</TT></TD><TD>New destructor function</TD></TR>
+</TABLE>
+<H4>Returns</H4>
+<P>0 on success, -1 on failure</P>
+
+<!-- NEW PAGE -->
+<H3><A name="mxmlSetCustomHandlers">mxmlSetCustomHandlers()</A></H3>
+<HR noshade/>
+<H4>Description</H4>
+<P>Set the handling functions for custom data. The load function accepts
+ a node pointer and a data string and must return 0 on success and
+ non-zero on error. The save function accepts a node pointer and must
+ return a malloc'd string on success and NULL on error.</P>
+<H4>Syntax</H4>
+<PRE>
+void
+mxmlSetCustomHandlers(
+    mxml_custom_load_cb_t load,
+    mxml_custom_save_cb_t save);
+</PRE>
+<H4>Arguments</H4>
+<P class="table"></P>
+<TABLE align="center" border="1" cellpadding="5" cellspacing="0" width="80%">
+<THEAD></THEAD>
+<TR bgcolor="#cccccc"><TH>Name</TH><TH>Description</TH></TR>
+<TBODY></TBODY>
+<TR><TD><TT>load</TT></TD><TD>Load function</TD></TR>
+<TR><TD><TT>save</TT></TD><TD>Save function</TD></TR>
+</TABLE>
+<H4>Returns</H4>
+<P>Nothing.</P>
+
+<!-- NEW PAGE -->
+<H3><A name="mxmlSetElement">mxmlSetElement()</A></H3>
+<HR noshade/>
+<H4>Description</H4>
+<P>Set the name of an element node. The node is not changed if it is not
+ an element node.</P>
+<H4>Syntax</H4>
+<PRE>
+int
+mxmlSetElement(
+    <A href="#mxml_node_t">mxml_node_t</A> * node,
+    const char * name);
+</PRE>
+<H4>Arguments</H4>
+<P class="table"></P>
+<TABLE align="center" border="1" cellpadding="5" cellspacing="0" width="80%">
+<THEAD></THEAD>
+<TR bgcolor="#cccccc"><TH>Name</TH><TH>Description</TH></TR>
+<TBODY></TBODY>
+<TR><TD><TT>node</TT></TD><TD>Node to set</TD></TR>
+<TR><TD><TT>name</TT></TD><TD>New name string</TD></TR>
+</TABLE>
+<H4>Returns</H4>
+<P>0 on success, -1 on failure</P>
+
+<!-- NEW PAGE -->
+<H3><A name="mxmlSetErrorCallback">mxmlSetErrorCallback()</A></H3>
+<HR noshade/>
+<H4>Description</H4>
+<P>Set the error message callback.</P>
+<H4>Syntax</H4>
+<PRE>
+void
+mxmlSetErrorCallback(
+    void (*cb)(const char *));
+</PRE>
+<H4>Arguments</H4>
+<P class="table"></P>
+<TABLE align="center" border="1" cellpadding="5" cellspacing="0" width="80%">
+<THEAD></THEAD>
+<TR bgcolor="#cccccc"><TH>Name</TH><TH>Description</TH></TR>
+<TBODY></TBODY>
+<TR><TD><TT>(*cb)(const char *)</TT></TD><TD>Error callback function</TD>
+</TR>
+</TABLE>
+<H4>Returns</H4>
+<P>Nothing.</P>
+
+<!-- NEW PAGE -->
+<H3><A name="mxmlSetInteger">mxmlSetInteger()</A></H3>
+<HR noshade/>
+<H4>Description</H4>
+<P>Set the value of an integer node. The node is not changed if it is
+ not an integer node.</P>
+<H4>Syntax</H4>
+<PRE>
+int
+mxmlSetInteger(
+    <A href="#mxml_node_t">mxml_node_t</A> * node,
+    int integer);
+</PRE>
+<H4>Arguments</H4>
+<P class="table"></P>
+<TABLE align="center" border="1" cellpadding="5" cellspacing="0" width="80%">
+<THEAD></THEAD>
+<TR bgcolor="#cccccc"><TH>Name</TH><TH>Description</TH></TR>
+<TBODY></TBODY>
+<TR><TD><TT>node</TT></TD><TD>Node to set</TD></TR>
+<TR><TD><TT>integer</TT></TD><TD>Integer value</TD></TR>
+</TABLE>
+<H4>Returns</H4>
+<P>0 on success, -1 on failure</P>
+
+<!-- NEW PAGE -->
+<H3><A name="mxmlSetOpaque">mxmlSetOpaque()</A></H3>
+<HR noshade/>
+<H4>Description</H4>
+<P>Set the value of an opaque node. The node is not changed if it is not
+ an opaque node.</P>
+<H4>Syntax</H4>
+<PRE>
+int
+mxmlSetOpaque(
+    <A href="#mxml_node_t">mxml_node_t</A> * node,
+    const char * opaque);
+</PRE>
+<H4>Arguments</H4>
+<P class="table"></P>
+<TABLE align="center" border="1" cellpadding="5" cellspacing="0" width="80%">
+<THEAD></THEAD>
+<TR bgcolor="#cccccc"><TH>Name</TH><TH>Description</TH></TR>
+<TBODY></TBODY>
+<TR><TD><TT>node</TT></TD><TD>Node to set</TD></TR>
+<TR><TD><TT>opaque</TT></TD><TD>Opaque string</TD></TR>
+</TABLE>
+<H4>Returns</H4>
+<P>0 on success, -1 on failure</P>
+
+<!-- NEW PAGE -->
+<H3><A name="mxmlSetReal">mxmlSetReal()</A></H3>
+<HR noshade/>
+<H4>Description</H4>
+<P>Set the value of a real number node. The node is not changed if it is
+ not a real number node.</P>
+<H4>Syntax</H4>
+<PRE>
+int
+mxmlSetReal(
+    <A href="#mxml_node_t">mxml_node_t</A> * node,
+    double real);
+</PRE>
+<H4>Arguments</H4>
+<P class="table"></P>
+<TABLE align="center" border="1" cellpadding="5" cellspacing="0" width="80%">
+<THEAD></THEAD>
+<TR bgcolor="#cccccc"><TH>Name</TH><TH>Description</TH></TR>
+<TBODY></TBODY>
+<TR><TD><TT>node</TT></TD><TD>Node to set</TD></TR>
+<TR><TD><TT>real</TT></TD><TD>Real number value</TD></TR>
+</TABLE>
+<H4>Returns</H4>
+<P>0 on success, -1 on failure</P>
+
+<!-- NEW PAGE -->
+<H3><A name="mxmlSetText">mxmlSetText()</A></H3>
+<HR noshade/>
+<H4>Description</H4>
+<P>Set the value of a text node. The node is not changed if it is not a
+ text node.</P>
+<H4>Syntax</H4>
+<PRE>
+int
+mxmlSetText(
+    <A href="#mxml_node_t">mxml_node_t</A> * node,
+    int whitespace,
+    const char * string);
+</PRE>
+<H4>Arguments</H4>
+<P class="table"></P>
+<TABLE align="center" border="1" cellpadding="5" cellspacing="0" width="80%">
+<THEAD></THEAD>
+<TR bgcolor="#cccccc"><TH>Name</TH><TH>Description</TH></TR>
+<TBODY></TBODY>
+<TR><TD><TT>node</TT></TD><TD>Node to set</TD></TR>
+<TR><TD><TT>whitespace</TT></TD><TD>1 = leading whitespace, 0 = no
+ whitespace</TD></TR>
+<TR><TD><TT>string</TT></TD><TD>String</TD></TR>
+</TABLE>
+<H4>Returns</H4>
+<P>0 on success, -1 on failure</P>
+
+<!-- NEW PAGE -->
+<H3><A name="mxmlSetTextf">mxmlSetTextf()</A></H3>
+<HR noshade/>
+<H4>Description</H4>
+<P>Set the value of a text node to a formatted string. The node is not
+ changed if it is not a text node.</P>
+<H4>Syntax</H4>
+<PRE>
+int
+mxmlSetTextf(
+    <A href="#mxml_node_t">mxml_node_t</A> * node,
+    int whitespace,
+    const char * format,
+    ...);
+</PRE>
+<H4>Arguments</H4>
+<P class="table"></P>
+<TABLE align="center" border="1" cellpadding="5" cellspacing="0" width="80%">
+<THEAD></THEAD>
+<TR bgcolor="#cccccc"><TH>Name</TH><TH>Description</TH></TR>
+<TBODY></TBODY>
+<TR><TD><TT>node</TT></TD><TD>Node to set</TD></TR>
+<TR><TD><TT>whitespace</TT></TD><TD>1 = leading whitespace, 0 = no
+ whitespace</TD></TR>
+<TR><TD><TT>format</TT></TD><TD>Printf-style format string</TD></TR>
+<TR><TD><TT>...</TT></TD><TD>Additional arguments as needed</TD></TR>
+</TABLE>
+<H4>Returns</H4>
+<P>0 on success, -1 on failure</P>
+
+<!-- NEW PAGE -->
+<H3><A name="mxmlWalkNext">mxmlWalkNext()</A></H3>
+<HR noshade/>
+<H4>Description</H4>
+<P>Walk to the next logical node in the tree. The descend argument
+ controls whether the first child is considered to be the next node. The
+ top node argument constrains the walk to the node's children.</P>
+<H4>Syntax</H4>
+<PRE>
+<A href="#mxml_node_t">mxml_node_t</A> *
+mxmlWalkNext(
+    <A href="#mxml_node_t">mxml_node_t</A> * node,
+    <A href="#mxml_node_t">mxml_node_t</A> * top,
+    int descend);
+</PRE>
+<H4>Arguments</H4>
+<P class="table"></P>
+<TABLE align="center" border="1" cellpadding="5" cellspacing="0" width="80%">
+<THEAD></THEAD>
+<TR bgcolor="#cccccc"><TH>Name</TH><TH>Description</TH></TR>
+<TBODY></TBODY>
+<TR><TD><TT>node</TT></TD><TD>Current node</TD></TR>
+<TR><TD><TT>top</TT></TD><TD>Top node</TD></TR>
+<TR><TD><TT>descend</TT></TD><TD>Descend into tree - MXML_DESCEND,
+ MXML_NO_DESCEND, or MXML_DESCEND_FIRST</TD></TR>
+</TABLE>
+<H4>Returns</H4>
+<P>Next node or NULL</P>
+
+<!-- NEW PAGE -->
+<H3><A name="mxmlWalkPrev">mxmlWalkPrev()</A></H3>
+<HR noshade/>
+<H4>Description</H4>
+<P>Walk to the previous logical node in the tree. The descend argument
+ controls whether the previous node's last child is considered to be the
+ previous node. The top node argument constrains the walk to the node's
+ children.</P>
+<H4>Syntax</H4>
+<PRE>
+<A href="#mxml_node_t">mxml_node_t</A> *
+mxmlWalkPrev(
+    <A href="#mxml_node_t">mxml_node_t</A> * node,
+    <A href="#mxml_node_t">mxml_node_t</A> * top,
+    int descend);
+</PRE>
+<H4>Arguments</H4>
+<P class="table"></P>
+<TABLE align="center" border="1" cellpadding="5" cellspacing="0" width="80%">
+<THEAD></THEAD>
+<TR bgcolor="#cccccc"><TH>Name</TH><TH>Description</TH></TR>
+<TBODY></TBODY>
+<TR><TD><TT>node</TT></TD><TD>Current node</TD></TR>
+<TR><TD><TT>top</TT></TD><TD>Top node</TD></TR>
+<TR><TD><TT>descend</TT></TD><TD>Descend into tree - MXML_DESCEND,
+ MXML_NO_DESCEND, or MXML_DESCEND_FIRST</TD></TR>
+</TABLE>
+<H4>Returns</H4>
+<P>Previous node or NULL</P>
+
+<!-- NEW PAGE -->
+<H2><A name="_structures">Structures</A></H2>
+<UL>
+<LI><A href="#mxml_attr_s"><TT>mxml_attr_s</TT></A></LI>
+<LI><A href="#mxml_custom_s"><TT>mxml_custom_s</TT></A></LI>
+<LI><A href="#mxml_index_s"><TT>mxml_index_s</TT></A></LI>
+<LI><A href="#mxml_node_s"><TT>mxml_node_s</TT></A></LI>
+<LI><A href="#mxml_text_s"><TT>mxml_text_s</TT></A></LI>
+<LI><A href="#mxml_value_s"><TT>mxml_value_s</TT></A></LI>
+</UL>
+
+<!-- NEW PAGE -->
+<H3><A name="mxml_attr_s">mxml_attr_s</A></H3>
+<HR noshade/>
+<H4>Description</H4>
+<P>An XML element attribute value.</P>
+<H4>Definition</H4>
+<PRE>
+struct mxml_attr_s
+{
+  char * name;
+  char * value;
+};
+</PRE>
+<H4>Members</H4>
+<P class="table"></P>
+<TABLE align="center" border="1" cellpadding="5" cellspacing="0" width="80%">
+<THEAD></THEAD>
+<TR bgcolor="#cccccc"><TH>Name</TH><TH>Description</TH></TR>
+<TBODY></TBODY>
+<TR><TD><TT>name</TT></TD><TD>Attribute name</TD></TR>
+<TR><TD><TT>value</TT></TD><TD>Attribute value</TD></TR>
+</TABLE>
+
+<!-- NEW PAGE -->
+<H3><A name="mxml_custom_s">mxml_custom_s</A></H3>
+<HR noshade/>
+<H4>Description</H4>
+<P>An XML custom value.</P>
+<H4>Definition</H4>
+<PRE>
+struct mxml_custom_s
+{
+  void * data;
+};
+</PRE>
+<H4>Members</H4>
+<P class="table"></P>
+<TABLE align="center" border="1" cellpadding="5" cellspacing="0" width="80%">
+<THEAD></THEAD>
+<TR bgcolor="#cccccc"><TH>Name</TH><TH>Description</TH></TR>
+<TBODY></TBODY>
+<TR><TD><TT>data</TT></TD><TD>Pointer to (allocated) custom data</TD></TR>
+</TABLE>
+
+<!-- NEW PAGE -->
+<H3><A name="mxml_index_s">mxml_index_s</A></H3>
+<HR noshade/>
+<H4>Description</H4>
+<P>An XML node index.</P>
+<H4>Definition</H4>
+<PRE>
+struct mxml_index_s
+{
+  int alloc_nodes;
+  char * attr;
+  int cur_node;
+  <A href="#mxml_node_t">mxml_node_t</A> ** nodes;
+  int num_nodes;
+};
+</PRE>
+<H4>Members</H4>
+<P class="table"></P>
+<TABLE align="center" border="1" cellpadding="5" cellspacing="0" width="80%">
+<THEAD></THEAD>
+<TR bgcolor="#cccccc"><TH>Name</TH><TH>Description</TH></TR>
+<TBODY></TBODY>
+<TR><TD><TT>alloc_nodes</TT></TD><TD>Allocated nodes in index</TD></TR>
+<TR><TD><TT>attr</TT></TD><TD>Attribute used for indexing or NULL</TD></TR>
+<TR><TD><TT>cur_node</TT></TD><TD>Current node</TD></TR>
+<TR><TD><TT>nodes</TT></TD><TD>Node array</TD></TR>
+<TR><TD><TT>num_nodes</TT></TD><TD>Number of nodes in index</TD></TR>
+</TABLE>
+
+<!-- NEW PAGE -->
+<H3><A name="mxml_node_s">mxml_node_s</A></H3>
+<HR noshade/>
+<H4>Description</H4>
+<P>An XML node.</P>
+<H4>Definition</H4>
+<PRE>
+struct mxml_node_s
+{
+  struct <A href="#mxml_node_s">mxml_node_s</A> * child;
+  struct <A href="#mxml_node_s">mxml_node_s</A> * last_child;
+  struct <A href="#mxml_node_s">mxml_node_s</A> * next;
+  struct <A href="#mxml_node_s">mxml_node_s</A> * parent;
+  struct <A href="#mxml_node_s">mxml_node_s</A> * prev;
+  <A href="#mxml_type_t">mxml_type_t</A> type;
+  <A href="#mxml_value_t">mxml_value_t</A> value;
+};
+</PRE>
+<H4>Members</H4>
+<P class="table"></P>
+<TABLE align="center" border="1" cellpadding="5" cellspacing="0" width="80%">
+<THEAD></THEAD>
+<TR bgcolor="#cccccc"><TH>Name</TH><TH>Description</TH></TR>
+<TBODY></TBODY>
+<TR><TD><TT>child</TT></TD><TD>First child node</TD></TR>
+<TR><TD><TT>last_child</TT></TD><TD>Last child node</TD></TR>
+<TR><TD><TT>next</TT></TD><TD>Next node under same parent</TD></TR>
+<TR><TD><TT>parent</TT></TD><TD>Parent node</TD></TR>
+<TR><TD><TT>prev</TT></TD><TD>Previous node under same parent</TD></TR>
+<TR><TD><TT>type</TT></TD><TD>Node type</TD></TR>
+<TR><TD><TT>value</TT></TD><TD>Node value</TD></TR>
+</TABLE>
+
+<!-- NEW PAGE -->
+<H3><A name="mxml_text_s">mxml_text_s</A></H3>
+<HR noshade/>
+<H4>Description</H4>
+<P>An XML text value.</P>
+<H4>Definition</H4>
+<PRE>
+struct mxml_text_s
+{
+  char * string;
+  int whitespace;
+};
+</PRE>
+<H4>Members</H4>
+<P class="table"></P>
+<TABLE align="center" border="1" cellpadding="5" cellspacing="0" width="80%">
+<THEAD></THEAD>
+<TR bgcolor="#cccccc"><TH>Name</TH><TH>Description</TH></TR>
+<TBODY></TBODY>
+<TR><TD><TT>string</TT></TD><TD>Fragment string</TD></TR>
+<TR><TD><TT>whitespace</TT></TD><TD>Leading whitespace?</TD></TR>
+</TABLE>
+
+<!-- NEW PAGE -->
+<H3><A name="mxml_value_s">mxml_value_s</A></H3>
+<HR noshade/>
+<H4>Description</H4>
+<P>An XML element value.</P>
+<H4>Definition</H4>
+<PRE>
+struct mxml_value_s
+{
+  <A href="#mxml_attr_t">mxml_attr_t</A> * attrs;
+  char * name;
+  int num_attrs;
+};
+</PRE>
+<H4>Members</H4>
+<P class="table"></P>
+<TABLE align="center" border="1" cellpadding="5" cellspacing="0" width="80%">
+<THEAD></THEAD>
+<TR bgcolor="#cccccc"><TH>Name</TH><TH>Description</TH></TR>
+<TBODY></TBODY>
+<TR><TD><TT>attrs</TT></TD><TD>Attributes</TD></TR>
+<TR><TD><TT>name</TT></TD><TD>Name of element</TD></TR>
+<TR><TD><TT>num_attrs</TT></TD><TD>Number of attributes</TD></TR>
+</TABLE>
+
+<!-- NEW PAGE -->
+<H2><A name="_types">Types</A></H2>
+<UL>
+<LI><A href="#mxml_attr_t"><TT>mxml_attr_t</TT></A></LI>
+<LI><A href="#mxml_custom_t"><TT>mxml_custom_t</TT></A></LI>
+<LI><A href="#mxml_element_t"><TT>mxml_element_t</TT></A></LI>
+<LI><A href="#mxml_index_t"><TT>mxml_index_t</TT></A></LI>
+<LI><A href="#mxml_node_t"><TT>mxml_node_t</TT></A></LI>
+<LI><A href="#mxml_text_t"><TT>mxml_text_t</TT></A></LI>
+<LI><A href="#mxml_type_t"><TT>mxml_type_t</TT></A></LI>
+<LI><A href="#mxml_value_t"><TT>mxml_value_t</TT></A></LI>
+</UL>
+
+<!-- NEW PAGE -->
+<H3><A name="mxml_attr_t">mxml_attr_t</A></H3>
+<HR noshade/>
+<H4>Description</H4>
+<P>An XML element attribute value.</P>
+<H4>Definition</H4>
+<PRE>
+typedef struct <A href="#mxml_attr_s">mxml_attr_s</A> mxml_attr_t;
+</PRE>
+
+<!-- NEW PAGE -->
+<H3><A name="mxml_custom_t">mxml_custom_t</A></H3>
+<HR noshade/>
+<H4>Description</H4>
+<P>An XML custom value.</P>
+<H4>Definition</H4>
+<PRE>
+typedef struct <A href="#mxml_custom_s">mxml_custom_s</A> mxml_custom_t;
+</PRE>
+
+<!-- NEW PAGE -->
+<H3><A name="mxml_element_t">mxml_element_t</A></H3>
+<HR noshade/>
+<H4>Description</H4>
+<P>An XML element value.</P>
+<H4>Definition</H4>
+<PRE>
+typedef struct <A href="#mxml_value_s">mxml_value_s</A> mxml_element_t;
+</PRE>
+
+<!-- NEW PAGE -->
+<H3><A name="mxml_index_t">mxml_index_t</A></H3>
+<HR noshade/>
+<H4>Description</H4>
+<P>An XML node index.</P>
+<H4>Definition</H4>
+<PRE>
+typedef struct <A href="#mxml_index_s">mxml_index_s</A> mxml_index_t;
+</PRE>
+
+<!-- NEW PAGE -->
+<H3><A name="mxml_node_t">mxml_node_t</A></H3>
+<HR noshade/>
+<H4>Description</H4>
+<P>An XML node.</P>
+<H4>Definition</H4>
+<PRE>
+typedef struct <A href="#mxml_node_s">mxml_node_s</A> mxml_node_t;
+</PRE>
+
+<!-- NEW PAGE -->
+<H3><A name="mxml_text_t">mxml_text_t</A></H3>
+<HR noshade/>
+<H4>Description</H4>
+<P>An XML text value.</P>
+<H4>Definition</H4>
+<PRE>
+typedef struct <A href="#mxml_text_s">mxml_text_s</A> mxml_text_t;
+</PRE>
+
+<!-- NEW PAGE -->
+<H3><A name="mxml_type_t">mxml_type_t</A></H3>
+<HR noshade/>
+<H4>Description</H4>
+<P>The XML node type.</P>
+<H4>Definition</H4>
+<PRE>
+typedef enum <A href="#mxml_type_e">mxml_type_e</A> mxml_type_t;
+</PRE>
+
+<!-- NEW PAGE -->
+<H3><A name="mxml_value_t">mxml_value_t</A></H3>
+<HR noshade/>
+<H4>Description</H4>
+<P>An XML node value.</P>
+<H4>Definition</H4>
+<PRE>
+typedef union <A href="#mxml_value_u">mxml_value_u</A> mxml_value_t;
+</PRE>
+
+<!-- NEW PAGE -->
+<H2><A name="_unions">Unions</A></H2>
+<UL>
+<LI><A href="#mxml_value_u"><TT>mxml_value_u</TT></A></LI>
+</UL>
+
+<!-- NEW PAGE -->
+<H3><A name="mxml_value_u">mxml_value_u</A></H3>
+<HR noshade/>
+<H4>Description</H4>
+<P>An XML node value.</P>
+<H4>Definition</H4>
+<PRE>
+union mxml_value_u
+{
+  <A href="#mxml_custom_t">mxml_custom_t</A> custom;
+  <A href="#mxml_element_t">mxml_element_t</A> element;
+  int integer;
+  char * opaque;
+  double real;
+  <A href="#mxml_text_t">mxml_text_t</A> text;
+};
+</PRE>
+<H4>Members</H4>
+<P class="table"></P>
+<TABLE align="center" border="1" cellpadding="5" cellspacing="0" width="80%">
+<THEAD></THEAD>
+<TR bgcolor="#cccccc"><TH>Name</TH><TH>Description</TH></TR>
+<TBODY></TBODY>
+<TR><TD><TT>custom</TT></TD><TD>Custom data</TD></TR>
+<TR><TD><TT>element</TT></TD><TD>Element</TD></TR>
+<TR><TD><TT>integer</TT></TD><TD>Integer number</TD></TR>
+<TR><TD><TT>opaque</TT></TD><TD>Opaque string</TD></TR>
+<TR><TD><TT>real</TT></TD><TD>Real number</TD></TR>
+<TR><TD><TT>text</TT></TD><TD>Text fragment</TD></TR>
+</TABLE>
+</BODY>
+</HTML>

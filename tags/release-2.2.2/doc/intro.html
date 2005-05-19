@@ -1,0 +1,274 @@
+<html>
+<head>
+	<title>Mini-XML Programmers Manual, Version 2.2.1</title>
+	<meta name='copyright' content='Copyright 2003-2005'/>
+	<meta name='author' content='Michael Sweet'/>
+	<meta name='keywords' content='XML, C, C++, library'/>
+</head>
+<body>
+
+<h1 align='right'><a name='INTRO'>Introduction</a></h1>
+
+<p>This programmers manual describes Mini-XML version 2.2.1, a
+small XML parsing library that you can use to read and write XML
+and XML-like data files in your application without requiring
+large non-standard libraries. Mini-XML only requires an ANSI C
+compatible compiler (GCC works, as do most vendors' ANSI C
+compilers) and a "make" program.</p>
+
+<p>Mini-XML provides the following functionality:</p>
+
+<ul>
+
+	<li>Reading of UTF-8 and UTF-16 encoded XML files and
+	strings.</li>
+
+	<li>Writing of UTF-8 encoded XML files and strings.</li>
+
+	<li>Data is stored in a linked-list tree structure,
+	preserving the XML data hierarchy.</li>
+
+	<li>Supports arbitrary element names, attributes, and
+	attribute values with no preset limits, just available
+	memory.</li>
+
+	<li>Supports integer, real, opaque ("cdata"), and text
+	data types in "leaf" nodes.</li>
+
+	<li>Functions for creating and managing trees of
+	data.</li>
+
+	<li>"Find" and "walk" functions for easily locating and
+	navigating trees of data.</li>
+
+</ul>
+
+<p>Mini-XML doesn't do validation or other types of processing
+on the data based upon schema files or other sources of
+definition information, nor does it support character entities
+other than those required by the XML specification.</p>
+
+<!-- NEED 4in -->
+<h2>Legal Stuff</h2>
+
+<p>The Mini-XML library is copyright 2003-2005 by Michael
+Sweet.</p>
+
+<p>This library is free software; you can redistribute it and/or
+modify it under the terms of the <a
+href='#LICENSE'>GNU Library General Public
+License</a> as published by the Free Software Foundation; either
+version 2 of the License, or (at your option) any later
+version.</p>
+
+<p>This library is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied
+warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+PURPOSE.  See the GNU Library General Public License for
+more details.</p>
+
+<!-- NEED 4in -->
+<h2>History</h2>
+
+<p>Mini-XML was initially developed for the <a
+href='http://gimp-print.sf.net/'>Gimp-Print</a> project to
+replace the rather large and unwieldy <tt>libxml2</tt> library
+with something substantially smaller and easier-to-use. It all
+began one morning in June of 2003 when Robert posted the
+following sentence to the developer's list:</p>
+
+<blockquote>It's bad enough that we require libxml2, but rolling
+our own XML parser is a bit more than we can
+handle.</blockquote>
+
+<p>I then replied with:</p>
+
+<blockquote>Given the limited scope of what you use in XML, it
+should be trivial to code a mini-XML API in a few hundred lines
+of code.</blockquote>
+
+<p>I took my own challenge and coded furiously for two days to
+produced the initial public release of Mini-XML, total lines of
+code: 696. Robert promptly integrated Mini-XML into Gimp-Print
+and removed libxml2.</p>
+
+<p>Thanks to lots of feedback and support from various
+developers, Mini-XML has evolved since then to provide a more
+complete XML implementation and now stands at a whopping 2,974
+lines of code, compared to 103,893 lines of code for libxml2
+version 2.6.9. Aside from Gimp-Print, Mini-XML is used for the
+following projects/software applications:</p>
+
+<ul>
+
+	<li><a href='http://www.cups.org/'>Common UNIX Printing
+	System</a></li>
+
+	<li><a href='http://www.cups.org/ddk/'>CUPS Driver
+	Development Kit</a></li>
+
+	<li><a href='http://www.easysw.com/printpro/'>ESP Print
+	Pro</a></li>
+
+	<li><a
+	href='http://zynaddsubfx.sourceforge.net'>ZynAddSubFX</a></li>
+
+</ul>
+
+<p>Please email me (mxml @ easysw . com) if you would like your
+project added or removed from this list, or if you have any
+comments/quotes you would like me to publish about your
+experiences with Mini-XML.</p>
+
+<!-- NEED 3in -->
+<h2>Organization of This Document</h2>
+
+<p>This manual is organized into the following chapters and
+appendices:</p>
+
+<ul>
+
+	<li>Chapter 1, "<a href='#INSTALL'>Building,
+	Installing, and Packaging Mini-XML</a>", provides
+	compilation, installation, and packaging instructions for
+	Mini-XML.</li>
+
+	<li>Chapter 2, "<a href='#BASICS'>Getting
+	Started with Mini-XML</a>", shows how to use the
+	Mini-XML library in your programs.</li>
+
+	<li>Chapter 3, "<a href='#ADVANCED'>More
+	Mini-XML Programming Techniques</a>", shows additional
+	ways to use the Mini-XML library.</li>
+
+	<li>Chapter 4, "<a href='#MXMLDOC'>Using the
+	mxmldoc Utility</a>", describes how to use the
+	<tt>mxmldoc(1)</tt> program to generate software
+	documentation.</li>
+
+	<li>Appendix A, "<a href='#LICENSE'>GNU
+	Library General Public License</a>", provides the terms
+	and conditions for using and distributing Mini-XML.</li>
+
+	<li>Appendix B, "<a href='#RELNOTES'>Release Notes</a>",
+	lists the changes in each release of Mini-XML.</li>
+
+	<li>Appendix C, "<a href='#REFERENCE'>Library
+	Reference</a>", contains a complete reference for
+	Mini-XML, generated by <tt>mxmldoc</tt>.</li>
+
+</ul>
+
+<!-- NEED 4in -->
+<h2>Notation Conventions</h2>
+
+<p>Various font and syntax conventions are used in this guide.
+Examples and their meanings and uses are explained below:</p>
+
+<center><table width='80%'>
+<tr>
+	<th>Example</th>
+	<td>&nbsp;&nbsp;&nbsp;</td>
+	<th>Description</th>
+</tr>
+<tr><td colspan='3'>&nbsp;</td></tr>
+<tr valign='top'>
+	<td><code>lpstat</code><br />
+	<code>lpstat(1)</code></td>
+
+	<td>&nbsp;&nbsp;&nbsp;</td>
+
+	<td>The names of commands; the first mention of a command or
+	function in a chapter is followed by a manual page section
+	number.</td>
+</tr>
+<tr><td colspan='3'>&nbsp;</td></tr>
+<tr valign='top'>
+	<td><var>/var</var><br />
+	<var>/usr/share/cups/data/testprint.ps</var></td>
+
+	<td>&nbsp;&nbsp;&nbsp;</td>
+
+	<td>File and directory names.</td>
+</tr>
+<tr><td colspan='3'>&nbsp;</td></tr>
+<tr valign='top'>
+	<td nowrap><tt>Request ID is Printer-123</tt></td>
+
+	<td>&nbsp;&nbsp;&nbsp;</td>
+
+	<td>Screen output.</td>
+</tr>
+<tr><td colspan='3'>&nbsp;</td></tr>
+<tr valign='top'>
+	<td nowrap><kbd>lp -d printer filename ENTER</kbd></td>
+
+	<td>&nbsp;&nbsp;&nbsp;</td>
+
+	<td>Literal user input; special keys like <kbd>ENTER</kbd> are
+	in ALL CAPS.</td>
+</tr>
+<tr><td colspan='3'>&nbsp;</td></tr>
+<tr valign='top'>
+	<td>12.3</td>
+
+	<td>&nbsp;&nbsp;&nbsp;</td>
+
+	<td>Numbers in the text are written using the period (.) to indicate
+	the decimal point.</td>
+</tr>
+</table></center>
+
+<!-- NEED 4in -->
+<h2>Abbreviations</h2>
+
+<p>The following abbreviations are used throughout this
+manual:</p>
+
+<blockquote>
+<dl>
+
+	<dt>Gb</dt>
+	<dd>Gigabytes, or 1073741824 bytes<br />&nbsp;</dd>
+
+	<dt>kb</dt>
+	<dd>Kilobytes, or 1024 bytes<br />&nbsp;</dd>
+
+	<dt>Mb</dt>
+	<dd>Megabytes, or 1048576 bytes<br />&nbsp;</dd>
+
+	<dt>UTF-8, UTF-16</dt>
+	<dd>Unicode Transformation Format, 8-bit or 16-bit<br />&nbsp;</dd>
+
+	<dt>W3C</dt>
+	<dd>World Wide Web Consortium<br />&nbsp;</dd>
+
+	<dt>XML</dt>
+	<dd>Extensible Markup Language<br />&nbsp;</dd>
+
+</dl>
+</blockquote>
+
+<h2>Other References</h2>
+
+<blockquote>
+<dl>
+
+	<dt>The Unicode Standard, Version 4.0, Addison-Wesley,
+	ISBN 0-321-18578-1</dt>
+
+	<dd>The definition of the Unicode character set which is
+	used for XML.<br />&nbsp;</dd>
+
+	<dt><a
+	href='http://www.w3.org/TR/2004/REC-xml-20040204/'>Extensible
+	Markup Language (XML) 1.0 (Third Edition)</a></dt>
+
+	<dd>The XML specification from the World Wide Web
+	Consortium (W3C)<br />&nbsp;</dd>
+
+</dl>
+</blockquote>
+
+</body>
+</html>

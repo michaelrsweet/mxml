@@ -1,5 +1,11 @@
-CHANGES - 05/19/2005
+CHANGES - 05/30/2005
 --------------------
+
+CHANGES IN Mini-XML 2.2.3
+
+	- mxmlLoad*() crashed when reporting an error in some
+	  invalid XML (STR #23)
+
 
 CHANGES IN Mini-XML 2.2.2
 

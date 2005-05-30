@@ -1703,7 +1703,7 @@ mxml_load_data(mxml_node_t *top,	/* I - Top node */
 	  */
 
 	  mxml_error("Mismatched close tag <%s> under parent <%s>!",
-	             buffer, parent->value.element.name);
+	             buffer, parent ? parent->value.element.name : "(nil)");
           goto error;
 	}
 

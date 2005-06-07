@@ -85,6 +85,19 @@ mxml_error(const char *format,		/* I - Printf-style format string */
 
 
 /*
+ * 'mxml_ignore_cb()' - Default callback for ignored values.
+ */
+
+mxml_type_t				/* O - Node type */
+mxml_ignore_cb(mxml_node_t *node)	/* I - Current node */
+{
+  (void)node;
+
+  return (MXML_IGNORE);
+}
+
+
+/*
  * 'mxml_integer_cb()' - Default callback for integer values.
  */
 

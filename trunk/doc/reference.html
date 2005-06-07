@@ -34,6 +34,7 @@
 <tbody>
 <tr><td><tt>MXML_CUSTOM</tt></td><td>Custom data</td></tr>
 <tr><td><tt>MXML_ELEMENT</tt></td><td>XML element with attributes</td></tr>
+<tr><td><tt>MXML_IGNORE</tt></td><td>Ignore/throw away node</td></tr>
 <tr><td><tt>MXML_INTEGER</tt></td><td>Integer value</td></tr>
 <tr><td><tt>MXML_OPAQUE</tt></td><td>Opaque string</td></tr>
 <tr><td><tt>MXML_REAL</tt></td><td>Real value</td></tr>
@@ -450,7 +451,7 @@ child nodes of the specified type.</p>
 mxmlLoadFd(
     <a href='#mxml_node_t'>mxml_node_t</a> * top,
     int fd,
-    <a href='#mxml_type_t'>mxml_type_t</a> (*cb)(mxml_node_t *node));
+    mxml_type_t (*cb)(mxml_node_t *node));
 </pre>
 <h4>Arguments</h4>
 <p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
@@ -484,7 +485,7 @@ child nodes of the specified type.</p>
 mxmlLoadFile(
     <a href='#mxml_node_t'>mxml_node_t</a> * top,
     FILE * fp,
-    <a href='#mxml_type_t'>mxml_type_t</a> (*cb)(mxml_node_t *node));
+    mxml_type_t (*cb)(mxml_node_t *node));
 </pre>
 <h4>Arguments</h4>
 <p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
@@ -518,7 +519,7 @@ child nodes of the specified type.</p>
 mxmlLoadString(
     <a href='#mxml_node_t'>mxml_node_t</a> * top,
     const char * s,
-    <a href='#mxml_type_t'>mxml_type_t</a> (*cb)(mxml_node_t *node));
+    mxml_type_t (*cb)(mxml_node_t *node));
 </pre>
 <h4>Arguments</h4>
 <p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
@@ -1150,7 +1151,7 @@ mxmlWalkPrev(
 <h3><a name='mxml_attr_s'>mxml_attr_s</a></h3>
 <hr noshade/>
 <h4>Description</h4>
-<p>An XML element attribute value.</p>
+<p>Data types...</p>
 <h4>Definition</h4>
 <pre>
 struct mxml_attr_s
@@ -1224,7 +1225,7 @@ struct mxml_node_s
   struct <a href='#mxml_node_s'>mxml_node_s</a> * next;
   struct <a href='#mxml_node_s'>mxml_node_s</a> * parent;
   struct <a href='#mxml_node_s'>mxml_node_s</a> * prev;
-  <a href='#mxml_type_t'>mxml_type_t</a> type;
+  mxml_type_t type;
   <a href='#mxml_value_t'>mxml_value_t</a> value;
 };
 </pre>
@@ -1291,14 +1292,13 @@ struct mxml_value_s
 	<li><a href='#mxml_index_t'><tt>mxml_index_t</tt></a></li>
 	<li><a href='#mxml_node_t'><tt>mxml_node_t</tt></a></li>
 	<li><a href='#mxml_text_t'><tt>mxml_text_t</tt></a></li>
-	<li><a href='#mxml_type_t'><tt>mxml_type_t</tt></a></li>
 	<li><a href='#mxml_value_t'><tt>mxml_value_t</tt></a></li>
 </ul>
 <!-- NEW PAGE -->
 <h3><a name='mxml_attr_t'>mxml_attr_t</a></h3>
 <hr noshade/>
 <h4>Description</h4>
-<p>An XML element attribute value.</p>
+<p>Data types...</p>
 <h4>Definition</h4>
 <pre>
 typedef struct <a href='#mxml_attr_s'>mxml_attr_s</a> mxml_attr_t;
@@ -1347,15 +1347,6 @@ typedef struct <a href='#mxml_node_s'>mxml_node_s</a> mxml_node_t;
 <h4>Definition</h4>
 <pre>
 typedef struct <a href='#mxml_text_s'>mxml_text_s</a> mxml_text_t;
-</pre>
-<!-- NEW PAGE -->
-<h3><a name='mxml_type_t'>mxml_type_t</a></h3>
-<hr noshade/>
-<h4>Description</h4>
-<p>The XML node type.</p>
-<h4>Definition</h4>
-<pre>
-typedef enum <a href='#mxml_type_e'>mxml_type_e</a> mxml_type_t;
 </pre>
 <!-- NEW PAGE -->
 <h3><a name='mxml_value_t'>mxml_value_t</a></h3>

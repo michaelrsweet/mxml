@@ -1409,7 +1409,7 @@ mxml_load_data(mxml_node_t *top,	/* I - Top node */
 	      break;
 	    }
 
-        default : /* Should never happen... */
+        default : /* Ignore... */
 	    node = NULL;
 	    break;
       }	  
@@ -1429,7 +1429,7 @@ mxml_load_data(mxml_node_t *top,	/* I - Top node */
       bufptr     = buffer;
       whitespace = isspace(ch) && type == MXML_TEXT;
 
-      if (!node)
+      if (!node && type != MXML_IGNORE)
       {
        /*
 	* Print error and return...
@@ -1440,7 +1440,7 @@ mxml_load_data(mxml_node_t *top,	/* I - Top node */
 	goto error;
       }
 
-      if (!first)
+      if (!first && node)
         first = node;
     }
     else if (isspace(ch) && type == MXML_TEXT)

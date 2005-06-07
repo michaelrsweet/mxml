@@ -261,6 +261,8 @@ mxmlDelete(mxml_node_t *node)		/* I - Node to delete */
 	    node->value.custom.destroy)
 	  (*(node->value.custom.destroy))(node->value.custom.data);
 	break;
+    default :
+        break;
   }
 
  /*

@@ -1,8 +1,10 @@
-CHANGES - 05/30/2005
+CHANGES - 06/07/2005
 --------------------
 
 CHANGES IN Mini-XML 2.2.3
 
+	- Added new MXML_IGNORE type and MXML_IGNORE_CB callback
+	  to ignore non-element nodes (i.e. whitespace)
 	- mxmlLoad*() crashed when reporting an error in some
 	  invalid XML (STR #23)
 

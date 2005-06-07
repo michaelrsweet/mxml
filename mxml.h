@@ -49,6 +49,8 @@
 #  define MXML_REAL_CALLBACK	mxml_real_cb
 					/* Treat all data as real numbers */
 #  define MXML_TEXT_CALLBACK	0	/* Treat all data as text */
+#  define MXML_IGNORE_CALLBACK	mxml_ignore_cb
+					/* Ignore all non-element content */
 
 #  define MXML_NO_PARENT	0	/* No parent for the node */
 
@@ -72,6 +74,7 @@
 
 typedef enum mxml_type_e		/**** The XML node type. ****/
 {
+  MXML_IGNORE = -1,			/* Ignore/throw away node */
   MXML_ELEMENT,				/* XML element with attributes */
   MXML_INTEGER,				/* Integer value */
   MXML_OPAQUE,				/* Opaque string */

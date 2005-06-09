@@ -63,12 +63,27 @@ mxmlElementGetAttr(mxml_node_t *node,	/* I - Element node */
   for (i = node->value.element.num_attrs, attr = node->value.element.attrs;
        i > 0;
        i --, attr ++)
+  {
+#ifdef DEBUG
+    printf("    %s=\"%s\"\n", attr->name, attr->value);
+#endif /* DEBUG */
+
     if (!strcmp(attr->name, name))
+    {
+#ifdef DEBUG
+      printf("    Returning \"%s\"!\n", attr->value);
+#endif /* DEBUG */
       return (attr->value);
+    }
+  }
 
  /*
   * Didn't find attribute, so return NULL...
   */
+
+#ifdef DEBUG
+  puts("    Returning NULL!\n");
+#endif /* DEBUG */
 
   return (NULL);
 }

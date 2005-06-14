@@ -891,6 +891,8 @@ scan_file(const char  *filename,	/* I - Filename */
 		  mxmlDelete(type);
 		  type = NULL;
 		}
+
+		typedefnode = NULL;
 		break;
 
 	    case ':' :

@@ -811,7 +811,7 @@ the walk to the node's children.</description>
     </argument>
   </function>
   <struct name="mxml_attr_s">
-    <description>Data types...</description>
+    <description>An XML element attribute value.</description>
     <variable name="name">
       <type>char *</type>
       <description>Attribute name</description>
@@ -823,7 +823,7 @@ the walk to the node's children.</description>
   </struct>
   <typedef name="mxml_attr_t">
     <type>struct mxml_attr_s</type>
-    <description>Data types...</description>
+    <description>An XML element attribute value.</description>
   </typedef>
   <struct name="mxml_custom_s">
     <description>An XML custom value.</description>

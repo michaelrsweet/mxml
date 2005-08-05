@@ -17,6 +17,8 @@
  *
  * Contents:
  *
+ *   mxmlSetCustom()  - Set the data and destructor of a custom data node.
+ *   mxmlSetCDATA()   - Set the element name of a CDATA node.
  *   mxmlSetElement() - Set the name of an element node.
  *   mxmlSetInteger() - Set the value of an integer node.
  *   mxmlSetOpaque()  - Set the value of an opaque node.
@@ -61,6 +63,37 @@ mxmlSetCustom(mxml_node_t *node,	/* I - Node to set */
 
   node->value.custom.data    = data;
   node->value.custom.destroy = destroy;
+
+  return (0);
+}
+
+
+/*
+ * 'mxmlSetCDATA()' - Set the element name of a CDATA node.
+ *
+ * The node is not changed if it is not a CDATA element node.
+ */
+
+int					/* O - 0 on success, -1 on failure */
+mxmlSetCDATA(mxml_node_t *node,		/* I - Node to set */
+             const char  *data)		/* I - New data string */
+{
+ /*
+  * Range check input...
+  */
+
+  if (!node || node->type != MXML_ELEMENT || !data ||
+      strncmp(node->value.element.name, "![CDATA[", 8))
+    return (-1);
+
+ /*
+  * Free any old element value and set the new value...
+  */
+
+  if (node->value.element.name)
+    free(node->value.element.name);
+
+  node->value.element.name = mxml_strdupf("![CDATA[%s]]", data);
 
   return (0);
 }

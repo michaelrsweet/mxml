@@ -3,9 +3,24 @@
 
 <h1 align='right'><a name='RELNOTES'>B - Release Notes</a></h1>
 
+<h2>Changes in Mini-XML 2.2.3</h2>
+
+<ul>
+
+	<li>Added new mxmlNewCDATA() and mxmlSetCDATA() functions
+	to create and set CDATA nodes, which are really just
+	special element nodes.</li>
+
+</ul>
+
+
 <h2>Changes in Mini-XML 2.2.2</h2>
 
 <ul>
+
+	<li>Added new MXML_IGNORE type and MXML_IGNORE_CB
+	callback to ignore non-element nodes (i.e.
+	whitespace)</li>
 
 	<li>mxmlLoad*() did not treat custom data as opaque, so
 	whitespace characters would be lost.</li>

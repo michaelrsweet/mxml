@@ -332,6 +332,26 @@ child nodes of the specified type.</description>
       <description>Callback function or MXML_NO_CALLBACK</description>
     </argument>
   </function>
+  <function name="mxmlNewCDATA">
+    <returnvalue>
+      <type>mxml_node_t *</type>
+      <description>New node</description>
+    </returnvalue>
+    <description>Create a new CDATA node.
+
+The new CDATA node is added to the end of the specified parent's child
+list. The constant MXML_NO_PARENT can be used to specify that the new
+CDATA node has no parent. The data string must be nul-terminated and
+is copied into the new node. CDATA nodes use the MXML_ELEMENT type.</description>
+    <argument name="parent" direction="I">
+      <type>mxml_node_t *</type>
+      <description>Parent node or MXML_NO_PARENT</description>
+    </argument>
+    <argument name="data" direction="I">
+      <type>const char *</type>
+      <description>Data string</description>
+    </argument>
+  </function>
   <function name="mxmlNewCustom">
     <returnvalue>
       <type>mxml_node_t *</type>
@@ -604,6 +624,23 @@ element tags.</description>
     <argument name="(*cb)(mxml_node_t *node, int ws)" direction="I">
       <type>const char *</type>
       <description>Whitespace callback or MXML_NO_CALLBACK</description>
+    </argument>
+  </function>
+  <function name="mxmlSetCDATA">
+    <returnvalue>
+      <type>int</type>
+      <description>0 on success, -1 on failure</description>
+    </returnvalue>
+    <description>Set the element name of a CDATA node.
+
+The node is not changed if it is not a CDATA element node.</description>
+    <argument name="node" direction="I">
+      <type>mxml_node_t *</type>
+      <description>Node to set</description>
+    </argument>
+    <argument name="data" direction="I">
+      <type>const char *</type>
+      <description>New data string</description>
     </argument>
   </function>
   <function name="mxmlSetCustom">

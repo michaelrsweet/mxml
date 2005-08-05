@@ -274,6 +274,45 @@ mxmlDelete(mxml_node_t *node)		/* I - Node to delete */
 
 
 /*
+ * 'mxmlNewCDATA()' - Create a new CDATA node.
+ *
+ * The new CDATA node is added to the end of the specified parent's child
+ * list. The constant MXML_NO_PARENT can be used to specify that the new
+ * CDATA node has no parent. The data string must be nul-terminated and
+ * is copied into the new node. CDATA nodes use the MXML_ELEMENT type.
+ */
+
+mxml_node_t *				/* O - New node */
+mxmlNewCDATA(mxml_node_t *parent,	/* I - Parent node or MXML_NO_PARENT */
+	     const char  *data)		/* I - Data string */
+{
+  mxml_node_t	*node;			/* New node */
+
+
+#ifdef DEBUG
+  fprintf(stderr, "mxmlNewCDATA(parent=%p, data=\"%s\")\n",
+          parent, data ? data : "(null)");
+#endif /* DEBUG */
+
+ /*
+  * Range check input...
+  */
+
+  if (!data)
+    return (NULL);
+
+ /*
+  * Create the node and set the name value...
+  */
+
+  if ((node = mxml_new(parent, MXML_ELEMENT)) != NULL)
+    node->value.element.name = mxml_strdupf("![CDATA[%s]]", data);
+
+  return (node);
+}
+
+
+/*
  * 'mxmlNewCustom()' - Create a new custom data node.
  *
  * The new custom node is added to the end of the specified parent's child
@@ -532,7 +571,7 @@ mxmlNewTextf(mxml_node_t *parent,	/* I - Parent node or MXML_NO_PARENT */
     va_start(ap, format);
 
     node->value.text.whitespace = whitespace;
-    node->value.text.string     = mxml_strdupf(format, ap);
+    node->value.text.string     = mxml_vstrdupf(format, ap);
 
     va_end(ap);
   }

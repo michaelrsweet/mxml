@@ -57,7 +57,8 @@ extern char	*mxml_strdup(const char *);
 #    define strdup mxml_strdup
 #  endif /* !HAVE_STRDUP */
 
-extern char	*mxml_strdupf(const char *, va_list);
+extern char	*mxml_strdupf(const char *, ...);
+extern char	*mxml_vstrdupf(const char *, va_list);
 
 #  ifndef HAVE_VSNPRINTF
 extern int	mxml_vsnprintf(char *, size_t, const char *, va_list);

@@ -185,6 +185,7 @@ extern mxml_node_t	*mxmlLoadFile(mxml_node_t *top, FILE *fp,
 			              mxml_type_t (*cb)(mxml_node_t *));
 extern mxml_node_t	*mxmlLoadString(mxml_node_t *top, const char *s,
 			                mxml_type_t (*cb)(mxml_node_t *));
+extern mxml_node_t	*mxmlNewCDATA(mxml_node_t *parent, const char *string);
 extern mxml_node_t	*mxmlNewCustom(mxml_node_t *parent, void *data,
 			               void (*destroy)(void *));
 extern mxml_node_t	*mxmlNewElement(mxml_node_t *parent, const char *name);
@@ -209,6 +210,7 @@ extern int		mxmlSaveFile(mxml_node_t *node, FILE *fp,
 extern int		mxmlSaveString(mxml_node_t *node, char *buffer,
 			               int bufsize,
 			               const char *(*cb)(mxml_node_t *, int));
+extern int		mxmlSetCDATA(mxml_node_t *node, const char *data);
 extern int		mxmlSetCustom(mxml_node_t *node, void *data,
 			              void (*destroy)(void *));
 extern void		mxmlSetCustomHandlers(mxml_custom_load_cb_t load,

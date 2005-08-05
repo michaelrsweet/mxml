@@ -19,6 +19,7 @@
  *
  *   mxml_strdup()    - Duplicate a string.
  *   mxml_strdupf()   - Format and duplicate a string.
+ *   mxml_vstrdupf()  - Format and duplicate a string.
  *   mxml_vsnprintf() - Format a string into a fixed size buffer.
  */
 
@@ -57,7 +58,32 @@ mxml_strdup(const char *s)		/* I - String to duplicate */
 
 char *					/* O - New string pointer */
 mxml_strdupf(const char *format,	/* I - Printf-style format string */
-             va_list    ap)		/* I - Pointer to additional arguments */
+             ...)			/* I - Additional arguments as needed */
+{
+  va_list	ap;			/* Pointer to additional arguments */
+  char		*s;			/* Pointer to formatted string */
+
+
+ /*
+  * Get a pointer to the additional arguments, format the string,
+  * and return it...
+  */
+
+  va_start(ap, format);
+  s = mxml_vstrdupf(format, ap);
+  va_end(ap);
+
+  return (s);
+}
+
+
+/*
+ * 'mxml_vstrdupf()' - Format and duplicate a string.
+ */
+
+char *					/* O - New string pointer */
+mxml_vstrdupf(const char *format,	/* I - Printf-style format string */
+              va_list    ap)		/* I - Pointer to additional arguments */
 {
   int	bytes;				/* Number of bytes required */
   char	*buffer,			/* String buffer */

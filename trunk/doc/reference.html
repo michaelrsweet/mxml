@@ -2,7 +2,7 @@
 <html xmlns='http://www.w3.org/1999/xhtml' xml:lang='en' lang='en'>
 <head>
 	<title>Documentation</title>
-	<meta name='creator' content='Mini-XML v2.2.3'/>
+	<meta name='creator' content='Mini-XML v2.2.4'/>
 	<style><!--
 	h1, h2, h3, p { font-family: sans-serif; text-align: justify; }
 	tt, pre a:link, pre a:visited, tt a:link, tt a:visited { font-weight: bold; color: #7f0000; }
@@ -60,6 +60,7 @@
 	<li><a href='#mxmlLoadFd'><tt>mxmlLoadFd()</tt></a></li>
 	<li><a href='#mxmlLoadFile'><tt>mxmlLoadFile()</tt></a></li>
 	<li><a href='#mxmlLoadString'><tt>mxmlLoadString()</tt></a></li>
+	<li><a href='#mxmlNewCDATA'><tt>mxmlNewCDATA()</tt></a></li>
 	<li><a href='#mxmlNewCustom'><tt>mxmlNewCustom()</tt></a></li>
 	<li><a href='#mxmlNewElement'><tt>mxmlNewElement()</tt></a></li>
 	<li><a href='#mxmlNewInteger'><tt>mxmlNewInteger()</tt></a></li>
@@ -72,6 +73,7 @@
 	<li><a href='#mxmlSaveFd'><tt>mxmlSaveFd()</tt></a></li>
 	<li><a href='#mxmlSaveFile'><tt>mxmlSaveFile()</tt></a></li>
 	<li><a href='#mxmlSaveString'><tt>mxmlSaveString()</tt></a></li>
+	<li><a href='#mxmlSetCDATA'><tt>mxmlSetCDATA()</tt></a></li>
 	<li><a href='#mxmlSetCustom'><tt>mxmlSetCustom()</tt></a></li>
 	<li><a href='#mxmlSetCustomHandlers'><tt>mxmlSetCustomHandlers()</tt></a></li>
 	<li><a href='#mxmlSetElement'><tt>mxmlSetElement()</tt></a></li>
@@ -532,6 +534,32 @@ mxmlLoadString(
 <h4>Returns</h4>
 <p>First node or NULL if the string has errors.</p>
 <!-- NEW PAGE -->
+<h3><a name='mxmlNewCDATA'>mxmlNewCDATA()</a></h3>
+<hr noshade/>
+<h4>Description</h4>
+<p>Create a new CDATA node.
+
+The new CDATA node is added to the end of the specified parent's child
+list. The constant MXML_NO_PARENT can be used to specify that the new
+CDATA node has no parent. The data string must be nul-terminated and
+is copied into the new node. CDATA nodes use the MXML_ELEMENT type.</p>
+<h4>Syntax</h4>
+<pre>
+<a href='#mxml_node_t'>mxml_node_t</a> *
+mxmlNewCDATA(
+    <a href='#mxml_node_t'>mxml_node_t</a> * parent,
+    const char * data);
+</pre>
+<h4>Arguments</h4>
+<p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
+<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><tt>parent</tt></td><td>Parent node or MXML_NO_PARENT</td></tr>
+<tr><td><tt>data</tt></td><td>Data string</td></tr>
+</tbody></table></p>
+<h4>Returns</h4>
+<p>New node</p>
+<!-- NEW PAGE -->
 <h3><a name='mxmlNewCustom'>mxmlNewCustom()</a></h3>
 <hr noshade/>
 <h4>Description</h4>
@@ -868,6 +896,29 @@ mxmlSaveString(
 </tbody></table></p>
 <h4>Returns</h4>
 <p>Size of string</p>
+<!-- NEW PAGE -->
+<h3><a name='mxmlSetCDATA'>mxmlSetCDATA()</a></h3>
+<hr noshade/>
+<h4>Description</h4>
+<p>Set the element name of a CDATA node.
+
+The node is not changed if it is not a CDATA element node.</p>
+<h4>Syntax</h4>
+<pre>
+int
+mxmlSetCDATA(
+    <a href='#mxml_node_t'>mxml_node_t</a> * node,
+    const char * data);
+</pre>
+<h4>Arguments</h4>
+<p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
+<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><tt>node</tt></td><td>Node to set</td></tr>
+<tr><td><tt>data</tt></td><td>New data string</td></tr>
+</tbody></table></p>
+<h4>Returns</h4>
+<p>0 on success, -1 on failure</p>
 <!-- NEW PAGE -->
 <h3><a name='mxmlSetCustom'>mxmlSetCustom()</a></h3>
 <hr noshade/>

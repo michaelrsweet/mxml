@@ -383,7 +383,9 @@ mxml_vsnprintf(char       *buffer,	/* O - Output buffer */
       bytes ++;
 
       if (bufptr && bufptr < bufend)
-	*bufptr++ = *format++;
+	*bufptr++ = *format;
+
+      format ++;
     }
   }
 

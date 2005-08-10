@@ -1236,7 +1236,7 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
           ac_config_headers="$ac_config_headers config.h"
 
 
-VERSION=2.2.4
+VERSION=2.2.3
 
 cat >>confdefs.h <<_ACEOF
 #define MXML_VERSION "Mini-XML v$VERSION"

@@ -1,17 +1,13 @@
 CHANGES - 08/10/2005
 --------------------
 
-CHANGES IN Mini-XML 2.2.4
+CHANGES IN Mini-XML 2.2.3
 
 	- The mxml_vsnprintf() function could get in an infinite
 	  loop on a buffer overflow (STR #25)
 	- Added new mxmlNewCDATA() and mxmlSetCDATA() functions
 	  to create and set CDATA nodes, which are really just
 	  special element nodes.
-
-
-CHANGES IN Mini-XML 2.2.3
-
 	- Added new MXML_IGNORE type and MXML_IGNORE_CB callback
 	  to ignore non-element nodes (i.e. whitespace)
 	- mxmlLoad*() crashed when reporting an error in some

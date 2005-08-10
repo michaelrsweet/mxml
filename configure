@@ -3154,7 +3154,7 @@ echo $ECHO_N "checking for shared library support... $ECHO_C" >&6
 		SunOS* | UNIX_S*)
 			echo "$as_me:$LINENO: result: yes" >&5
 echo "${ECHO_T}yes" >&6
-			LIBMXML="libmxml.so.1.0"
+			LIBMXML="libmxml.so.1.1"
 			DSO="\$(CC)"
 			DSOFLAGS="$DSOFLAGS -Wl,-h,libmxml.so.1 -G -R\$(libdir) \$(OPTIM)"
 			LDFLAGS="$LDFLAGS -R\$(libdir)"
@@ -3172,7 +3172,7 @@ echo "${ECHO_T}yes" >&6
 		IRIX)
 			echo "$as_me:$LINENO: result: yes" >&5
 echo "${ECHO_T}yes" >&6
-			LIBMXML="libmxml.so.1.0"
+			LIBMXML="libmxml.so.1.1"
 			DSO="\$(CC)"
 			DSOFLAGS="$DSOFLAGS -Wl,-rpath,\$(libdir),-set_version,sgi1.0,-soname,libmxml.so.1 -shared \$(OPTIM)"
 			;;
@@ -3180,7 +3180,7 @@ echo "${ECHO_T}yes" >&6
 		OSF1* | Linux | GNU)
 			echo "$as_me:$LINENO: result: yes" >&5
 echo "${ECHO_T}yes" >&6
-			LIBMXML="libmxml.so.1.0"
+			LIBMXML="libmxml.so.1.1"
 			DSO="\$(CC)"
 			DSOFLAGS="$DSOFLAGS -Wl,-soname,libmxml.so.1,-rpath,\$(libdir) -shared \$(OPTIM)"
                         LDFLAGS="$LDFLAGS -Wl,-rpath,\$(libdir)"
@@ -3189,7 +3189,7 @@ echo "${ECHO_T}yes" >&6
 		*BSD*)
 			echo "$as_me:$LINENO: result: yes" >&5
 echo "${ECHO_T}yes" >&6
-			LIBMXML="libmxml.so.1.0"
+			LIBMXML="libmxml.so.1.1"
 			DSO="\$(CC)"
 			DSOFLAGS="$DSOFLAGS -Wl,-soname,libmxml.so.1,-R\$(libdir) -shared \$(OPTIM)"
 			LDFLAGS="$LDFLAGS -Wl,-R\$(libdir)"

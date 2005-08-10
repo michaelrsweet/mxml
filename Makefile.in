@@ -148,13 +148,13 @@ install-libmxml.a:
 	$(INSTALL_DIR) $(BUILDROOT)$(libdir)
 	$(INSTALL_LIB) libmxml.a $(BUILDROOT)$(libdir)
 
-install-libmxml.so.1.0:
+install-libmxml.so.1.1:
 	$(INSTALL_DIR) $(BUILDROOT)$(libdir)
-	$(INSTALL_LIB) libmxml.so.1.0 $(BUILDROOT)$(libdir)
+	$(INSTALL_LIB) libmxml.so.1.1 $(BUILDROOT)$(libdir)
 	$(RM) $(BUILDROOT)$(libdir)/libmxml.so
-	$(LN) libmxml.so.1.0 $(BUILDROOT)$(libdir)/libmxml.so
+	$(LN) libmxml.so.1.1 $(BUILDROOT)$(libdir)/libmxml.so
 	$(RM) $(BUILDROOT)$(libdir)/libmxml.so.1
-	$(LN) libmxml.so.1.0 $(BUILDROOT)$(libdir)/libmxml.so.1
+	$(LN) libmxml.so.1.1 $(BUILDROOT)$(libdir)/libmxml.so.1
 
 install-libmxml.sl.1:
 	$(INSTALL_DIR) $(BUILDROOT)$(libdir)
@@ -186,10 +186,10 @@ uninstall: uninstall-$(LIBMXML) uninstall-libmxml.a
 uninstall-libmxml.a:
 	$(RM) $(BUILDROOT)$(libdir)/libmxml.a
 
-uninstall-libmxml.so.1.0:
+uninstall-libmxml.so.1.1:
 	$(RM) $(BUILDROOT)$(libdir)/libmxml.so
 	$(RM) $(BUILDROOT)$(libdir)/libmxml.so.1
-	$(RM) $(BUILDROOT)$(libdir)/libmxml.so.1.0
+	$(RM) $(BUILDROOT)$(libdir)/libmxml.so.1.1
 
 uninstall-libmxml.sl.1:
 	$(RM) $(BUILDROOT)$(libdir)/libmxml.sl
@@ -258,14 +258,14 @@ $(LIBOBJS):	mxml.h
 
 
 #
-# libmxml.so.1.0
+# libmxml.so.1.1
 #
 
-libmxml.so.1.0:	$(LIBOBJS)
-	$(DSO) $(DSOFLAGS) -o libmxml.so.1.0 $(LIBOBJS)
+libmxml.so.1.1:	$(LIBOBJS)
+	$(DSO) $(DSOFLAGS) -o libmxml.so.1.1 $(LIBOBJS)
 	$(RM) libmxml.so libmxml.so.1
-	$(LN) libmxml.so.1.0 libmxml.so
-	$(LN) libmxml.so.1.0 libmxml.so.1
+	$(LN) libmxml.so.1.1 libmxml.so
+	$(LN) libmxml.so.1.1 libmxml.so.1
 
 
 #
@@ -285,7 +285,7 @@ libmxml.sl.1:	$(LIBOBJS)
 libmxml.1.dylib:	$(LIBOBJS)
 	$(DSO) $(DSOFLAGS) -o libmxml.1.dylib \
 		-install_name $(libdir)/libmxml.dylib \
-		-current_version 1.0.0 \
+		-current_version 1.1.0 \
 		-compatibility_version 1.0.0 \
 		$(LIBOBJS)
 	$(RM) libmxml.dylib libmxml.1.dylib

@@ -122,7 +122,7 @@ if test x$enable_shared = xyes; then
 	case "$uname" in
 		SunOS* | UNIX_S*)
 			AC_MSG_RESULT(yes)
-			LIBMXML="libmxml.so.1.0"
+			LIBMXML="libmxml.so.1.1"
 			DSO="\$(CC)"
 			DSOFLAGS="$DSOFLAGS -Wl,-h,libmxml.so.1 -G -R\$(libdir) \$(OPTIM)"
 			LDFLAGS="$LDFLAGS -R\$(libdir)"
@@ -138,14 +138,14 @@ if test x$enable_shared = xyes; then
 
 		IRIX)
 			AC_MSG_RESULT(yes)
-			LIBMXML="libmxml.so.1.0"
+			LIBMXML="libmxml.so.1.1"
 			DSO="\$(CC)"
 			DSOFLAGS="$DSOFLAGS -Wl,-rpath,\$(libdir),-set_version,sgi1.0,-soname,libmxml.so.1 -shared \$(OPTIM)"
 			;;
 
 		OSF1* | Linux | GNU)
 			AC_MSG_RESULT(yes)
-			LIBMXML="libmxml.so.1.0"
+			LIBMXML="libmxml.so.1.1"
 			DSO="\$(CC)"
 			DSOFLAGS="$DSOFLAGS -Wl,-soname,libmxml.so.1,-rpath,\$(libdir) -shared \$(OPTIM)"
                         LDFLAGS="$LDFLAGS -Wl,-rpath,\$(libdir)"
@@ -153,7 +153,7 @@ if test x$enable_shared = xyes; then
 
 		*BSD*)
 			AC_MSG_RESULT(yes)
-			LIBMXML="libmxml.so.1.0"
+			LIBMXML="libmxml.so.1.1"
 			DSO="\$(CC)"
 			DSOFLAGS="$DSOFLAGS -Wl,-soname,libmxml.so.1,-R\$(libdir) -shared \$(OPTIM)"
 			LDFLAGS="$LDFLAGS -Wl,-R\$(libdir)"

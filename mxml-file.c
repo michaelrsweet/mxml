@@ -1453,7 +1453,11 @@ mxml_load_data(mxml_node_t *top,	/* I - Top node */
 
     if (ch == '<' && whitespace && type == MXML_TEXT)
     {
-      mxmlNewText(parent, whitespace, "");
+      node = mxmlNewText(parent, whitespace, "");
+
+      if (!first && node)
+        first = node;
+
       whitespace = 0;
     }
 
@@ -1521,7 +1525,7 @@ mxml_load_data(mxml_node_t *top,	/* I - Top node */
 
 	*bufptr = '\0';
 
-	if (!mxmlNewElement(parent, buffer))
+	if ((node = mxmlNewElement(parent, buffer)) == NULL)
 	{
 	 /*
 	  * Just print error for now...
@@ -1531,6 +1535,9 @@ mxml_load_data(mxml_node_t *top,	/* I - Top node */
 	             parent ? parent->value.element.name : "null");
 	  break;
 	}
+
+	if (!first)
+	  first = node;
       }
       else if (!strcmp(buffer, "![CDATA["))
       {
@@ -1567,7 +1574,7 @@ mxml_load_data(mxml_node_t *top,	/* I - Top node */
 
 	*bufptr = '\0';
 
-	if (!mxmlNewElement(parent, buffer))
+	if ((node = mxmlNewElement(parent, buffer)) == NULL)
 	{
 	 /*
 	  * Print error and return...
@@ -1577,6 +1584,9 @@ mxml_load_data(mxml_node_t *top,	/* I - Top node */
 	             parent ? parent->value.element.name : "null");
 	  goto error;
 	}
+
+	if (!first)
+	  first = node;
       }
       else if (buffer[0] == '?')
       {
@@ -1613,7 +1623,7 @@ mxml_load_data(mxml_node_t *top,	/* I - Top node */
 
 	*bufptr = '\0';
 
-	if (!(parent = mxmlNewElement(parent, buffer)))
+	if ((parent = mxmlNewElement(parent, buffer)) == NULL)
 	{
 	 /*
 	  * Print error and return...
@@ -1623,6 +1633,9 @@ mxml_load_data(mxml_node_t *top,	/* I - Top node */
 	             parent ? parent->value.element.name : "null");
 	  goto error;
 	}
+
+        if (!first)
+	  first = parent;
 
 	if (cb)
 	  type = (*cb)(parent);
@@ -1669,8 +1682,7 @@ mxml_load_data(mxml_node_t *top,	/* I - Top node */
 
 	*bufptr = '\0';
 
-	node = mxmlNewElement(parent, buffer);
-	if (!node)
+	if ((node = mxmlNewElement(parent, buffer)) == NULL)
 	{
 	 /*
 	  * Print error and return...
@@ -1680,6 +1692,9 @@ mxml_load_data(mxml_node_t *top,	/* I - Top node */
 	             parent ? parent->value.element.name : "null");
 	  goto error;
 	}
+
+        if (!first)
+	  first = node;
 
        /*
 	* Descend into this node, setting the value type as needed...
@@ -1729,9 +1744,7 @@ mxml_load_data(mxml_node_t *top,	/* I - Top node */
         * Handle open tag...
 	*/
 
-        node = mxmlNewElement(parent, buffer);
-
-	if (!node)
+        if ((node = mxmlNewElement(parent, buffer)) == NULL)
 	{
 	 /*
 	  * Just print error for now...
@@ -1742,6 +1755,9 @@ mxml_load_data(mxml_node_t *top,	/* I - Top node */
 	  goto error;
 	}
 
+        if (!first)
+	  first = node;
+
         if (isspace(ch))
           ch = mxml_parse_element(node, p, &encoding, getc_cb);
         else if (ch == '/')
@@ -1750,6 +1766,7 @@ mxml_load_data(mxml_node_t *top,	/* I - Top node */
 	  {
 	    mxml_error("Expected > but got '%c' instead for element <%s/>!",
 	               ch, buffer);
+            mxmlDelete(node);
             goto error;
 	  }
 

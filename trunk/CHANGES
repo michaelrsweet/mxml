@@ -1,8 +1,10 @@
-CHANGES - 08/10/2005
+CHANGES - 08/16/2005
 --------------------
 
 CHANGES IN Mini-XML 2.2.3
 
+	- The mxmlLoad*() functions could leak a node on an error
+	  (STR #27)
 	- The mxml_vsnprintf() function could get in an infinite
 	  loop on a buffer overflow (STR #25)
 	- Added new mxmlNewCDATA() and mxmlSetCDATA() functions

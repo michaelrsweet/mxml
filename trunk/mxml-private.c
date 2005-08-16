@@ -47,7 +47,7 @@ mxml_error(const char *format,		/* I - Printf-style format string */
            ...)				/* I - Additional arguments as needed */
 {
   va_list	ap;			/* Pointer to arguments */
-  char		*s;			/* Message string */
+  char		s[1024];		/* Message string */
 
 
  /*
@@ -63,7 +63,7 @@ mxml_error(const char *format,		/* I - Printf-style format string */
 
   va_start(ap, format);
 
-  s = mxml_strdupf(format, ap);
+  vsnprintf(s, sizeof(s), format, ap);
 
   va_end(ap);
 
@@ -75,12 +75,6 @@ mxml_error(const char *format,		/* I - Printf-style format string */
     (*mxml_error_cb)(s);
   else
     fprintf(stderr, "mxml: %s\n", s);
-
- /*
-  * Free the string...
-  */
-
-  free(s);
 }
 
 

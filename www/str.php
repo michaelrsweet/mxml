@@ -514,7 +514,7 @@ switch ($op)
 	  while ($row = db_next($result))
 	  {
             $date     = date("M d, Y", $row['create_date']);
-            $time     = date("H:m", $row['create_date']);
+            $time     = date("H:i", $row['create_date']);
 	    $email    = sanitize_email($row['create_user']);
 	    $filename = htmlspecialchars($row['filename']);
 
@@ -550,7 +550,7 @@ switch ($op)
 	  while ($row = db_next($result))
 	  {
             $date     = date("M d, Y", $row['create_date']);
-            $time     = date("H:m", $row['create_date']);
+            $time     = date("H:i", $row['create_date']);
 	    $email    = sanitize_email($row['create_user']);
 	    $contents = quote_text($row['contents']);
 
@@ -1219,7 +1219,7 @@ switch ($op)
 	  while ($row = db_next($result))
 	  {
             $date     = date("M d, Y", $row['create_date']);
-            $time     = date("H:m", $row['create_date']);
+            $time     = date("H:i", $row['create_date']);
 	    $email    = sanitize_email($row['create_user']);
 	    $filename = htmlspecialchars($row['filename']);
 
@@ -1268,7 +1268,7 @@ switch ($op)
 	  while ($row = db_next($result))
 	  {
             $date     = date("M d, Y", $row['create_date']);
-            $time     = date("H:m", $row['create_date']);
+            $time     = date("H:i", $row['create_date']);
 	    $email    = sanitize_email($row['create_user']);
 	    $contents = quote_text($row['contents']);
 

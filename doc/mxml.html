@@ -1831,13 +1831,19 @@ Ty Coon, President of Vice
 <H1 align="right"><A name="RELNOTES">B - Release Notes</A></H1>
 <H2><A NAME="7_1">Changes in Mini-XML 2.2.3</A></H2>
 <UL>
+<LI>The mxmldoc program now supports --title and --intro options.</LI>
+<LI>The mxmlLoad*() functions could leak a node on an error (STR #27)</LI>
+<LI>The mxml_vsnprintf() function could get in an infinite loop on a
+ buffer overflow (STR #25)</LI>
 <LI>Added new mxmlNewCDATA() and mxmlSetCDATA() functions to create and
  set CDATA nodes, which are really just special element nodes.</LI>
+<LI>Added new MXML_IGNORE type and MXML_IGNORE_CB callback to ignore
+ non-element nodes (i.e. whitespace)</LI>
+<LI>mxmlLoad*() did not treat custom data as opaque, so whitespace
+ characters would be lost.</LI>
 </UL>
 <H2><A NAME="7_2">Changes in Mini-XML 2.2.2</A></H2>
 <UL>
-<LI>Added new MXML_IGNORE type and MXML_IGNORE_CB callback to ignore
- non-element nodes (i.e. whitespace)</LI>
 <LI>mxmlLoad*() did not treat custom data as opaque, so whitespace
  characters would be lost.</LI>
 </UL>

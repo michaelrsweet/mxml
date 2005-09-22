@@ -20,10 +20,12 @@
  *
  *   main()                - Main entry for test program.
  *   add_variable()        - Add a variable or argument.
+ *   new_documentation()   - Create a new documentation tree.
  *   safe_strcpy()         - Copy a string allowing for overlapping strings.
  *   scan_file()           - Scan a source file.
  *   sort_node()           - Insert a node sorted into a tree.
  *   update_comment()      - Update a comment node.
+ *   usage()               - Show program usage...
  *   write_documentation() - Write HTML documentation.
  *   write_element()       - Write an elements text nodes.
  *   write_string()        - Write a string, quoting XHTML special chars
@@ -132,13 +134,17 @@
 
 static mxml_node_t	*add_variable(mxml_node_t *parent, const char *name,
 			              mxml_node_t *type);
+static mxml_node_t	*new_documentation(mxml_node_t **mxmldoc);
 static void		safe_strcpy(char *dst, const char *src);
 static int		scan_file(const char *filename, FILE *fp,
 			          mxml_node_t *doc);
 static void		sort_node(mxml_node_t *tree, mxml_node_t *func);
 static void		update_comment(mxml_node_t *parent,
 			               mxml_node_t *comment);
-static void		write_documentation(mxml_node_t *doc);
+static void		usage(const char *option);
+static void		write_documentation(const char *title,
+			                    const char *intro,
+			                    mxml_node_t *doc);
 static void		write_element(mxml_node_t *doc, mxml_node_t *element);
 static void		write_string(const char *s);
 static const char	*ws_cb(mxml_node_t *node, int where);
@@ -153,110 +159,153 @@ main(int  argc,				/* I - Number of command-line args */
      char *argv[])			/* I - Command-line args */
 {
   int		i;			/* Looping var */
+  int		len;			/* Length of argument */
   FILE		*fp;			/* File to read */
   mxml_node_t	*doc;			/* XML documentation tree */
   mxml_node_t	*mxmldoc;		/* mxmldoc node */
+  const char	*title;			/* Title of documentation */
+  const char	*introfile;		/* Introduction file */
+  const char	*xmlfile;		/* XML file */
+  int		update;			/* Updated XML file */
 
 
  /*
   * Check arguments...
   */
 
-  if (argc < 2)
-  {
-    fputs("Usage: mxmldoc filename.xml [source files] >filename.html\n", stderr);
-    return (1);
-  }
+  title     = NULL;
+  introfile = NULL;
+  xmlfile   = NULL;
+  update    = 0;
+  doc       = NULL;
+  mxmldoc   = NULL;
 
- /*
-  * Read the XML documentation file, if it exists...
-  */
-
-  if ((fp = fopen(argv[1], "r")) != NULL)
-  {
-   /*
-    * Read the existing XML file...
-    */
-
-    doc = mxmlLoadFile(NULL, fp, MXML_NO_CALLBACK);
-
-    fclose(fp);
-
-    if (!doc)
+  for (i = 1; i < argc; i ++)
+    if (!strcmp(argv[i], "--title") && !title)
     {
-      mxmldoc = NULL;
+     /*
+      * Set title...
+      */
 
-      fprintf(stderr, "mxmldoc: Unable to read the XML documentation file \"%s\"!\n",
-              argv[1]);
+      i ++;
+      if (i < argc)
+        title = argv[i];
+      else
+        usage(NULL);
     }
-    else if ((mxmldoc = mxmlFindElement(doc, doc, "mxmldoc", NULL,
-                                        NULL, MXML_DESCEND)) == NULL)
+    else if (!strcmp(argv[i], "--intro") && !introfile)
     {
-      fprintf(stderr, "mxmldoc: XML documentation file \"%s\" is missing <mxmldoc> node!!\n",
-              argv[1]);
+     /*
+      * Set intro file...
+      */
 
-      mxmlDelete(doc);
-      doc = NULL;
+      i ++;
+      if (i < argc)
+        introfile = argv[i];
+      else
+        usage(NULL);
     }
-  }
-  else
-  {
-    doc     = NULL;
-    mxmldoc = NULL;
-  }
-
-  if (!doc)
-  {
-   /*
-    * Create an empty XML documentation file...
-    */
-
-    doc = mxmlNewElement(NULL, "?xml version=\"1.0\"?");
-
-    mxmldoc = mxmlNewElement(doc, "mxmldoc");
-
-#ifdef MXML_INCLUDE_SCHEMA
-   /*
-    * Currently we don't include the schema/namespace stuff with the
-    * XML output since some validators don't seem to like it...
-    */
-
-    mxmlElementSetAttr(mxmldoc, "xmlns", "http://www.easysw.com");
-    mxmlElementSetAttr(mxmldoc, "xmlns:xsi",
-                       "http://www.w3.org/2001/XMLSchema-instance");
-    mxmlElementSetAttr(mxmldoc, "xsi:schemaLocation",
-                       "http://www.easysw.com/~mike/mxml/mxmldoc.xsd");
-#endif /* MXML_INCLUDE_SCHEMA */
-  }
-
- /*
-  * Loop through all of the source files...
-  */
-
-  for (i = 2; i < argc; i ++)
-    if ((fp = fopen(argv[i], "r")) == NULL)
+    else if (argv[i][0] == '-')
     {
-      fprintf(stderr, "Unable to open source file \"%s\": %s\n", argv[i],
-              strerror(errno));
-      mxmlDelete(doc);
-      return (1);
-    }
-    else if (scan_file(argv[i], fp, mxmldoc))
-    {
-      fclose(fp);
-      mxmlDelete(doc);
-      return (1);
+     /*
+      * Unknown/bad option...
+      */
+
+      usage(argv[i]);
     }
     else
-      fclose(fp);
+    {
+     /*
+      * Process XML or source file...
+      */
 
-  if (argc > 2)
+      len = strlen(argv[i]);
+      if (len > 4 && !strcmp(argv[i] + len - 4, ".xml"))
+      {
+       /*
+        * Set XML file...
+	*/
+
+        if (xmlfile)
+	  usage(NULL);
+
+        xmlfile = argv[i];
+
+        if (!doc)
+	{
+	  if ((fp = fopen(argv[i], "r")) != NULL)
+	  {
+	   /*
+	    * Read the existing XML file...
+	    */
+
+	    doc = mxmlLoadFile(NULL, fp, MXML_NO_CALLBACK);
+
+	    fclose(fp);
+
+	    if (!doc)
+	    {
+	      mxmldoc = NULL;
+
+	      fprintf(stderr, "mxmldoc: Unable to read the XML documentation file \"%s\"!\n",
+        	      argv[i]);
+	    }
+	    else if ((mxmldoc = mxmlFindElement(doc, doc, "mxmldoc", NULL,
+                                        	NULL, MXML_DESCEND)) == NULL)
+	    {
+	      fprintf(stderr, "mxmldoc: XML documentation file \"%s\" is missing <mxmldoc> node!!\n",
+        	      argv[i]);
+
+	      mxmlDelete(doc);
+	      doc = NULL;
+	    }
+	  }
+	  else
+	  {
+	    doc     = NULL;
+	    mxmldoc = NULL;
+	  }
+
+	  if (!doc)
+	    doc = new_documentation(&mxmldoc);
+        }
+      }
+      else
+      {
+       /*
+        * Load source file...
+	*/
+
+        update = 1;
+
+	if (!doc)
+	  doc = new_documentation(&mxmldoc);
+
+	if ((fp = fopen(argv[i], "r")) == NULL)
+	{
+	  fprintf(stderr, "mxmldoc: Unable to open source file \"%s\": %s\n",
+	          argv[i], strerror(errno));
+	  mxmlDelete(doc);
+	  return (1);
+	}
+	else if (scan_file(argv[i], fp, mxmldoc))
+	{
+	  fclose(fp);
+	  mxmlDelete(doc);
+	  return (1);
+	}
+	else
+	  fclose(fp);
+      }
+    }
+
+  if (update && xmlfile)
   {
    /*
     * Save the updated XML documentation file...
     */
 
-    if ((fp = fopen(argv[1], "w")) != NULL)
+    if ((fp = fopen(xmlfile, "w")) != NULL)
     {
      /*
       * Write over the existing XML file...
@@ -264,8 +313,8 @@ main(int  argc,				/* I - Number of command-line args */
 
       if (mxmlSaveFile(doc, fp, ws_cb))
       {
-	fprintf(stderr, "Unable to write the XML documentation file \"%s\": %s!\n",
-        	argv[1], strerror(errno));
+	fprintf(stderr, "mxmldoc: Unable to write the XML documentation file \"%s\": %s!\n",
+        	xmlfile, strerror(errno));
 	fclose(fp);
 	mxmlDelete(doc);
 	return (1);
@@ -275,8 +324,8 @@ main(int  argc,				/* I - Number of command-line args */
     }
     else
     {
-      fprintf(stderr, "Unable to create the XML documentation file \"%s\": %s!\n",
-              argv[1], strerror(errno));
+      fprintf(stderr, "mxmldoc: Unable to create the XML documentation file \"%s\": %s!\n",
+              xmlfile, strerror(errno));
       mxmlDelete(doc);
       return (1);
     }
@@ -286,7 +335,7 @@ main(int  argc,				/* I - Number of command-line args */
   * Write HTML documentation...
   */
 
-  write_documentation(mxmldoc);
+  write_documentation(title ? title : "Documentation", introfile, mxmldoc);
 
  /*
   * Delete the tree and return...
@@ -411,6 +460,40 @@ add_variable(mxml_node_t *parent,	/* I - Parent node */
   return (variable);
 }
 
+
+/*
+ * 'new_documentation()' - Create a new documentation tree.
+ */
+
+static mxml_node_t *			/* O - New documentation */
+new_documentation(mxml_node_t **mxmldoc)/* O - mxmldoc node */
+{
+  mxml_node_t	*doc;			/* New documentation */
+
+
+ /*
+  * Create an empty XML documentation file...
+  */
+
+  doc = mxmlNewElement(NULL, "?xml version=\"1.0\"?");
+
+  *mxmldoc = mxmlNewElement(doc, "mxmldoc");
+
+#ifdef MXML_INCLUDE_SCHEMA
+ /*
+  * Currently we don't include the schema/namespace stuff with the
+  * XML output since some validators don't seem to like it...
+  */
+
+  mxmlElementSetAttr(*mxmldoc, "xmlns", "http://www.easysw.com");
+  mxmlElementSetAttr(*mxmldoc, "xmlns:xsi",
+                     "http://www.w3.org/2001/XMLSchema-instance");
+  mxmlElementSetAttr(*mxmldoc, "xsi:schemaLocation",
+                     "http://www.easysw.com/~mike/mxml/mxmldoc.xsd");
+#endif /* MXML_INCLUDE_SCHEMA */
+
+  return (doc);
+}
 
 /*
  * 'safe_strcpy()' - Copy a string allowing for overlapping strings.
@@ -1636,6 +1719,9 @@ sort_node(mxml_node_t *tree,		/* I - Tree to sort into */
   if ((nodename = mxmlElementGetAttr(node, "name")) == NULL)
     return;
 
+  if (nodename[0] == '_')
+    return;				/* Hide private names */
+
 #if DEBUG > 1
   fprintf(stderr, "        nodename=%p (\"%s\")\n", nodename, nodename);
 #endif /* DEBUG > 1 */
@@ -1793,13 +1879,37 @@ update_comment(mxml_node_t *parent,	/* I - Parent node */
 
 
 /*
+ * 'usage()' - Show program usage...
+ */
+
+static void
+usage(const char *option)		/* I - Unknown option */
+{
+  if (option)
+    printf("mxmldoc: Bad option \"%s\"!\n\n", option);
+
+  puts("Usage: mxmldoc [options] [filename.xml] [source files] >filename.html");
+  puts("Options:");
+  puts("    --title title              Set documentation title");
+  puts("    --intro introfile.html     Set introduction file");
+
+  exit(1);
+}
+
+
+/*
  * 'write_documentation()' - Write HTML documentation.
  */
 
 static void
-write_documentation(mxml_node_t *doc)	/* I - XML documentation */
+write_documentation(
+    const char  *title,			/* I - Title */
+    const char  *introfile,		/* I - Intro file */
+    mxml_node_t *doc)			/* I - XML documentation */
 {
   int		i;			/* Looping var */
+  FILE		*fp;			/* File */
+  char		line[8192];		/* Line from file */
   mxml_node_t	*function,		/* Current function */
 		*scut,			/* Struct/class/union/typedef */
 		*arg,			/* Current argument */
@@ -1823,19 +1933,35 @@ write_documentation(mxml_node_t *doc)	/* I - XML documentation */
   * Standard header...
   */
 
-  puts("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" "
-       "\"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n"
-       "<html xmlns='http://www.w3.org/1999/xhtml' xml:lang='en' lang='en'>\n"
-       "<head>\n"
-       "\t<title>Documentation</title>\n"
-       "\t<meta name='creator' content='" MXML_VERSION "'/>\n"
-       "\t<style><!--\n"
-       "\th1, h2, h3, p { font-family: sans-serif; text-align: justify; }\n"
-       "\ttt, pre a:link, pre a:visited, tt a:link, tt a:visited { font-weight: bold; color: #7f0000; }\n"
-       "\tpre { font-weight: bold; color: #7f0000; margin-left: 2em; }\n"
-       "\t--></style>\n"
-       "</head>\n"
-       "<body>");
+  printf("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" "
+	 "\"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n"
+	 "<html xmlns='http://www.w3.org/1999/xhtml' xml:lang='en' lang='en'>\n"
+	 "<head>\n"
+	 "\t<title>%s</title>\n"
+	 "\t<meta name='creator' content='" MXML_VERSION "'/>\n"
+	 "\t<style><!--\n"
+	 "\th1, h2, h3, p { font-family: sans-serif; text-align: justify; }\n"
+	 "\ttt, pre a:link, pre a:visited, tt a:link, tt a:visited { font-weight: bold; color: #7f0000; }\n"
+	 "\tpre { font-weight: bold; color: #7f0000; margin-left: 2em; }\n"
+	 "\t--></style>\n"
+	 "</head>\n"
+	 "<body>\n", title);
+
+ /*
+  * Intro...
+  */
+
+  if (introfile && (fp = fopen(introfile, "r")) != NULL)
+  {
+   /*
+    * Insert intro file before contents...
+    */
+
+    while (fgets(line, sizeof(line), fp))
+      fputs(line, stdout);
+
+    fclose(fp);
+  }
 
  /*
   * Table of contents...

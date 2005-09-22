@@ -15,13 +15,18 @@
 .\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 .\" GNU General Public License for more details.
 .\"
-.TH mxmldoc 1 "mini-XML" "25 February 2005" "Michael Sweet"
+.TH mxmldoc 1 "mini-XML" "21 September 2005" "Michael Sweet"
 .SH NAME
 mxmldoc \- mini-xml documentation generator
 .SH SYNOPSIS
 .B mxmldoc
+[ --intro
+.I introfile.html
+] [ --title
+.I title
+] [
 .I filename.xml
-[
+] [
 .I source file(s)
 ] >
 .I filename.html
@@ -39,6 +44,15 @@ In general, any C or C++ source code is handled by
 code with documentation that is formatted according to the CUPS
 Configuration Management Plan which is available at
 "http://www.cups.org/documentation.php".
+.SH OPTIONS
+.TP 5
+\--intro introfile.html
+.br
+Inserts the specified file at the top of the output documentation.
+.TP 5
+\--title title
+.br
+Sets the title of the output documentation.
 .SH SEE ALSO
 mxml(3), Mini-XML Programmers Manual, http://www.easysw.com/~mike/mxml/
 .SH COPYRIGHT

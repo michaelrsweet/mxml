@@ -29,8 +29,8 @@
 <h4>Description</h4>
 <p>The XML node type.</p>
 <h4>Values</h4>
-<p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
-<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
+<p class='table'><table align='center' border='1' width='80%'>
+<thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td><tt>MXML_CUSTOM</tt></td><td>Custom data</td></tr>
 <tr><td><tt>MXML_ELEMENT</tt></td><td>XML element with attributes</td></tr>
@@ -109,7 +109,7 @@ mxmlAdd(
 </pre>
 <h4>Arguments</h4>
 <p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
-<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
+<thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td><tt>parent</tt></td><td>Parent node</td></tr>
 <tr><td><tt>where</tt></td><td>Where to add, MXML_ADD_BEFORE or MXML_ADD_AFTER</td></tr>
@@ -134,7 +134,7 @@ mxmlDelete(
 </pre>
 <h4>Arguments</h4>
 <p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
-<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
+<thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td><tt>node</tt></td><td>Node to delete</td></tr>
 </tbody></table></p>
@@ -157,7 +157,7 @@ mxmlElementGetAttr(
 </pre>
 <h4>Arguments</h4>
 <p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
-<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
+<thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td><tt>node</tt></td><td>Element node</td></tr>
 <tr><td><tt>name</tt></td><td>Name of attribute</td></tr>
@@ -184,7 +184,7 @@ mxmlElementSetAttr(
 </pre>
 <h4>Arguments</h4>
 <p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
-<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
+<thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td><tt>node</tt></td><td>Element node</td></tr>
 <tr><td><tt>name</tt></td><td>Name of attribute</td></tr>
@@ -205,7 +205,7 @@ mxmlEntityAddCallback(
 </pre>
 <h4>Arguments</h4>
 <p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
-<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
+<thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td><tt>(*cb)(const char *name)</tt></td><td>Callback function to add</td></tr>
 </tbody></table></p>
@@ -226,7 +226,7 @@ mxmlEntityGetName(
 </pre>
 <h4>Arguments</h4>
 <p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
-<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
+<thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td><tt>val</tt></td><td>Character value</td></tr>
 </tbody></table></p>
@@ -248,7 +248,7 @@ mxmlEntityGetValue(
 </pre>
 <h4>Arguments</h4>
 <p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
-<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
+<thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td><tt>name</tt></td><td>Entity name</td></tr>
 </tbody></table></p>
@@ -267,7 +267,7 @@ mxmlEntityRemoveCallback(
 </pre>
 <h4>Arguments</h4>
 <p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
-<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
+<thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td><tt>(*cb)(const char *name)</tt></td><td>Callback function to remove</td></tr>
 </tbody></table></p>
@@ -300,7 +300,7 @@ mxmlFindElement(
 </pre>
 <h4>Arguments</h4>
 <p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
-<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
+<thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td><tt>node</tt></td><td>Current node</td></tr>
 <tr><td><tt>top</tt></td><td>Top node</td></tr>
@@ -324,7 +324,7 @@ mxmlIndexDelete(
 </pre>
 <h4>Arguments</h4>
 <p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
-<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
+<thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td><tt>ind</tt></td><td>Index to delete</td></tr>
 </tbody></table></p>
@@ -345,7 +345,7 @@ mxmlIndexEnum(
 </pre>
 <h4>Arguments</h4>
 <p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
-<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
+<thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td><tt>ind</tt></td><td>Index to enumerate</td></tr>
 </tbody></table></p>
@@ -371,7 +371,7 @@ mxmlIndexFind(
 </pre>
 <h4>Arguments</h4>
 <p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
-<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
+<thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td><tt>ind</tt></td><td>Index to search</td></tr>
 <tr><td><tt>element</tt></td><td>Element name to find, if any</td></tr>
@@ -400,7 +400,7 @@ mxmlIndexNew(
 </pre>
 <h4>Arguments</h4>
 <p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
-<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
+<thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td><tt>node</tt></td><td>XML node tree</td></tr>
 <tr><td><tt>element</tt></td><td>Element to index or NULL for all</td></tr>
@@ -425,7 +425,7 @@ mxmlIndexReset(
 </pre>
 <h4>Arguments</h4>
 <p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
-<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
+<thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td><tt>ind</tt></td><td>Index to reset</td></tr>
 </tbody></table></p>
@@ -457,7 +457,7 @@ mxmlLoadFd(
 </pre>
 <h4>Arguments</h4>
 <p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
-<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
+<thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td><tt>top</tt></td><td>Top node</td></tr>
 <tr><td><tt>fd</tt></td><td>File descriptor to read from</td></tr>
@@ -491,7 +491,7 @@ mxmlLoadFile(
 </pre>
 <h4>Arguments</h4>
 <p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
-<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
+<thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td><tt>top</tt></td><td>Top node</td></tr>
 <tr><td><tt>fp</tt></td><td>File to read from</td></tr>
@@ -525,7 +525,7 @@ mxmlLoadString(
 </pre>
 <h4>Arguments</h4>
 <p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
-<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
+<thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td><tt>top</tt></td><td>Top node</td></tr>
 <tr><td><tt>s</tt></td><td>String to load</td></tr>
@@ -552,7 +552,7 @@ mxmlNewCDATA(
 </pre>
 <h4>Arguments</h4>
 <p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
-<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
+<thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td><tt>parent</tt></td><td>Parent node or MXML_NO_PARENT</td></tr>
 <tr><td><tt>data</tt></td><td>Data string</td></tr>
@@ -579,7 +579,7 @@ mxmlNewCustom(
 </pre>
 <h4>Arguments</h4>
 <p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
-<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
+<thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td><tt>parent</tt></td><td>Parent node or MXML_NO_PARENT</td></tr>
 <tr><td><tt>data</tt></td><td>Pointer to data</td></tr>
@@ -605,7 +605,7 @@ mxmlNewElement(
 </pre>
 <h4>Arguments</h4>
 <p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
-<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
+<thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td><tt>parent</tt></td><td>Parent node or MXML_NO_PARENT</td></tr>
 <tr><td><tt>name</tt></td><td>Name of element</td></tr>
@@ -630,7 +630,7 @@ mxmlNewInteger(
 </pre>
 <h4>Arguments</h4>
 <p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
-<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
+<thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td><tt>parent</tt></td><td>Parent node or MXML_NO_PARENT</td></tr>
 <tr><td><tt>integer</tt></td><td>Integer value</td></tr>
@@ -656,7 +656,7 @@ mxmlNewOpaque(
 </pre>
 <h4>Arguments</h4>
 <p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
-<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
+<thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td><tt>parent</tt></td><td>Parent node or MXML_NO_PARENT</td></tr>
 <tr><td><tt>opaque</tt></td><td>Opaque string</td></tr>
@@ -681,7 +681,7 @@ mxmlNewReal(
 </pre>
 <h4>Arguments</h4>
 <p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
-<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
+<thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td><tt>parent</tt></td><td>Parent node or MXML_NO_PARENT</td></tr>
 <tr><td><tt>real</tt></td><td>Real number value</td></tr>
@@ -709,7 +709,7 @@ mxmlNewText(
 </pre>
 <h4>Arguments</h4>
 <p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
-<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
+<thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td><tt>parent</tt></td><td>Parent node or MXML_NO_PARENT</td></tr>
 <tr><td><tt>whitespace</tt></td><td>1 = leading whitespace, 0 = no whitespace</td></tr>
@@ -739,7 +739,7 @@ mxmlNewTextf(
 </pre>
 <h4>Arguments</h4>
 <p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
-<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
+<thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td><tt>parent</tt></td><td>Parent node or MXML_NO_PARENT</td></tr>
 <tr><td><tt>whitespace</tt></td><td>1 = leading whitespace, 0 = no whitespace</td></tr>
@@ -764,7 +764,7 @@ mxmlRemove(
 </pre>
 <h4>Arguments</h4>
 <p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
-<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
+<thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td><tt>node</tt></td><td>Node to remove</td></tr>
 </tbody></table></p>
@@ -796,7 +796,7 @@ mxmlSaveAllocString(
 </pre>
 <h4>Arguments</h4>
 <p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
-<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
+<thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td><tt>node</tt></td><td>Node to write</td></tr>
 <tr><td><tt>(*cb)(mxml_node_t *node, int ws)</tt></td><td>Whitespace callback or MXML_NO_CALLBACK</td></tr>
@@ -824,7 +824,7 @@ mxmlSaveFd(
 </pre>
 <h4>Arguments</h4>
 <p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
-<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
+<thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td><tt>node</tt></td><td>Node to write</td></tr>
 <tr><td><tt>fd</tt></td><td>File descriptor to write to</td></tr>
@@ -853,7 +853,7 @@ mxmlSaveFile(
 </pre>
 <h4>Arguments</h4>
 <p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
-<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
+<thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td><tt>node</tt></td><td>Node to write</td></tr>
 <tr><td><tt>fp</tt></td><td>File to write to</td></tr>
@@ -887,7 +887,7 @@ mxmlSaveString(
 </pre>
 <h4>Arguments</h4>
 <p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
-<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
+<thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td><tt>node</tt></td><td>Node to write</td></tr>
 <tr><td><tt>buffer</tt></td><td>String buffer</td></tr>
@@ -912,7 +912,7 @@ mxmlSetCDATA(
 </pre>
 <h4>Arguments</h4>
 <p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
-<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
+<thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td><tt>node</tt></td><td>Node to set</td></tr>
 <tr><td><tt>data</tt></td><td>New data string</td></tr>
@@ -936,7 +936,7 @@ mxmlSetCustom(
 </pre>
 <h4>Arguments</h4>
 <p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
-<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
+<thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td><tt>node</tt></td><td>Node to set</td></tr>
 <tr><td><tt>data</tt></td><td>New data pointer</td></tr>
@@ -964,7 +964,7 @@ mxmlSetCustomHandlers(
 </pre>
 <h4>Arguments</h4>
 <p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
-<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
+<thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td><tt>load</tt></td><td>Load function</td></tr>
 <tr><td><tt>save</tt></td><td>Save function</td></tr>
@@ -987,7 +987,7 @@ mxmlSetElement(
 </pre>
 <h4>Arguments</h4>
 <p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
-<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
+<thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td><tt>node</tt></td><td>Node to set</td></tr>
 <tr><td><tt>name</tt></td><td>New name string</td></tr>
@@ -1007,7 +1007,7 @@ mxmlSetErrorCallback(
 </pre>
 <h4>Arguments</h4>
 <p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
-<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
+<thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td><tt>(*cb)(const char *)</tt></td><td>Error callback function</td></tr>
 </tbody></table></p>
@@ -1029,7 +1029,7 @@ mxmlSetInteger(
 </pre>
 <h4>Arguments</h4>
 <p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
-<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
+<thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td><tt>node</tt></td><td>Node to set</td></tr>
 <tr><td><tt>integer</tt></td><td>Integer value</td></tr>
@@ -1052,7 +1052,7 @@ mxmlSetOpaque(
 </pre>
 <h4>Arguments</h4>
 <p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
-<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
+<thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td><tt>node</tt></td><td>Node to set</td></tr>
 <tr><td><tt>opaque</tt></td><td>Opaque string</td></tr>
@@ -1075,7 +1075,7 @@ mxmlSetReal(
 </pre>
 <h4>Arguments</h4>
 <p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
-<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
+<thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td><tt>node</tt></td><td>Node to set</td></tr>
 <tr><td><tt>real</tt></td><td>Real number value</td></tr>
@@ -1099,7 +1099,7 @@ mxmlSetText(
 </pre>
 <h4>Arguments</h4>
 <p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
-<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
+<thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td><tt>node</tt></td><td>Node to set</td></tr>
 <tr><td><tt>whitespace</tt></td><td>1 = leading whitespace, 0 = no whitespace</td></tr>
@@ -1125,7 +1125,7 @@ mxmlSetTextf(
 </pre>
 <h4>Arguments</h4>
 <p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
-<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
+<thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td><tt>node</tt></td><td>Node to set</td></tr>
 <tr><td><tt>whitespace</tt></td><td>1 = leading whitespace, 0 = no whitespace</td></tr>
@@ -1153,7 +1153,7 @@ mxmlWalkNext(
 </pre>
 <h4>Arguments</h4>
 <p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
-<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
+<thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td><tt>node</tt></td><td>Current node</td></tr>
 <tr><td><tt>top</tt></td><td>Top node</td></tr>
@@ -1180,7 +1180,7 @@ mxmlWalkPrev(
 </pre>
 <h4>Arguments</h4>
 <p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
-<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
+<thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td><tt>node</tt></td><td>Current node</td></tr>
 <tr><td><tt>top</tt></td><td>Top node</td></tr>
@@ -1212,8 +1212,8 @@ struct mxml_attr_s
 };
 </pre>
 <h4>Members</h4>
-<p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
-<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
+<p class='table'><table align='center' border='1' width='80%'>
+<thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td><tt>name</tt></td><td>Attribute name</td></tr>
 <tr><td><tt>value</tt></td><td>Attribute value</td></tr>
@@ -1231,8 +1231,8 @@ struct mxml_custom_s
 };
 </pre>
 <h4>Members</h4>
-<p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
-<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
+<p class='table'><table align='center' border='1' width='80%'>
+<thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td><tt>data</tt></td><td>Pointer to (allocated) custom data</td></tr>
 </tbody></table></p>
@@ -1253,8 +1253,8 @@ struct mxml_index_s
 };
 </pre>
 <h4>Members</h4>
-<p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
-<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
+<p class='table'><table align='center' border='1' width='80%'>
+<thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td><tt>alloc_nodes</tt></td><td>Allocated nodes in index</td></tr>
 <tr><td><tt>attr</tt></td><td>Attribute used for indexing or NULL</td></tr>
@@ -1281,8 +1281,8 @@ struct mxml_node_s
 };
 </pre>
 <h4>Members</h4>
-<p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
-<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
+<p class='table'><table align='center' border='1' width='80%'>
+<thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td><tt>child</tt></td><td>First child node</td></tr>
 <tr><td><tt>last_child</tt></td><td>Last child node</td></tr>
@@ -1306,8 +1306,8 @@ struct mxml_text_s
 };
 </pre>
 <h4>Members</h4>
-<p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
-<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
+<p class='table'><table align='center' border='1' width='80%'>
+<thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td><tt>string</tt></td><td>Fragment string</td></tr>
 <tr><td><tt>whitespace</tt></td><td>Leading whitespace?</td></tr>
@@ -1327,8 +1327,8 @@ struct mxml_value_s
 };
 </pre>
 <h4>Members</h4>
-<p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
-<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
+<p class='table'><table align='center' border='1' width='80%'>
+<thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td><tt>attrs</tt></td><td>Attributes</td></tr>
 <tr><td><tt>name</tt></td><td>Name of element</td></tr>
@@ -1431,8 +1431,8 @@ union mxml_value_u
 };
 </pre>
 <h4>Members</h4>
-<p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
-<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>
+<p class='table'><table align='center' border='1' width='80%'>
+<thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td><tt>custom</tt></td><td>Custom data</td></tr>
 <tr><td><tt>element</tt></td><td>Element</td></tr>

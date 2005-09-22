@@ -2119,9 +2119,8 @@ write_documentation(
 
       puts("};\n</pre>\n"
            "<h4>Members</h4>\n"
-           "<p class='table'><table align='center' border='1' "
-           "cellpadding='5' cellspacing='0' width='80%'>\n"
-           "<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>\n"
+           "<p class='table'><table align='center' border='1' width='80%'>\n"
+           "<thead><tr><th>Name</th><th>Description</th></tr></thead>\n"
            "<tbody>");
 
       for (arg = mxmlFindElement(scut, scut, "variable", NULL, NULL,
@@ -2215,9 +2214,8 @@ write_documentation(
       }
 
       puts("<h4>Values</h4>\n"
-           "<p class='table'><table align='center' border='1' width='80%' "
-           "cellpadding='5' cellspacing='0' width='80%'>\n"
-           "<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>\n"
+           "<p class='table'><table align='center' border='1' width='80%'>\n"
+           "<thead><tr><th>Name</th><th>Description</th></tr></thead>\n"
            "<tbody>");
 
       for (arg = mxmlFindElement(scut, scut, "constant", NULL, NULL,
@@ -2327,7 +2325,7 @@ write_documentation(
       {
 	puts("<p class='table'><table align='center' border='1' width='80%' "
              "cellpadding='5' cellspacing='0' width='80%'>\n"
-	     "<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>\n"
+	     "<thead><tr><th>Name</th><th>Description</th></tr></thead>\n"
 	     "<tbody>");
 
 	for (arg = mxmlFindElement(function, function, "argument", NULL, NULL,
@@ -2477,9 +2475,8 @@ write_documentation(
 
       puts("};\n</pre>\n"
            "<h4>Members</h4>\n"
-           "<p class='table'><table align='center' border='1' width='80%' "
-           "cellpadding='5' cellspacing='0' width='80%'>\n"
-           "<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>\n"
+           "<p class='table'><table align='center' border='1' width='80%'>\n"
+           "<thead><tr><th>Name</th><th>Description</th></tr></thead>\n"
            "<tbody>");
 
       for (arg = mxmlFindElement(scut, scut, "variable", NULL, NULL,
@@ -2641,9 +2638,8 @@ write_documentation(
 
       puts("};\n</pre>\n"
            "<h4>Members</h4>\n"
-           "<p class='table'><table align='center' border='1' width='80%' "
-           "cellpadding='5' cellspacing='0' width='80%'>\n"
-           "<thead><tr bgcolor='#cccccc'><th>Name</th><th>Description</th></tr></thead>\n"
+           "<p class='table'><table align='center' border='1' width='80%'>\n"
+           "<thead><tr><th>Name</th><th>Description</th></tr></thead>\n"
            "<tbody>");
 
       for (arg = mxmlFindElement(scut, scut, "variable", NULL, NULL,

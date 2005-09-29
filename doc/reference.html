@@ -200,15 +200,10 @@ mxmlElementSetAttr(
 <h4>Syntax</h4>
 <pre>
 int
-mxmlEntityAddCallback(
-    int (*cb)(const char *name));
+mxmlEntityAddCallback(void);
 </pre>
 <h4>Arguments</h4>
-<p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
-<thead><tr><th>Name</th><th>Description</th></tr></thead>
-<tbody>
-<tr><td><tt>(*cb)(const char *name)</tt></td><td>Callback function to add</td></tr>
-</tbody></table></p>
+<p>None.</p>
 <h4>Returns</h4>
 <p>0 on success, -1 on failure</p>
 <!-- NEW PAGE -->
@@ -262,15 +257,10 @@ mxmlEntityGetValue(
 <h4>Syntax</h4>
 <pre>
 void
-mxmlEntityRemoveCallback(
-    int (*cb)(const char *name));
+mxmlEntityRemoveCallback(void);
 </pre>
 <h4>Arguments</h4>
-<p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
-<thead><tr><th>Name</th><th>Description</th></tr></thead>
-<tbody>
-<tr><td><tt>(*cb)(const char *name)</tt></td><td>Callback function to remove</td></tr>
-</tbody></table></p>
+<p>None.</p>
 <h4>Returns</h4>
 <p>Nothing.</p>
 <!-- NEW PAGE -->
@@ -452,8 +442,7 @@ child nodes of the specified type.</p>
 <a href='#mxml_node_t'>mxml_node_t</a> *
 mxmlLoadFd(
     <a href='#mxml_node_t'>mxml_node_t</a> * top,
-    int fd,
-    mxml_type_t (*cb)(mxml_node_t *node));
+    int fd);
 </pre>
 <h4>Arguments</h4>
 <p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
@@ -461,7 +450,6 @@ mxmlLoadFd(
 <tbody>
 <tr><td><tt>top</tt></td><td>Top node</td></tr>
 <tr><td><tt>fd</tt></td><td>File descriptor to read from</td></tr>
-<tr><td><tt>(*cb)(mxml_node_t *node)</tt></td><td>Callback function or MXML_NO_CALLBACK</td></tr>
 </tbody></table></p>
 <h4>Returns</h4>
 <p>First node or NULL if the file could not be read.</p>
@@ -486,8 +474,7 @@ child nodes of the specified type.</p>
 <a href='#mxml_node_t'>mxml_node_t</a> *
 mxmlLoadFile(
     <a href='#mxml_node_t'>mxml_node_t</a> * top,
-    FILE * fp,
-    mxml_type_t (*cb)(mxml_node_t *node));
+    FILE * fp);
 </pre>
 <h4>Arguments</h4>
 <p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
@@ -495,7 +482,6 @@ mxmlLoadFile(
 <tbody>
 <tr><td><tt>top</tt></td><td>Top node</td></tr>
 <tr><td><tt>fp</tt></td><td>File to read from</td></tr>
-<tr><td><tt>(*cb)(mxml_node_t *node)</tt></td><td>Callback function or MXML_NO_CALLBACK</td></tr>
 </tbody></table></p>
 <h4>Returns</h4>
 <p>First node or NULL if the file could not be read.</p>
@@ -520,8 +506,7 @@ child nodes of the specified type.</p>
 <a href='#mxml_node_t'>mxml_node_t</a> *
 mxmlLoadString(
     <a href='#mxml_node_t'>mxml_node_t</a> * top,
-    const char * s,
-    mxml_type_t (*cb)(mxml_node_t *node));
+    const char * s);
 </pre>
 <h4>Arguments</h4>
 <p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
@@ -529,7 +514,6 @@ mxmlLoadString(
 <tbody>
 <tr><td><tt>top</tt></td><td>Top node</td></tr>
 <tr><td><tt>s</tt></td><td>String to load</td></tr>
-<tr><td><tt>(*cb)(mxml_node_t *node)</tt></td><td>Callback function or MXML_NO_CALLBACK</td></tr>
 </tbody></table></p>
 <h4>Returns</h4>
 <p>First node or NULL if the string has errors.</p>
@@ -574,8 +558,7 @@ node is not dynamically allocated or is separately managed.</p>
 <a href='#mxml_node_t'>mxml_node_t</a> *
 mxmlNewCustom(
     <a href='#mxml_node_t'>mxml_node_t</a> * parent,
-    void * data,
-    void (*destroy)(void *));
+    void * data);
 </pre>
 <h4>Arguments</h4>
 <p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
@@ -583,7 +566,6 @@ mxmlNewCustom(
 <tbody>
 <tr><td><tt>parent</tt></td><td>Parent node or MXML_NO_PARENT</td></tr>
 <tr><td><tt>data</tt></td><td>Pointer to data</td></tr>
-<tr><td><tt>(*destroy)(void *)</tt></td><td>Function to destroy data</td></tr>
 </tbody></table></p>
 <h4>Returns</h4>
 <p>New node</p>
@@ -791,15 +773,13 @@ element tags.</p>
 <pre>
 char *
 mxmlSaveAllocString(
-    <a href='#mxml_node_t'>mxml_node_t</a> * node,
-    const char * (*cb)(mxml_node_t *node, int ws));
+    <a href='#mxml_node_t'>mxml_node_t</a> * node);
 </pre>
 <h4>Arguments</h4>
 <p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
 <thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td><tt>node</tt></td><td>Node to write</td></tr>
-<tr><td><tt>(*cb)(mxml_node_t *node, int ws)</tt></td><td>Whitespace callback or MXML_NO_CALLBACK</td></tr>
 </tbody></table></p>
 <h4>Returns</h4>
 <p>Allocated string or NULL</p>
@@ -819,8 +799,7 @@ element tags.</p>
 int
 mxmlSaveFd(
     <a href='#mxml_node_t'>mxml_node_t</a> * node,
-    int fd,
-    const char * (*cb)(mxml_node_t *node, int ws));
+    int fd);
 </pre>
 <h4>Arguments</h4>
 <p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
@@ -828,7 +807,6 @@ mxmlSaveFd(
 <tbody>
 <tr><td><tt>node</tt></td><td>Node to write</td></tr>
 <tr><td><tt>fd</tt></td><td>File descriptor to write to</td></tr>
-<tr><td><tt>(*cb)(mxml_node_t *node, int ws)</tt></td><td>Whitespace callback or MXML_NO_CALLBACK</td></tr>
 </tbody></table></p>
 <h4>Returns</h4>
 <p>0 on success, -1 on error.</p>
@@ -848,8 +826,7 @@ element tags.</p>
 int
 mxmlSaveFile(
     <a href='#mxml_node_t'>mxml_node_t</a> * node,
-    FILE * fp,
-    const char * (*cb)(mxml_node_t *node, int ws));
+    FILE * fp);
 </pre>
 <h4>Arguments</h4>
 <p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
@@ -857,7 +834,6 @@ mxmlSaveFile(
 <tbody>
 <tr><td><tt>node</tt></td><td>Node to write</td></tr>
 <tr><td><tt>fp</tt></td><td>File to write to</td></tr>
-<tr><td><tt>(*cb)(mxml_node_t *node, int ws)</tt></td><td>Whitespace callback or MXML_NO_CALLBACK</td></tr>
 </tbody></table></p>
 <h4>Returns</h4>
 <p>0 on success, -1 on error.</p>
@@ -882,8 +858,7 @@ int
 mxmlSaveString(
     <a href='#mxml_node_t'>mxml_node_t</a> * node,
     char * buffer,
-    int bufsize,
-    const char * (*cb)(mxml_node_t *node, int ws));
+    int bufsize);
 </pre>
 <h4>Arguments</h4>
 <p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
@@ -892,7 +867,6 @@ mxmlSaveString(
 <tr><td><tt>node</tt></td><td>Node to write</td></tr>
 <tr><td><tt>buffer</tt></td><td>String buffer</td></tr>
 <tr><td><tt>bufsize</tt></td><td>Size of string buffer</td></tr>
-<tr><td><tt>(*cb)(mxml_node_t *node, int ws)</tt></td><td>Whitespace callback or MXML_NO_CALLBACK</td></tr>
 </tbody></table></p>
 <h4>Returns</h4>
 <p>Size of string</p>
@@ -931,8 +905,7 @@ The node is not changed if it is not a custom node.</p>
 int
 mxmlSetCustom(
     <a href='#mxml_node_t'>mxml_node_t</a> * node,
-    void * data,
-    void (*destroy)(void *));
+    void * data);
 </pre>
 <h4>Arguments</h4>
 <p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
@@ -940,7 +913,6 @@ mxmlSetCustom(
 <tbody>
 <tr><td><tt>node</tt></td><td>Node to set</td></tr>
 <tr><td><tt>data</tt></td><td>New data pointer</td></tr>
-<tr><td><tt>(*destroy)(void *)</tt></td><td>New destructor function</td></tr>
 </tbody></table></p>
 <h4>Returns</h4>
 <p>0 on success, -1 on failure</p>
@@ -959,8 +931,8 @@ string on success and NULL on error.</p>
 <pre>
 void
 mxmlSetCustomHandlers(
-    mxml_custom_load_cb_t load,
-    mxml_custom_save_cb_t save);
+    <a href='#mxml_custom_load_cb_t'>mxml_custom_load_cb_t</a> load,
+    <a href='#mxml_custom_save_cb_t'>mxml_custom_save_cb_t</a> save);
 </pre>
 <h4>Arguments</h4>
 <p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
@@ -1002,15 +974,10 @@ mxmlSetElement(
 <h4>Syntax</h4>
 <pre>
 void
-mxmlSetErrorCallback(
-    void (*cb)(const char *));
+mxmlSetErrorCallback(void);
 </pre>
 <h4>Arguments</h4>
-<p class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' width='80%'>
-<thead><tr><th>Name</th><th>Description</th></tr></thead>
-<tbody>
-<tr><td><tt>(*cb)(const char *)</tt></td><td>Error callback function</td></tr>
-</tbody></table></p>
+<p>None.</p>
 <h4>Returns</h4>
 <p>Nothing.</p>
 <!-- NEW PAGE -->
@@ -1338,6 +1305,8 @@ struct mxml_value_s
 <h2><a name='_types'>Types</a></h2>
 <ul>
 	<li><a href='#mxml_attr_t'><tt>mxml_attr_t</tt></a></li>
+	<li><a href='#mxml_custom_load_cb_t'><tt>mxml_custom_load_cb_t</tt></a></li>
+	<li><a href='#mxml_custom_save_cb_t'><tt>mxml_custom_save_cb_t</tt></a></li>
 	<li><a href='#mxml_custom_t'><tt>mxml_custom_t</tt></a></li>
 	<li><a href='#mxml_element_t'><tt>mxml_element_t</tt></a></li>
 	<li><a href='#mxml_index_t'><tt>mxml_index_t</tt></a></li>
@@ -1353,6 +1322,24 @@ struct mxml_value_s
 <h4>Definition</h4>
 <pre>
 typedef struct <a href='#mxml_attr_s'>mxml_attr_s</a> mxml_attr_t;
+</pre>
+<!-- NEW PAGE -->
+<h3><a name='mxml_custom_load_cb_t'>mxml_custom_load_cb_t</a></h3>
+<hr noshade/>
+<h4>Description</h4>
+<p>Custom data load callback function</p>
+<h4>Definition</h4>
+<pre>
+typedef int (*mxml_custom_load_cb_t)(<a href='#mxml_node_t'>mxml_node_t</a> *, const char *);
+</pre>
+<!-- NEW PAGE -->
+<h3><a name='mxml_custom_save_cb_t'>mxml_custom_save_cb_t</a></h3>
+<hr noshade/>
+<h4>Description</h4>
+<p>Custom data save callback function</p>
+<h4>Definition</h4>
+<pre>
+typedef char * (*mxml_custom_save_cb_t)(<a href='#mxml_node_t'>mxml_node_t</a> *);
 </pre>
 <!-- NEW PAGE -->
 <h3><a name='mxml_custom_t'>mxml_custom_t</a></h3>

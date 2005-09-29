@@ -1,4 +1,7 @@
-<?xml version="1.0"?><mxmldoc>
+<?xml version="1.0"?><mxmldoc
+xmlns="http://www.easysw.com"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.easysw.com/~mike/mxml/mxmldoc.xsd">
   <function name="mxmlAdd">
     <description>Add a node to a tree.
 
@@ -79,10 +82,6 @@ not an element.</description>
       <description>0 on success, -1 on failure</description>
     </returnvalue>
     <description>Add a callback to convert entities to Unicode.</description>
-    <argument name="(*cb)(const char *name)" direction="I">
-      <type>int</type>
-      <description>Callback function to add</description>
-    </argument>
   </function>
   <function name="mxmlEntityGetName">
     <returnvalue>
@@ -113,10 +112,6 @@ name is not known.</description>
   </function>
   <function name="mxmlEntityRemoveCallback">
     <description>Remove a callback.</description>
-    <argument name="(*cb)(const char *name)" direction="I">
-      <type>int</type>
-      <description>Callback function to remove</description>
-    </argument>
   </function>
   <function name="mxmlFindElement">
     <returnvalue>
@@ -267,10 +262,6 @@ child nodes of the specified type.</description>
       <type>int</type>
       <description>File descriptor to read from</description>
     </argument>
-    <argument name="(*cb)(mxml_node_t *node)" direction="I">
-      <type>mxml_type_t</type>
-      <description>Callback function or MXML_NO_CALLBACK</description>
-    </argument>
   </function>
   <function name="mxmlLoadFile">
     <returnvalue>
@@ -297,10 +288,6 @@ child nodes of the specified type.</description>
       <type>FILE *</type>
       <description>File to read from</description>
     </argument>
-    <argument name="(*cb)(mxml_node_t *node)" direction="I">
-      <type>mxml_type_t</type>
-      <description>Callback function or MXML_NO_CALLBACK</description>
-    </argument>
   </function>
   <function name="mxmlLoadString">
     <returnvalue>
@@ -326,10 +313,6 @@ child nodes of the specified type.</description>
     <argument name="s" direction="I">
       <type>const char *</type>
       <description>String to load</description>
-    </argument>
-    <argument name="(*cb)(mxml_node_t *node)" direction="I">
-      <type>mxml_type_t</type>
-      <description>Callback function or MXML_NO_CALLBACK</description>
     </argument>
   </function>
   <function name="mxmlNewCDATA">
@@ -370,10 +353,6 @@ node is not dynamically allocated or is separately managed.</description>
     <argument name="data" direction="I">
       <type>void *</type>
       <description>Pointer to data</description>
-    </argument>
-    <argument name="(*destroy)(void *)" direction="I">
-      <type>void</type>
-      <description>Function to destroy data</description>
     </argument>
   </function>
   <function name="mxmlNewElement">
@@ -538,10 +517,6 @@ element tags.</description>
       <type>mxml_node_t *</type>
       <description>Node to write</description>
     </argument>
-    <argument name="(*cb)(mxml_node_t *node, int ws)" direction="I">
-      <type>const char *</type>
-      <description>Whitespace callback or MXML_NO_CALLBACK</description>
-    </argument>
   </function>
   <function name="mxmlSaveFd">
     <returnvalue>
@@ -563,10 +538,6 @@ element tags.</description>
       <type>int</type>
       <description>File descriptor to write to</description>
     </argument>
-    <argument name="(*cb)(mxml_node_t *node, int ws)" direction="I">
-      <type>const char *</type>
-      <description>Whitespace callback or MXML_NO_CALLBACK</description>
-    </argument>
   </function>
   <function name="mxmlSaveFile">
     <returnvalue>
@@ -587,10 +558,6 @@ element tags.</description>
     <argument name="fp" direction="I">
       <type>FILE *</type>
       <description>File to write to</description>
-    </argument>
-    <argument name="(*cb)(mxml_node_t *node, int ws)" direction="I">
-      <type>const char *</type>
-      <description>Whitespace callback or MXML_NO_CALLBACK</description>
     </argument>
   </function>
   <function name="mxmlSaveString">
@@ -620,10 +587,6 @@ element tags.</description>
     <argument name="bufsize" direction="I">
       <type>int</type>
       <description>Size of string buffer</description>
-    </argument>
-    <argument name="(*cb)(mxml_node_t *node, int ws)" direction="I">
-      <type>const char *</type>
-      <description>Whitespace callback or MXML_NO_CALLBACK</description>
     </argument>
   </function>
   <function name="mxmlSetCDATA">
@@ -658,10 +621,6 @@ The node is not changed if it is not a custom node.</description>
     <argument name="data" direction="I">
       <type>void *</type>
       <description>New data pointer</description>
-    </argument>
-    <argument name="(*destroy)(void *)" direction="I">
-      <type>void</type>
-      <description>New destructor function</description>
     </argument>
   </function>
   <function name="mxmlSetCustomHandlers">
@@ -700,10 +659,6 @@ The node is not changed if it is not an element node.</description>
   </function>
   <function name="mxmlSetErrorCallback">
     <description>Set the error message callback.</description>
-    <argument name="(*cb)(const char *)" direction="I">
-      <type>void</type>
-      <description>Error callback function</description>
-    </argument>
   </function>
   <function name="mxmlSetInteger">
     <returnvalue>
@@ -862,6 +817,10 @@ the walk to the node's children.</description>
     <type>struct mxml_attr_s</type>
     <description>An XML element attribute value.</description>
   </typedef>
+  <typedef name="mxml_custom_load_cb_t">
+    <type>int(*)(mxml_node_t *, const char *)</type>
+    <description>Custom data load callback function</description>
+  </typedef>
   <struct name="mxml_custom_s">
     <description>An XML custom value.</description>
     <variable name="data">
@@ -869,6 +828,12 @@ the walk to the node's children.</description>
       <description>Pointer to (allocated) custom data</description>
     </variable>
   </struct>
+  <typedef name="mxml_custom_save_cb_t">
+    <type>char *(*)(mxml_node_t *)</type>
+    <description>Custom data save callback function</description>
+    <description>C++ support...</description>
+    <description>End of &quot;$Id$&quot;.</description>
+  </typedef>
   <typedef name="mxml_custom_t">
     <type>struct mxml_custom_s</type>
     <description>An XML custom value.</description>

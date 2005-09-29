@@ -1,8 +1,10 @@
-CHANGES - 09/21/2005
+CHANGES - 09/28/2005
 --------------------
 
 CHANGES IN Mini-XML 2.2.3
 
+	- Fixed function and enumeraion type bugs in mxmldoc.
+	- Fixed XML schema for mxmldoc.
 	- The mxmldoc program now supports --title and --intro
 	  options.
 	- The mxmlLoad*() functions could leak a node on an error

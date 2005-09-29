@@ -7,7 +7,7 @@ else
 fi
 
 rm -f test.xml
-../mxmldoc test.xml $files >test.html 2>test.log
-#valgrind --logfile-fd=3 --leak-check=yes ../mxmldoc test.xml \
-#	$files >test.html 2>test.log 3>test.valgrind
+#../mxmldoc-static test.xml $files >test.html 2>test.log
+valgrind --log-fd=3 --leak-check=yes ../mxmldoc-static test.xml \
+	$files >test.html 2>test.log 3>test.valgrind
 

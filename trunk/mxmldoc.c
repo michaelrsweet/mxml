@@ -479,18 +479,11 @@ new_documentation(mxml_node_t **mxmldoc)/* O - mxmldoc node */
 
   *mxmldoc = mxmlNewElement(doc, "mxmldoc");
 
-#ifdef MXML_INCLUDE_SCHEMA
- /*
-  * Currently we don't include the schema/namespace stuff with the
-  * XML output since some validators don't seem to like it...
-  */
-
   mxmlElementSetAttr(*mxmldoc, "xmlns", "http://www.easysw.com");
   mxmlElementSetAttr(*mxmldoc, "xmlns:xsi",
                      "http://www.w3.org/2001/XMLSchema-instance");
   mxmlElementSetAttr(*mxmldoc, "xsi:schemaLocation",
                      "http://www.easysw.com/~mike/mxml/mxmldoc.xsd");
-#endif /* MXML_INCLUDE_SCHEMA */
 
   return (doc);
 }
@@ -559,7 +552,7 @@ scan_file(const char  *filename,	/* I - Filename */
 #ifdef DEBUG
   fprintf(stderr, "scan_file(filename=\"%s\", fp=%p, tree=%p)\n", filename,
           fp, tree);
-#endif // DEBUG
+#endif /* DEBUG */
 
  /*
   * Initialize the finite state machine...
@@ -929,9 +922,6 @@ scan_file(const char  *filename,	/* I - Filename */
 		break;
 
             case ')' :
-	        if (parens > 0)
-		  parens --;
-
 		if (type && parens)
 		{
 #ifdef DEBUG
@@ -945,6 +935,9 @@ scan_file(const char  *filename,	/* I - Filename */
 		  variable = add_variable(function, "argument", type);
 		  type     = NULL;
 		}
+
+	        if (parens > 0)
+		  parens --;
 		break;
 
 	    case ';' :
@@ -971,6 +964,43 @@ scan_file(const char  *filename,	/* I - Filename */
 
 		if (type)
 		{
+		 /*
+		  * See if we have a function typedef...
+		  */
+
+		  if (type->child &&
+		      !strcmp(type->child->value.text.string, "typedef"))
+		  {
+		   /*
+		    * Yes, add it!
+		    */
+
+		    typedefnode = mxmlNewElement(MXML_NO_PARENT, "typedef");
+
+		    for (node = type->child->next->next; node; node = node->next)
+		      if (strcmp(node->value.text.string, "(") &&
+		          strcmp(node->value.text.string, "*"))
+			break;
+
+                    if (node)
+		    {
+		      mxmlElementSetAttr(typedefnode, "name",
+		                         node->value.text.string);
+                      sort_node(tree, typedefnode);
+
+		      mxmlDelete(type->child);
+		      mxmlDelete(node);
+
+                      if (type->child)
+			type->child->value.text.whitespace = 0;
+
+		      mxmlAdd(typedefnode, MXML_ADD_AFTER, MXML_ADD_TO_PARENT,
+		              type);
+		      type = NULL;
+		      break;
+		    }
+		  }
+		  
 		  mxmlDelete(type);
 		  type = NULL;
 		}
@@ -996,6 +1026,17 @@ scan_file(const char  *filename,	/* I - Filename */
 #endif /* DEBUG */
                   ch = type->last_child->value.text.string[0];
 		  mxmlNewText(type, isalnum(ch) || ch == '_', "*");
+		}
+		break;
+
+	    case ',' :
+		if (type && !enumeration)
+		{
+#ifdef DEBUG
+                  fputs("Identifier: <<<< , >>>\n", stderr);
+#endif /* DEBUG */
+                  ch = type->last_child->value.text.string[0];
+		  mxmlNewText(type, 0, ",");
 		}
 		break;
 
@@ -1357,7 +1398,8 @@ scan_file(const char  *filename,	/* I - Filename */
 
       case STATE_IDENTIFIER :		/* Inside a keyword or identifier */
 	  if (isalnum(ch) || ch == '_' || ch == '[' || ch == ']' ||
-	      (ch == ',' && parens > 1) || ch == ':' || ch == '.' || ch == '~')
+	      (ch == ',' && (parens > 1 || (type && !enumeration && !function))) ||
+	      ch == ':' || ch == '.' || ch == '~')
 	  {
 	    if (bufptr < (buffer + sizeof(buffer) - 1))
 	      *bufptr++ = ch;
@@ -2572,9 +2614,79 @@ write_documentation(
       fputs("<h4>Definition</h4>\n"
             "<pre>\n"
 	    "typedef ", stdout);
-      write_element(doc, mxmlFindElement(scut, scut, "type", NULL,
-                                         NULL, MXML_DESCEND_FIRST));
-      printf(" %s;\n</pre>\n", name);
+
+      type = mxmlFindElement(scut, scut, "type", NULL, NULL,
+                             MXML_DESCEND_FIRST);
+
+      for (type = type->child; type; type = type->next)
+        if (!strcmp(type->value.text.string, "("))
+	  break;
+	else
+	{
+	  if (type->value.text.whitespace)
+	    putchar(' ');
+
+	  if (mxmlFindElement(doc, doc, "class", "name",
+	                      type->value.text.string, MXML_DESCEND) ||
+	      mxmlFindElement(doc, doc, "enumeration", "name",
+	                      type->value.text.string, MXML_DESCEND) ||
+	      mxmlFindElement(doc, doc, "struct", "name",
+	                      type->value.text.string, MXML_DESCEND) ||
+	      mxmlFindElement(doc, doc, "typedef", "name",
+	                      type->value.text.string, MXML_DESCEND) ||
+	      mxmlFindElement(doc, doc, "union", "name",
+	                      type->value.text.string, MXML_DESCEND))
+	  {
+            printf("<a href='#");
+            write_string(type->value.text.string);
+	    printf("'>");
+            write_string(type->value.text.string);
+	    printf("</a>");
+	  }
+	  else
+            write_string(type->value.text.string);
+        }
+
+      if (type)
+      {
+       /*
+        * Output function type...
+	*/
+
+        printf(" (*%s", name);
+
+	for (type = type->next->next; type; type = type->next)
+	{
+	  if (type->value.text.whitespace)
+	    putchar(' ');
+
+	  if (mxmlFindElement(doc, doc, "class", "name",
+	                      type->value.text.string, MXML_DESCEND) ||
+	      mxmlFindElement(doc, doc, "enumeration", "name",
+	                      type->value.text.string, MXML_DESCEND) ||
+	      mxmlFindElement(doc, doc, "struct", "name",
+	                      type->value.text.string, MXML_DESCEND) ||
+	      mxmlFindElement(doc, doc, "typedef", "name",
+	                      type->value.text.string, MXML_DESCEND) ||
+	      mxmlFindElement(doc, doc, "union", "name",
+	                      type->value.text.string, MXML_DESCEND))
+	  {
+            printf("<a href='#");
+            write_string(type->value.text.string);
+	    printf("'>");
+            write_string(type->value.text.string);
+	    printf("</a>");
+	  }
+	  else
+            write_string(type->value.text.string);
+        }
+
+        puts(";");
+      }
+      else
+	printf(" %s;\n", name);
+
+      puts("</pre>");
     }
   }
 

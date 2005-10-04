@@ -253,7 +253,7 @@ switch ($op)
         $temp = htmlspecialchars($row["abstract"]);
         print("<tr><th align='right'>Abstract:</th><td class='left'>$temp</td></tr>\n");
 
-        $temp = fomat_text($row["contents"]);
+        $temp = format_text($row["contents"]);
         print("<tr><th align='right'>Contents:</th><td class='left'>$temp</td></tr>\n");
 
         print("<tr><th colspan='2'>"

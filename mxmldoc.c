@@ -363,6 +363,11 @@ add_variable(mxml_node_t *parent,	/* I - Parent node */
 		*bufptr;		/* Pointer into buffer */
 
 
+#ifdef DEBUG
+  fprintf(stderr, "add_variable(parent=%p, name=\"%s\", type=%p)\n",
+          parent, name, type);
+#endif /* DEBUG */
+
  /*
   * Range check input...
   */
@@ -932,8 +937,16 @@ scan_file(const char  *filename,	/* I - Filename */
 
                 if (function && type && !parens)
 		{
-		  variable = add_variable(function, "argument", type);
-		  type     = NULL;
+		 /*
+		  * Check for "void" argument...
+		  */
+
+		  if (type->child && type->child->next)
+		    variable = add_variable(function, "argument", type);
+		  else
+		    mxmlDelete(type);
+
+		  type = NULL;
 		}
 
 	        if (parens > 0)
@@ -1557,17 +1570,23 @@ scan_file(const char  *filename,	/* I - Filename */
 	        * Argument definition...
 		*/
 
-	        mxmlNewText(type, type->child != NULL &&
-		                  type->last_child->value.text.string[0] != '(' &&
-				  type->last_child->value.text.string[0] != '*',
-			    buffer);
+                if (strcmp(buffer, "void"))
+		{
+	          mxmlNewText(type, type->child != NULL &&
+		                    type->last_child->value.text.string[0] != '(' &&
+				    type->last_child->value.text.string[0] != '*',
+			      buffer);
 
 #ifdef DEBUG
-                fprintf(stderr, "Argument: <<<< %s >>>\n", buffer);
+                  fprintf(stderr, "Argument: <<<< %s >>>\n", buffer);
 #endif /* DEBUG */
 
-	        variable = add_variable(function, "argument", type);
-		type     = NULL;
+	          variable = add_variable(function, "argument", type);
+		}
+		else
+		  mxmlDelete(type);
+
+		type = NULL;
 	      }
               else if (type->child && !function && (ch == ';' || ch == ','))
 	      {

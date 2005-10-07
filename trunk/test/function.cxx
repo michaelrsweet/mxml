@@ -74,3 +74,14 @@ foo_default_int(int one,		/* I - Integer */
 
   return (2);
 }
+
+
+/*
+ * 'foo_void_func()' - Function taking no arguments.
+ */
+
+void
+foo_void_func(void)
+{
+  puts("foo_void_func()");
+}

@@ -80,6 +80,12 @@ if ($argc)
     exit();
   }
 
+  if ($op != 'L' && $LOGIN_USER == "")
+  {
+    header("Location: login.php");
+    exit();
+  }
+
   if (($op == 'D' || $op == 'M') && !$id)
   {
     html_header("Article Error");

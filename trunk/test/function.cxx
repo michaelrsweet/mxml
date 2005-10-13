@@ -1,5 +1,7 @@
 /*
  * 'foo_void_function()' - Do foo with bar.
+ *
+ * @deprecated@
  */
 
 void
@@ -20,6 +22,8 @@ foo_void_function(int        one,	/* I - Integer */
 
 /*
  * 'foo_float_function()' - Do foo with bar.
+ *
+ * @since 1.2@
  */
 
 float					/* O - Real number */

@@ -20,12 +20,14 @@
  *
  *   main()                - Main entry for test program.
  *   add_variable()        - Add a variable or argument.
+ *   get_comment_info()    - Get info from comment.
  *   new_documentation()   - Create a new documentation tree.
  *   safe_strcpy()         - Copy a string allowing for overlapping strings.
  *   scan_file()           - Scan a source file.
  *   sort_node()           - Insert a node sorted into a tree.
  *   update_comment()      - Update a comment node.
  *   usage()               - Show program usage...
+ *   write_description()   - Write the description text.
  *   write_documentation() - Write HTML documentation.
  *   write_element()       - Write an elements text nodes.
  *   write_string()        - Write a string, quoting XHTML special chars
@@ -134,6 +136,7 @@
 
 static mxml_node_t	*add_variable(mxml_node_t *parent, const char *name,
 			              mxml_node_t *type);
+static char		*get_comment_info(mxml_node_t *description);
 static mxml_node_t	*new_documentation(mxml_node_t **mxmldoc);
 static void		safe_strcpy(char *dst, const char *src);
 static int		scan_file(const char *filename, FILE *fp,
@@ -142,6 +145,7 @@ static void		sort_node(mxml_node_t *tree, mxml_node_t *func);
 static void		update_comment(mxml_node_t *parent,
 			               mxml_node_t *comment);
 static void		usage(const char *option);
+static void		write_description(mxml_node_t *description);
 static void		write_documentation(const char *title,
 			                    const char *intro,
 			                    mxml_node_t *doc);
@@ -463,6 +467,40 @@ add_variable(mxml_node_t *parent,	/* I - Parent node */
   */
 
   return (variable);
+}
+
+
+/*
+ * 'get_comment_info()' - Get info from comment.
+ */
+
+static char *				/* O - Info from comment */
+get_comment_info(
+    mxml_node_t *description)		/* I - Description node */
+{
+  static char	info[1024];		/* Info string */
+  int		infolen;		/* Length of info string */
+  mxml_node_t	*current;		/* Current text node in description */
+
+
+  if (!description)
+    return ("<span class='info'>NULL</span>");
+
+  for (current = description->child; current; current = current->next)
+    if (!strcmp(current->value.text.string, "@deprecated@"))
+      return ("<span class='info'>DEPRECATED</span>");
+    else if (!strcmp(current->value.text.string, "@since") && current->next)
+    {
+      current = current->next;
+      snprintf(info, sizeof(info), "<span class='info'>%s",
+               current->value.text.string);
+      infolen = strlen(info);
+      strncpy(info + infolen - 1, "</span>", sizeof(info) - infolen);
+      info[sizeof(info) - 1] = '\0';
+      return (info);
+    }
+
+  return ("<span class='info'>NO</span>");
 }
 
 
@@ -1959,6 +1997,41 @@ usage(const char *option)		/* I - Unknown option */
 
 
 /*
+ * 'write_description()' - Write the description text.
+ */
+
+static void
+write_description(
+    mxml_node_t *description)		/* I - Description node */
+{
+  mxml_node_t	*current;		/* Current text node in description */
+
+
+  if (!description)
+    return;
+
+  for (current = description->child; current; current = current->next)
+    if (!strcmp(current->value.text.string, "@deprecated@"))
+      continue;
+    else if (!strcmp(current->value.text.string, "@since") && current->next)
+    {
+      do
+      {
+        current = current->next;
+      }
+      while (current && !strchr(current->value.text.string, '@'));
+    }
+    else
+    {
+      if (current->value.text.whitespace)
+	putchar(' ');
+
+      write_string(current->value.text.string);
+    }
+}
+
+
+/*
  * 'write_documentation()' - Write HTML documentation.
  */
 
@@ -2004,6 +2077,7 @@ write_documentation(
 	 "\th1, h2, h3, p { font-family: sans-serif; text-align: justify; }\n"
 	 "\ttt, pre a:link, pre a:visited, tt a:link, tt a:visited { font-weight: bold; color: #7f0000; }\n"
 	 "\tpre { font-weight: bold; color: #7f0000; margin-left: 2em; }\n"
+	 "\tspan.info { font-weight: bold; padding: 2; color: #ffffff; background: #000000; float: right; }\n"
 	 "\t--></style>\n"
 	 "</head>\n"
 	 "<body>\n", title);
@@ -2074,18 +2148,18 @@ write_documentation(
 	 scut = mxmlFindElement(scut, doc, "class", NULL, NULL,
                         	MXML_NO_DESCEND))
     {
-      cname = mxmlElementGetAttr(scut, "name");
-      printf("<!-- NEW PAGE -->\n"
-             "<h3><a name='%s'>%s</a></h3>\n"
-             "<hr noshade/>\n", cname, cname);
-
+      cname       = mxmlElementGetAttr(scut, "name");
       description = mxmlFindElement(scut, scut, "description", NULL,
                                     NULL, MXML_DESCEND_FIRST);
+      printf("<!-- NEW PAGE -->\n"
+             "<h3>%s<a name='%s'>%s</a></h3>\n"
+             "<hr noshade/>\n", get_comment_info(description), cname, cname);
+
       if (description)
       {
         fputs("<h4>Description</h4>\n"
 	      "<p>", stdout);
-	write_element(NULL, description);
+	write_description(description);
 	puts("</p>");
       }
 
@@ -2190,10 +2264,13 @@ write_documentation(
 	   arg = mxmlFindElement(arg, scut, "variable", NULL, NULL,
                         	 MXML_NO_DESCEND))
       {
-	printf("<tr><td><tt>%s</tt></td><td>", mxmlElementGetAttr(arg, "name"));
+        description = mxmlFindElement(arg, arg, "description", NULL,
+                                      NULL, MXML_DESCEND_FIRST);
 
-	write_element(NULL, mxmlFindElement(arg, arg, "description", NULL,
-                                            NULL, MXML_DESCEND_FIRST));
+	printf("<tr><td>%s<tt>%s</tt></td><td>", get_comment_info(description),
+	       mxmlElementGetAttr(arg, "name"));
+
+	write_description(description);
 
 	puts("</td></tr>");
       }
@@ -2204,15 +2281,14 @@ write_documentation(
 	   function = mxmlFindElement(function, scut, "function", NULL, NULL,
                                       MXML_NO_DESCEND))
       {
-	name = mxmlElementGetAttr(function, "name");
-
-	printf("<tr><td><tt><a name='%s.%s'>%s()</a></tt></td><td>",
-	       cname, name, name);
-
+	name        = mxmlElementGetAttr(function, "name");
 	description = mxmlFindElement(function, function, "description", NULL,
                                       NULL, MXML_DESCEND_FIRST);
-	if (description)
-	  write_element(NULL, description);
+
+	printf("<tr><td>%s<tt><a name='%s.%s'>%s()</a></tt></td><td>",
+	       get_comment_info(description), cname, name, name);
+
+	write_description(description);
 
 	arg = mxmlFindElement(function, function, "returnvalue", NULL,
                               NULL, MXML_DESCEND_FIRST);
@@ -2259,18 +2335,18 @@ write_documentation(
 	 scut = mxmlFindElement(scut, doc, "enumeration", NULL, NULL,
                         	MXML_NO_DESCEND))
     {
-      name = mxmlElementGetAttr(scut, "name");
-      printf("<!-- NEW PAGE -->\n"
-             "<h3><a name='%s'>%s</a></h3>\n"
-             "<hr noshade/>\n", name, name);
-
+      name        = mxmlElementGetAttr(scut, "name");
       description = mxmlFindElement(scut, scut, "description", NULL,
                                     NULL, MXML_DESCEND_FIRST);
+      printf("<!-- NEW PAGE -->\n"
+             "<h3>%s<a name='%s'>%s</a></h3>\n"
+             "<hr noshade/>\n", get_comment_info(description), name, name);
+
       if (description)
       {
         fputs("<h4>Description</h4>\n"
 	      "<p>", stdout);
-	write_element(NULL, description);
+	write_description(description);
 	puts("</p>");
       }
 
@@ -2285,10 +2361,12 @@ write_documentation(
 	   arg = mxmlFindElement(arg, scut, "constant", NULL, NULL,
                         	 MXML_NO_DESCEND))
       {
-	printf("<tr><td><tt>%s</tt></td><td>", mxmlElementGetAttr(arg, "name"));
+	description = mxmlFindElement(arg, arg, "description", NULL,
+                                      NULL, MXML_DESCEND_FIRST);
+	printf("<tr><td>%s<tt>%s</tt></td><td>", get_comment_info(description),
+	       mxmlElementGetAttr(arg, "name"));
 
-	write_element(doc, mxmlFindElement(arg, arg, "description", NULL,
-                                           NULL, MXML_DESCEND_FIRST));
+	write_description(description);
 
 	puts("</td></tr>");
       }
@@ -2325,18 +2403,18 @@ write_documentation(
 	 function = mxmlFindElement(function, doc, "function", NULL, NULL,
                                     MXML_NO_DESCEND))
     {
-      name = mxmlElementGetAttr(function, "name");
-      printf("<!-- NEW PAGE -->\n"
-             "<h3><a name='%s'>%s()</a></h3>\n"
-             "<hr noshade/>\n", name, name);
-
+      name        = mxmlElementGetAttr(function, "name");
       description = mxmlFindElement(function, function, "description", NULL,
                                     NULL, MXML_DESCEND_FIRST);
+      printf("<!-- NEW PAGE -->\n"
+             "<h3>%s<a name='%s'>%s()</a></h3>\n"
+             "<hr noshade/>\n", get_comment_info(description), name, name);
+
       if (description)
       {
         fputs("<h4>Description</h4>\n"
 	      "<p>", stdout);
-	write_element(NULL, description);
+	write_description(description);
 	puts("</p>");
       }
 
@@ -2451,18 +2529,18 @@ write_documentation(
 	 scut = mxmlFindElement(scut, doc, "struct", NULL, NULL,
                         	MXML_NO_DESCEND))
     {
-      cname = mxmlElementGetAttr(scut, "name");
-      printf("<!-- NEW PAGE -->\n"
-             "<h3><a name='%s'>%s</a></h3>\n"
-	     "<hr noshade/>\n", cname, cname);
-
+      cname       = mxmlElementGetAttr(scut, "name");
       description = mxmlFindElement(scut, scut, "description", NULL,
                                     NULL, MXML_DESCEND_FIRST);
+      printf("<!-- NEW PAGE -->\n"
+             "<h3>%s<a name='%s'>%s</a></h3>\n"
+	     "<hr noshade/>\n", get_comment_info(description), cname, cname);
+
       if (description)
       {
         fputs("<h4>Description</h4>\n"
 	      "<p>", stdout);
-	write_element(NULL, description);
+	write_description(description);
 	puts("</p>");
       }
 
@@ -2546,10 +2624,12 @@ write_documentation(
 	   arg = mxmlFindElement(arg, scut, "variable", NULL, NULL,
                         	 MXML_NO_DESCEND))
       {
-	printf("<tr><td><tt>%s</tt></td><td>", mxmlElementGetAttr(arg, "name"));
+        description = mxmlFindElement(arg, arg, "description", NULL,
+                                      NULL, MXML_DESCEND_FIRST);
+	printf("<tr><td>%s<tt>%s</tt></td><td>", get_comment_info(description),
+	       mxmlElementGetAttr(arg, "name"));
 
-	write_element(NULL, mxmlFindElement(arg, arg, "description", NULL,
-                                            NULL, MXML_DESCEND_FIRST));
+	write_description(description);
 
 	puts("</td></tr>");
       }
@@ -2560,15 +2640,14 @@ write_documentation(
 	   function = mxmlFindElement(function, scut, "function", NULL, NULL,
                                       MXML_NO_DESCEND))
       {
-	name = mxmlElementGetAttr(function, "name");
-
-	printf("<tr><td><tt><a name='%s.%s'>%s()</a></tt></td><td>",
-	       cname, name, name);
-
+	name        = mxmlElementGetAttr(function, "name");
 	description = mxmlFindElement(function, function, "description", NULL,
                                       NULL, MXML_DESCEND_FIRST);
-	if (description)
-	  write_element(NULL, description);
+
+	printf("<tr><td>%s<tt><a name='%s.%s'>%s()</a></tt></td><td>",
+	       get_comment_info(description), cname, name, name);
+
+	write_description(description);
 
 	arg = mxmlFindElement(function, function, "returnvalue", NULL,
                               NULL, MXML_DESCEND_FIRST);
@@ -2615,18 +2694,18 @@ write_documentation(
 	 scut = mxmlFindElement(scut, doc, "typedef", NULL, NULL,
                         	MXML_NO_DESCEND))
     {
-      name = mxmlElementGetAttr(scut, "name");
-      printf("<!-- NEW PAGE -->\n"
-             "<h3><a name='%s'>%s</a></h3>\n"
-	     "<hr noshade/>\n", name, name);
-
+      name        = mxmlElementGetAttr(scut, "name");
       description = mxmlFindElement(scut, scut, "description", NULL,
                                     NULL, MXML_DESCEND_FIRST);
+      printf("<!-- NEW PAGE -->\n"
+             "<h3>%s<a name='%s'>%s</a></h3>\n"
+	     "<hr noshade/>\n", get_comment_info(description), name, name);
+
       if (description)
       {
         fputs("<h4>Description</h4>\n"
 	      "<p>", stdout);
-	write_element(NULL, description);
+	write_description(description);
 	puts("</p>");
       }
 
@@ -2737,18 +2816,18 @@ write_documentation(
 	 scut = mxmlFindElement(scut, doc, "union", NULL, NULL,
                         	MXML_NO_DESCEND))
     {
-      name = mxmlElementGetAttr(scut, "name");
-      printf("<!-- NEW PAGE -->\n"
-             "<h3><a name='%s'>%s</a></h3>\n"
-	     "<hr noshade/>\n", name, name);
-
+      name        = mxmlElementGetAttr(scut, "name");
       description = mxmlFindElement(scut, scut, "description", NULL,
                                     NULL, MXML_DESCEND_FIRST);
+      printf("<!-- NEW PAGE -->\n"
+             "<h3>%s<a name='%s'>%s</a></h3>\n"
+	     "<hr noshade/>\n", get_comment_info(description), name, name);
+
       if (description)
       {
         fputs("<h4>Description</h4>\n"
 	      "<p>", stdout);
-	write_element(NULL, description);
+	write_description(description);
 	puts("</p>");
       }
 
@@ -2779,10 +2858,12 @@ write_documentation(
 	   arg = mxmlFindElement(arg, scut, "variable", NULL, NULL,
                         	 MXML_NO_DESCEND))
       {
-	printf("<tr><td><tt>%s</tt></td><td>", mxmlElementGetAttr(arg, "name"));
+        description = mxmlFindElement(arg, arg, "description", NULL,
+                                      NULL, MXML_DESCEND_FIRST);
+	printf("<tr><td>%s<tt>%s</tt></td><td>", get_comment_info(description),
+	       mxmlElementGetAttr(arg, "name"));
 
-	write_element(NULL, mxmlFindElement(arg, arg, "description", NULL,
-                                            NULL, MXML_DESCEND_FIRST));
+	write_description(description);
 
 	puts("</td></tr>");
       }
@@ -2819,18 +2900,18 @@ write_documentation(
 	 arg = mxmlFindElement(arg, doc, "variable", NULL, NULL,
                                MXML_NO_DESCEND))
     {
-      name = mxmlElementGetAttr(arg, "name");
-      printf("<!-- NEW PAGE -->\n"
-             "<h3><a name='%s'>%s</a></h3>\n"
-	     "<hr noshade/>", name, name);
-
+      name        = mxmlElementGetAttr(arg, "name");
       description = mxmlFindElement(arg, arg, "description", NULL,
                                     NULL, MXML_DESCEND_FIRST);
+      printf("<!-- NEW PAGE -->\n"
+             "<h3>%s<a name='%s'>%s</a></h3>\n"
+	     "<hr noshade/>", get_comment_info(description), name, name);
+
       if (description)
       {
         fputs("<h4>Description</h4>\n"
 	      "<p>", stdout);
-	write_element(NULL, description);
+	write_description(description);
 	puts("</p>");
       }
 

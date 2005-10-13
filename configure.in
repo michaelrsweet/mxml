@@ -23,7 +23,7 @@ dnl Set the name of the config header file...
 AC_CONFIG_HEADER(config.h)
 
 dnl Version number...
-VERSION=2.2.3
+VERSION=2.3
 AC_SUBST(VERSION)
 AC_DEFINE_UNQUOTED(MXML_VERSION, "Mini-XML v$VERSION")
 
@@ -33,7 +33,7 @@ CFLAGS="${CFLAGS:=}"
 CXXFLAGS="${CXXFLAGS:=}"
 LDFLAGS="${LDFLAGS:=}"
 AC_SUBST(LDFLAGS)
-OPTIM="-O"
+OPTIM=""
 AC_SUBST(OPTIM)
 
 AC_ARG_WITH(ansi, [  --with-ansi             set full ANSI C mode, default=no],
@@ -43,8 +43,6 @@ AC_ARG_WITH(ansi, [  --with-ansi             set full ANSI C mode, default=no],
 AC_ARG_ENABLE(debug, [  --enable-debug          turn on debugging, default=no],
 if eval "test x$enable_debug = xyes"; then
  	OPTIM="-g"
-else
-	LDFLAGS="$LDFLAGS -s"
 fi)
 
 AC_ARG_WITH(docdir, [  --with-docdir           set directory for documentation, default=${prefix}/share/doc/mxml],
@@ -122,7 +120,7 @@ if test x$enable_shared = xyes; then
 	case "$uname" in
 		SunOS* | UNIX_S*)
 			AC_MSG_RESULT(yes)
-			LIBMXML="libmxml.so.1.1"
+			LIBMXML="libmxml.so.1.2"
 			DSO="\$(CC)"
 			DSOFLAGS="$DSOFLAGS -Wl,-h,libmxml.so.1 -G -R\$(libdir) \$(OPTIM)"
 			LDFLAGS="$LDFLAGS -R\$(libdir)"
@@ -130,7 +128,7 @@ if test x$enable_shared = xyes; then
 
 		HP-UX*)
 			AC_MSG_RESULT(yes)
-			LIBMXML="libmxml.sl.1"
+			LIBMXML="libmxml.sl.2"
 			DSO="ld"
 			DSOFLAGS="$DSOFLAGS -b -z +h libmxml.sl.1 +s +b \$(libdir)"
 			LDFLAGS="$LDFLAGS -Wl,+s,+b,\$(libdir)"
@@ -138,14 +136,14 @@ if test x$enable_shared = xyes; then
 
 		IRIX)
 			AC_MSG_RESULT(yes)
-			LIBMXML="libmxml.so.1.1"
+			LIBMXML="libmxml.so.1.2"
 			DSO="\$(CC)"
 			DSOFLAGS="$DSOFLAGS -Wl,-rpath,\$(libdir),-set_version,sgi1.0,-soname,libmxml.so.1 -shared \$(OPTIM)"
 			;;
 
 		OSF1* | Linux | GNU)
 			AC_MSG_RESULT(yes)
-			LIBMXML="libmxml.so.1.1"
+			LIBMXML="libmxml.so.1.2"
 			DSO="\$(CC)"
 			DSOFLAGS="$DSOFLAGS -Wl,-soname,libmxml.so.1,-rpath,\$(libdir) -shared \$(OPTIM)"
                         LDFLAGS="$LDFLAGS -Wl,-rpath,\$(libdir)"
@@ -153,7 +151,7 @@ if test x$enable_shared = xyes; then
 
 		*BSD*)
 			AC_MSG_RESULT(yes)
-			LIBMXML="libmxml.so.1.1"
+			LIBMXML="libmxml.so.1.2"
 			DSO="\$(CC)"
 			DSOFLAGS="$DSOFLAGS -Wl,-soname,libmxml.so.1,-R\$(libdir) -shared \$(OPTIM)"
 			LDFLAGS="$LDFLAGS -Wl,-R\$(libdir)"
@@ -187,6 +185,10 @@ dnl Add -Wall for GCC...
 if test -n "$GCC"; then
 	CFLAGS="-Wall $CFLAGS"
 
+	if test "x$OPTIM" = x; then
+		OPTIM="-Os -g"
+	fi
+
 	if test "x$use_ansi" = xyes; then
 		CFLAGS="-ansi -pedantic $CFLAGS"
 	fi
@@ -198,6 +200,11 @@ else
 	case $uname in
 		HP-UX*)
 			CFLAGS="-Ae $CFLAGS"
+
+			if test "x$OPTIM" = x; then
+				OPTIM="-O2"
+			fi
+
 			OPTIM="+DAportable $OPTIM"
 
 			if test $PICFLAG = 1; then
@@ -206,8 +213,18 @@ else
 			;;
 
 		UNIX_SVR* | SunOS*)
+			if test "x$OPTIM" = x; then
+				OPTIM="-O2"
+			fi
+
 			if test $PICFLAG = 1; then
 				OPTIM="-KPIC $OPTIM"
+			fi
+			;;
+
+		*)
+			if test "x$OPTIM" = x; then
+				OPTIM="-O2"
 			fi
 			;;
 	esac

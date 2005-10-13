@@ -74,13 +74,13 @@
 
 typedef enum mxml_type_e		/**** The XML node type. ****/
 {
-  MXML_IGNORE = -1,			/* Ignore/throw away node */
+  MXML_IGNORE = -1,			/* Ignore/throw away node @since Mini-XML 2.3@ */
   MXML_ELEMENT,				/* XML element with attributes */
   MXML_INTEGER,				/* Integer value */
   MXML_OPAQUE,				/* Opaque string */
   MXML_REAL,				/* Real value */
   MXML_TEXT,				/* Text fragment */
-  MXML_CUSTOM				/* Custom data */
+  MXML_CUSTOM				/* Custom data @since Mini-XML 2.1@ */
 } mxml_type_t;
 
 typedef struct mxml_attr_s		/**** An XML element attribute value. ****/
@@ -89,7 +89,7 @@ typedef struct mxml_attr_s		/**** An XML element attribute value. ****/
   char			*value;		/* Attribute value */
 } mxml_attr_t;
 
-typedef struct mxml_value_s		/**** An XML element value. ****/
+typedef struct mxml_element_s		/**** An XML element value. ****/
 {
   char			*name;		/* Name of element */
   int			num_attrs;	/* Number of attributes */
@@ -102,7 +102,7 @@ typedef struct mxml_text_s		/**** An XML text value. ****/
   char			*string;	/* Fragment string */
 } mxml_text_t;
 
-typedef struct mxml_custom_s		/**** An XML custom value. ****/
+typedef struct mxml_custom_s		/**** An XML custom value. @since Mini-XML 2.1@ ****/
 {
   void			*data;		/* Pointer to (allocated) custom data */
   void			(*destroy)(void *);
@@ -116,7 +116,7 @@ typedef union mxml_value_u		/**** An XML node value. ****/
   char			*opaque;	/* Opaque string */
   double		real;		/* Real number */
   mxml_text_t		text;		/* Text fragment */
-  mxml_custom_t		custom;		/* Custom data */
+  mxml_custom_t		custom;		/* Custom data @since Mini-XML 2.1@ */
 } mxml_value_t;
 
 typedef struct mxml_node_s		/**** An XML node. ****/
@@ -235,7 +235,7 @@ extern mxml_node_t	*mxmlWalkPrev(mxml_node_t *node, mxml_node_t *top,
 
 
 /*
- * Private functions...
+ * Semi-private functions...
  */
 
 extern void		mxml_error(const char *format, ...);

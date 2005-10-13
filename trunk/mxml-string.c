@@ -17,10 +17,10 @@
  *
  * Contents:
  *
- *   mxml_strdup()    - Duplicate a string.
- *   mxml_strdupf()   - Format and duplicate a string.
- *   mxml_vstrdupf()  - Format and duplicate a string.
- *   mxml_vsnprintf() - Format a string into a fixed size buffer.
+ *   _mxml_strdup()    - Duplicate a string.
+ *   _mxml_strdupf()   - Format and duplicate a string.
+ *   _mxml_vstrdupf()  - Format and duplicate a string.
+ *   _mxml_vsnprintf() - Format a string into a fixed size buffer.
  */
 
 /*
@@ -31,12 +31,12 @@
 
 
 /*
- * 'mxml_strdup()' - Duplicate a string.
+ * '_mxml_strdup()' - Duplicate a string.
  */
 
 #ifndef HAVE_STRDUP
 char 	*				/* O - New string pointer */
-mxml_strdup(const char *s)		/* I - String to duplicate */
+_mxml_strdup(const char *s)		/* I - String to duplicate */
 {
   char	*t;				/* New string pointer */
 
@@ -53,12 +53,12 @@ mxml_strdup(const char *s)		/* I - String to duplicate */
 
 
 /*
- * 'mxml_strdupf()' - Format and duplicate a string.
+ * '_mxml_strdupf()' - Format and duplicate a string.
  */
 
 char *					/* O - New string pointer */
-mxml_strdupf(const char *format,	/* I - Printf-style format string */
-             ...)			/* I - Additional arguments as needed */
+_mxml_strdupf(const char *format,	/* I - Printf-style format string */
+              ...)			/* I - Additional arguments as needed */
 {
   va_list	ap;			/* Pointer to additional arguments */
   char		*s;			/* Pointer to formatted string */
@@ -70,7 +70,7 @@ mxml_strdupf(const char *format,	/* I - Printf-style format string */
   */
 
   va_start(ap, format);
-  s = mxml_vstrdupf(format, ap);
+  s = _mxml_vstrdupf(format, ap);
   va_end(ap);
 
   return (s);
@@ -78,12 +78,12 @@ mxml_strdupf(const char *format,	/* I - Printf-style format string */
 
 
 /*
- * 'mxml_vstrdupf()' - Format and duplicate a string.
+ * '_mxml_vstrdupf()' - Format and duplicate a string.
  */
 
 char *					/* O - New string pointer */
-mxml_vstrdupf(const char *format,	/* I - Printf-style format string */
-              va_list    ap)		/* I - Pointer to additional arguments */
+_mxml_vstrdupf(const char *format,	/* I - Printf-style format string */
+               va_list    ap)		/* I - Pointer to additional arguments */
 {
   int	bytes;				/* Number of bytes required */
   char	*buffer,			/* String buffer */
@@ -124,14 +124,14 @@ mxml_vstrdupf(const char *format,	/* I - Printf-style format string */
 
 #ifndef HAVE_VSNPRINTF
 /*
- * 'mxml_vsnprintf()' - Format a string into a fixed size buffer.
+ * '_mxml_vsnprintf()' - Format a string into a fixed size buffer.
  */
 
 int					/* O - Number of bytes formatted */
-mxml_vsnprintf(char       *buffer,	/* O - Output buffer */
-               size_t     bufsize,	/* O - Size of output buffer */
-	       const char *format,	/* I - Printf-style format string */
-	       va_list    ap)		/* I - Pointer to additional arguments */
+_mxml_vsnprintf(char       *buffer,	/* O - Output buffer */
+                size_t     bufsize,	/* O - Size of output buffer */
+		const char *format,	/* I - Printf-style format string */
+ 		va_list    ap)		/* I - Pointer to additional arguments */
 {
   char		*bufptr,		/* Pointer to position in buffer */
 		*bufend,		/* Pointer to end of buffer */
@@ -180,7 +180,10 @@ mxml_vsnprintf(char       *buffer,	/* O - Output buffer */
 
       if (*format == '*')
       {
-        // Get width from argument...
+       /*
+        * Get width from argument...
+	*/
+
 	format ++;
 	width = va_arg(ap, int);
 
@@ -209,7 +212,10 @@ mxml_vsnprintf(char       *buffer,	/* O - Output buffer */
 
         if (*format == '*')
 	{
-          // Get precision from argument...
+         /*
+	  * Get precision from argument...
+	  */
+
 	  format ++;
 	  prec = va_arg(ap, int);
 

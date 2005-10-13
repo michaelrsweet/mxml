@@ -39,6 +39,8 @@
  * 'mxmlSetCustom()' - Set the data and destructor of a custom data node.
  *
  * The node is not changed if it is not a custom node.
+ *
+ * @since Mini-XML 2.1@
  */
 
 int					/* O - 0 on success, -1 on failure */
@@ -72,6 +74,8 @@ mxmlSetCustom(mxml_node_t *node,	/* I - Node to set */
  * 'mxmlSetCDATA()' - Set the element name of a CDATA node.
  *
  * The node is not changed if it is not a CDATA element node.
+ *
+ * @since Mini-XML 2.3@
  */
 
 int					/* O - 0 on success, -1 on failure */
@@ -93,7 +97,7 @@ mxmlSetCDATA(mxml_node_t *node,		/* I - Node to set */
   if (node->value.element.name)
     free(node->value.element.name);
 
-  node->value.element.name = mxml_strdupf("![CDATA[%s]]", data);
+  node->value.element.name = _mxml_strdupf("![CDATA[%s]]", data);
 
   return (0);
 }
@@ -277,7 +281,7 @@ mxmlSetTextf(mxml_node_t *node,		/* I - Node to set */
   va_start(ap, format);
 
   node->value.text.whitespace = whitespace;
-  node->value.text.string     = mxml_strdupf(format, ap);
+  node->value.text.string     = _mxml_strdupf(format, ap);
 
   va_end(ap);
 

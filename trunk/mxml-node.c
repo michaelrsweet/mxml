@@ -19,6 +19,8 @@
  *
  *   mxmlAdd()        - Add a node to a tree.
  *   mxmlDelete()     - Delete a node and all of its children.
+ *   mxmlNewCDATA()   - Create a new CDATA node.
+ *   mxmlNewCustom()  - Create a new custom data node.
  *   mxmlNewElement() - Create a new element node.
  *   mxmlNewInteger() - Create a new integer node.
  *   mxmlNewOpaque()  - Create a new opaque string.
@@ -280,6 +282,8 @@ mxmlDelete(mxml_node_t *node)		/* I - Node to delete */
  * list. The constant MXML_NO_PARENT can be used to specify that the new
  * CDATA node has no parent. The data string must be nul-terminated and
  * is copied into the new node. CDATA nodes use the MXML_ELEMENT type.
+ *
+ * @since Mini-XML 2.3@
  */
 
 mxml_node_t *				/* O - New node */
@@ -306,7 +310,7 @@ mxmlNewCDATA(mxml_node_t *parent,	/* I - Parent node or MXML_NO_PARENT */
   */
 
   if ((node = mxml_new(parent, MXML_ELEMENT)) != NULL)
-    node->value.element.name = mxml_strdupf("![CDATA[%s]]", data);
+    node->value.element.name = _mxml_strdupf("![CDATA[%s]]", data);
 
   return (node);
 }
@@ -319,6 +323,8 @@ mxmlNewCDATA(mxml_node_t *parent,	/* I - Parent node or MXML_NO_PARENT */
  * list. The constant MXML_NO_PARENT can be used to specify that the new
  * element node has no parent. NULL can be passed when the data in the
  * node is not dynamically allocated or is separately managed.
+ *
+ * @since Mini-XML 2.1@
  */
 
 mxml_node_t *				/* O - New node */
@@ -571,7 +577,7 @@ mxmlNewTextf(mxml_node_t *parent,	/* I - Parent node or MXML_NO_PARENT */
     va_start(ap, format);
 
     node->value.text.whitespace = whitespace;
-    node->value.text.string     = mxml_vstrdupf(format, ap);
+    node->value.text.string     = _mxml_vstrdupf(format, ap);
 
     va_end(ap);
   }

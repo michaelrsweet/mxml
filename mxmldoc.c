@@ -21,6 +21,7 @@
  *   main()                - Main entry for test program.
  *   add_variable()        - Add a variable or argument.
  *   get_comment_info()    - Get info from comment.
+ *   get_text()            - Get the text for a node.
  *   new_documentation()   - Create a new documentation tree.
  *   safe_strcpy()         - Copy a string allowing for overlapping strings.
  *   scan_file()           - Scan a source file.
@@ -137,6 +138,7 @@
 static mxml_node_t	*add_variable(mxml_node_t *parent, const char *name,
 			              mxml_node_t *type);
 static char		*get_comment_info(mxml_node_t *description);
+static char		*get_text(mxml_node_t *node, char *buffer, int buflen);
 static mxml_node_t	*new_documentation(mxml_node_t **mxmldoc);
 static void		safe_strcpy(char *dst, const char *src);
 static int		scan_file(const char *filename, FILE *fp,
@@ -478,29 +480,72 @@ static char *				/* O - Info from comment */
 get_comment_info(
     mxml_node_t *description)		/* I - Description node */
 {
+  char		text[10240],		/* Description text */
+		since[255],		/* @since value */
+		*ptr;			/* Pointer into text */
   static char	info[1024];		/* Info string */
-  int		infolen;		/* Length of info string */
-  mxml_node_t	*current;		/* Current text node in description */
 
 
   if (!description)
-    return ("<span class='info'>NULL</span>");
+    return ("");
 
-  for (current = description->child; current; current = current->next)
-    if (!strcmp(current->value.text.string, "@deprecated@"))
+  get_text(description, text, sizeof(text));
+
+  for (ptr = strchr(text, '@'); ptr; ptr = strchr(ptr, '@'))
+  {
+    if (!strncmp(ptr, "@deprecated@", 12))
       return ("<span class='info'>DEPRECATED</span>");
-    else if (!strcmp(current->value.text.string, "@since") && current->next)
+    else if (!strncmp(ptr, "@since ", 7))
     {
-      current = current->next;
-      snprintf(info, sizeof(info), "<span class='info'>%s",
-               current->value.text.string);
-      infolen = strlen(info);
-      strncpy(info + infolen - 1, "</span>", sizeof(info) - infolen);
-      info[sizeof(info) - 1] = '\0';
+      strncpy(since, ptr + 7, sizeof(since) - 1);
+      since[sizeof(since) - 1] = '\0';
+
+      if ((ptr = strchr(since, '@')) != NULL)
+        *ptr = '\0';
+
+      snprintf(info, sizeof(info), "<span class='info'>%s</span>", since);
       return (info);
     }
+  }
 
-  return ("<span class='info'>NO</span>");
+  return ("");
+}
+
+
+/*
+ * 'get_text()' - Get the text for a node.
+ */
+
+static char *				/* O - Text in node */
+get_text(mxml_node_t *node,		/* I - Node to get */
+         char        *buffer,		/* I - Buffer */
+	 int         buflen)		/* I - Size of buffer */
+{
+  char		*ptr,			/* Pointer into buffer */
+		*end;			/* End of buffer */
+  int		len;			/* Length of node */
+  mxml_node_t	*current;		/* Current node */
+
+
+  ptr = buffer;
+  end = buffer + buflen - 1;
+
+  for (current = node->child; current && ptr < end; current = current->next)
+  {
+    if (current->value.text.whitespace)
+      *ptr++ = ' ';
+
+    len = strlen(current->value.text.string);
+    if (len > (end - ptr))
+      len = end - ptr;
+
+    memcpy(ptr, current->value.text.string, len);
+    ptr += len;
+  }
+
+  *ptr = '\0';
+
+  return (buffer);
 }
 
 
@@ -2004,30 +2049,70 @@ static void
 write_description(
     mxml_node_t *description)		/* I - Description node */
 {
-  mxml_node_t	*current;		/* Current text node in description */
-
+  char	text[10240],			/* Text for description */
+	*ptr;				/* Pointer into text */
 
   if (!description)
     return;
 
-  for (current = description->child; current; current = current->next)
-    if (!strcmp(current->value.text.string, "@deprecated@"))
-      continue;
-    else if (!strcmp(current->value.text.string, "@since") && current->next)
+  get_text(description, text, sizeof(text));
+
+  for (ptr = text; *ptr; ptr ++)
+  {
+    if (*ptr == '@' && !strncmp(ptr + 1, "deprecated@", 11) &&
+        !strncmp(ptr + 1, "since ", 6))
     {
-      do
+      ptr ++;
+      while (*ptr && *ptr != '@')
+        ptr ++;
+
+      if (!*ptr)
+        return;
+    }
+    else if (*ptr == '&')
+      fputs("&amp;", stdout);
+    else if (*ptr == '<')
+      fputs("&lt;", stdout);
+    else if (*ptr == '>')
+      fputs("&gt;", stdout);
+    else if (*ptr == '\"')
+      fputs("&quot;", stdout);
+    else if (*ptr & 128)
+    {
+     /*
+      * Convert UTF-8 to Unicode constant...
+      */
+
+      int	ch;			/* Unicode character */
+
+
+      ch = *ptr & 255;
+
+      if ((ch & 0xe0) == 0xc0)
       {
-        current = current->next;
+        ch = ((ch & 0x1f) << 6) | (ptr[1] & 0x3f);
+	ptr ++;
       }
-      while (current && !strchr(current->value.text.string, '@'));
+      else if ((ch & 0xf0) == 0xe0)
+      {
+        ch = ((((ch * 0x0f) << 6) | (ptr[1] & 0x3f)) << 6) | (ptr[2] & 0x3f);
+	ptr += 2;
+      }
+
+      if (ch == 0xa0)
+      {
+       /*
+        * Handle non-breaking space as-is...
+	*/
+
+        fputs("&nbsp;", stdout);
+      }
+      else
+        printf("&#x%x;", ch);
     }
     else
-    {
-      if (current->value.text.whitespace)
-	putchar(' ');
-
-      write_string(current->value.text.string);
-    }
+      putchar(*ptr);
+  }
 }
 
 

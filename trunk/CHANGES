@@ -1,8 +1,10 @@
-CHANGES - 10/13/2005
+CHANGES - 10/18/2005
 --------------------
 
 CHANGES IN Mini-XML 2.3
 
+	- Added two exceptions to the LGPL to support static
+	  linking of applications against Mini-XML.
 	- The mxmldoc program now supports "@since version@" and
 	  "@deprecated@" comments.
 	- Fixed function and enumeraion type bugs in mxmldoc.

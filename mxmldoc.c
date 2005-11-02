@@ -491,7 +491,7 @@ get_comment_info(
 
   get_text(description, text, sizeof(text));
 
-  for (ptr = strchr(text, '@'); ptr; ptr = strchr(ptr, '@'))
+  for (ptr = strchr(text, '@'); ptr; ptr = strchr(ptr + 1, '@'))
   {
     if (!strncmp(ptr, "@deprecated@", 12))
       return ("<span class='info'>&nbsp;DEPRECATED&nbsp;</span>");

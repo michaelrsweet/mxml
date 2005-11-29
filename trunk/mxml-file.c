@@ -77,7 +77,7 @@
  * Structures...
  */
 
-typedef struct mxml_fdbuf_s		/**** File descriptor buffer (@private) ****/
+typedef struct mxml_fdbuf_s		/**** File descriptor buffer (@private@) ****/
 {
   int		fd;			/* File descriptor */
   unsigned char	*current,		/* Current position in buffer */

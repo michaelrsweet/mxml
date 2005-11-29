@@ -1,3 +1,4 @@
+#define DEBUG 1
 /*
  * "$Id$"
  *
@@ -792,7 +793,7 @@ scan_file(const char  *filename,	/* I - Filename */
 #endif /* DEBUG */
 
                   if (comment->last_child &&
-		      strstr(comment->last_child->value.text.string, "@private"))
+		      strstr(comment->last_child->value.text.string, "@private@"))
 		  {
 		    mxmlDelete(type);
 		    type = NULL;
@@ -861,9 +862,9 @@ scan_file(const char  *filename,	/* I - Filename */
 #ifdef DEBUG
 		    fputs("    duplicating comment for typedef...\n", stderr);
 #endif /* DEBUG */
-		    update_comment(typedefnode, comment->last_child);
 		    mxmlAdd(description, MXML_ADD_AFTER, MXML_ADD_TO_PARENT,
 		            comment->last_child);
+		    update_comment(typedefnode, comment->last_child);
 		  }
 
 		  description = mxmlNewElement(structclass, "description");
@@ -871,9 +872,9 @@ scan_file(const char  *filename,	/* I - Filename */
 		  fprintf(stderr, "    adding comment to %s...\n",
 		          structclass->value.element.name);
 #endif /* DEBUG */
-		  update_comment(structclass, comment->last_child);
 		  mxmlAdd(description, MXML_ADD_AFTER, MXML_ADD_TO_PARENT,
 		          comment->last_child);
+		  update_comment(structclass, comment->last_child);
 
                   if (scan_file(filename, fp, structclass))
 		  {
@@ -943,18 +944,18 @@ scan_file(const char  *filename,	/* I - Filename */
 #ifdef DEBUG
 		    fputs("    duplicating comment for typedef...\n", stderr);
 #endif /* DEBUG */
-		    update_comment(typedefnode, comment->last_child);
 		    mxmlAdd(description, MXML_ADD_AFTER, MXML_ADD_TO_PARENT,
 		            comment->last_child);
+		    update_comment(typedefnode, comment->last_child);
 		  }
 
 		  description = mxmlNewElement(enumeration, "description");
 #ifdef DEBUG
 		  fputs("    adding comment to enumeration...\n", stderr);
 #endif /* DEBUG */
-		  update_comment(enumeration, comment->last_child);
 		  mxmlAdd(description, MXML_ADD_AFTER, MXML_ADD_TO_PARENT,
 		          comment->last_child);
+		  update_comment(enumeration, comment->last_child);
 		}
 		else if (type && type->child &&
 		         !strcmp(type->child->value.text.string, "extern"))
@@ -1100,8 +1101,6 @@ scan_file(const char  *filename,	/* I - Filename */
 		  mxmlDelete(type);
 		  type = NULL;
 		}
-
-		typedefnode = NULL;
 		break;
 
 	    case ':' :
@@ -1224,8 +1223,11 @@ scan_file(const char  *filename,	/* I - Filename */
 		      }
 
 #ifdef DEBUG
-                      fprintf(stderr, "    processing comment, variable=%p, constant=%p, tree=\"%s\"\n",
-		              variable, constant, tree->value.element.name);
+                      fprintf(stderr,
+		              "    processing comment, variable=%p, "
+		              "constant=%p, typedefnode=%p, tree=\"%s\"\n",
+		              variable, constant, typedefnode,
+			      tree->value.element.name);
 #endif /* DEBUG */
 
 		      if (variable)
@@ -1324,6 +1326,14 @@ scan_file(const char  *filename,	/* I - Filename */
 			    comment->child, comment->last_child);
 #endif /* DEBUG */
 		  }
+
+#ifdef DEBUG
+                  fprintf(stderr,
+		          "    processing comment, variable=%p, "
+		          "constant=%p, typedefnode=%p, tree=\"%s\"\n",
+		          variable, constant, typedefnode,
+			  tree->value.element.name);
+#endif /* DEBUG */
 
 		  if (variable)
 		  {
@@ -1630,9 +1640,9 @@ scan_file(const char  *filename,	/* I - Filename */
 #ifdef DEBUG
 		  fputs("    adding comment to returnvalue...\n", stderr);
 #endif /* DEBUG */
-		  update_comment(returnvalue, comment->last_child);
 		  mxmlAdd(description, MXML_ADD_AFTER, MXML_ADD_TO_PARENT,
 		          comment->last_child);
+		  update_comment(returnvalue, comment->last_child);
                 }
 		else
 		  mxmlDelete(type);
@@ -1641,9 +1651,9 @@ scan_file(const char  *filename,	/* I - Filename */
 #ifdef DEBUG
 		  fputs("    adding comment to function...\n", stderr);
 #endif /* DEBUG */
-		update_comment(function, comment->last_child);
 		mxmlAdd(description, MXML_ADD_AFTER, MXML_ADD_TO_PARENT,
 		        comment->last_child);
+		update_comment(function, comment->last_child);
 
 		type = NULL;
 	      }
@@ -2015,6 +2025,16 @@ update_comment(mxml_node_t *parent,	/* I - Parent node */
     *ptr = '\0';
   for (; ptr > comment->value.text.string && isspace(*ptr & 255); ptr --)
     *ptr = '\0';
+
+ /*
+  * Remove private types, variables, etc.
+  */
+
+  if (strstr(comment->value.text.string, "@private@"))
+  {
+    fputs("Deleting private node!\n", stderr);
+    mxmlDelete(parent);
+  }
 
 #ifdef DEBUG
   fprintf(stderr, "    updated comment = %s\n", comment->value.text.string);

@@ -1,4 +1,5 @@
 #!/bin/sh
+(cd ..; make mxmldoc-static)
 
 if test $# -gt 0; then
 	files=$*

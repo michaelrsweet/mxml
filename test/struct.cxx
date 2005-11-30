@@ -46,3 +46,9 @@ foo_s::foo_s(float f, int b)
 foo_s::~foo_s()
 {
 }
+
+typedef struct foo_private_s		/* @private@ */
+{
+  int	a;				/* Value of "a" */
+  char	b[255];				/* Value of "b" */
+} foo_private_t;

@@ -2209,7 +2209,7 @@ write_documentation(
 	 "<html xmlns='http://www.w3.org/1999/xhtml' xml:lang='en' lang='en'>\n"
 	 "<head>\n"
 	 "\t<title>%s</title>\n"
-	 "\t<meta name='creator' content='" MXML_VERSION "'/>\n"
+	 "\t<meta name='creator' content='" MXML_VERSION "'>\n"
 	 "\t<style><!--\n"
 	 "\th1, h2, h3, p { font-family: sans-serif; text-align: justify; }\n"
 	 "\ttt, pre a:link, pre a:visited, tt a:link, tt a:visited { font-weight: bold; color: #7f0000; }\n"
@@ -2289,7 +2289,7 @@ write_documentation(
                                     NULL, MXML_DESCEND_FIRST);
       printf("<!-- NEW PAGE -->\n"
              "<h3><a name='%s'>%s</a> %s</h3>\n"
-             "<hr noshade/>\n", cname, cname, get_comment_info(description));
+             "<hr noshade>\n", cname, cname, get_comment_info(description));
 
       if (description)
       {
@@ -2474,7 +2474,7 @@ write_documentation(
                                     NULL, MXML_DESCEND_FIRST);
       printf("<!-- NEW PAGE -->\n"
              "<h3><a name='%s'>%s</a> %s</h3>\n"
-             "<hr noshade/>\n", name, name, get_comment_info(description));
+             "<hr noshade>\n", name, name, get_comment_info(description));
 
       if (description)
       {
@@ -2540,7 +2540,7 @@ write_documentation(
                                     NULL, MXML_DESCEND_FIRST);
       printf("<!-- NEW PAGE -->\n"
              "<h3><a name='%s'>%s()</a> %s</h3>\n"
-             "<hr noshade/>\n", name, name, get_comment_info(description));
+             "<hr noshade>\n", name, name, get_comment_info(description));
 
       if (description)
       {
@@ -2664,7 +2664,7 @@ write_documentation(
                                     NULL, MXML_DESCEND_FIRST);
       printf("<!-- NEW PAGE -->\n"
              "<h3><a name='%s'>%s</a> %s</h3>\n"
-	     "<hr noshade/>\n", cname, cname, get_comment_info(description));
+	     "<hr noshade>\n", cname, cname, get_comment_info(description));
 
       if (description)
       {
@@ -2827,7 +2827,7 @@ write_documentation(
                                     NULL, MXML_DESCEND_FIRST);
       printf("<!-- NEW PAGE -->\n"
              "<h3><a name='%s'>%s</a> %s</h3>\n"
-	     "<hr noshade/>\n", name, name, get_comment_info(description));
+	     "<hr noshade>\n", name, name, get_comment_info(description));
 
       if (description)
       {
@@ -2947,7 +2947,7 @@ write_documentation(
                                     NULL, MXML_DESCEND_FIRST);
       printf("<!-- NEW PAGE -->\n"
              "<h3><a name='%s'>%s</a> %s</h3>\n"
-	     "<hr noshade/>\n", name, name, get_comment_info(description));
+	     "<hr noshade>\n", name, name, get_comment_info(description));
 
       if (description)
       {
@@ -3029,7 +3029,7 @@ write_documentation(
                                     NULL, MXML_DESCEND_FIRST);
       printf("<!-- NEW PAGE -->\n"
              "<h3><a name='%s'>%s</a> %s</h3>\n"
-	     "<hr noshade/>", name, name, get_comment_info(description));
+	     "<hr noshade>", name, name, get_comment_info(description));
 
       if (description)
       {

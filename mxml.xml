@@ -839,8 +839,6 @@ the walk to the node's children.</description>
   <typedef name="mxml_custom_save_cb_t">
     <type>char *(*)(mxml_node_t *)</type>
     <description>Custom data save callback function</description>
-    <description>C++ support...</description>
-    <description>End of &quot;$Id$&quot;.</description>
   </typedef>
   <typedef name="mxml_custom_t">
     <type>struct mxml_custom_s</type>
@@ -864,6 +862,21 @@ the walk to the node's children.</description>
   <typedef name="mxml_element_t">
     <type>struct mxml_element_s</type>
     <description>An XML element value.</description>
+  </typedef>
+  <struct name="mxml_fdbuf_s">
+    <description>File descriptor buffer (@private@)</description>
+    <variable name="buffer[8192]">
+      <type>unsigned char *current, *end,</type>
+      <description>Character buffer</description>
+    </variable>
+    <variable name="fd">
+      <type>int</type>
+      <description>File descriptor</description>
+    </variable>
+  </struct>
+  <typedef name="mxml_fdbuf_t">
+    <type>struct mxml_fdbuf_s</type>
+    <description>File descriptor buffer (@private@)</description>
   </typedef>
   <struct name="mxml_index_s">
     <description>An XML node index.</description>

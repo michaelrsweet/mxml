@@ -2204,13 +2204,13 @@ write_documentation(
   * Standard header...
   */
 
-  printf("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" "
-	 "\"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n"
-	 "<html xmlns='http://www.w3.org/1999/xhtml' xml:lang='en' lang='en'>\n"
+  printf("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\" "
+         "\"http://www.w3.org/TR/REC-html40/loose.dtd\">\n"
+	 "<html>\n"
 	 "<head>\n"
 	 "\t<title>%s</title>\n"
 	 "\t<meta name='creator' content='" MXML_VERSION "'>\n"
-	 "\t<style><!--\n"
+	 "\t<style type='text/css'><!--\n"
 	 "\th1, h2, h3, p { font-family: sans-serif; text-align: justify; }\n"
 	 "\ttt, pre a:link, pre a:visited, tt a:link, tt a:visited { font-weight: bold; color: #7f0000; }\n"
 	 "\tpre { font-weight: bold; color: #7f0000; margin-left: 2em; }\n"
@@ -2243,19 +2243,19 @@ write_documentation(
   puts("<h2>Contents</h2>");
   puts("<ul>");
   if (find_public(doc, doc, "class"))
-    puts("\t<li><a href='#_classes'>Classes</a></li>");
+    puts("\t<li><a href='#CLASSES'>Classes</a></li>");
   if (find_public(doc, doc, "enumeration"))
-    puts("\t<li><a href='#_enumerations'>Enumerations</a></li>");
+    puts("\t<li><a href='#ENUMERATIONS'>Enumerations</a></li>");
   if (find_public(doc, doc, "function"))
-    puts("\t<li><a href='#_functions'>Functions</a></li>");
+    puts("\t<li><a href='#FUNCTIONS'>Functions</a></li>");
   if (find_public(doc, doc, "struct"))
-    puts("\t<li><a href='#_structures'>Structures</a></li>");
+    puts("\t<li><a href='#STRUCTURES'>Structures</a></li>");
   if (find_public(doc, doc, "typedef"))
-    puts("\t<li><a href='#_types'>Types</a></li>");
+    puts("\t<li><a href='#TYPES'>Types</a></li>");
   if (find_public(doc, doc, "union"))
-    puts("\t<li><a href='#_unions'>Unions</a></li>");
+    puts("\t<li><a href='#UNIONS'>Unions</a></li>");
   if (find_public(doc, doc, "variable"))
-    puts("\t<li><a href='#_variables'>Variables</a></li>");
+    puts("\t<li><a href='#VARIABLES'>Variables</a></li>");
   puts("</ul>");
 
  /*
@@ -2265,7 +2265,7 @@ write_documentation(
   if (find_public(doc, doc, "class"))
   {
     puts("<!-- NEW PAGE -->\n"
-         "<h2><a name='_classes'>Classes</a></h2>\n"
+         "<h2><a name='CLASSES'>Classes</a></h2>\n"
          "<ul>");
 
     for (scut = find_public(doc, doc, "class");
@@ -2390,7 +2390,7 @@ write_documentation(
 
       puts("};\n</pre>\n"
            "<h4>Members</h4>\n"
-           "<p class='table'><table align='center' border='1' width='80%'>\n"
+           "<div class='table'><table align='center' border='1' width='80%'>\n"
            "<thead><tr><th>Name</th><th>Description</th></tr></thead>\n"
            "<tbody>");
 
@@ -2439,7 +2439,7 @@ write_documentation(
 	puts("</td></tr>");
       }
 
-      puts("</tbody></table></p>");
+      puts("</tbody></table></div>");
     }
   }
 
@@ -2450,7 +2450,7 @@ write_documentation(
   if (find_public(doc, doc, "enumeration"))
   {
     puts("<!-- NEW PAGE -->\n"
-         "<h2><a name='_enumerations'>Enumerations</a></h2>\n"
+         "<h2><a name='ENUMERATIONS'>Enumerations</a></h2>\n"
          "<ul>");
 
     for (scut = find_public(doc, doc, "enumeration");
@@ -2485,7 +2485,7 @@ write_documentation(
       }
 
       puts("<h4>Values</h4>\n"
-           "<p class='table'><table align='center' border='1' width='80%'>\n"
+           "<div class='table'><table align='center' border='1' width='80%'>\n"
            "<thead><tr><th>Name</th><th>Description</th></tr></thead>\n"
            "<tbody>");
 
@@ -2505,7 +2505,7 @@ write_documentation(
 	puts("</td></tr>");
       }
 
-      puts("</tbody></table></p>");
+      puts("</tbody></table></div>");
     }
   }
 
@@ -2516,7 +2516,7 @@ write_documentation(
   if (find_public(doc, doc, "function"))
   {
     puts("<!-- NEW PAGE -->\n"
-         "<h2><a name='_functions'>Functions</a></h2>\n"
+         "<h2><a name='FUNCTIONS'>Functions</a></h2>\n"
          "<ul>");
 
     for (function = find_public(doc, doc, "function");
@@ -2594,8 +2594,8 @@ write_documentation(
 	puts("<p>None.</p>");
       else
       {
-	puts("<p class='table'><table align='center' border='1' width='80%' "
-             "cellpadding='5' cellspacing='0' width='80%'>\n"
+	puts("<div class='table'><table align='center' border='1' width='80%' "
+             "cellpadding='5' cellspacing='0'>\n"
 	     "<thead><tr><th>Name</th><th>Description</th></tr></thead>\n"
 	     "<tbody>");
 
@@ -2613,7 +2613,7 @@ write_documentation(
           puts("</td></tr>");
 	}
 
-	puts("</tbody></table></p>");
+	puts("</tbody></table></div>");
       }
 
       puts("<h4>Returns</h4>");
@@ -2640,7 +2640,7 @@ write_documentation(
   if (find_public(doc, doc, "struct"))
   {
     puts("<!-- NEW PAGE -->\n"
-         "<h2><a name='_structures'>Structures</a></h2>\n"
+         "<h2><a name='STRUCTURES'>Structures</a></h2>\n"
          "<ul>");
 
     for (scut = find_public(doc, doc, "struct");
@@ -2744,7 +2744,7 @@ write_documentation(
 
       puts("};\n</pre>\n"
            "<h4>Members</h4>\n"
-           "<p class='table'><table align='center' border='1' width='80%'>\n"
+           "<div class='table'><table align='center' border='1' width='80%'>\n"
            "<thead><tr><th>Name</th><th>Description</th></tr></thead>\n"
            "<tbody>");
 
@@ -2792,7 +2792,7 @@ write_documentation(
 	puts("</td></tr>");
       }
 
-      puts("</tbody></table></p>");
+      puts("</tbody></table></div>");
     }
   }
 
@@ -2803,7 +2803,7 @@ write_documentation(
   if (find_public(doc, doc, "typedef"))
   {
     puts("<!-- NEW PAGE -->\n"
-         "<h2><a name='_types'>Types</a></h2>\n"
+         "<h2><a name='TYPES'>Types</a></h2>\n"
          "<ul>");
 
     for (scut = find_public(doc, doc, "typedef");
@@ -2923,7 +2923,7 @@ write_documentation(
   if (find_public(doc, doc, "union"))
   {
     puts("<!-- NEW PAGE -->\n"
-         "<h2><a name='_unions'>Unions</a></h2>\n"
+         "<h2><a name='UNIONS'>Unions</a></h2>\n"
          "<ul>");
 
     for (scut = find_public(doc, doc, "union");
@@ -2974,7 +2974,7 @@ write_documentation(
 
       puts("};\n</pre>\n"
            "<h4>Members</h4>\n"
-           "<p class='table'><table align='center' border='1' width='80%'>\n"
+           "<div class='table'><table align='center' border='1' width='80%'>\n"
            "<thead><tr><th>Name</th><th>Description</th></tr></thead>\n"
            "<tbody>");
 
@@ -2994,7 +2994,7 @@ write_documentation(
 	puts("</td></tr>");
       }
 
-      puts("</tbody></table></p>");
+      puts("</tbody></table></div>");
     }
   }
 
@@ -3005,7 +3005,7 @@ write_documentation(
   if (find_public(doc, doc, "variable"))
   {
     puts("<!-- NEW PAGE -->\n"
-         "<h2><a name='_variables'>Variables</a></h2>\n"
+         "<h2><a name='VARIABLES'>Variables</a></h2>\n"
          "<ul>");
 
     for (arg = find_public(doc, doc, "variable");

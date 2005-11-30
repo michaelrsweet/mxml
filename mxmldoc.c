@@ -2289,8 +2289,8 @@ write_documentation(
       description = mxmlFindElement(scut, scut, "description", NULL,
                                     NULL, MXML_DESCEND_FIRST);
       printf("<!-- NEW PAGE -->\n"
-             "<h3 class='title'><a name='%s'>%s</a> %s</h3>\n",
-	     cname, cname, get_comment_info(description));
+             "<h3 class='title'>%s<a name='%s'>%s</a></h3>\n",
+	     get_comment_info(description), cname, cname);
 
       if (description)
       {
@@ -2474,8 +2474,8 @@ write_documentation(
       description = mxmlFindElement(scut, scut, "description", NULL,
                                     NULL, MXML_DESCEND_FIRST);
       printf("<!-- NEW PAGE -->\n"
-             "<h3 class='title'><a name='%s'>%s</a> %s</h3>\n",
-             name, name, get_comment_info(description));
+             "<h3 class='title'>%s<a name='%s'>%s</a></h3>\n",
+             get_comment_info(description), name, name);
 
       if (description)
       {
@@ -2540,8 +2540,8 @@ write_documentation(
       description = mxmlFindElement(function, function, "description", NULL,
                                     NULL, MXML_DESCEND_FIRST);
       printf("<!-- NEW PAGE -->\n"
-             "<h3 class='title'><a name='%s'>%s()</a> %s</h3>\n",
-             name, name, get_comment_info(description));
+             "<h3 class='title'>%s<a name='%s'>%s()</a></h3>\n",
+             get_comment_info(description), name, name);
 
       if (description)
       {
@@ -2664,8 +2664,8 @@ write_documentation(
       description = mxmlFindElement(scut, scut, "description", NULL,
                                     NULL, MXML_DESCEND_FIRST);
       printf("<!-- NEW PAGE -->\n"
-             "<h3 class='title'><a name='%s'>%s</a> %s</h3>\n",
-	     cname, cname, get_comment_info(description));
+             "<h3 class='title'>%s<a name='%s'>%s</a></h3>\n",
+	     get_comment_info(description), cname, cname);
 
       if (description)
       {
@@ -2827,8 +2827,8 @@ write_documentation(
       description = mxmlFindElement(scut, scut, "description", NULL,
                                     NULL, MXML_DESCEND_FIRST);
       printf("<!-- NEW PAGE -->\n"
-             "<h3 class='title'><a name='%s'>%s</a> %s</h3>\n",
-	     name, name, get_comment_info(description));
+             "<h3 class='title'>%s<a name='%s'>%s</a></h3>\n",
+	     get_comment_info(description), name, name);
 
       if (description)
       {
@@ -2947,8 +2947,8 @@ write_documentation(
       description = mxmlFindElement(scut, scut, "description", NULL,
                                     NULL, MXML_DESCEND_FIRST);
       printf("<!-- NEW PAGE -->\n"
-             "<h3 class='title'><a name='%s'>%s</a> %s</h3>\n",
-	     name, name, get_comment_info(description));
+             "<h3 class='title'>%s<a name='%s'>%s</a></h3>\n",
+	     get_comment_info(description), name, name);
 
       if (description)
       {
@@ -3029,8 +3029,8 @@ write_documentation(
       description = mxmlFindElement(arg, arg, "description", NULL,
                                     NULL, MXML_DESCEND_FIRST);
       printf("<!-- NEW PAGE -->\n"
-             "<h3 class='title'><a name='%s'>%s</a> %s</h3>\n",
-	     name, name, get_comment_info(description));
+             "<h3 class='title'>%s<a name='%s'>%s</a></h3>\n",
+	     get_comment_info(description), name, name);
 
       if (description)
       {

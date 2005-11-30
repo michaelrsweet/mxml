@@ -9,10 +9,11 @@
 	pre { font-weight: bold; color: #7f0000; margin-left: 2em; }
 	span.info { font-weight: bold; font-style: italic; color: #ffffff; background: #000000; }
 	h3 span.info { float: right; }
+	h1.title, h2.title, h3.title { border-bottom: solid 2px #000000; }
 	--></style>
 </head>
 <body>
-<h2>Contents</h2>
+<h2 class='title'>Contents</h2>
 <ul>
 	<li><a href='#ENUMERATIONS'>Enumerations</a></li>
 	<li><a href='#FUNCTIONS'>Functions</a></li>
@@ -21,13 +22,12 @@
 	<li><a href='#UNIONS'>Unions</a></li>
 </ul>
 <!-- NEW PAGE -->
-<h2><a name='ENUMERATIONS'>Enumerations</a></h2>
+<h2 class='title'><a name='ENUMERATIONS'>Enumerations</a></h2>
 <ul>
 	<li><a href='#mxml_type_e'><tt>mxml_type_e</tt></a> </li>
 </ul>
 <!-- NEW PAGE -->
-<h3><a name='mxml_type_e'>mxml_type_e</a> </h3>
-<hr noshade>
+<h3 class='title'><a name='mxml_type_e'>mxml_type_e</a> </h3>
 <h4>Description</h4>
 <p>The XML node type.</p>
 <h4>Values</h4>
@@ -43,7 +43,7 @@
 <tr><td><tt>MXML_TEXT</tt> </td><td>Text fragment</td></tr>
 </tbody></table></div>
 <!-- NEW PAGE -->
-<h2><a name='FUNCTIONS'>Functions</a></h2>
+<h2 class='title'><a name='FUNCTIONS'>Functions</a></h2>
 <ul>
 	<li><a href='#mxmlAdd'><tt>mxmlAdd()</tt></a> </li>
 	<li><a href='#mxmlDelete'><tt>mxmlDelete()</tt></a> </li>
@@ -89,8 +89,7 @@
 	<li><a href='#mxmlWalkPrev'><tt>mxmlWalkPrev()</tt></a> </li>
 </ul>
 <!-- NEW PAGE -->
-<h3><a name='mxmlAdd'>mxmlAdd()</a> </h3>
-<hr noshade>
+<h3 class='title'><a name='mxmlAdd'>mxmlAdd()</a> </h3>
 <h4>Description</h4>
 <p>Add a node to a tree.
 
@@ -121,8 +120,7 @@ mxmlAdd(
 <h4>Returns</h4>
 <p>Nothing.</p>
 <!-- NEW PAGE -->
-<h3><a name='mxmlDelete'>mxmlDelete()</a> </h3>
-<hr noshade>
+<h3 class='title'><a name='mxmlDelete'>mxmlDelete()</a> </h3>
 <h4>Description</h4>
 <p>Delete a node and all of its children.
 
@@ -143,8 +141,7 @@ mxmlDelete(
 <h4>Returns</h4>
 <p>Nothing.</p>
 <!-- NEW PAGE -->
-<h3><a name='mxmlElementGetAttr'>mxmlElementGetAttr()</a> </h3>
-<hr noshade>
+<h3 class='title'><a name='mxmlElementGetAttr'>mxmlElementGetAttr()</a> </h3>
 <h4>Description</h4>
 <p>Get an attribute.
 
@@ -167,8 +164,7 @@ mxmlElementGetAttr(
 <h4>Returns</h4>
 <p>Attribute value or NULL</p>
 <!-- NEW PAGE -->
-<h3><a name='mxmlElementSetAttr'>mxmlElementSetAttr()</a> </h3>
-<hr noshade>
+<h3 class='title'><a name='mxmlElementSetAttr'>mxmlElementSetAttr()</a> </h3>
 <h4>Description</h4>
 <p>Set an attribute.
 
@@ -195,8 +191,7 @@ mxmlElementSetAttr(
 <h4>Returns</h4>
 <p>Nothing.</p>
 <!-- NEW PAGE -->
-<h3><a name='mxmlEntityAddCallback'>mxmlEntityAddCallback()</a> </h3>
-<hr noshade>
+<h3 class='title'><a name='mxmlEntityAddCallback'>mxmlEntityAddCallback()</a> </h3>
 <h4>Description</h4>
 <p>Add a callback to convert entities to Unicode.</p>
 <h4>Syntax</h4>
@@ -209,8 +204,7 @@ mxmlEntityAddCallback(void);
 <h4>Returns</h4>
 <p>0 on success, -1 on failure</p>
 <!-- NEW PAGE -->
-<h3><a name='mxmlEntityGetName'>mxmlEntityGetName()</a> </h3>
-<hr noshade>
+<h3 class='title'><a name='mxmlEntityGetName'>mxmlEntityGetName()</a> </h3>
 <h4>Description</h4>
 <p>Get the name that corresponds to the character value.
 
@@ -230,8 +224,7 @@ mxmlEntityGetName(
 <h4>Returns</h4>
 <p>Entity name or NULL</p>
 <!-- NEW PAGE -->
-<h3><a name='mxmlEntityGetValue'>mxmlEntityGetValue()</a> </h3>
-<hr noshade>
+<h3 class='title'><a name='mxmlEntityGetValue'>mxmlEntityGetValue()</a> </h3>
 <h4>Description</h4>
 <p>Get the character corresponding to a named entity.
 
@@ -252,8 +245,7 @@ mxmlEntityGetValue(
 <h4>Returns</h4>
 <p>Character value or -1 on error</p>
 <!-- NEW PAGE -->
-<h3><a name='mxmlEntityRemoveCallback'>mxmlEntityRemoveCallback()</a> </h3>
-<hr noshade>
+<h3 class='title'><a name='mxmlEntityRemoveCallback'>mxmlEntityRemoveCallback()</a> </h3>
 <h4>Description</h4>
 <p>Remove a callback.</p>
 <h4>Syntax</h4>
@@ -266,8 +258,7 @@ mxmlEntityRemoveCallback(void);
 <h4>Returns</h4>
 <p>Nothing.</p>
 <!-- NEW PAGE -->
-<h3><a name='mxmlFindElement'>mxmlFindElement()</a> </h3>
-<hr noshade>
+<h3 class='title'><a name='mxmlFindElement'>mxmlFindElement()</a> </h3>
 <h4>Description</h4>
 <p>Find the named element.
 
@@ -304,8 +295,7 @@ mxmlFindElement(
 <h4>Returns</h4>
 <p>Element node or NULL</p>
 <!-- NEW PAGE -->
-<h3><a name='mxmlIndexDelete'>mxmlIndexDelete()</a> </h3>
-<hr noshade>
+<h3 class='title'><a name='mxmlIndexDelete'>mxmlIndexDelete()</a> </h3>
 <h4>Description</h4>
 <p>Delete an index.</p>
 <h4>Syntax</h4>
@@ -323,8 +313,7 @@ mxmlIndexDelete(
 <h4>Returns</h4>
 <p>Nothing.</p>
 <!-- NEW PAGE -->
-<h3><a name='mxmlIndexEnum'>mxmlIndexEnum()</a> </h3>
-<hr noshade>
+<h3 class='title'><a name='mxmlIndexEnum'>mxmlIndexEnum()</a> </h3>
 <h4>Description</h4>
 <p>Return the next node in the index.
 
@@ -344,8 +333,7 @@ mxmlIndexEnum(
 <h4>Returns</h4>
 <p>Next node or NULL if there is none</p>
 <!-- NEW PAGE -->
-<h3><a name='mxmlIndexFind'>mxmlIndexFind()</a> </h3>
-<hr noshade>
+<h3 class='title'><a name='mxmlIndexFind'>mxmlIndexFind()</a> </h3>
 <h4>Description</h4>
 <p>Find the next matching node.
 
@@ -372,8 +360,7 @@ mxmlIndexFind(
 <h4>Returns</h4>
 <p>Node or NULL if none found</p>
 <!-- NEW PAGE -->
-<h3><a name='mxmlIndexNew'>mxmlIndexNew()</a> </h3>
-<hr noshade>
+<h3 class='title'><a name='mxmlIndexNew'>mxmlIndexNew()</a> </h3>
 <h4>Description</h4>
 <p>Create a new index.
 
@@ -401,8 +388,7 @@ mxmlIndexNew(
 <h4>Returns</h4>
 <p>New index</p>
 <!-- NEW PAGE -->
-<h3><a name='mxmlIndexReset'>mxmlIndexReset()</a> </h3>
-<hr noshade>
+<h3 class='title'><a name='mxmlIndexReset'>mxmlIndexReset()</a> </h3>
 <h4>Description</h4>
 <p>Reset the enumeration/find pointer in the index and
 return the first node in the index.
@@ -424,8 +410,7 @@ mxmlIndexReset(
 <h4>Returns</h4>
 <p>First node or NULL if there is none</p>
 <!-- NEW PAGE -->
-<h3><a name='mxmlLoadFd'>mxmlLoadFd()</a> </h3>
-<hr noshade>
+<h3 class='title'><a name='mxmlLoadFd'>mxmlLoadFd()</a> </h3>
 <h4>Description</h4>
 <p>Load a file descriptor into an XML node tree.
 
@@ -456,8 +441,7 @@ mxmlLoadFd(
 <h4>Returns</h4>
 <p>First node or NULL if the file could not be read.</p>
 <!-- NEW PAGE -->
-<h3><a name='mxmlLoadFile'>mxmlLoadFile()</a> </h3>
-<hr noshade>
+<h3 class='title'><a name='mxmlLoadFile'>mxmlLoadFile()</a> </h3>
 <h4>Description</h4>
 <p>Load a file into an XML node tree.
 
@@ -488,8 +472,7 @@ mxmlLoadFile(
 <h4>Returns</h4>
 <p>First node or NULL if the file could not be read.</p>
 <!-- NEW PAGE -->
-<h3><a name='mxmlLoadString'>mxmlLoadString()</a> </h3>
-<hr noshade>
+<h3 class='title'><a name='mxmlLoadString'>mxmlLoadString()</a> </h3>
 <h4>Description</h4>
 <p>Load a string into an XML node tree.
 
@@ -520,8 +503,7 @@ mxmlLoadString(
 <h4>Returns</h4>
 <p>First node or NULL if the string has errors.</p>
 <!-- NEW PAGE -->
-<h3><a name='mxmlNewCDATA'>mxmlNewCDATA()</a> <span class='info'>&nbsp;Mini-XML 2.3&nbsp;</span></h3>
-<hr noshade>
+<h3 class='title'><a name='mxmlNewCDATA'>mxmlNewCDATA()</a> <span class='info'>&nbsp;Mini-XML 2.3&nbsp;</span></h3>
 <h4>Description</h4>
 <p>Create a new CDATA node.
 
@@ -548,8 +530,7 @@ mxmlNewCDATA(
 <h4>Returns</h4>
 <p>New node</p>
 <!-- NEW PAGE -->
-<h3><a name='mxmlNewCustom'>mxmlNewCustom()</a> <span class='info'>&nbsp;Mini-XML 2.1&nbsp;</span></h3>
-<hr noshade>
+<h3 class='title'><a name='mxmlNewCustom'>mxmlNewCustom()</a> <span class='info'>&nbsp;Mini-XML 2.1&nbsp;</span></h3>
 <h4>Description</h4>
 <p>Create a new custom data node.
 
@@ -576,8 +557,7 @@ mxmlNewCustom(
 <h4>Returns</h4>
 <p>New node</p>
 <!-- NEW PAGE -->
-<h3><a name='mxmlNewElement'>mxmlNewElement()</a> </h3>
-<hr noshade>
+<h3 class='title'><a name='mxmlNewElement'>mxmlNewElement()</a> </h3>
 <h4>Description</h4>
 <p>Create a new element node.
 
@@ -601,8 +581,7 @@ mxmlNewElement(
 <h4>Returns</h4>
 <p>New node</p>
 <!-- NEW PAGE -->
-<h3><a name='mxmlNewInteger'>mxmlNewInteger()</a> </h3>
-<hr noshade>
+<h3 class='title'><a name='mxmlNewInteger'>mxmlNewInteger()</a> </h3>
 <h4>Description</h4>
 <p>Create a new integer node.
 
@@ -626,8 +605,7 @@ mxmlNewInteger(
 <h4>Returns</h4>
 <p>New node</p>
 <!-- NEW PAGE -->
-<h3><a name='mxmlNewOpaque'>mxmlNewOpaque()</a> </h3>
-<hr noshade>
+<h3 class='title'><a name='mxmlNewOpaque'>mxmlNewOpaque()</a> </h3>
 <h4>Description</h4>
 <p>Create a new opaque string.
 
@@ -652,8 +630,7 @@ mxmlNewOpaque(
 <h4>Returns</h4>
 <p>New node</p>
 <!-- NEW PAGE -->
-<h3><a name='mxmlNewReal'>mxmlNewReal()</a> </h3>
-<hr noshade>
+<h3 class='title'><a name='mxmlNewReal'>mxmlNewReal()</a> </h3>
 <h4>Description</h4>
 <p>Create a new real number node.
 
@@ -677,8 +654,7 @@ mxmlNewReal(
 <h4>Returns</h4>
 <p>New node</p>
 <!-- NEW PAGE -->
-<h3><a name='mxmlNewText'>mxmlNewText()</a> </h3>
-<hr noshade>
+<h3 class='title'><a name='mxmlNewText'>mxmlNewText()</a> </h3>
 <h4>Description</h4>
 <p>Create a new text fragment node.
 
@@ -706,8 +682,7 @@ mxmlNewText(
 <h4>Returns</h4>
 <p>New node</p>
 <!-- NEW PAGE -->
-<h3><a name='mxmlNewTextf'>mxmlNewTextf()</a> </h3>
-<hr noshade>
+<h3 class='title'><a name='mxmlNewTextf'>mxmlNewTextf()</a> </h3>
 <h4>Description</h4>
 <p>Create a new formatted text fragment node.
 
@@ -737,8 +712,7 @@ mxmlNewTextf(
 <h4>Returns</h4>
 <p>New node</p>
 <!-- NEW PAGE -->
-<h3><a name='mxmlRemove'>mxmlRemove()</a> </h3>
-<hr noshade>
+<h3 class='title'><a name='mxmlRemove'>mxmlRemove()</a> </h3>
 <h4>Description</h4>
 <p>Remove a node from its parent.
 
@@ -759,8 +733,7 @@ mxmlRemove(
 <h4>Returns</h4>
 <p>Nothing.</p>
 <!-- NEW PAGE -->
-<h3><a name='mxmlSaveAllocString'>mxmlSaveAllocString()</a> </h3>
-<hr noshade>
+<h3 class='title'><a name='mxmlSaveAllocString'>mxmlSaveAllocString()</a> </h3>
 <h4>Description</h4>
 <p>Save an XML node tree to an allocated string.
 
@@ -790,8 +763,7 @@ mxmlSaveAllocString(
 <h4>Returns</h4>
 <p>Allocated string or NULL</p>
 <!-- NEW PAGE -->
-<h3><a name='mxmlSaveFd'>mxmlSaveFd()</a> </h3>
-<hr noshade>
+<h3 class='title'><a name='mxmlSaveFd'>mxmlSaveFd()</a> </h3>
 <h4>Description</h4>
 <p>Save an XML tree to a file descriptor.
 
@@ -817,8 +789,7 @@ mxmlSaveFd(
 <h4>Returns</h4>
 <p>0 on success, -1 on error.</p>
 <!-- NEW PAGE -->
-<h3><a name='mxmlSaveFile'>mxmlSaveFile()</a> </h3>
-<hr noshade>
+<h3 class='title'><a name='mxmlSaveFile'>mxmlSaveFile()</a> </h3>
 <h4>Description</h4>
 <p>Save an XML tree to a file.
 
@@ -844,8 +815,7 @@ mxmlSaveFile(
 <h4>Returns</h4>
 <p>0 on success, -1 on error.</p>
 <!-- NEW PAGE -->
-<h3><a name='mxmlSaveString'>mxmlSaveString()</a> </h3>
-<hr noshade>
+<h3 class='title'><a name='mxmlSaveString'>mxmlSaveString()</a> </h3>
 <h4>Description</h4>
 <p>Save an XML node tree to a string.
 
@@ -877,8 +847,7 @@ mxmlSaveString(
 <h4>Returns</h4>
 <p>Size of string</p>
 <!-- NEW PAGE -->
-<h3><a name='mxmlSetCDATA'>mxmlSetCDATA()</a> <span class='info'>&nbsp;Mini-XML 2.3&nbsp;</span></h3>
-<hr noshade>
+<h3 class='title'><a name='mxmlSetCDATA'>mxmlSetCDATA()</a> <span class='info'>&nbsp;Mini-XML 2.3&nbsp;</span></h3>
 <h4>Description</h4>
 <p>Set the element name of a CDATA node.
 
@@ -902,8 +871,7 @@ mxmlSetCDATA(
 <h4>Returns</h4>
 <p>0 on success, -1 on failure</p>
 <!-- NEW PAGE -->
-<h3><a name='mxmlSetCustom'>mxmlSetCustom()</a> <span class='info'>&nbsp;Mini-XML 2.1&nbsp;</span></h3>
-<hr noshade>
+<h3 class='title'><a name='mxmlSetCustom'>mxmlSetCustom()</a> <span class='info'>&nbsp;Mini-XML 2.1&nbsp;</span></h3>
 <h4>Description</h4>
 <p>Set the data and destructor of a custom data node.
 
@@ -927,8 +895,7 @@ mxmlSetCustom(
 <h4>Returns</h4>
 <p>0 on success, -1 on failure</p>
 <!-- NEW PAGE -->
-<h3><a name='mxmlSetCustomHandlers'>mxmlSetCustomHandlers()</a> </h3>
-<hr noshade>
+<h3 class='title'><a name='mxmlSetCustomHandlers'>mxmlSetCustomHandlers()</a> </h3>
 <h4>Description</h4>
 <p>Set the handling functions for custom data.
 
@@ -954,8 +921,7 @@ mxmlSetCustomHandlers(
 <h4>Returns</h4>
 <p>Nothing.</p>
 <!-- NEW PAGE -->
-<h3><a name='mxmlSetElement'>mxmlSetElement()</a> </h3>
-<hr noshade>
+<h3 class='title'><a name='mxmlSetElement'>mxmlSetElement()</a> </h3>
 <h4>Description</h4>
 <p>Set the name of an element node.
 
@@ -977,8 +943,7 @@ mxmlSetElement(
 <h4>Returns</h4>
 <p>0 on success, -1 on failure</p>
 <!-- NEW PAGE -->
-<h3><a name='mxmlSetErrorCallback'>mxmlSetErrorCallback()</a> </h3>
-<hr noshade>
+<h3 class='title'><a name='mxmlSetErrorCallback'>mxmlSetErrorCallback()</a> </h3>
 <h4>Description</h4>
 <p>Set the error message callback.</p>
 <h4>Syntax</h4>
@@ -991,8 +956,7 @@ mxmlSetErrorCallback(void);
 <h4>Returns</h4>
 <p>Nothing.</p>
 <!-- NEW PAGE -->
-<h3><a name='mxmlSetInteger'>mxmlSetInteger()</a> </h3>
-<hr noshade>
+<h3 class='title'><a name='mxmlSetInteger'>mxmlSetInteger()</a> </h3>
 <h4>Description</h4>
 <p>Set the value of an integer node.
 
@@ -1014,8 +978,7 @@ mxmlSetInteger(
 <h4>Returns</h4>
 <p>0 on success, -1 on failure</p>
 <!-- NEW PAGE -->
-<h3><a name='mxmlSetOpaque'>mxmlSetOpaque()</a> </h3>
-<hr noshade>
+<h3 class='title'><a name='mxmlSetOpaque'>mxmlSetOpaque()</a> </h3>
 <h4>Description</h4>
 <p>Set the value of an opaque node.
 
@@ -1037,8 +1000,7 @@ mxmlSetOpaque(
 <h4>Returns</h4>
 <p>0 on success, -1 on failure</p>
 <!-- NEW PAGE -->
-<h3><a name='mxmlSetReal'>mxmlSetReal()</a> </h3>
-<hr noshade>
+<h3 class='title'><a name='mxmlSetReal'>mxmlSetReal()</a> </h3>
 <h4>Description</h4>
 <p>Set the value of a real number node.
 
@@ -1060,8 +1022,7 @@ mxmlSetReal(
 <h4>Returns</h4>
 <p>0 on success, -1 on failure</p>
 <!-- NEW PAGE -->
-<h3><a name='mxmlSetText'>mxmlSetText()</a> </h3>
-<hr noshade>
+<h3 class='title'><a name='mxmlSetText'>mxmlSetText()</a> </h3>
 <h4>Description</h4>
 <p>Set the value of a text node.
 
@@ -1085,8 +1046,7 @@ mxmlSetText(
 <h4>Returns</h4>
 <p>0 on success, -1 on failure</p>
 <!-- NEW PAGE -->
-<h3><a name='mxmlSetTextf'>mxmlSetTextf()</a> </h3>
-<hr noshade>
+<h3 class='title'><a name='mxmlSetTextf'>mxmlSetTextf()</a> </h3>
 <h4>Description</h4>
 <p>Set the value of a text node to a formatted string.
 
@@ -1112,8 +1072,7 @@ mxmlSetTextf(
 <h4>Returns</h4>
 <p>0 on success, -1 on failure</p>
 <!-- NEW PAGE -->
-<h3><a name='mxmlWalkNext'>mxmlWalkNext()</a> </h3>
-<hr noshade>
+<h3 class='title'><a name='mxmlWalkNext'>mxmlWalkNext()</a> </h3>
 <h4>Description</h4>
 <p>Walk to the next logical node in the tree.
 
@@ -1139,8 +1098,7 @@ mxmlWalkNext(
 <h4>Returns</h4>
 <p>Next node or NULL</p>
 <!-- NEW PAGE -->
-<h3><a name='mxmlWalkPrev'>mxmlWalkPrev()</a> </h3>
-<hr noshade>
+<h3 class='title'><a name='mxmlWalkPrev'>mxmlWalkPrev()</a> </h3>
 <h4>Description</h4>
 <p>Walk to the previous logical node in the tree.
 
@@ -1166,7 +1124,7 @@ mxmlWalkPrev(
 <h4>Returns</h4>
 <p>Previous node or NULL</p>
 <!-- NEW PAGE -->
-<h2><a name='STRUCTURES'>Structures</a></h2>
+<h2 class='title'><a name='STRUCTURES'>Structures</a></h2>
 <ul>
 	<li><a href='#mxml_attr_s'><tt>mxml_attr_s</tt></a> </li>
 	<li><a href='#mxml_custom_s'><tt>mxml_custom_s</tt></a> <span class='info'>&nbsp;Mini-XML 2.1&nbsp;</span></li>
@@ -1176,8 +1134,7 @@ mxmlWalkPrev(
 	<li><a href='#mxml_text_s'><tt>mxml_text_s</tt></a> </li>
 </ul>
 <!-- NEW PAGE -->
-<h3><a name='mxml_attr_s'>mxml_attr_s</a> </h3>
-<hr noshade>
+<h3 class='title'><a name='mxml_attr_s'>mxml_attr_s</a> </h3>
 <h4>Description</h4>
 <p>Data types...</p>
 <h4>Definition</h4>
@@ -1196,8 +1153,7 @@ struct mxml_attr_s
 <tr><td><tt>value</tt> </td><td>Attribute value</td></tr>
 </tbody></table></div>
 <!-- NEW PAGE -->
-<h3><a name='mxml_custom_s'>mxml_custom_s</a> <span class='info'>&nbsp;Mini-XML 2.1&nbsp;</span></h3>
-<hr noshade>
+<h3 class='title'><a name='mxml_custom_s'>mxml_custom_s</a> <span class='info'>&nbsp;Mini-XML 2.1&nbsp;</span></h3>
 <h4>Description</h4>
 <p>An XML custom value. </p>
 <h4>Definition</h4>
@@ -1214,8 +1170,7 @@ struct mxml_custom_s
 <tr><td><tt>data</tt> </td><td>Pointer to (allocated) custom data</td></tr>
 </tbody></table></div>
 <!-- NEW PAGE -->
-<h3><a name='mxml_element_s'>mxml_element_s</a> </h3>
-<hr noshade>
+<h3 class='title'><a name='mxml_element_s'>mxml_element_s</a> </h3>
 <h4>Description</h4>
 <p>An XML element value.</p>
 <h4>Definition</h4>
@@ -1236,8 +1191,7 @@ struct mxml_element_s
 <tr><td><tt>num_attrs</tt> </td><td>Number of attributes</td></tr>
 </tbody></table></div>
 <!-- NEW PAGE -->
-<h3><a name='mxml_index_s'>mxml_index_s</a> </h3>
-<hr noshade>
+<h3 class='title'><a name='mxml_index_s'>mxml_index_s</a> </h3>
 <h4>Description</h4>
 <p>An XML node index.</p>
 <h4>Definition</h4>
@@ -1262,8 +1216,7 @@ struct mxml_index_s
 <tr><td><tt>num_nodes</tt> </td><td>Number of nodes in index</td></tr>
 </tbody></table></div>
 <!-- NEW PAGE -->
-<h3><a name='mxml_node_s'>mxml_node_s</a> </h3>
-<hr noshade>
+<h3 class='title'><a name='mxml_node_s'>mxml_node_s</a> </h3>
 <h4>Description</h4>
 <p>An XML node.</p>
 <h4>Definition</h4>
@@ -1292,8 +1245,7 @@ struct mxml_node_s
 <tr><td><tt>value</tt> </td><td>Node value</td></tr>
 </tbody></table></div>
 <!-- NEW PAGE -->
-<h3><a name='mxml_text_s'>mxml_text_s</a> </h3>
-<hr noshade>
+<h3 class='title'><a name='mxml_text_s'>mxml_text_s</a> </h3>
 <h4>Description</h4>
 <p>An XML text value.</p>
 <h4>Definition</h4>
@@ -1312,7 +1264,7 @@ struct mxml_text_s
 <tr><td><tt>whitespace</tt> </td><td>Leading whitespace?</td></tr>
 </tbody></table></div>
 <!-- NEW PAGE -->
-<h2><a name='TYPES'>Types</a></h2>
+<h2 class='title'><a name='TYPES'>Types</a></h2>
 <ul>
 	<li><a href='#mxml_attr_t'><tt>mxml_attr_t</tt></a> </li>
 	<li><a href='#mxml_custom_load_cb_t'><tt>mxml_custom_load_cb_t</tt></a> </li>
@@ -1325,8 +1277,7 @@ struct mxml_text_s
 	<li><a href='#mxml_value_t'><tt>mxml_value_t</tt></a> </li>
 </ul>
 <!-- NEW PAGE -->
-<h3><a name='mxml_attr_t'>mxml_attr_t</a> </h3>
-<hr noshade>
+<h3 class='title'><a name='mxml_attr_t'>mxml_attr_t</a> </h3>
 <h4>Description</h4>
 <p>Data types...</p>
 <h4>Definition</h4>
@@ -1334,8 +1285,7 @@ struct mxml_text_s
 typedef struct <a href='#mxml_attr_s'>mxml_attr_s</a> mxml_attr_t;
 </pre>
 <!-- NEW PAGE -->
-<h3><a name='mxml_custom_load_cb_t'>mxml_custom_load_cb_t</a> </h3>
-<hr noshade>
+<h3 class='title'><a name='mxml_custom_load_cb_t'>mxml_custom_load_cb_t</a> </h3>
 <h4>Description</h4>
 <p>Custom data load callback function</p>
 <h4>Definition</h4>
@@ -1343,8 +1293,7 @@ typedef struct <a href='#mxml_attr_s'>mxml_attr_s</a> mxml_attr_t;
 typedef int (*mxml_custom_load_cb_t)(<a href='#mxml_node_t'>mxml_node_t</a> *, const char *);
 </pre>
 <!-- NEW PAGE -->
-<h3><a name='mxml_custom_save_cb_t'>mxml_custom_save_cb_t</a> </h3>
-<hr noshade>
+<h3 class='title'><a name='mxml_custom_save_cb_t'>mxml_custom_save_cb_t</a> </h3>
 <h4>Description</h4>
 <p>Custom data save callback function</p>
 <h4>Definition</h4>
@@ -1352,8 +1301,7 @@ typedef int (*mxml_custom_load_cb_t)(<a href='#mxml_node_t'>mxml_node_t</a> *, c
 typedef char * (*mxml_custom_save_cb_t)(<a href='#mxml_node_t'>mxml_node_t</a> *);
 </pre>
 <!-- NEW PAGE -->
-<h3><a name='mxml_custom_t'>mxml_custom_t</a> <span class='info'>&nbsp;Mini-XML 2.1&nbsp;</span></h3>
-<hr noshade>
+<h3 class='title'><a name='mxml_custom_t'>mxml_custom_t</a> <span class='info'>&nbsp;Mini-XML 2.1&nbsp;</span></h3>
 <h4>Description</h4>
 <p>An XML custom value. </p>
 <h4>Definition</h4>
@@ -1361,8 +1309,7 @@ typedef char * (*mxml_custom_save_cb_t)(<a href='#mxml_node_t'>mxml_node_t</a> *
 typedef struct <a href='#mxml_custom_s'>mxml_custom_s</a> mxml_custom_t;
 </pre>
 <!-- NEW PAGE -->
-<h3><a name='mxml_element_t'>mxml_element_t</a> </h3>
-<hr noshade>
+<h3 class='title'><a name='mxml_element_t'>mxml_element_t</a> </h3>
 <h4>Description</h4>
 <p>An XML element value.</p>
 <h4>Definition</h4>
@@ -1370,8 +1317,7 @@ typedef struct <a href='#mxml_custom_s'>mxml_custom_s</a> mxml_custom_t;
 typedef struct <a href='#mxml_element_s'>mxml_element_s</a> mxml_element_t;
 </pre>
 <!-- NEW PAGE -->
-<h3><a name='mxml_index_t'>mxml_index_t</a> </h3>
-<hr noshade>
+<h3 class='title'><a name='mxml_index_t'>mxml_index_t</a> </h3>
 <h4>Description</h4>
 <p>An XML node index.</p>
 <h4>Definition</h4>
@@ -1379,8 +1325,7 @@ typedef struct <a href='#mxml_element_s'>mxml_element_s</a> mxml_element_t;
 typedef struct <a href='#mxml_index_s'>mxml_index_s</a> mxml_index_t;
 </pre>
 <!-- NEW PAGE -->
-<h3><a name='mxml_node_t'>mxml_node_t</a> </h3>
-<hr noshade>
+<h3 class='title'><a name='mxml_node_t'>mxml_node_t</a> </h3>
 <h4>Description</h4>
 <p>An XML node.</p>
 <h4>Definition</h4>
@@ -1388,8 +1333,7 @@ typedef struct <a href='#mxml_index_s'>mxml_index_s</a> mxml_index_t;
 typedef struct <a href='#mxml_node_s'>mxml_node_s</a> mxml_node_t;
 </pre>
 <!-- NEW PAGE -->
-<h3><a name='mxml_text_t'>mxml_text_t</a> </h3>
-<hr noshade>
+<h3 class='title'><a name='mxml_text_t'>mxml_text_t</a> </h3>
 <h4>Description</h4>
 <p>An XML text value.</p>
 <h4>Definition</h4>
@@ -1397,8 +1341,7 @@ typedef struct <a href='#mxml_node_s'>mxml_node_s</a> mxml_node_t;
 typedef struct <a href='#mxml_text_s'>mxml_text_s</a> mxml_text_t;
 </pre>
 <!-- NEW PAGE -->
-<h3><a name='mxml_value_t'>mxml_value_t</a> </h3>
-<hr noshade>
+<h3 class='title'><a name='mxml_value_t'>mxml_value_t</a> </h3>
 <h4>Description</h4>
 <p>An XML node value.</p>
 <h4>Definition</h4>
@@ -1406,13 +1349,12 @@ typedef struct <a href='#mxml_text_s'>mxml_text_s</a> mxml_text_t;
 typedef union <a href='#mxml_value_u'>mxml_value_u</a> mxml_value_t;
 </pre>
 <!-- NEW PAGE -->
-<h2><a name='UNIONS'>Unions</a></h2>
+<h2 class='title'><a name='UNIONS'>Unions</a></h2>
 <ul>
 	<li><a href='#mxml_value_u'><tt>mxml_value_u</tt></a> </li>
 </ul>
 <!-- NEW PAGE -->
-<h3><a name='mxml_value_u'>mxml_value_u</a> </h3>
-<hr noshade>
+<h3 class='title'><a name='mxml_value_u'>mxml_value_u</a> </h3>
 <h4>Description</h4>
 <p>An XML node value.</p>
 <h4>Definition</h4>

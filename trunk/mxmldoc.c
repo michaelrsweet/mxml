@@ -2216,6 +2216,7 @@ write_documentation(
 	 "\tpre { font-weight: bold; color: #7f0000; margin-left: 2em; }\n"
 	 "\tspan.info { font-weight: bold; font-style: italic; color: #ffffff; background: #000000; }\n"
 	 "\th3 span.info { float: right; }\n"
+	 "\th1.title, h2.title, h3.title { border-bottom: solid 2px #000000; }\n"
 	 "\t--></style>\n"
 	 "</head>\n"
 	 "<body>\n", title);
@@ -2240,7 +2241,7 @@ write_documentation(
   * Table of contents...
   */
 
-  puts("<h2>Contents</h2>");
+  puts("<h2 class='title'>Contents</h2>");
   puts("<ul>");
   if (find_public(doc, doc, "class"))
     puts("\t<li><a href='#CLASSES'>Classes</a></li>");
@@ -2265,7 +2266,7 @@ write_documentation(
   if (find_public(doc, doc, "class"))
   {
     puts("<!-- NEW PAGE -->\n"
-         "<h2><a name='CLASSES'>Classes</a></h2>\n"
+         "<h2 class='title'><a name='CLASSES'>Classes</a></h2>\n"
          "<ul>");
 
     for (scut = find_public(doc, doc, "class");
@@ -2288,8 +2289,8 @@ write_documentation(
       description = mxmlFindElement(scut, scut, "description", NULL,
                                     NULL, MXML_DESCEND_FIRST);
       printf("<!-- NEW PAGE -->\n"
-             "<h3><a name='%s'>%s</a> %s</h3>\n"
-             "<hr noshade>\n", cname, cname, get_comment_info(description));
+             "<h3 class='title'><a name='%s'>%s</a> %s</h3>\n",
+	     cname, cname, get_comment_info(description));
 
       if (description)
       {
@@ -2450,7 +2451,7 @@ write_documentation(
   if (find_public(doc, doc, "enumeration"))
   {
     puts("<!-- NEW PAGE -->\n"
-         "<h2><a name='ENUMERATIONS'>Enumerations</a></h2>\n"
+         "<h2 class='title'><a name='ENUMERATIONS'>Enumerations</a></h2>\n"
          "<ul>");
 
     for (scut = find_public(doc, doc, "enumeration");
@@ -2473,8 +2474,8 @@ write_documentation(
       description = mxmlFindElement(scut, scut, "description", NULL,
                                     NULL, MXML_DESCEND_FIRST);
       printf("<!-- NEW PAGE -->\n"
-             "<h3><a name='%s'>%s</a> %s</h3>\n"
-             "<hr noshade>\n", name, name, get_comment_info(description));
+             "<h3 class='title'><a name='%s'>%s</a> %s</h3>\n",
+             name, name, get_comment_info(description));
 
       if (description)
       {
@@ -2516,7 +2517,7 @@ write_documentation(
   if (find_public(doc, doc, "function"))
   {
     puts("<!-- NEW PAGE -->\n"
-         "<h2><a name='FUNCTIONS'>Functions</a></h2>\n"
+         "<h2 class='title'><a name='FUNCTIONS'>Functions</a></h2>\n"
          "<ul>");
 
     for (function = find_public(doc, doc, "function");
@@ -2539,8 +2540,8 @@ write_documentation(
       description = mxmlFindElement(function, function, "description", NULL,
                                     NULL, MXML_DESCEND_FIRST);
       printf("<!-- NEW PAGE -->\n"
-             "<h3><a name='%s'>%s()</a> %s</h3>\n"
-             "<hr noshade>\n", name, name, get_comment_info(description));
+             "<h3 class='title'><a name='%s'>%s()</a> %s</h3>\n",
+             name, name, get_comment_info(description));
 
       if (description)
       {
@@ -2640,7 +2641,7 @@ write_documentation(
   if (find_public(doc, doc, "struct"))
   {
     puts("<!-- NEW PAGE -->\n"
-         "<h2><a name='STRUCTURES'>Structures</a></h2>\n"
+         "<h2 class='title'><a name='STRUCTURES'>Structures</a></h2>\n"
          "<ul>");
 
     for (scut = find_public(doc, doc, "struct");
@@ -2663,8 +2664,8 @@ write_documentation(
       description = mxmlFindElement(scut, scut, "description", NULL,
                                     NULL, MXML_DESCEND_FIRST);
       printf("<!-- NEW PAGE -->\n"
-             "<h3><a name='%s'>%s</a> %s</h3>\n"
-	     "<hr noshade>\n", cname, cname, get_comment_info(description));
+             "<h3 class='title'><a name='%s'>%s</a> %s</h3>\n",
+	     cname, cname, get_comment_info(description));
 
       if (description)
       {
@@ -2803,7 +2804,7 @@ write_documentation(
   if (find_public(doc, doc, "typedef"))
   {
     puts("<!-- NEW PAGE -->\n"
-         "<h2><a name='TYPES'>Types</a></h2>\n"
+         "<h2 class='title'><a name='TYPES'>Types</a></h2>\n"
          "<ul>");
 
     for (scut = find_public(doc, doc, "typedef");
@@ -2826,8 +2827,8 @@ write_documentation(
       description = mxmlFindElement(scut, scut, "description", NULL,
                                     NULL, MXML_DESCEND_FIRST);
       printf("<!-- NEW PAGE -->\n"
-             "<h3><a name='%s'>%s</a> %s</h3>\n"
-	     "<hr noshade>\n", name, name, get_comment_info(description));
+             "<h3 class='title'><a name='%s'>%s</a> %s</h3>\n",
+	     name, name, get_comment_info(description));
 
       if (description)
       {
@@ -2923,7 +2924,7 @@ write_documentation(
   if (find_public(doc, doc, "union"))
   {
     puts("<!-- NEW PAGE -->\n"
-         "<h2><a name='UNIONS'>Unions</a></h2>\n"
+         "<h2 class='title'><a name='UNIONS'>Unions</a></h2>\n"
          "<ul>");
 
     for (scut = find_public(doc, doc, "union");
@@ -2946,8 +2947,8 @@ write_documentation(
       description = mxmlFindElement(scut, scut, "description", NULL,
                                     NULL, MXML_DESCEND_FIRST);
       printf("<!-- NEW PAGE -->\n"
-             "<h3><a name='%s'>%s</a> %s</h3>\n"
-	     "<hr noshade>\n", name, name, get_comment_info(description));
+             "<h3 class='title'><a name='%s'>%s</a> %s</h3>\n",
+	     name, name, get_comment_info(description));
 
       if (description)
       {
@@ -3005,7 +3006,7 @@ write_documentation(
   if (find_public(doc, doc, "variable"))
   {
     puts("<!-- NEW PAGE -->\n"
-         "<h2><a name='VARIABLES'>Variables</a></h2>\n"
+         "<h2 class='title'><a name='VARIABLES'>Variables</a></h2>\n"
          "<ul>");
 
     for (arg = find_public(doc, doc, "variable");
@@ -3028,8 +3029,8 @@ write_documentation(
       description = mxmlFindElement(arg, arg, "description", NULL,
                                     NULL, MXML_DESCEND_FIRST);
       printf("<!-- NEW PAGE -->\n"
-             "<h3><a name='%s'>%s</a> %s</h3>\n"
-	     "<hr noshade>", name, name, get_comment_info(description));
+             "<h3 class='title'><a name='%s'>%s</a> %s</h3>\n",
+	     name, name, get_comment_info(description));
 
       if (description)
       {

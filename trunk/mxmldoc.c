@@ -1,4 +1,3 @@
-#define DEBUG 1
 /*
  * "$Id$"
  *
@@ -138,6 +137,8 @@
 
 static mxml_node_t	*add_variable(mxml_node_t *parent, const char *name,
 			              mxml_node_t *type);
+static mxml_node_t	*find_public(mxml_node_t *node, mxml_node_t *top,
+			             const char *name);
 static char		*get_comment_info(mxml_node_t *description);
 static char		*get_text(mxml_node_t *node, char *buffer, int buflen);
 static mxml_node_t	*new_documentation(mxml_node_t **mxmldoc);
@@ -474,6 +475,65 @@ add_variable(mxml_node_t *parent,	/* I - Parent node */
 
 
 /*
+ * 'find_public()' - Find a public function, type, etc.
+ */
+
+static mxml_node_t *			/* I - Found node or NULL */
+find_public(mxml_node_t *node,		/* I - Current node */
+            mxml_node_t *top,		/* I - Top node */
+            const char  *name)		/* I - Name of element */
+{
+  mxml_node_t	*description,		/* Description node */
+		*comment;		/* Comment node */
+
+
+  for (node = mxmlFindElement(node, top, name, NULL, NULL,
+                              node == top ? MXML_DESCEND_FIRST :
+			                    MXML_NO_DESCEND);
+       node;
+       node = mxmlFindElement(node, top, name, NULL, NULL, MXML_NO_DESCEND))
+  {
+   /*
+    * Get the description for this node...
+    */
+
+    description = mxmlFindElement(node, node, "description", NULL, NULL,
+                                  MXML_DESCEND_FIRST);
+
+   /*
+    * A missing or empty description signals a private node...
+    */
+
+    if (!description || !description->child)
+      continue;
+
+   /*
+    * Look for @private@ in the comment text...
+    */
+
+    for (comment = description->child; comment; comment = comment->next)
+      if (strstr(comment->value.text.string, "@private@"))
+        break;
+
+    if (!comment)
+    {
+     /*
+      * No @private@, so return this node...
+      */
+
+      return (node);
+    }
+  }
+
+ /*
+  * If we get here, there are no (more) public nodes...
+  */
+
+  return (NULL);
+}
+
+
+/*
  * 'get_comment_info()' - Get info from comment.
  */
 
@@ -792,27 +852,6 @@ scan_file(const char  *filename,	/* I - Filename */
                   fprintf(stderr, "    scope = %s\n", scope ? scope : "(null)");
 #endif /* DEBUG */
 
-                  if (comment->last_child &&
-		      strstr(comment->last_child->value.text.string, "@private@"))
-		  {
-		    mxmlDelete(type);
-		    type = NULL;
-
-                    if (typedefnode)
-		    {
-		      mxmlDelete(typedefnode);
-		      typedefnode = NULL;
-		    }
-
-		    mxmlDelete(structclass);
-		    structclass = NULL;
-
-	            braces ++;
-		    function = NULL;
-		    variable = NULL;
-		    break;
-		  }
-
                   if (type->child->next)
 		  {
 		    mxmlElementSetAttr(structclass, "name",
@@ -862,9 +901,9 @@ scan_file(const char  *filename,	/* I - Filename */
 #ifdef DEBUG
 		    fputs("    duplicating comment for typedef...\n", stderr);
 #endif /* DEBUG */
+		    update_comment(typedefnode, comment->last_child);
 		    mxmlAdd(description, MXML_ADD_AFTER, MXML_ADD_TO_PARENT,
 		            comment->last_child);
-		    update_comment(typedefnode, comment->last_child);
 		  }
 
 		  description = mxmlNewElement(structclass, "description");
@@ -872,9 +911,9 @@ scan_file(const char  *filename,	/* I - Filename */
 		  fprintf(stderr, "    adding comment to %s...\n",
 		          structclass->value.element.name);
 #endif /* DEBUG */
+		  update_comment(structclass, comment->last_child);
 		  mxmlAdd(description, MXML_ADD_AFTER, MXML_ADD_TO_PARENT,
 		          comment->last_child);
-		  update_comment(structclass, comment->last_child);
 
                   if (scan_file(filename, fp, structclass))
 		  {
@@ -944,18 +983,18 @@ scan_file(const char  *filename,	/* I - Filename */
 #ifdef DEBUG
 		    fputs("    duplicating comment for typedef...\n", stderr);
 #endif /* DEBUG */
+		    update_comment(typedefnode, comment->last_child);
 		    mxmlAdd(description, MXML_ADD_AFTER, MXML_ADD_TO_PARENT,
 		            comment->last_child);
-		    update_comment(typedefnode, comment->last_child);
 		  }
 
 		  description = mxmlNewElement(enumeration, "description");
 #ifdef DEBUG
 		  fputs("    adding comment to enumeration...\n", stderr);
 #endif /* DEBUG */
+		  update_comment(enumeration, comment->last_child);
 		  mxmlAdd(description, MXML_ADD_AFTER, MXML_ADD_TO_PARENT,
 		          comment->last_child);
-		  update_comment(enumeration, comment->last_child);
 		}
 		else if (type && type->child &&
 		         !strcmp(type->child->value.text.string, "extern"))
@@ -1259,6 +1298,7 @@ scan_file(const char  *filename,	/* I - Filename */
 #endif /* DEBUG */
 			update_comment(typedefnode,
 			               mxmlNewText(description, 0, buffer));
+			typedefnode = NULL;
 		      }
 		      else if (strcmp(tree->value.element.name, "mxmldoc") &&
 		               !mxmlFindElement(tree, tree, "description",
@@ -1364,6 +1404,7 @@ scan_file(const char  *filename,	/* I - Filename */
 #endif /* DEBUG */
 		    update_comment(typedefnode,
 			           mxmlNewText(description, 0, buffer));
+		    typedefnode = NULL;
 		  }
 		  else if (strcmp(tree->value.element.name, "mxmldoc") &&
 		           !mxmlFindElement(tree, tree, "description",
@@ -1640,9 +1681,9 @@ scan_file(const char  *filename,	/* I - Filename */
 #ifdef DEBUG
 		  fputs("    adding comment to returnvalue...\n", stderr);
 #endif /* DEBUG */
+		  update_comment(returnvalue, comment->last_child);
 		  mxmlAdd(description, MXML_ADD_AFTER, MXML_ADD_TO_PARENT,
 		          comment->last_child);
-		  update_comment(returnvalue, comment->last_child);
                 }
 		else
 		  mxmlDelete(type);
@@ -1651,9 +1692,9 @@ scan_file(const char  *filename,	/* I - Filename */
 #ifdef DEBUG
 		  fputs("    adding comment to function...\n", stderr);
 #endif /* DEBUG */
+		update_comment(function, comment->last_child);
 		mxmlAdd(description, MXML_ADD_AFTER, MXML_ADD_TO_PARENT,
 		        comment->last_child);
-		update_comment(function, comment->last_child);
 
 		type = NULL;
 	      }
@@ -2026,16 +2067,6 @@ update_comment(mxml_node_t *parent,	/* I - Parent node */
   for (; ptr > comment->value.text.string && isspace(*ptr & 255); ptr --)
     *ptr = '\0';
 
- /*
-  * Remove private types, variables, etc.
-  */
-
-  if (strstr(comment->value.text.string, "@private@"))
-  {
-    fputs("Deleting private node!\n", stderr);
-    mxmlDelete(parent);
-  }
-
 #ifdef DEBUG
   fprintf(stderr, "    updated comment = %s\n", comment->value.text.string);
 #endif /* DEBUG */
@@ -2211,19 +2242,19 @@ write_documentation(
 
   puts("<h2>Contents</h2>");
   puts("<ul>");
-  if (mxmlFindElement(doc, doc, "class", NULL, NULL, MXML_DESCEND_FIRST))
+  if (find_public(doc, doc, "class"))
     puts("\t<li><a href='#_classes'>Classes</a></li>");
-  if (mxmlFindElement(doc, doc, "enumeration", NULL, NULL, MXML_DESCEND_FIRST))
+  if (find_public(doc, doc, "enumeration"))
     puts("\t<li><a href='#_enumerations'>Enumerations</a></li>");
-  if (mxmlFindElement(doc, doc, "function", NULL, NULL, MXML_DESCEND_FIRST))
+  if (find_public(doc, doc, "function"))
     puts("\t<li><a href='#_functions'>Functions</a></li>");
-  if (mxmlFindElement(doc, doc, "struct", NULL, NULL, MXML_DESCEND_FIRST))
+  if (find_public(doc, doc, "struct"))
     puts("\t<li><a href='#_structures'>Structures</a></li>");
-  if (mxmlFindElement(doc, doc, "typedef", NULL, NULL, MXML_DESCEND_FIRST))
+  if (find_public(doc, doc, "typedef"))
     puts("\t<li><a href='#_types'>Types</a></li>");
-  if (mxmlFindElement(doc, doc, "union", NULL, NULL, MXML_DESCEND_FIRST))
+  if (find_public(doc, doc, "union"))
     puts("\t<li><a href='#_unions'>Unions</a></li>");
-  if (mxmlFindElement(doc, doc, "variable", NULL, NULL, MXML_DESCEND_FIRST))
+  if (find_public(doc, doc, "variable"))
     puts("\t<li><a href='#_variables'>Variables</a></li>");
   puts("</ul>");
 
@@ -2231,17 +2262,15 @@ write_documentation(
   * List of classes...
   */
 
-  if (mxmlFindElement(doc, doc, "class", NULL, NULL, MXML_DESCEND_FIRST))
+  if (find_public(doc, doc, "class"))
   {
     puts("<!-- NEW PAGE -->\n"
          "<h2><a name='_classes'>Classes</a></h2>\n"
          "<ul>");
 
-    for (scut = mxmlFindElement(doc, doc, "class", NULL, NULL,
-                        	MXML_DESCEND_FIRST);
+    for (scut = find_public(doc, doc, "class");
 	 scut;
-	 scut = mxmlFindElement(scut, doc, "class", NULL, NULL,
-                        	MXML_NO_DESCEND))
+	 scut = find_public(scut, doc, "class"))
     {
       name = mxmlElementGetAttr(scut, "name");
       printf("\t<li><a href='#%s'><tt>%s</tt></a> %s</li>\n", name, name,
@@ -2251,11 +2280,9 @@ write_documentation(
 
     puts("</ul>");
 
-    for (scut = mxmlFindElement(doc, doc, "class", NULL, NULL,
-                        	MXML_DESCEND_FIRST);
+    for (scut = find_public(doc, doc, "class");
 	 scut;
-	 scut = mxmlFindElement(scut, doc, "class", NULL, NULL,
-                        	MXML_NO_DESCEND))
+	 scut = find_public(scut, doc, "class"))
     {
       cname       = mxmlElementGetAttr(scut, "name");
       description = mxmlFindElement(scut, scut, "description", NULL,
@@ -2301,11 +2328,11 @@ write_documentation(
 	  printf(" %s;\n", mxmlElementGetAttr(arg, "name"));
 	}
 
-	for (function = mxmlFindElement(scut, scut, "function", "scope", scopes[i],
-                                	MXML_DESCEND_FIRST);
+	for (function = mxmlFindElement(scut, scut, "function", "scope",
+	                                scopes[i], MXML_DESCEND_FIRST);
 	     function;
-	     function = mxmlFindElement(function, scut, "function", "scope", scopes[i],
-                                	MXML_NO_DESCEND))
+	     function = mxmlFindElement(function, scut, "function", "scope",
+	                                scopes[i], MXML_NO_DESCEND))
 	{
           if (!inscope)
 	  {
@@ -2420,17 +2447,15 @@ write_documentation(
   * List of enumerations...
   */
 
-  if (mxmlFindElement(doc, doc, "enumeration", NULL, NULL, MXML_DESCEND_FIRST))
+  if (find_public(doc, doc, "enumeration"))
   {
     puts("<!-- NEW PAGE -->\n"
          "<h2><a name='_enumerations'>Enumerations</a></h2>\n"
          "<ul>");
 
-    for (scut = mxmlFindElement(doc, doc, "enumeration", NULL, NULL,
-                        	MXML_DESCEND_FIRST);
+    for (scut = find_public(doc, doc, "enumeration");
 	 scut;
-	 scut = mxmlFindElement(scut, doc, "enumeration", NULL, NULL,
-                        	MXML_NO_DESCEND))
+	 scut = find_public(scut, doc, "enumeration"))
     {
       name = mxmlElementGetAttr(scut, "name");
       printf("\t<li><a href='#%s'><tt>%s</tt></a> %s</li>\n", name, name,
@@ -2440,11 +2465,9 @@ write_documentation(
 
     puts("</ul>");
 
-    for (scut = mxmlFindElement(doc, doc, "enumeration", NULL, NULL,
-                        	MXML_DESCEND_FIRST);
+    for (scut = find_public(doc, doc, "enumeration");
 	 scut;
-	 scut = mxmlFindElement(scut, doc, "enumeration", NULL, NULL,
-                        	MXML_NO_DESCEND))
+	 scut = find_public(scut, doc, "enumeration"))
     {
       name        = mxmlElementGetAttr(scut, "name");
       description = mxmlFindElement(scut, scut, "description", NULL,
@@ -2490,17 +2513,15 @@ write_documentation(
   * List of functions...
   */
 
-  if (mxmlFindElement(doc, doc, "function", NULL, NULL, MXML_DESCEND_FIRST))
+  if (find_public(doc, doc, "function"))
   {
     puts("<!-- NEW PAGE -->\n"
          "<h2><a name='_functions'>Functions</a></h2>\n"
          "<ul>");
 
-    for (function = mxmlFindElement(doc, doc, "function", NULL, NULL,
-                                    MXML_DESCEND_FIRST);
+    for (function = find_public(doc, doc, "function");
 	 function;
-	 function = mxmlFindElement(function, doc, "function", NULL, NULL,
-                                    MXML_NO_DESCEND))
+	 function = find_public(function, doc, "function"))
     {
       name = mxmlElementGetAttr(function, "name");
       printf("\t<li><a href='#%s'><tt>%s()</tt></a> %s</li>\n", name, name,
@@ -2510,11 +2531,9 @@ write_documentation(
 
     puts("</ul>");
 
-    for (function = mxmlFindElement(doc, doc, "function", NULL, NULL,
-                                    MXML_DESCEND_FIRST);
+    for (function = find_public(doc, doc, "function");
 	 function;
-	 function = mxmlFindElement(function, doc, "function", NULL, NULL,
-                                    MXML_NO_DESCEND))
+	 function = find_public(function, doc, "function"))
     {
       name        = mxmlElementGetAttr(function, "name");
       description = mxmlFindElement(function, function, "description", NULL,
@@ -2618,17 +2637,15 @@ write_documentation(
   * List of structures...
   */
 
-  if (mxmlFindElement(doc, doc, "struct", NULL, NULL, MXML_DESCEND_FIRST))
+  if (find_public(doc, doc, "struct"))
   {
     puts("<!-- NEW PAGE -->\n"
          "<h2><a name='_structures'>Structures</a></h2>\n"
          "<ul>");
 
-    for (scut = mxmlFindElement(doc, doc, "struct", NULL, NULL,
-                        	MXML_DESCEND_FIRST);
+    for (scut = find_public(doc, doc, "struct");
 	 scut;
-	 scut = mxmlFindElement(scut, doc, "struct", NULL, NULL,
-                        	MXML_NO_DESCEND))
+	 scut = find_public(scut, doc, "struct"))
     {
       name = mxmlElementGetAttr(scut, "name");
       printf("\t<li><a href='#%s'><tt>%s</tt></a> %s</li>\n", name, name,
@@ -2638,11 +2655,9 @@ write_documentation(
 
     puts("</ul>");
 
-    for (scut = mxmlFindElement(doc, doc, "struct", NULL, NULL,
-                        	MXML_DESCEND_FIRST);
+    for (scut = find_public(doc, doc, "struct");
 	 scut;
-	 scut = mxmlFindElement(scut, doc, "struct", NULL, NULL,
-                        	MXML_NO_DESCEND))
+	 scut = find_public(scut, doc, "struct"))
     {
       cname       = mxmlElementGetAttr(scut, "name");
       description = mxmlFindElement(scut, scut, "description", NULL,
@@ -2785,17 +2800,15 @@ write_documentation(
   * List of types...
   */
 
-  if (mxmlFindElement(doc, doc, "typedef", NULL, NULL, MXML_DESCEND_FIRST))
+  if (find_public(doc, doc, "typedef"))
   {
     puts("<!-- NEW PAGE -->\n"
          "<h2><a name='_types'>Types</a></h2>\n"
          "<ul>");
 
-    for (scut = mxmlFindElement(doc, doc, "typedef", NULL, NULL,
-                        	MXML_DESCEND_FIRST);
+    for (scut = find_public(doc, doc, "typedef");
 	 scut;
-	 scut = mxmlFindElement(scut, doc, "typedef", NULL, NULL,
-                        	MXML_NO_DESCEND))
+	 scut = find_public(scut, doc, "typedef"))
     {
       name = mxmlElementGetAttr(scut, "name");
       printf("\t<li><a href='#%s'><tt>%s</tt></a> %s</li>\n", name, name,
@@ -2805,11 +2818,9 @@ write_documentation(
 
     puts("</ul>");
 
-    for (scut = mxmlFindElement(doc, doc, "typedef", NULL, NULL,
-                        	MXML_DESCEND_FIRST);
+    for (scut = find_public(doc, doc, "typedef");
 	 scut;
-	 scut = mxmlFindElement(scut, doc, "typedef", NULL, NULL,
-                        	MXML_NO_DESCEND))
+	 scut = find_public(scut, doc, "typedef"))
     {
       name        = mxmlElementGetAttr(scut, "name");
       description = mxmlFindElement(scut, scut, "description", NULL,
@@ -2909,17 +2920,15 @@ write_documentation(
   * List of unions...
   */
 
-  if (mxmlFindElement(doc, doc, "union", NULL, NULL, MXML_DESCEND_FIRST))
+  if (find_public(doc, doc, "union"))
   {
     puts("<!-- NEW PAGE -->\n"
          "<h2><a name='_unions'>Unions</a></h2>\n"
          "<ul>");
 
-    for (scut = mxmlFindElement(doc, doc, "union", NULL, NULL,
-                        	MXML_DESCEND_FIRST);
+    for (scut = find_public(doc, doc, "union");
 	 scut;
-	 scut = mxmlFindElement(scut, doc, "union", NULL, NULL,
-                        	MXML_NO_DESCEND))
+	 scut = find_public(scut, doc, "union"))
     {
       name = mxmlElementGetAttr(scut, "name");
       printf("\t<li><a href='#%s'><tt>%s</tt></a> %s</li>\n", name, name,
@@ -2929,11 +2938,9 @@ write_documentation(
 
     puts("</ul>");
 
-    for (scut = mxmlFindElement(doc, doc, "union", NULL, NULL,
-                        	MXML_DESCEND_FIRST);
+    for (scut = find_public(doc, doc, "union");
 	 scut;
-	 scut = mxmlFindElement(scut, doc, "union", NULL, NULL,
-                        	MXML_NO_DESCEND))
+	 scut = find_public(scut, doc, "union"))
     {
       name        = mxmlElementGetAttr(scut, "name");
       description = mxmlFindElement(scut, scut, "description", NULL,
@@ -2995,17 +3002,15 @@ write_documentation(
   * Variables...
   */
 
-  if (mxmlFindElement(doc, doc, "variable", NULL, NULL, MXML_DESCEND_FIRST))
+  if (find_public(doc, doc, "variable"))
   {
     puts("<!-- NEW PAGE -->\n"
          "<h2><a name='_variables'>Variables</a></h2>\n"
          "<ul>");
 
-    for (arg = mxmlFindElement(doc, doc, "variable", NULL, NULL,
-                               MXML_DESCEND_FIRST);
+    for (arg = find_public(doc, doc, "variable");
 	 arg;
-	 arg = mxmlFindElement(arg, doc, "variable", NULL, NULL,
-                               MXML_NO_DESCEND))
+	 arg = find_public(arg, doc, "variable"))
     {
       name = mxmlElementGetAttr(arg, "name");
       printf("\t<li><a href='#%s'><tt>%s</tt></a> %s</li>\n", name, name,
@@ -3015,11 +3020,9 @@ write_documentation(
 
     puts("</ul>");
 
-    for (arg = mxmlFindElement(doc, doc, "variable", NULL, NULL,
-                               MXML_DESCEND_FIRST);
+    for (arg = find_public(doc, doc, "variable");
 	 arg;
-	 arg = mxmlFindElement(arg, doc, "variable", NULL, NULL,
-                               MXML_NO_DESCEND))
+	 arg = find_public(arg, doc, "variable"))
     {
       name        = mxmlElementGetAttr(arg, "name");
       description = mxmlFindElement(arg, arg, "description", NULL,

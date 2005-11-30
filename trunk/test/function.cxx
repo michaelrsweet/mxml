@@ -89,3 +89,16 @@ foo_void_func(void)
 {
   puts("foo_void_func()");
 }
+
+
+/*
+ * 'foo_private_func()' - Private function.
+ *
+ * @private@
+ */
+
+void
+foo_private_func(void)
+{
+  puts("foo_private_func()");
+}

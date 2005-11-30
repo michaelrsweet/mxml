@@ -3,7 +3,7 @@ xmlns="http://www.easysw.com"
 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 xsi:schemaLocation="http://www.easysw.com/~mike/mxml/mxmldoc.xsd">
   <function name="mxmlAdd">
-    <description>'mxmlAdd()' - Add a node to a tree.
+    <description>Add a node to a tree.
 
 Adds the specified node to the parent. If the child argument is not
 NULL, puts the new node before or after the specified child depending
@@ -29,7 +29,7 @@ MXML_ADD_TO_PARENT can be used to specify a NULL child pointer.</description>
     </argument>
   </function>
   <function name="mxmlDelete">
-    <description>'mxmlDelete()' - Delete a node and all of its children.
+    <description>Delete a node and all of its children.
 
 If the specified node has a parent, this function first removes the
 node from its parent using the mxmlRemove() function.</description>
@@ -41,7 +41,7 @@ node from its parent using the mxmlRemove() function.</description>
   <function name="mxmlElementGetAttr">
     <returnvalue>
       <type>const char *</type>
-      <description>O - Attribute value or NULL</description>
+      <description>Attribute value or NULL</description>
     </returnvalue>
     <description>Get an attribute.
 
@@ -57,7 +57,7 @@ named attribute does not exist.</description>
     </argument>
   </function>
   <function name="mxmlElementSetAttr">
-    <description>'mxmlElementSetAttr()' - Set an attribute.
+    <description>Set an attribute.
 
 If the named attribute already exists, the value of the attribute
 is replaced by the new string value. The string value is copied
@@ -79,14 +79,14 @@ not an element.</description>
   <function name="mxmlEntityAddCallback">
     <returnvalue>
       <type>int</type>
-      <description>O - 0 on success, -1 on failure</description>
+      <description>0 on success, -1 on failure</description>
     </returnvalue>
     <description>Add a callback to convert entities to Unicode.</description>
   </function>
   <function name="mxmlEntityGetName">
     <returnvalue>
       <type>const char *</type>
-      <description>O - Entity name or NULL</description>
+      <description>Entity name or NULL</description>
     </returnvalue>
     <description>Get the name that corresponds to the character value.
 
@@ -99,7 +99,7 @@ If val does not need to be represented by a named entity, NULL is returned.</des
   <function name="mxmlEntityGetValue">
     <returnvalue>
       <type>int</type>
-      <description>O - Character value or -1 on error</description>
+      <description>Character value or -1 on error</description>
     </returnvalue>
     <description>Get the character corresponding to a named entity.
 
@@ -111,12 +111,12 @@ name is not known.</description>
     </argument>
   </function>
   <function name="mxmlEntityRemoveCallback">
-    <description>'mxmlEntityRemoveCallback()' - Remove a callback.</description>
+    <description>Remove a callback.</description>
   </function>
   <function name="mxmlFindElement">
     <returnvalue>
       <type>mxml_node_t *</type>
-      <description>O - Element node or NULL</description>
+      <description>Element node or NULL</description>
     </returnvalue>
     <description>Find the named element.
 
@@ -154,7 +154,7 @@ constrains the search to a particular node's children.</description>
     </argument>
   </function>
   <function name="mxmlIndexDelete">
-    <description>'mxmlIndexDelete()' - Delete an index.</description>
+    <description>Delete an index.</description>
     <argument name="ind" direction="I">
       <type>mxml_index_t *</type>
       <description>Index to delete</description>
@@ -163,7 +163,7 @@ constrains the search to a particular node's children.</description>
   <function name="mxmlIndexEnum">
     <returnvalue>
       <type>mxml_node_t *</type>
-      <description>O - Next node or NULL if there is none</description>
+      <description>Next node or NULL if there is none</description>
     </returnvalue>
     <description>Return the next node in the index.
 
@@ -176,7 +176,7 @@ Nodes are returned in the sorted order of the index.</description>
   <function name="mxmlIndexFind">
     <returnvalue>
       <type>mxml_node_t *</type>
-      <description>O - Node or NULL if none found</description>
+      <description>Node or NULL if none found</description>
     </returnvalue>
     <description>Find the next matching node.
 
@@ -200,7 +200,7 @@ to calling mxmlIndexEnum().</description>
   <function name="mxmlIndexNew">
     <returnvalue>
       <type>mxml_index_t *</type>
-      <description>O - New index</description>
+      <description>New index</description>
     </returnvalue>
     <description>Create a new index.
 
@@ -225,7 +225,7 @@ argument is not NULL.</description>
   <function name="mxmlIndexReset">
     <returnvalue>
       <type>mxml_node_t *</type>
-      <description>O - First node or NULL if there is none</description>
+      <description>First node or NULL if there is none</description>
     </returnvalue>
     <description>Reset the enumeration/find pointer in the index and
 return the first node in the index.
@@ -240,7 +240,7 @@ mxmlIndexFind() for the first time.</description>
   <function name="mxmlLoadFd">
     <returnvalue>
       <type>mxml_node_t *</type>
-      <description>O - First node or NULL if the file could not be read.</description>
+      <description>First node or NULL if the file could not be read.</description>
     </returnvalue>
     <description>Load a file descriptor into an XML node tree.
 
@@ -266,7 +266,7 @@ child nodes of the specified type.</description>
   <function name="mxmlLoadFile">
     <returnvalue>
       <type>mxml_node_t *</type>
-      <description>O - First node or NULL if the file could not be read.</description>
+      <description>First node or NULL if the file could not be read.</description>
     </returnvalue>
     <description>Load a file into an XML node tree.
 
@@ -292,7 +292,7 @@ child nodes of the specified type.</description>
   <function name="mxmlLoadString">
     <returnvalue>
       <type>mxml_node_t *</type>
-      <description>O - First node or NULL if the string has errors.</description>
+      <description>First node or NULL if the string has errors.</description>
     </returnvalue>
     <description>Load a string into an XML node tree.
 
@@ -318,7 +318,7 @@ child nodes of the specified type.</description>
   <function name="mxmlNewCDATA">
     <returnvalue>
       <type>mxml_node_t *</type>
-      <description>O - New node</description>
+      <description>New node</description>
     </returnvalue>
     <description>Create a new CDATA node.
 
@@ -340,7 +340,7 @@ is copied into the new node. CDATA nodes use the MXML_ELEMENT type.
   <function name="mxmlNewCustom">
     <returnvalue>
       <type>mxml_node_t *</type>
-      <description>O - New node</description>
+      <description>New node</description>
     </returnvalue>
     <description>Create a new custom data node.
 
@@ -362,7 +362,7 @@ node is not dynamically allocated or is separately managed.
   <function name="mxmlNewElement">
     <returnvalue>
       <type>mxml_node_t *</type>
-      <description>O - New node</description>
+      <description>New node</description>
     </returnvalue>
     <description>Create a new element node.
 
@@ -381,7 +381,7 @@ element node has no parent.</description>
   <function name="mxmlNewInteger">
     <returnvalue>
       <type>mxml_node_t *</type>
-      <description>O - New node</description>
+      <description>New node</description>
     </returnvalue>
     <description>Create a new integer node.
 
@@ -400,7 +400,7 @@ integer node has no parent.</description>
   <function name="mxmlNewOpaque">
     <returnvalue>
       <type>mxml_node_t *</type>
-      <description>O - New node</description>
+      <description>New node</description>
     </returnvalue>
     <description>Create a new opaque string.
 
@@ -420,7 +420,7 @@ is copied into the new node.</description>
   <function name="mxmlNewReal">
     <returnvalue>
       <type>mxml_node_t *</type>
-      <description>O - New node</description>
+      <description>New node</description>
     </returnvalue>
     <description>Create a new real number node.
 
@@ -439,7 +439,7 @@ the new real number node has no parent.</description>
   <function name="mxmlNewText">
     <returnvalue>
       <type>mxml_node_t *</type>
-      <description>O - New node</description>
+      <description>New node</description>
     </returnvalue>
     <description>Create a new text fragment node.
 
@@ -464,7 +464,7 @@ string must be nul-terminated and is copied into the new node.</description>
   <function name="mxmlNewTextf">
     <returnvalue>
       <type>mxml_node_t *</type>
-      <description>O - New node</description>
+      <description>New node</description>
     </returnvalue>
     <description>Create a new formatted text fragment node.
 
@@ -490,7 +490,7 @@ string must be nul-terminated and is formatted into the new node.</description>
     </argument>
   </function>
   <function name="mxmlRemove">
-    <description>'mxmlRemove()' - Remove a node from its parent.
+    <description>Remove a node from its parent.
 
 Does not free memory used by the node - use mxmlDelete() for that.
 This function does nothing if the node has no parent.</description>
@@ -502,7 +502,7 @@ This function does nothing if the node has no parent.</description>
   <function name="mxmlSaveAllocString">
     <returnvalue>
       <type>char *</type>
-      <description>O - Allocated string or NULL</description>
+      <description>Allocated string or NULL</description>
     </returnvalue>
     <description>Save an XML node tree to an allocated string.
 
@@ -525,7 +525,7 @@ element tags.</description>
   <function name="mxmlSaveFd">
     <returnvalue>
       <type>int</type>
-      <description>O - 0 on success, -1 on error.</description>
+      <description>0 on success, -1 on error.</description>
     </returnvalue>
     <description>Save an XML tree to a file descriptor.
 
@@ -546,7 +546,7 @@ element tags.</description>
   <function name="mxmlSaveFile">
     <returnvalue>
       <type>int</type>
-      <description>O - 0 on success, -1 on error.</description>
+      <description>0 on success, -1 on error.</description>
     </returnvalue>
     <description>Save an XML tree to a file.
 
@@ -567,7 +567,7 @@ element tags.</description>
   <function name="mxmlSaveString">
     <returnvalue>
       <type>int</type>
-      <description>O - Size of string</description>
+      <description>Size of string</description>
     </returnvalue>
     <description>Save an XML node tree to a string.
 
@@ -596,7 +596,7 @@ element tags.</description>
   <function name="mxmlSetCDATA">
     <returnvalue>
       <type>int</type>
-      <description>O - 0 on success, -1 on failure</description>
+      <description>0 on success, -1 on failure</description>
     </returnvalue>
     <description>Set the element name of a CDATA node.
 
@@ -615,7 +615,7 @@ The node is not changed if it is not a CDATA element node.
   <function name="mxmlSetCustom">
     <returnvalue>
       <type>int</type>
-      <description>O - 0 on success, -1 on failure</description>
+      <description>0 on success, -1 on failure</description>
     </returnvalue>
     <description>Set the data and destructor of a custom data node.
 
@@ -632,14 +632,13 @@ The node is not changed if it is not a custom node.
     </argument>
   </function>
   <function name="mxmlSetCustomHandlers">
-    <description>'mxmlSetCustomHandlers()' - Set the handling functions for custom data.
+    <description>Set the handling functions for custom data.
 
 The load function accepts a node pointer and a data string and must
 return 0 on success and non-zero on error.
 
 The save function accepts a node pointer and must return a malloc'd
-string on success and NULL on error.
-</description>
+string on success and NULL on error.</description>
     <argument name="load" direction="I">
       <type>mxml_custom_load_cb_t</type>
       <description>Load function</description>
@@ -652,7 +651,7 @@ string on success and NULL on error.
   <function name="mxmlSetElement">
     <returnvalue>
       <type>int</type>
-      <description>O - 0 on success, -1 on failure</description>
+      <description>0 on success, -1 on failure</description>
     </returnvalue>
     <description>Set the name of an element node.
 
@@ -667,12 +666,12 @@ The node is not changed if it is not an element node.</description>
     </argument>
   </function>
   <function name="mxmlSetErrorCallback">
-    <description>'mxmlSetErrorCallback()' - Set the error message callback.</description>
+    <description>Set the error message callback.</description>
   </function>
   <function name="mxmlSetInteger">
     <returnvalue>
       <type>int</type>
-      <description>O - 0 on success, -1 on failure</description>
+      <description>0 on success, -1 on failure</description>
     </returnvalue>
     <description>Set the value of an integer node.
 
@@ -689,7 +688,7 @@ The node is not changed if it is not an integer node.</description>
   <function name="mxmlSetOpaque">
     <returnvalue>
       <type>int</type>
-      <description>O - 0 on success, -1 on failure</description>
+      <description>0 on success, -1 on failure</description>
     </returnvalue>
     <description>Set the value of an opaque node.
 
@@ -706,7 +705,7 @@ The node is not changed if it is not an opaque node.</description>
   <function name="mxmlSetReal">
     <returnvalue>
       <type>int</type>
-      <description>O - 0 on success, -1 on failure</description>
+      <description>0 on success, -1 on failure</description>
     </returnvalue>
     <description>Set the value of a real number node.
 
@@ -723,7 +722,7 @@ The node is not changed if it is not a real number node.</description>
   <function name="mxmlSetText">
     <returnvalue>
       <type>int</type>
-      <description>O - 0 on success, -1 on failure</description>
+      <description>0 on success, -1 on failure</description>
     </returnvalue>
     <description>Set the value of a text node.
 
@@ -744,7 +743,7 @@ The node is not changed if it is not a text node.</description>
   <function name="mxmlSetTextf">
     <returnvalue>
       <type>int</type>
-      <description>O - 0 on success, -1 on failure</description>
+      <description>0 on success, -1 on failure</description>
     </returnvalue>
     <description>Set the value of a text node to a formatted string.
 
@@ -768,7 +767,7 @@ The node is not changed if it is not a text node.</description>
   <function name="mxmlWalkNext">
     <returnvalue>
       <type>mxml_node_t *</type>
-      <description>O - Next node or NULL</description>
+      <description>Next node or NULL</description>
     </returnvalue>
     <description>Walk to the next logical node in the tree.
 
@@ -791,7 +790,7 @@ the node's children.</description>
   <function name="mxmlWalkPrev">
     <returnvalue>
       <type>mxml_node_t *</type>
-      <description>O - Previous node or NULL</description>
+      <description>Previous node or NULL</description>
     </returnvalue>
     <description>Walk to the previous logical node in the tree.
 
@@ -845,7 +844,7 @@ the walk to the node's children.</description>
   </typedef>
   <typedef name="mxml_custom_t">
     <type>struct mxml_custom_s</type>
-    <description>*** An XML custom value. @since Mini-XML 2.1@</description>
+    <description>An XML custom value. @since Mini-XML 2.1@</description>
   </typedef>
   <struct name="mxml_element_s">
     <description>An XML element value.</description>
@@ -864,7 +863,7 @@ the walk to the node's children.</description>
   </struct>
   <typedef name="mxml_element_t">
     <type>struct mxml_element_s</type>
-    <description>*** An XML element value.</description>
+    <description>An XML element value.</description>
   </typedef>
   <struct name="mxml_index_s">
     <description>An XML node index.</description>
@@ -891,7 +890,7 @@ the walk to the node's children.</description>
   </struct>
   <typedef name="mxml_index_t">
     <type>struct mxml_index_s</type>
-    <description>*** An XML node index.</description>
+    <description>An XML node index.</description>
   </typedef>
   <struct name="mxml_node_s">
     <description>An XML node.</description>
@@ -926,7 +925,7 @@ the walk to the node's children.</description>
   </struct>
   <typedef name="mxml_node_t">
     <type>struct mxml_node_s</type>
-    <description>*** An XML node.</description>
+    <description>An XML node.</description>
   </typedef>
   <struct name="mxml_text_s">
     <description>An XML text value.</description>
@@ -941,7 +940,7 @@ the walk to the node's children.</description>
   </struct>
   <typedef name="mxml_text_t">
     <type>struct mxml_text_s</type>
-    <description>*** An XML text value.</description>
+    <description>An XML text value.</description>
   </typedef>
   <enumeration name="mxml_type_e">
     <description>The XML node type.</description>
@@ -969,7 +968,7 @@ the walk to the node's children.</description>
   </enumeration>
   <typedef name="mxml_value_t">
     <type>union mxml_value_u</type>
-    <description>*** An XML node value.</description>
+    <description>An XML node value.</description>
   </typedef>
   <union name="mxml_value_u">
     <description>An XML node value.</description>

@@ -15,7 +15,7 @@
 .\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 .\" GNU General Public License for more details.
 .\"
-.TH mxml 3 "mini-XML" "25 February 2005" "Michael Sweet"
+.TH mxml 3 "mini-XML" "2 December 2005" "Michael Sweet"
 .SH NAME
 mxml \- mini-xml library
 .SH INCLUDE FILE
@@ -31,9 +31,7 @@ most vendors' ANSI C compilers) and a "make" program.
 .PP
 Mini-XML provides the following functionality:
 .IP \(bu 4
-Reading and writing of UTF-8 encoded XML files.
-.IP \(bu 4
-Reading and writing of UTF-8 encoded XML strings.
+Reading of UTF-8 and UTF-16 and writing of UTF-8 encoded XML files and strings.
 .IP \(bu 4
 Data is stored in a linked-list tree structure,
 preserving the XML data hierarchy.
@@ -44,7 +42,7 @@ values with no preset limits, just available memory.
 Supports integer, real, opaque ("cdata"), and text data types in
 "leaf" nodes.
 .IP \(bu 4
-Functions for creating and managing trees of data.
+Functions for creating, indexing, and managing trees of data.
 .IP \(bu 4
 "Find" and "walk" functions for easily locating and navigating
 trees of data.
@@ -53,9 +51,7 @@ Mini-XML doesn't do validation or other types of processing
 on the data based upon schema files or other sources of
 definition information, nor does it support character
 entities other than those required by the XML
-specification.  Also, since Mini-XML does not support the
-UTF-16 encoding, it is technically not a conforming XML
-consumer/client.
+specification.
 .SH USING MINI-XML
 Mini-XML provides a single header file which you include:
 .nf

@@ -15,13 +15,15 @@
 .\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 .\" GNU General Public License for more details.
 .\"
-.TH mxmldoc 1 "mini-XML" "21 September 2005" "Michael Sweet"
+.TH mxmldoc 1 "mini-XML" "2 December 2005" "Michael Sweet"
 .SH NAME
 mxmldoc \- mini-xml documentation generator
 .SH SYNOPSIS
 .B mxmldoc
 [ --intro
 .I introfile.html
+] [ --section
+.I section
 ] [ --title
 .I title
 ] [
@@ -49,6 +51,10 @@ Configuration Management Plan which is available at
 \--intro introfile.html
 .br
 Inserts the specified file at the top of the output documentation.
+.TP 5
+\--section section
+.br
+Sets the section/keywords in the output documentation.
 .TP 5
 \--title title
 .br

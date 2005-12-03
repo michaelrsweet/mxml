@@ -150,7 +150,8 @@ static void		update_comment(mxml_node_t *parent,
 			               mxml_node_t *comment);
 static void		usage(const char *option);
 static void		write_description(mxml_node_t *description);
-static void		write_documentation(const char *title,
+static void		write_documentation(const char *section,
+			                    const char *title,
 			                    const char *intro,
 			                    mxml_node_t *doc);
 static void		write_element(mxml_node_t *doc, mxml_node_t *element);
@@ -171,6 +172,7 @@ main(int  argc,				/* I - Number of command-line args */
   FILE		*fp;			/* File to read */
   mxml_node_t	*doc;			/* XML documentation tree */
   mxml_node_t	*mxmldoc;		/* mxmldoc node */
+  const char	*section;		/* Section/keywords of documentation */
   const char	*title;			/* Title of documentation */
   const char	*introfile;		/* Introduction file */
   const char	*xmlfile;		/* XML file */
@@ -181,6 +183,7 @@ main(int  argc,				/* I - Number of command-line args */
   * Check arguments...
   */
 
+  section   = NULL;
   title     = NULL;
   introfile = NULL;
   xmlfile   = NULL;
@@ -189,19 +192,7 @@ main(int  argc,				/* I - Number of command-line args */
   mxmldoc   = NULL;
 
   for (i = 1; i < argc; i ++)
-    if (!strcmp(argv[i], "--title") && !title)
-    {
-     /*
-      * Set title...
-      */
-
-      i ++;
-      if (i < argc)
-        title = argv[i];
-      else
-        usage(NULL);
-    }
-    else if (!strcmp(argv[i], "--intro") && !introfile)
+    if (!strcmp(argv[i], "--intro") && !introfile)
     {
      /*
       * Set intro file...
@@ -210,6 +201,30 @@ main(int  argc,				/* I - Number of command-line args */
       i ++;
       if (i < argc)
         introfile = argv[i];
+      else
+        usage(NULL);
+    }
+    else if (!strcmp(argv[i], "--section") && !section)
+    {
+     /*
+      * Set section/keywords...
+      */
+
+      i ++;
+      if (i < argc)
+        section = argv[i];
+      else
+        usage(NULL);
+    }
+    else if (!strcmp(argv[i], "--title") && !title)
+    {
+     /*
+      * Set title...
+      */
+
+      i ++;
+      if (i < argc)
+        title = argv[i];
       else
         usage(NULL);
     }
@@ -343,7 +358,8 @@ main(int  argc,				/* I - Number of command-line args */
   * Write HTML documentation...
   */
 
-  write_documentation(title ? title : "Documentation", introfile, mxmldoc);
+  write_documentation(section, title ? title : "Documentation", introfile,
+                      mxmldoc);
 
  /*
   * Delete the tree and return...
@@ -2174,6 +2190,7 @@ write_description(
 
 static void
 write_documentation(
+    const char  *section,		/* I - Section */
     const char  *title,			/* I - Title */
     const char  *introfile,		/* I - Intro file */
     mxml_node_t *doc)			/* I - XML documentation */
@@ -2204,24 +2221,31 @@ write_documentation(
   * Standard header...
   */
 
-  printf("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\" "
-         "\"http://www.w3.org/TR/REC-html40/loose.dtd\">\n"
-	 "<html>\n"
-	 "<head>\n"
-	 "\t<title>%s</title>\n"
-	 "\t<meta name='creator' content='" MXML_VERSION "'>\n"
-	 "\t<style type='text/css'><!--\n"
-	 "\th1, h2, h3, p { font-family: sans-serif; text-align: justify; }\n"
-	 "\ttt, pre a:link, pre a:visited, tt a:link, tt a:visited { font-weight: bold; color: #7f0000; }\n"
-	 "\tpre { font-weight: bold; color: #7f0000; margin-left: 2em; }\n"
-	 "\tspan.info { background: #000000; border: solid thin #000000; "
-	 "color: #ffffff; font-size: 80%; font-style: italic; "
-	 "font-weight: bold; white-space: nowrap; }\n"
-	 "\th3 span.info { float: right; font-size: 100%; }\n"
-	 "\th1.title, h2.title, h3.title { border-bottom: solid 2px #000000; }\n"
-	 "\t--></style>\n"
-	 "</head>\n"
-	 "<body>\n", title);
+  puts("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\" "
+       "\"http://www.w3.org/TR/REC-html40/loose.dtd\">\n"
+       "<html>");
+
+  if (section)
+    printf("<!-- SECTION: %s -->\n", section);
+
+  printf("<head>\n"
+	 "\t<title>%s</title>\n", title);
+  if (section)
+    printf("\t<meta name='keywords' content='%s'>\n", section);
+
+  puts("\t<meta name='creator' content='" MXML_VERSION "'>\n"
+       "\t<style type='text/css'><!--\n"
+       "\th1, h2, h3, p { font-family: sans-serif; text-align: justify; }\n"
+       "\ttt, pre a:link, pre a:visited, tt a:link, tt a:visited { font-weight: bold; color: #7f0000; }\n"
+       "\tpre { font-weight: bold; color: #7f0000; margin-left: 2em; }\n"
+       "\tspan.info { background: #000000; border: solid thin #000000; "
+       "color: #ffffff; font-size: 80%; font-style: italic; "
+       "font-weight: bold; white-space: nowrap; }\n"
+       "\th3 span.info { float: right; font-size: 100%; }\n"
+       "\th1.title, h2.title, h3.title { border-bottom: solid 2px #000000; }\n"
+       "\t--></style>\n"
+       "</head>\n"
+       "<body>");
 
  /*
   * Intro...

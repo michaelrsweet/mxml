@@ -1,10 +1,13 @@
-CHANGES - 12/02/2005
+CHANGES - 12/07/2005
 --------------------
 
 CHANGES IN Mini-XML 2.3
 
 	- Added two exceptions to the LGPL to support static
 	  linking of applications against Mini-XML.
+	- Added conditional check for EINTR error code for
+	  certain Windows compilers that do not define it (STR
+	  #33)
 	- The mxmldoc program now generates correct HTML 4.0
 	  output (previously it generated invalid XHTML...)
 	- The mxmldoc program now supports "@deprecated@,

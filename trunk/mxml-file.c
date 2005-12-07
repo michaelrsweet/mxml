@@ -930,7 +930,11 @@ mxml_fd_read(mxml_fdbuf_t *buf)		/* I - File descriptor buffer */
   */
 
   while ((bytes = read(buf->fd, buf->buffer, sizeof(buf->buffer))) < 0)
+#ifdef EINTR
     if (errno != EAGAIN && errno != EINTR)
+#else
+    if (errno != EAGAIN)
+#endif /* EINTR */
       return (-1);
 
   if (bytes == 0)

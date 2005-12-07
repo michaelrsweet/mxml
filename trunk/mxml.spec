@@ -18,7 +18,7 @@
 
 Summary: Miniature XML development library
 Name: mxml
-Version: 2.2.3
+Version: 2.3
 Release: 1
 Copyright: GPL
 Group: Development/Libraries

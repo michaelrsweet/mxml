@@ -31,7 +31,7 @@ cd mxml-$version
 
 echo "Removing Subversion files and directories..."
 
-rm -f makesrcdist TODO
+rm -f makesrcdist TODO mvalidate.c
 rm -rf www
 
 cd ..

@@ -4,7 +4,7 @@
  * Documentation generator using Mini-XML, a small XML-like file parsing
  * library.
  *
- * Copyright 2003-2005 by Michael Sweet.
+ * Copyright 2003-2006 by Michael Sweet.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -1129,9 +1129,12 @@ scan_file(const char  *filename,	/* I - Filename */
 
 		    typedefnode = mxmlNewElement(MXML_NO_PARENT, "typedef");
 
-		    for (node = type->child->next->next; node; node = node->next)
-		      if (strcmp(node->value.text.string, "(") &&
-		          strcmp(node->value.text.string, "*"))
+		    for (node = type->child->next; node; node = node->next)
+		      if (!strcmp(node->value.text.string, "("))
+			break;
+
+		    for (node = node->next; node; node = node->next)
+		      if (strcmp(node->value.text.string, "*"))
 			break;
 
                     if (node)

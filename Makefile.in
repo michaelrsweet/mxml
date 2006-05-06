@@ -3,7 +3,7 @@
 #
 # Makefile for Mini-XML, a small XML-like file parsing library.
 #
-# Copyright 2003-2005 by Michael Sweet.
+# Copyright 2003-2006 by Michael Sweet.
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Library General Public
@@ -115,9 +115,17 @@ all:		Makefile configure config.h $(TARGETS)
 clean:
 	$(RM) $(OBJS) $(TARGETS)
 	$(RM) mxmldoc-static libmxml.a
-	$(RM) *.bck *.bak
+
+
+#
+# Really clean everything...
+#
+
+distclean:	clean
 	$(RM) config.cache config.log config.status
+	$(RM) Makefile config.h
 	$(RM) -r autom4te*.cache
+	$(RM) *.bck *.bak
 
 
 #

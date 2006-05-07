@@ -839,6 +839,8 @@ the walk to the node's children.</description>
   <typedef name="mxml_custom_save_cb_t">
     <type>char *(*)(mxml_node_t *)</type>
     <description>Custom data save callback function</description>
+    <description>C++ support...</description>
+    <description>End of &quot;$Id$&quot;.</description>
   </typedef>
   <typedef name="mxml_custom_t">
     <type>struct mxml_custom_s</type>

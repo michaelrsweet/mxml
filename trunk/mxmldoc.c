@@ -1,3 +1,4 @@
+#define DEBUG 1
 /*
  * "$Id$"
  *
@@ -520,8 +521,13 @@ find_public(mxml_node_t *node,		/* I - Current node */
     * A missing or empty description signals a private node...
     */
 
+#if 0
     if (!description || !description->child)
       continue;
+#else
+    if (!description)
+      continue;
+#endif /* 0 */
 
    /*
     * Look for @private@ in the comment text...
@@ -1317,7 +1323,21 @@ scan_file(const char  *filename,	/* I - Filename */
 #endif /* DEBUG */
 			update_comment(typedefnode,
 			               mxmlNewText(description, 0, buffer));
-			typedefnode = NULL;
+
+                	if (structclass)
+			{
+        		  description = mxmlNewElement(structclass, "description");
+			  update_comment(structclass,
+			        	 mxmlNewText(description, 0, buffer));
+                	}
+			else if (enumeration)
+			{
+        		  description = mxmlNewElement(enumeration, "description");
+			  update_comment(enumeration,
+			        	 mxmlNewText(description, 0, buffer));
+			}
+
+//			typedefnode = NULL;
 		      }
 		      else if (strcmp(tree->value.element.name, "mxmldoc") &&
 		               !mxmlFindElement(tree, tree, "description",
@@ -1423,7 +1443,21 @@ scan_file(const char  *filename,	/* I - Filename */
 #endif /* DEBUG */
 		    update_comment(typedefnode,
 			           mxmlNewText(description, 0, buffer));
-		    typedefnode = NULL;
+
+                    if (structclass)
+		    {
+        	      description = mxmlNewElement(structclass, "description");
+		      update_comment(structclass,
+			             mxmlNewText(description, 0, buffer));
+                    }
+		    else if (enumeration)
+		    {
+        	      description = mxmlNewElement(enumeration, "description");
+		      update_comment(enumeration,
+			             mxmlNewText(description, 0, buffer));
+		    }
+
+//		    typedefnode = NULL;
 		  }
 		  else if (strcmp(tree->value.element.name, "mxmldoc") &&
 		           !mxmlFindElement(tree, tree, "description",
@@ -1505,6 +1539,19 @@ scan_file(const char  *filename,	/* I - Filename */
 #endif /* DEBUG */
 	      update_comment(typedefnode,
 			     mxmlNewText(description, 0, buffer));
+
+              if (structclass)
+	      {
+        	description = mxmlNewElement(structclass, "description");
+		update_comment(structclass,
+			       mxmlNewText(description, 0, buffer));
+              }
+	      else if (enumeration)
+	      {
+        	description = mxmlNewElement(enumeration, "description");
+		update_comment(enumeration,
+			       mxmlNewText(description, 0, buffer));
+	      }
 	    }
 	    else if (strcmp(tree->value.element.name, "mxmldoc") &&
 		     !mxmlFindElement(tree, tree, "description",

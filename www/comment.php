@@ -82,6 +82,13 @@ else
 
     case 'e' : // Edit comment
     case 'r' : // New comment
+	if ($LOGIN_USER == "")
+	{
+          header("Location: login.php?PAGE=comment.php?$op$id+p" .
+	         urlencode($path));
+	  return;
+	}
+
         $havedata = 0;
 
         if ($REQUEST_METHOD == "POST")

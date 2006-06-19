@@ -421,6 +421,12 @@ switch ($op)
       break;
 
   case 'U' : // Add or update category or listing...
+      if ($LOGIN_USER == "")
+      {
+        header("Location: login.php?PAGE=links.php?$op$type$id+P$parent_id");
+	return;
+      }
+
       if ($id > 0)
       {
         // Get current link data from database...

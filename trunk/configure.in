@@ -3,7 +3,7 @@ dnl "$Id$"
 dnl
 dnl Configuration script for Mini-XML, a small XML-like file parsing library.
 dnl
-dnl Copyright 2003-2005 by Michael Sweet.
+dnl Copyright 2003-2006 by Michael Sweet.
 dnl
 dnl This program is free software; you can redistribute it and/or
 dnl modify it under the terms of the GNU Library General Public
@@ -202,7 +202,7 @@ else
 			CFLAGS="-Ae $CFLAGS"
 
 			if test "x$OPTIM" = x; then
-				OPTIM="-O2"
+				OPTIM="-O"
 			fi
 
 			OPTIM="+DAportable $OPTIM"
@@ -214,7 +214,7 @@ else
 
 		UNIX_SVR* | SunOS*)
 			if test "x$OPTIM" = x; then
-				OPTIM="-O2"
+				OPTIM="-O"
 			fi
 
 			if test $PICFLAG = 1; then
@@ -224,7 +224,7 @@ else
 
 		*)
 			if test "x$OPTIM" = x; then
-				OPTIM="-O2"
+				OPTIM="-O"
 			fi
 			;;
 	esac

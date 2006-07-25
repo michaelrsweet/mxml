@@ -3240,7 +3240,7 @@ else
 			CFLAGS="-Ae $CFLAGS"
 
 			if test "x$OPTIM" = x; then
-				OPTIM="-O2"
+				OPTIM="-O"
 			fi
 
 			OPTIM="+DAportable $OPTIM"
@@ -3252,7 +3252,7 @@ else
 
 		UNIX_SVR* | SunOS*)
 			if test "x$OPTIM" = x; then
-				OPTIM="-O2"
+				OPTIM="-O"
 			fi
 
 			if test $PICFLAG = 1; then
@@ -3262,7 +3262,7 @@ else
 
 		*)
 			if test "x$OPTIM" = x; then
-				OPTIM="-O2"
+				OPTIM="-O"
 			fi
 			;;
 	esac

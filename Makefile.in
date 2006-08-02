@@ -155,6 +155,7 @@ install:	$(TARGETS) install-$(LIBMXML) install-libmxml.a
 install-libmxml.a:
 	$(INSTALL_DIR) $(BUILDROOT)$(libdir)
 	$(INSTALL_LIB) libmxml.a $(BUILDROOT)$(libdir)
+	$(RANLIB) $(BUILDROOT)$(libdir)/libmxml.a
 
 install-libmxml.so.1.2:
 	$(INSTALL_DIR) $(BUILDROOT)$(libdir)

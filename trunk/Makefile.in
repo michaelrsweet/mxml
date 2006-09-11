@@ -306,7 +306,7 @@ libmxml.1.dylib:	$(LIBOBJS)
 #
 
 mxmldoc:	$(LIBMXML) mxmldoc.o
-	$(CC) $(LDFLAGS) -o $@ mxmldoc.o -L. -lmxml
+	$(CC) -L. $(LDFLAGS) -o $@ mxmldoc.o -lmxml
 
 mxmldoc-static:	libmxml.a mxmldoc.o
 	$(CC) $(LDFLAGS) -o $@ mxmldoc.o libmxml.a

@@ -14,10 +14,10 @@ include_once "phplib/html.php";
 
 // List of download servers...
 $sitelist = array(
-  "http://ftp.easysw.com/pub" => "Oregon, USA via HTTP",
-  "ftp://ftp.easysw.com/pub" => "Oregon, USA via FTP",
+//  "http://ftp.easysw.com/pub" => "Oregon, USA via HTTP",
+//  "ftp://ftp.easysw.com/pub" => "Oregon, USA via FTP",
 //  "http://ftp2.easysw.com/pub" => "Maryland, USA via HTTP",
-  "ftp://ftp2.easysw.com/pub" => "Maryland, USA via FTP",
+  "ftp://ftp.easysw.com/pub" => "Maryland, USA via FTP",
   "ftp://ftp3.easysw.com/pub" => "California, USA via FTP",
   "http://www.nu6.org/_/mirror/ftp.easysw.com/pub" => "Gustavsberg, Sweden via HTTP",
   "http://ftp.funet.fi/pub/mirrors/ftp.easysw.com/pub" => "Espoo, Finland via HTTP",

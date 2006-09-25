@@ -105,7 +105,7 @@ TARGETS		=	$(LIBMXML) mxmldoc doc/mxml.$(CAT3EXT) \
 # Make everything...
 #
 
-all:		Makefile configure config.h $(TARGETS)
+all:		Makefile config.h $(TARGETS)
 
 
 #
@@ -223,17 +223,6 @@ epm:	all
 #
 
 Makefile:	configure Makefile.in
-	if test -f config.status; then \
-		./config.status --recheck; \
-		./config.status; \
-	else \
-		./configure; \
-	fi
-	touch config.h
-
-
-configure:	configure.in
-	autoconf
 	if test -f config.status; then \
 		./config.status --recheck; \
 		./config.status; \

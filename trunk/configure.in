@@ -104,7 +104,7 @@ if test "x$use_ansi" != xyes; then
 fi
 
 if test "x$use_vsnprintf" != xyes; then
-	AC_CHECK_FUNCS(vsnprintf)
+	AC_CHECK_FUNCS(snprintf vsnprintf)
 fi
 
 dnl Shared library support...

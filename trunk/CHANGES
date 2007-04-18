@@ -1,10 +1,12 @@
-CHANGES - 2007-04-17
+CHANGES - 2007-04-18
 --------------------
 
 CHANGES IN Mini-XML 2.3
 
 	- Added two exceptions to the LGPL to support static
 	  linking of applications against Mini-XML.
+	- Added snprintf() emulation function for test program (STR
+	  #32)
 	- Added the _CRT_SECURE_NO_DEPRECATE definition when
 	  building on VC++ 2005 (STR #36)
 	- mxmlLoad*() did not detect missing > characters in

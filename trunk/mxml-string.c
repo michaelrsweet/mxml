@@ -3,7 +3,7 @@
  *
  * String functions for Mini-XML, a small XML-like file parsing library.
  *
- * Copyright 2003-2005 by Michael Sweet.
+ * Copyright 2003-2007 by Michael Sweet.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -17,10 +17,11 @@
  *
  * Contents:
  *
+ *   _mxml_snprintf()  - Format a string.
  *   _mxml_strdup()    - Duplicate a string.
  *   _mxml_strdupf()   - Format and duplicate a string.
- *   _mxml_vstrdupf()  - Format and duplicate a string.
  *   _mxml_vsnprintf() - Format a string into a fixed size buffer.
+ *   _mxml_vstrdupf()  - Format and duplicate a string.
  */
 
 /*
@@ -28,6 +29,30 @@
  */
 
 #include "config.h"
+
+
+#ifdef HAVE_SNPRINTF
+/*
+ * '_mxml_snprintf()' - Format a string.
+ */
+
+int					/* O - Number of bytes formatted */
+_mxml_snprintf(char       *buffer,	/* I - Output buffer */
+               size_t     bufsize,	/* I - Size of output buffer */
+	       const char *format,	/* I - Printf-style format string */
+	       ...)			/* I - Additional arguments as needed */
+{
+  va_list	ap;			/* Argument list */
+  int		bytes;			/* Number of bytes formatted */
+
+
+  va_start(ap, format);
+  bytes = vsnprintf(buffer, bufsize, format, ap);
+  va_end(ap);
+
+  return (bytes);
+}
+#endif /* HAVE_SNPRINTF */
 
 
 /*
@@ -74,51 +99,6 @@ _mxml_strdupf(const char *format,	/* I - Printf-style format string */
   va_end(ap);
 
   return (s);
-}
-
-
-/*
- * '_mxml_vstrdupf()' - Format and duplicate a string.
- */
-
-char *					/* O - New string pointer */
-_mxml_vstrdupf(const char *format,	/* I - Printf-style format string */
-               va_list    ap)		/* I - Pointer to additional arguments */
-{
-  int	bytes;				/* Number of bytes required */
-  char	*buffer,			/* String buffer */
-	temp[256];			/* Small buffer for first vsnprintf */
-
-
- /*
-  * First format with a tiny buffer; this will tell us how many bytes are
-  * needed...
-  */
-
-  bytes = vsnprintf(temp, sizeof(temp), format, ap);
-
-  if (bytes < sizeof(temp))
-  {
-   /*
-    * Hey, the formatted string fits in the tiny buffer, so just dup that...
-    */
-
-    return (strdup(temp));
-  }
-
- /*
-  * Allocate memory for the whole thing and reformat to the new, larger
-  * buffer...
-  */
-
-  if ((buffer = calloc(1, bytes + 1)) != NULL)
-    vsnprintf(buffer, bytes + 1, format, ap);
-
- /*
-  * Return the new string...
-  */
-
-  return (buffer);
 }
 
 
@@ -425,6 +405,51 @@ _mxml_vsnprintf(char       *buffer,	/* O - Output buffer */
   return (bytes);
 }
 #endif /* !HAVE_VSNPRINTF */
+
+
+/*
+ * '_mxml_vstrdupf()' - Format and duplicate a string.
+ */
+
+char *					/* O - New string pointer */
+_mxml_vstrdupf(const char *format,	/* I - Printf-style format string */
+               va_list    ap)		/* I - Pointer to additional arguments */
+{
+  int	bytes;				/* Number of bytes required */
+  char	*buffer,			/* String buffer */
+	temp[256];			/* Small buffer for first vsnprintf */
+
+
+ /*
+  * First format with a tiny buffer; this will tell us how many bytes are
+  * needed...
+  */
+
+  bytes = vsnprintf(temp, sizeof(temp), format, ap);
+
+  if (bytes < sizeof(temp))
+  {
+   /*
+    * Hey, the formatted string fits in the tiny buffer, so just dup that...
+    */
+
+    return (strdup(temp));
+  }
+
+ /*
+  * Allocate memory for the whole thing and reformat to the new, larger
+  * buffer...
+  */
+
+  if ((buffer = calloc(1, bytes + 1)) != NULL)
+    vsnprintf(buffer, bytes + 1, format, ap);
+
+ /*
+  * Return the new string...
+  */
+
+  return (buffer);
+}
 
 
 /*

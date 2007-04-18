@@ -5,8 +5,10 @@ CHANGES IN Mini-XML 2.3
 
 	- Added two exceptions to the LGPL to support static
 	  linking of applications against Mini-XML.
+	- mxmlLoad*() did not detect missing > characters in
+	  elements (STR #41)
 	- mxmlLoad*() did not detect missing close tags at the end
-	  of an XML document.
+	  of an XML document (STR #45)
 	- Added user_data and ref_count members to mxml_node_t
 	  structure.
 	- Added mxmlReleaseNode() and mxmlRetainNode() APIs for

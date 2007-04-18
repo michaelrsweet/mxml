@@ -1502,6 +1502,11 @@ mxml_load_data(mxml_node_t *top,	/* I - Top node */
       while ((ch = (*getc_cb)(p, &encoding)) != EOF)
         if (isspace(ch) || ch == '>' || (ch == '/' && bufptr > buffer))
 	  break;
+	else if (ch == '<')
+	{
+	  mxml_error("Bare < in element!");
+	  goto error;
+	}
 	else if (ch == '&')
 	{
 	  if ((ch = mxml_get_entity(parent, p, &encoding, getc_cb)) == EOF)
@@ -1966,10 +1971,15 @@ mxml_parse_element(mxml_node_t *node,	/* I  - Element node */
       {
         mxml_error("Expected '>' after '%c' for element %s, but got '%c'!",
 	           ch, node->value.element.name, quote);
-        ch = EOF;
+        goto error;
       }
 
       break;
+    }
+    else if (ch == '<')
+    {
+      mxml_error("Bare < in element %s!", node->value.element.name);
+      goto error;
     }
     else if (ch == '>')
       break;

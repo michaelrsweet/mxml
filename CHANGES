@@ -1,20 +1,16 @@
 CHANGES - 2007-04-17
 --------------------
 
-CHANGES IN Mini-XML 2.4
+CHANGES IN Mini-XML 2.3
 
+	- Added two exceptions to the LGPL to support static
+	  linking of applications against Mini-XML.
 	- Added user_data and ref_count members to mxml_node_t
 	  structure.
 	- Added mxmlReleaseNode() and mxmlRetainNode() APIs for
 	  reference-counted nodes.
 	- Added mxmlSetWrapMargin() to control the wrapping of XML
 	  output.
-
-
-CHANGES IN Mini-XML 2.3
-
-	- Added two exceptions to the LGPL to support static
-	  linking of applications against Mini-XML.
 	- Added conditional check for EINTR error code for
 	  certain Windows compilers that do not define it (STR
 	  #33)
@@ -22,7 +18,7 @@ CHANGES IN Mini-XML 2.3
 	  output (previously it generated invalid XHTML...)
 	- The mxmldoc program now supports "@deprecated@,
 	  "@private@", and "@since version@" comments.
-	- Fixed function and enumeraion type bugs in mxmldoc.
+	- Fixed function and enumeration type bugs in mxmldoc.
 	- Fixed XML schema for mxmldoc.
 	- The mxmldoc program now supports --intro, --section,
 	  and --title options.

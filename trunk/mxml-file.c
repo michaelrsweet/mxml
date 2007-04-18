@@ -26,6 +26,7 @@
  *   mxmlSaveString()        - Save an XML node tree to a string.
  *   mxmlSetCustomHandlers() - Set the handling functions for custom data.
  *   mxmlSetErrorCallback()  - Set the error message callback.
+ *   mxmlSetWrapMargin()     - Set the the wrap margin when saving XML data.
  *   mxml_add_char()         - Add a character to a buffer, expanding as needed.
  *   mxml_fd_getc()          - Read a character from a file descriptor.
  *   mxml_fd_putc()          - Write a character to a file descriptor.
@@ -483,6 +484,8 @@ mxmlSetErrorCallback(void (*cb)(const char *))
  * 'mxmlSetWrapMargin()' - Set the the wrap margin when saving XML data.
  *
  * Wrapping is disabled when "column" is <= 0.
+ *
+ * @since Mini-XML 2.3@
  */
 
 void

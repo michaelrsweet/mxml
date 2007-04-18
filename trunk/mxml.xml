@@ -497,7 +497,9 @@ string must be nul-terminated and is formatted into the new node.</description>
     <description>Release a node.
 
 When the reference count reaches zero, the node (and any children)
-is deleted via mxmlDelete().</description>
+is deleted via mxmlDelete().
+
+@since Mini-XML 2.4@</description>
     <argument name="node" direction="I">
       <type>mxml_node_t *</type>
       <description>Node</description>
@@ -518,7 +520,9 @@ This function does nothing if the node has no parent.</description>
       <type>int</type>
       <description>New reference count</description>
     </returnvalue>
-    <description>Retain a node.</description>
+    <description>Retain a node.
+
+@since Mini-XML 2.4@</description>
     <argument name="node" direction="I">
       <type>mxml_node_t *</type>
       <description>Node</description>
@@ -792,7 +796,9 @@ The node is not changed if it is not a text node.</description>
   <function name="mxmlSetWrapMargin">
     <description>Set the the wrap margin when saving XML data.
 
-Wrapping is disabled when &quot;column&quot; is &lt;= 0.</description>
+Wrapping is disabled when &quot;column&quot; is &lt;= 0.
+
+@since Mini-XML 2.4@</description>
     <argument name="column" direction="I">
       <type>int</type>
       <description>Column for wrapping</description>

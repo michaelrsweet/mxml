@@ -10,6 +10,15 @@
 	<li>Added two exceptions to the LGPL to support static
 	linking of applications against Mini-XML.</li>
 
+	<li>Added user_data and ref_count members to mxml_node_t
+	structure.</li>
+
+	<li>Added mxmlReleaseNode() and mxmlRetainNode() APIs for
+	reference-counted nodes.</li>
+
+	<li>Added mxmlSetWrapMargin() to control the wrapping of XML
+	output.</li>
+
 	<li>Added conditional check for EINTR error code for
 	certain Windows compilers that do not define it (STR
 	#33)</li>

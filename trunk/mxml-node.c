@@ -660,6 +660,8 @@ mxmlRemove(mxml_node_t *node)		/* I - Node to remove */
  *
  * When the reference count reaches zero, the node (and any children)
  * is deleted via mxmlDelete().
+ *
+ * @since Mini-XML 2.3@
  */
 
 int					/* O - New reference count */
@@ -682,6 +684,8 @@ mxmlRelease(mxml_node_t *node)		/* I - Node */
 
 /*
  * 'mxmlRetain()' - Retain a node.
+ *
+ * @since Mini-XML 2.3@
  */
 
 int					/* O - New reference count */

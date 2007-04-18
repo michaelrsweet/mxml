@@ -3,7 +3,7 @@
  *
  * Node support code for Mini-XML, a small XML-like file parsing library.
  *
- * Copyright 2003-2005 by Michael Sweet.
+ * Copyright 2003-2007 by Michael Sweet.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -27,7 +27,9 @@
  *   mxmlNewReal()    - Create a new real number node.
  *   mxmlNewText()    - Create a new text fragment node.
  *   mxmlNewTextf()   - Create a new formatted text fragment node.
+ *   mxmlRelease()    - Release a node.
  *   mxmlRemove()     - Remove a node from its parent.
+ *   mxmlRetain()     - Retain a node.
  *   mxml_new()       - Create a new node.
  */
 
@@ -654,6 +656,45 @@ mxmlRemove(mxml_node_t *node)		/* I - Node to remove */
 
 
 /*
+ * 'mxmlRelease()' - Release a node.
+ *
+ * When the reference count reaches zero, the node (and any children)
+ * is deleted via mxmlDelete().
+ */
+
+int					/* O - New reference count */
+mxmlRelease(mxml_node_t *node)		/* I - Node */
+{
+  if (node)
+  {
+    if ((-- node->ref_count) <= 0)
+    {
+      mxmlDelete(node);
+      return (0);
+    }
+    else
+      return (node->ref_count);
+  }
+  else
+    return (-1);
+}
+
+
+/*
+ * 'mxmlRetain()' - Retain a node.
+ */
+
+int					/* O - New reference count */
+mxmlRetain(mxml_node_t *node)		/* I - Node */
+{
+  if (node)
+    return (++ node->ref_count);
+  else
+    return (-1);
+}
+
+
+/*
  * 'mxml_new()' - Create a new node.
  */
 
@@ -689,7 +730,8 @@ mxml_new(mxml_node_t *parent,		/* I - Parent node */
   * Set the node type...
   */
 
-  node->type = type;
+  node->type      = type;
+  node->ref_count = 1;
 
  /*
   * Add to the parent if present...

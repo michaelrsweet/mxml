@@ -3,7 +3,7 @@
  *
  * File loading code for Mini-XML, a small XML-like file parsing library.
  *
- * Copyright 2003-2005 by Michael Sweet.
+ * Copyright 2003-2007 by Michael Sweet.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -91,6 +91,13 @@ typedef struct mxml_fdbuf_s		/**** File descriptor buffer (@private@) ****/
  */
 
 extern void	(*mxml_error_cb)(const char *);
+
+
+/*
+ * Settings...
+ */
+
+static int			mxml_wrap = 72;
 
 
 /*
@@ -469,6 +476,22 @@ mxmlSetErrorCallback(void (*cb)(const char *))
 					/* I - Error callback function */
 {
   mxml_error_cb = cb;
+}
+
+
+/*
+ * 'mxmlSetWrapMargin()' - Set the the wrap margin when saving XML data.
+ *
+ * Wrapping is disabled when "column" is <= 0.
+ */
+
+void
+mxmlSetWrapMargin(int column)		/* I - Column for wrapping */
+{
+  if (column <= 0)
+    mxml_wrap = 2147483647;
+  else
+    mxml_wrap = column;
 }
 
 
@@ -2549,7 +2572,7 @@ mxml_write_node(mxml_node_t *node,	/* I - Node to write */
 	    */
 
             if (!strncmp(node->value.element.name, "?xml", 4))
-              col = MXML_WRAP;
+              col = mxml_wrap;
 	  }
 	  else if (mxml_write_name(node->value.element.name, p, putc_cb) < 0)
 	    return (-1);
@@ -2565,7 +2588,7 @@ mxml_write_node(mxml_node_t *node,	/* I - Node to write */
 	    if (attr->value)
 	      width += strlen(attr->value) + 3;
 
-	    if ((col + width) > MXML_WRAP)
+	    if ((col + width) > mxml_wrap)
 	    {
 	      if ((*putc_cb)('\n', p) < 0)
 	        return (-1);
@@ -2669,7 +2692,7 @@ mxml_write_node(mxml_node_t *node,	/* I - Node to write */
       case MXML_INTEGER :
 	  if (node->prev)
 	  {
-	    if (col > MXML_WRAP)
+	    if (col > mxml_wrap)
 	    {
 	      if ((*putc_cb)('\n', p) < 0)
 	        return (-1);
@@ -2699,7 +2722,7 @@ mxml_write_node(mxml_node_t *node,	/* I - Node to write */
       case MXML_REAL :
 	  if (node->prev)
 	  {
-	    if (col > MXML_WRAP)
+	    if (col > mxml_wrap)
 	    {
 	      if ((*putc_cb)('\n', p) < 0)
 	        return (-1);
@@ -2722,7 +2745,7 @@ mxml_write_node(mxml_node_t *node,	/* I - Node to write */
       case MXML_TEXT :
 	  if (node->value.text.whitespace && col > 0)
 	  {
-	    if (col > MXML_WRAP)
+	    if (col > mxml_wrap)
 	    {
 	      if ((*putc_cb)('\n', p) < 0)
 	        return (-1);

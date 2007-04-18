@@ -3,7 +3,7 @@
 <HEAD>
 <TITLE>Mini-XML Programmers Manual, Version 2.3</TITLE>
 <META NAME="author" CONTENT="Michael Sweet">
-<META NAME="copyright" CONTENT="Copyright 2003-2005">
+<META NAME="copyright" CONTENT="Copyright 2003-2007">
 <META HTTP-EQUIV="Content-Type" CONTENT="text/html; CHARSET=iso-iso-8859-1">
 <STYLE TYPE="text/css"><!--
 BODY { font-family: serif }
@@ -22,7 +22,7 @@ PRE { font-family: monospace }
 <CENTER><A HREF="#CONTENTS"><IMG SRC="logo.png" BORDER="0" WIDTH="256" HEIGHT="256" ALT="Mini-XML Programmers Manual, Version 2.3"><BR>
 <H1>Mini-XML Programmers Manual, Version 2.3</H1></A><BR>
 Michael Sweet<BR>
-Copyright 2003-2005<BR>
+Copyright 2003-2007<BR>
 </CENTER>
 <HR NOSHADE>
 <H1 ALIGN="CENTER"><A NAME="CONTENTS">Table of Contents</A></H1>
@@ -67,10 +67,8 @@ Copyright 2003-2005<BR>
 </LI>
 </UL>
 <B><A HREF="#LICENSE">A - Mini-XML License</A></B>
-<UL>
-<LI><A HREF="#5_1">How to Apply These Terms to Your New Libraries</A></LI>
-</UL>
-<B><A HREF="#RELNOTES">B - Release Notes</A></B>
+<BR>
+<BR><B><A HREF="#RELNOTES">B - Release Notes</A></B>
 <UL>
 <LI><A HREF="#6_1">Changes in Mini-XML 2.3</A></LI>
 <LI><A HREF="#6_2">Changes in Mini-XML 2.2.2</A></LI>
@@ -103,6 +101,7 @@ Copyright 2003-2005<BR>
 <LI><A HREF="#mxmlDelete">mxmlDelete()</A></LI>
 <LI><A HREF="#mxmlElementGetAttr">mxmlElementGetAttr()</A></LI>
 <LI><A HREF="#mxmlElementSetAttr">mxmlElementSetAttr()</A></LI>
+<LI><A HREF="#mxmlElementSetAttrf">mxmlElementSetAttrf()</A></LI>
 <LI><A HREF="#mxmlEntityAddCallback">mxmlEntityAddCallback()</A></LI>
 <LI><A HREF="#mxmlEntityGetName">mxmlEntityGetName()</A></LI>
 <LI><A HREF="#mxmlEntityGetValue">mxmlEntityGetValue()</A></LI>
@@ -116,21 +115,23 @@ Copyright 2003-2005<BR>
 <LI><A HREF="#mxmlLoadFd">mxmlLoadFd()</A></LI>
 <LI><A HREF="#mxmlLoadFile">mxmlLoadFile()</A></LI>
 <LI><A HREF="#mxmlLoadString">mxmlLoadString()</A></LI>
-<LI><A HREF="#7_3_18">&nbsp;Mini-XML 2.3&nbsp;mxmlNewCDATA()</A></LI>
-<LI><A HREF="#7_3_19">&nbsp;Mini-XML 2.1&nbsp;mxmlNewCustom()</A></LI>
+<LI><A HREF="#7_3_19">&nbsp;Mini-XML 2.3&nbsp;mxmlNewCDATA()</A></LI>
+<LI><A HREF="#7_3_20">&nbsp;Mini-XML 2.1&nbsp;mxmlNewCustom()</A></LI>
 <LI><A HREF="#mxmlNewElement">mxmlNewElement()</A></LI>
 <LI><A HREF="#mxmlNewInteger">mxmlNewInteger()</A></LI>
 <LI><A HREF="#mxmlNewOpaque">mxmlNewOpaque()</A></LI>
 <LI><A HREF="#mxmlNewReal">mxmlNewReal()</A></LI>
 <LI><A HREF="#mxmlNewText">mxmlNewText()</A></LI>
 <LI><A HREF="#mxmlNewTextf">mxmlNewTextf()</A></LI>
+<LI><A HREF="#7_3_27">&nbsp;Mini-XML 2.3&nbsp;mxmlRelease()</A></LI>
 <LI><A HREF="#mxmlRemove">mxmlRemove()</A></LI>
+<LI><A HREF="#7_3_29">&nbsp;Mini-XML 2.3&nbsp;mxmlRetain()</A></LI>
 <LI><A HREF="#mxmlSaveAllocString">mxmlSaveAllocString()</A></LI>
 <LI><A HREF="#mxmlSaveFd">mxmlSaveFd()</A></LI>
 <LI><A HREF="#mxmlSaveFile">mxmlSaveFile()</A></LI>
 <LI><A HREF="#mxmlSaveString">mxmlSaveString()</A></LI>
-<LI><A HREF="#7_3_31">&nbsp;Mini-XML 2.3&nbsp;mxmlSetCDATA()</A></LI>
-<LI><A HREF="#7_3_32">&nbsp;Mini-XML 2.1&nbsp;mxmlSetCustom()</A></LI>
+<LI><A HREF="#7_3_34">&nbsp;Mini-XML 2.3&nbsp;mxmlSetCDATA()</A></LI>
+<LI><A HREF="#7_3_35">&nbsp;Mini-XML 2.1&nbsp;mxmlSetCustom()</A></LI>
 <LI><A HREF="#mxmlSetCustomHandlers">mxmlSetCustomHandlers()</A></LI>
 <LI><A HREF="#mxmlSetElement">mxmlSetElement()</A></LI>
 <LI><A HREF="#mxmlSetErrorCallback">mxmlSetErrorCallback()</A></LI>
@@ -139,6 +140,7 @@ Copyright 2003-2005<BR>
 <LI><A HREF="#mxmlSetReal">mxmlSetReal()</A></LI>
 <LI><A HREF="#mxmlSetText">mxmlSetText()</A></LI>
 <LI><A HREF="#mxmlSetTextf">mxmlSetTextf()</A></LI>
+<LI><A HREF="#7_3_44">&nbsp;Mini-XML 2.3&nbsp;mxmlSetWrapMargin()</A></LI>
 <LI><A HREF="#mxmlWalkNext">mxmlWalkNext()</A></LI>
 <LI><A HREF="#mxmlWalkPrev">mxmlWalkPrev()</A></LI>
 </UL>
@@ -1474,7 +1476,7 @@ mxmlIndexEnum</TT>.</P>
  SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH
  DAMAGES.</P>
 <P align="center"><BIG>END OF TERMS AND CONDITIONS</BIG></P>
-<H2><A NAME="5_1">How to Apply These Terms to Your New Libraries</A></H2>
+<P><BIG>How to Apply These Terms to Your New Libraries</BIG></P>
 <P>If you develop a new library, and you want it to be of the greatest
  possible use to the public, we recommend making it free software that
  everyone can redistribute and change. You can do so by permitting
@@ -1523,6 +1525,20 @@ Ty Coon, President of Vice
 <UL>
 <LI>Added two exceptions to the LGPL to support static linking of
  applications against Mini-XML.</LI>
+<LI>Added mxmlElementSetAttrf() function (STR #43)</LI>
+<LI>Added snprintf() emulation function for test program (STR #32)</LI>
+<LI>Added the _CRT_SECURE_NO_DEPRECATE definition when building on VC++
+ 2005 (STR #36)</LI>
+<LI>mxmlLoad*() did not detect missing &gt; characters in elements (STR
+ #41)</LI>
+<LI>mxmlLoad*() did not detect missing close tags at the end of an XML
+ document (STR #45)</LI>
+<LI>Added user_data and ref_count members to mxml_node_t structure.</LI>
+<LI>Added mxmlReleaseNode() and mxmlRetainNode() APIs for
+ reference-counted nodes.</LI>
+<LI>Added mxmlSetWrapMargin() to control the wrapping of XML output.</LI>
+<LI>Added conditional check for EINTR error code for certain Windows
+ compilers that do not define it (STR #33)</LI>
 <LI>The mxmldoc program now generates correct HTML 4.0 output
  (previously it generated invalid XHTML...)</LI>
 <LI>The mxmldoc program now supports &quot;@deprecated@, &quot;@private@&quot;, and
@@ -1764,6 +1780,7 @@ Ty Coon, President of Vice
 <LI><A href="#mxmlDelete"><TT>mxmlDelete()</TT></A></LI>
 <LI><A href="#mxmlElementGetAttr"><TT>mxmlElementGetAttr()</TT></A></LI>
 <LI><A href="#mxmlElementSetAttr"><TT>mxmlElementSetAttr()</TT></A></LI>
+<LI><A href="#mxmlElementSetAttrf"><TT>mxmlElementSetAttrf()</TT></A></LI>
 <LI><A href="#mxmlEntityAddCallback"><TT>mxmlEntityAddCallback()</TT></A>
 </LI>
 <LI><A href="#mxmlEntityGetName"><TT>mxmlEntityGetName()</TT></A></LI>
@@ -1791,7 +1808,13 @@ Ty Coon, President of Vice
 <LI><A href="#mxmlNewReal"><TT>mxmlNewReal()</TT></A></LI>
 <LI><A href="#mxmlNewText"><TT>mxmlNewText()</TT></A></LI>
 <LI><A href="#mxmlNewTextf"><TT>mxmlNewTextf()</TT></A></LI>
+<LI><A href="#mxmlRelease"><TT>mxmlRelease()</TT></A>
+<!--span class='info'-->
+ &nbsp;Mini-XML 2.3&nbsp;</LI>
 <LI><A href="#mxmlRemove"><TT>mxmlRemove()</TT></A></LI>
+<LI><A href="#mxmlRetain"><TT>mxmlRetain()</TT></A>
+<!--span class='info'-->
+ &nbsp;Mini-XML 2.3&nbsp;</LI>
 <LI><A href="#mxmlSaveAllocString"><TT>mxmlSaveAllocString()</TT></A></LI>
 <LI><A href="#mxmlSaveFd"><TT>mxmlSaveFd()</TT></A></LI>
 <LI><A href="#mxmlSaveFile"><TT>mxmlSaveFile()</TT></A></LI>
@@ -1811,6 +1834,9 @@ Ty Coon, President of Vice
 <LI><A href="#mxmlSetReal"><TT>mxmlSetReal()</TT></A></LI>
 <LI><A href="#mxmlSetText"><TT>mxmlSetText()</TT></A></LI>
 <LI><A href="#mxmlSetTextf"><TT>mxmlSetTextf()</TT></A></LI>
+<LI><A href="#mxmlSetWrapMargin"><TT>mxmlSetWrapMargin()</TT></A>
+<!--span class='info'-->
+ &nbsp;Mini-XML 2.3&nbsp;</LI>
 <LI><A href="#mxmlWalkNext"><TT>mxmlWalkNext()</TT></A></LI>
 <LI><A href="#mxmlWalkPrev"><TT>mxmlWalkPrev()</TT></A></LI>
 </UL>
@@ -1924,6 +1950,38 @@ mxmlElementSetAttr(
 <TR><TD><TT>node</TT></TD><TD>Element node</TD></TR>
 <TR><TD><TT>name</TT></TD><TD>Name of attribute</TD></TR>
 <TR><TD><TT>value</TT></TD><TD>Attribute value</TD></TR>
+</TABLE>
+</DIV>
+<H4>Returns</H4>
+<P>Nothing.</P>
+
+<!-- NEW PAGE -->
+<H3 class="title"><A name="mxmlElementSetAttrf">mxmlElementSetAttrf()</A>
+</H3>
+<H4>Description</H4>
+<P>Set an attribute with a formatted value. If the named attribute
+ already exists, the value of the attribute is replaced by the new
+ formatted string. The formatted string value is copied into the element
+ node. This function does nothing if the node is not an element.</P>
+<H4>Syntax</H4>
+<PRE>
+void
+mxmlElementSetAttrf(
+    <A href="#mxml_node_t">mxml_node_t</A> * node,
+    const char * name,
+    const char * format,
+    ...);
+</PRE>
+<H4>Arguments</H4>
+<DIV class="table">
+<TABLE align="center" border="1" cellpadding="5" cellspacing="0" width="80%">
+<THEAD></THEAD>
+<TR><TH>Name</TH><TH>Description</TH></TR>
+<TBODY></TBODY>
+<TR><TD><TT>node</TT></TD><TD>Element node</TD></TR>
+<TR><TD><TT>name</TT></TD><TD>Name of attribute</TD></TR>
+<TR><TD><TT>format</TT></TD><TD>Printf-style attribute value</TD></TR>
+<TR><TD><TT>...</TT></TD><TD>Additional arguments as needed</TD></TR>
 </TABLE>
 </DIV>
 <H4>Returns</H4>
@@ -2272,7 +2330,7 @@ mxmlLoadString(
 <P>First node or NULL if the string has errors.</P>
 
 <!-- NEW PAGE -->
-<H3 class="title"><A NAME="7_3_18">
+<H3 class="title"><A NAME="7_3_19">
 <!--span class='info'-->
 &nbsp;Mini-XML 2.3&nbsp;<A name="mxmlNewCDATA">mxmlNewCDATA()</A></A></H3>
 <H4>Description</H4>
@@ -2302,7 +2360,7 @@ mxmlNewCDATA(
 <P>New node</P>
 
 <!-- NEW PAGE -->
-<H3 class="title"><A NAME="7_3_19">
+<H3 class="title"><A NAME="7_3_20">
 <!--span class='info'-->
 &nbsp;Mini-XML 2.1&nbsp;<A name="mxmlNewCustom">mxmlNewCustom()</A></A></H3>
 <H4>Description</H4>
@@ -2504,6 +2562,31 @@ mxmlNewTextf(
 <P>New node</P>
 
 <!-- NEW PAGE -->
+<H3 class="title"><A NAME="7_3_27">
+<!--span class='info'-->
+&nbsp;Mini-XML 2.3&nbsp;<A name="mxmlRelease">mxmlRelease()</A></A></H3>
+<H4>Description</H4>
+<P>Release a node. When the reference count reaches zero, the node (and
+ any children) is deleted via mxmlDelete().</P>
+<H4>Syntax</H4>
+<PRE>
+int
+mxmlRelease(
+    <A href="#mxml_node_t">mxml_node_t</A> * node);
+</PRE>
+<H4>Arguments</H4>
+<DIV class="table">
+<TABLE align="center" border="1" cellpadding="5" cellspacing="0" width="80%">
+<THEAD></THEAD>
+<TR><TH>Name</TH><TH>Description</TH></TR>
+<TBODY></TBODY>
+<TR><TD><TT>node</TT></TD><TD>Node</TD></TR>
+</TABLE>
+</DIV>
+<H4>Returns</H4>
+<P>New reference count</P>
+
+<!-- NEW PAGE -->
 <H3 class="title"><A name="mxmlRemove">mxmlRemove()</A></H3>
 <H4>Description</H4>
 <P>Remove a node from its parent. Does not free memory used by the node
@@ -2526,6 +2609,30 @@ mxmlRemove(
 </DIV>
 <H4>Returns</H4>
 <P>Nothing.</P>
+
+<!-- NEW PAGE -->
+<H3 class="title"><A NAME="7_3_29">
+<!--span class='info'-->
+&nbsp;Mini-XML 2.3&nbsp;<A name="mxmlRetain">mxmlRetain()</A></A></H3>
+<H4>Description</H4>
+<P>Retain a node.</P>
+<H4>Syntax</H4>
+<PRE>
+int
+mxmlRetain(
+    <A href="#mxml_node_t">mxml_node_t</A> * node);
+</PRE>
+<H4>Arguments</H4>
+<DIV class="table">
+<TABLE align="center" border="1" cellpadding="5" cellspacing="0" width="80%">
+<THEAD></THEAD>
+<TR><TH>Name</TH><TH>Description</TH></TR>
+<TBODY></TBODY>
+<TR><TD><TT>node</TT></TD><TD>Node</TD></TR>
+</TABLE>
+</DIV>
+<H4>Returns</H4>
+<P>New reference count</P>
 
 <!-- NEW PAGE -->
 <H3 class="title"><A name="mxmlSaveAllocString">mxmlSaveAllocString()</A>
@@ -2647,7 +2754,7 @@ mxmlSaveString(
 <P>Size of string</P>
 
 <!-- NEW PAGE -->
-<H3 class="title"><A NAME="7_3_31">
+<H3 class="title"><A NAME="7_3_34">
 <!--span class='info'-->
 &nbsp;Mini-XML 2.3&nbsp;<A name="mxmlSetCDATA">mxmlSetCDATA()</A></A></H3>
 <H4>Description</H4>
@@ -2674,7 +2781,7 @@ mxmlSetCDATA(
 <P>0 on success, -1 on failure</P>
 
 <!-- NEW PAGE -->
-<H3 class="title"><A NAME="7_3_32">
+<H3 class="title"><A NAME="7_3_35">
 <!--span class='info'-->
 &nbsp;Mini-XML 2.1&nbsp;<A name="mxmlSetCustom">mxmlSetCustom()</A></A></H3>
 <H4>Description</H4>
@@ -2902,6 +3009,31 @@ mxmlSetTextf(
 <P>0 on success, -1 on failure</P>
 
 <!-- NEW PAGE -->
+<H3 class="title"><A NAME="7_3_44">
+<!--span class='info'-->
+&nbsp;Mini-XML 2.3&nbsp;<A name="mxmlSetWrapMargin">mxmlSetWrapMargin()</A></A></H3>
+<H4>Description</H4>
+<P>Set the the wrap margin when saving XML data. Wrapping is disabled
+ when &quot;column&quot; is &lt;= 0.</P>
+<H4>Syntax</H4>
+<PRE>
+void
+mxmlSetWrapMargin(
+    int column);
+</PRE>
+<H4>Arguments</H4>
+<DIV class="table">
+<TABLE align="center" border="1" cellpadding="5" cellspacing="0" width="80%">
+<THEAD></THEAD>
+<TR><TH>Name</TH><TH>Description</TH></TR>
+<TBODY></TBODY>
+<TR><TD><TT>column</TT></TD><TD>Column for wrapping</TD></TR>
+</TABLE>
+</DIV>
+<H4>Returns</H4>
+<P>Nothing.</P>
+
+<!-- NEW PAGE -->
 <H3 class="title"><A name="mxmlWalkNext">mxmlWalkNext()</A></H3>
 <H4>Description</H4>
 <P>Walk to the next logical node in the tree. The descend argument
@@ -3078,7 +3210,9 @@ struct mxml_node_s
   struct <A href="#mxml_node_s">mxml_node_s</A> * next;
   struct <A href="#mxml_node_s">mxml_node_s</A> * parent;
   struct <A href="#mxml_node_s">mxml_node_s</A> * prev;
+  int ref_count;
   mxml_type_t type;
+  void * user_data;
   <A href="#mxml_value_t">mxml_value_t</A> value;
 };
 </PRE>
@@ -3092,7 +3226,9 @@ struct mxml_node_s
 <TR><TD><TT>next</TT></TD><TD>Next node under same parent</TD></TR>
 <TR><TD><TT>parent</TT></TD><TD>Parent node</TD></TR>
 <TR><TD><TT>prev</TT></TD><TD>Previous node under same parent</TD></TR>
+<TR><TD><TT>ref_count</TT></TD><TD>Use count</TD></TR>
 <TR><TD><TT>type</TT></TD><TD>Node type</TD></TR>
+<TR><TD><TT>user_data</TT></TD><TD>User data</TD></TR>
 <TR><TD><TT>value</TT></TD><TD>Node value</TD></TR>
 </TABLE>
 </DIV>

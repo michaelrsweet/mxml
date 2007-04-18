@@ -46,9 +46,10 @@
 
 
 /*
- * Do we have the vsnprintf() function?
+ * Do we have the snprintf() and vsnprintf() functions?
  */
 
+/*#undef HAVE_SNPRINTF */
 /*#undef HAVE_VSNPRINTF */
 
 
@@ -69,6 +70,11 @@ extern char	*mxml_strdup(const char *);
 #  endif /* !HAVE_STRDUP */
 
 extern char	*mxml_strdupf(const char *, va_list);
+
+#  ifndef HAVE_SNPRINTF
+extern int	_mxml_snprintf(char *, size_t, const char *, ...);
+#    define snprintf _mxml_snprintf
+#  endif /* !HAVE_SNPRINTF */
 
 #  ifndef HAVE_VSNPRINTF
 extern int	mxml_vsnprintf(char *, size_t, const char *, va_list);

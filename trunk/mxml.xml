@@ -489,6 +489,20 @@ string must be nul-terminated and is formatted into the new node.</description>
       <type />      <description>Additional args as needed</description>
     </argument>
   </function>
+  <function name="mxmlRelease">
+    <returnvalue>
+      <type>int</type>
+      <description>New reference count</description>
+    </returnvalue>
+    <description>Release a node.
+
+When the reference count reaches zero, the node (and any children)
+is deleted via mxmlDelete().</description>
+    <argument name="node" direction="I">
+      <type>mxml_node_t *</type>
+      <description>Node</description>
+    </argument>
+  </function>
   <function name="mxmlRemove">
     <description>Remove a node from its parent.
 
@@ -497,6 +511,17 @@ This function does nothing if the node has no parent.</description>
     <argument name="node" direction="I">
       <type>mxml_node_t *</type>
       <description>Node to remove</description>
+    </argument>
+  </function>
+  <function name="mxmlRetain">
+    <returnvalue>
+      <type>int</type>
+      <description>New reference count</description>
+    </returnvalue>
+    <description>Retain a node.</description>
+    <argument name="node" direction="I">
+      <type>mxml_node_t *</type>
+      <description>Node</description>
     </argument>
   </function>
   <function name="mxmlSaveAllocString">
@@ -764,6 +789,15 @@ The node is not changed if it is not a text node.</description>
       <type />      <description>Additional arguments as needed</description>
     </argument>
   </function>
+  <function name="mxmlSetWrapMargin">
+    <description>Set the the wrap margin when saving XML data.
+
+Wrapping is disabled when &quot;column&quot; is &lt;= 0.</description>
+    <argument name="column" direction="I">
+      <type>int</type>
+      <description>Column for wrapping</description>
+    </argument>
+  </function>
   <function name="mxmlWalkNext">
     <returnvalue>
       <type>mxml_node_t *</type>
@@ -929,9 +963,17 @@ the walk to the node's children.</description>
       <type>struct mxml_node_s *</type>
       <description>Previous node under same parent</description>
     </variable>
+    <variable name="ref_count">
+      <type>int</type>
+      <description>Use count</description>
+    </variable>
     <variable name="type">
       <type>mxml_type_t</type>
       <description>Node type</description>
+    </variable>
+    <variable name="user_data">
+      <type>void *</type>
+      <description>User data</description>
     </variable>
     <variable name="value">
       <type>mxml_value_t</type>

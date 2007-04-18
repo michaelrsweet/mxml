@@ -3,7 +3,7 @@
  *
  * Header file for Mini-XML, a small XML-like file parsing library.
  *
- * Copyright 2003-2005 by Michael Sweet.
+ * Copyright 2003-2007 by Michael Sweet.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -38,7 +38,6 @@
  * Constants...
  */
 
-#  define MXML_WRAP		72	/* Wrap XML output at this column position */
 #  define MXML_TAB		8	/* Tabs every N columns */
 
 #  define MXML_NO_CALLBACK	0	/* Don't use a type callback */
@@ -128,6 +127,8 @@ typedef struct mxml_node_s		/**** An XML node. ****/
   struct mxml_node_s	*child;		/* First child node */
   struct mxml_node_s	*last_child;	/* Last child node */
   mxml_value_t		value;		/* Node value */
+  int			ref_count;	/* Use count */
+  void			*user_data;	/* User data */
 } mxml_node_t;
 
 typedef struct mxml_index_s		/**** An XML node index. ****/
@@ -200,7 +201,9 @@ extern mxml_node_t	*mxmlNewTextf(mxml_node_t *parent, int whitespace,
 __attribute__ ((__format__ (__printf__, 3, 4)))
 #    endif /* __GNUC__ */
 ;
+extern int		mxmlRelease(mxml_node_t *node);
 extern void		mxmlRemove(mxml_node_t *node);
+extern int		mxmlRetain(mxml_node_t *node);
 extern char		*mxmlSaveAllocString(mxml_node_t *node,
 			        	     const char *(*cb)(mxml_node_t *, int));
 extern int		mxmlSaveFd(mxml_node_t *node, int fd,
@@ -228,6 +231,7 @@ extern int		mxmlSetTextf(mxml_node_t *node, int whitespace,
 __attribute__ ((__format__ (__printf__, 3, 4)))
 #    endif /* __GNUC__ */
 ;
+extern void		mxmlSetWrapMargin(int column);
 extern mxml_node_t	*mxmlWalkNext(mxml_node_t *node, mxml_node_t *top,
 			              int descend);
 extern mxml_node_t	*mxmlWalkPrev(mxml_node_t *node, mxml_node_t *top,

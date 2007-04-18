@@ -3,7 +3,7 @@ dnl "$Id$"
 dnl
 dnl Configuration script for Mini-XML, a small XML-like file parsing library.
 dnl
-dnl Copyright 2003-2006 by Michael Sweet.
+dnl Copyright 2003-2007 by Michael Sweet.
 dnl
 dnl This program is free software; you can redistribute it and/or
 dnl modify it under the terms of the GNU Library General Public
@@ -23,7 +23,7 @@ dnl Set the name of the config header file...
 AC_CONFIG_HEADER(config.h)
 
 dnl Version number...
-VERSION=2.3
+VERSION=2.4
 AC_SUBST(VERSION)
 AC_DEFINE_UNQUOTED(MXML_VERSION, "Mini-XML v$VERSION")
 
@@ -120,7 +120,7 @@ if test x$enable_shared = xyes; then
 	case "$uname" in
 		SunOS* | UNIX_S*)
 			AC_MSG_RESULT(yes)
-			LIBMXML="libmxml.so.1.2"
+			LIBMXML="libmxml.so.1.3"
 			DSO="\$(CC)"
 			DSOFLAGS="$DSOFLAGS -Wl,-h,libmxml.so.1 -G -R\$(libdir) \$(OPTIM)"
 			LDFLAGS="$LDFLAGS -R\$(libdir)"
@@ -136,14 +136,14 @@ if test x$enable_shared = xyes; then
 
 		IRIX)
 			AC_MSG_RESULT(yes)
-			LIBMXML="libmxml.so.1.2"
+			LIBMXML="libmxml.so.1.3"
 			DSO="\$(CC)"
 			DSOFLAGS="$DSOFLAGS -Wl,-rpath,\$(libdir),-set_version,sgi1.0,-soname,libmxml.so.1 -shared \$(OPTIM)"
 			;;
 
 		OSF1* | Linux | GNU)
 			AC_MSG_RESULT(yes)
-			LIBMXML="libmxml.so.1.2"
+			LIBMXML="libmxml.so.1.3"
 			DSO="\$(CC)"
 			DSOFLAGS="$DSOFLAGS -Wl,-soname,libmxml.so.1,-rpath,\$(libdir) -shared \$(OPTIM)"
                         LDFLAGS="$LDFLAGS -Wl,-rpath,\$(libdir)"
@@ -151,7 +151,7 @@ if test x$enable_shared = xyes; then
 
 		*BSD*)
 			AC_MSG_RESULT(yes)
-			LIBMXML="libmxml.so.1.2"
+			LIBMXML="libmxml.so.1.3"
 			DSO="\$(CC)"
 			DSOFLAGS="$DSOFLAGS -Wl,-soname,libmxml.so.1,-R\$(libdir) -shared \$(OPTIM)"
 			LDFLAGS="$LDFLAGS -Wl,-R\$(libdir)"

@@ -3,7 +3,7 @@
  *
  * Attribute support code for Mini-XML, a small XML-like file parsing library.
  *
- * Copyright 2003-2005 by Michael Sweet.
+ * Copyright 2003-2007 by Michael Sweet.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -17,8 +17,10 @@
  *
  * Contents:
  *
- *   mxmlElementGetAttr() - Get an attribute.
- *   mxmlElementSetAttr() - Set an attribute.
+ *   mxmlElementGetAttr()  - Get an attribute.
+ *   mxmlElementSetAttr()  - Set an attribute.
+ *   mxmlElementSetAttrf() - Set an attribute with a formatted value.
+ *   mxml_set_attr()       - Set or add an attribute name/value pair.
  */
 
 /*
@@ -27,6 +29,14 @@
 
 #include "config.h"
 #include "mxml.h"
+
+
+/*
+ * Local functions...
+ */
+
+static int	mxml_set_attr(mxml_node_t *node, const char *name,
+		              char *value);
 
 
 /*
@@ -103,8 +113,7 @@ mxmlElementSetAttr(mxml_node_t *node,	/* I - Element node */
                    const char  *name,	/* I - Name of attribute */
                    const char  *value)	/* I - Attribute value */
 {
-  int		i;			/* Looping var */
-  mxml_attr_t	*attr;			/* New attribute */
+  char	*valuec;			/* Copy of value */
 
 
 #ifdef DEBUG
@@ -119,6 +128,77 @@ mxmlElementSetAttr(mxml_node_t *node,	/* I - Element node */
   if (!node || node->type != MXML_ELEMENT || !name)
     return;
 
+  if (value)
+    valuec = strdup(value);
+  else
+    valuec = NULL;
+
+  if (mxml_set_attr(node, name, valuec))
+    free(valuec);
+}
+
+
+/*
+ * 'mxmlElementSetAttrf()' - Set an attribute with a formatted value.
+ *
+ * If the named attribute already exists, the value of the attribute
+ * is replaced by the new formatted string. The formatted string value is
+ * copied into the element node. This function does nothing if the node
+ * is not an element.
+ */
+
+void
+mxmlElementSetAttrf(mxml_node_t *node,	/* I - Element node */
+                    const char  *name,	/* I - Name of attribute */
+                    const char  *format,/* I - Printf-style attribute value */
+		    ...)		/* I - Additional arguments as needed */
+{
+  va_list	ap;			/* Argument pointer */
+  char		*value;			/* Value */
+
+
+#ifdef DEBUG
+  fprintf(stderr,
+          "mxmlElementSetAttrf(node=%p, name=\"%s\", format=\"%s\", ...)\n",
+          node, name ? name : "(null)", format ? format : "(null)");
+#endif /* DEBUG */
+
+ /*
+  * Range check input...
+  */
+
+  if (!node || node->type != MXML_ELEMENT || !name || !format)
+    return;
+
+ /*
+  * Format the value...
+  */
+
+  va_start(ap, format);
+  value = _mxml_vstrdupf(format, ap);
+  va_end(ap);
+
+  if (value)
+    mxml_error("Unable to allocate memory for attribute '%s' in element %s!",
+               name, node->value.element.name);
+  else if (mxml_set_attr(node, name, value))
+    free(value);
+}
+
+
+/*
+ * 'mxml_set_attr()' - Set or add an attribute name/value pair.
+ */
+
+static int				/* O - 0 on success, -1 on failure */
+mxml_set_attr(mxml_node_t *node,	/* I - Element node */
+              const char  *name,	/* I - Attribute name */
+              char        *value)	/* I - Attribute value */
+{
+  int		i;			/* Looping var */
+  mxml_attr_t	*attr;			/* New attribute */
+
+
  /*
   * Look for the attribute...
   */
@@ -129,26 +209,19 @@ mxmlElementSetAttr(mxml_node_t *node,	/* I - Element node */
     if (!strcmp(attr->name, name))
     {
      /*
-      * Replace the attribute value and return...
+      * Free the old value as needed...
       */
 
       if (attr->value)
         free(attr->value);
 
-      if (value)
-      {
-	if ((attr->value = strdup(value)) == NULL)
-	  mxml_error("Unable to allocate memory for attribute '%s' in element %s!",
-                     name, node->value.element.name);
-      }
-      else
-        attr->value = NULL;
+      attr->value = value;
 
-      return;
+      return (0);
     }
 
  /*
-  * Attribute not found, so add a new one...
+  * Add a new attribute...
   */
 
   if (node->value.element.num_attrs == 0)
@@ -161,33 +234,24 @@ mxmlElementSetAttr(mxml_node_t *node,	/* I - Element node */
   {
     mxml_error("Unable to allocate memory for attribute '%s' in element %s!",
                name, node->value.element.name);
-    return;
+    return (-1);
   }
 
   node->value.element.attrs = attr;
   attr += node->value.element.num_attrs;
 
-  attr->name = strdup(name);
-  if (value)
-    attr->value = strdup(value);
-  else
-    attr->value = NULL;
-
-  if (!attr->name || (!attr->value && value))
+  if ((attr->name = strdup(name)) == NULL)
   {
-    if (attr->name)
-      free(attr->name);
-
-    if (attr->value)
-      free(attr->value);
-
     mxml_error("Unable to allocate memory for attribute '%s' in element %s!",
                name, node->value.element.name);
-
-    return;
+    return (-1);
   }
-    
+
+  attr->value = value;
+
   node->value.element.num_attrs ++;
+
+  return (0);
 }
 
 

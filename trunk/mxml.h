@@ -165,6 +165,12 @@ extern void		mxmlDelete(mxml_node_t *node);
 extern const char	*mxmlElementGetAttr(mxml_node_t *node, const char *name);
 extern void		mxmlElementSetAttr(mxml_node_t *node, const char *name,
 			                   const char *value);
+extern void		mxmlElementSetAttrf(mxml_node_t *node, const char *name,
+			                    const char *format, ...)
+#    ifdef __GNUC__
+__attribute__ ((__format__ (__printf__, 3, 4)))
+#    endif /* __GNUC__ */
+;
 extern int		mxmlEntityAddCallback(int (*cb)(const char *name));
 extern const char	*mxmlEntityGetName(int val);
 extern int		mxmlEntityGetValue(const char *name);

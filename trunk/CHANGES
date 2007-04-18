@@ -5,6 +5,7 @@ CHANGES IN Mini-XML 2.3
 
 	- Added two exceptions to the LGPL to support static
 	  linking of applications against Mini-XML.
+	- Added mxmlElementSetAttrf() function (STR #43)
 	- Added snprintf() emulation function for test program (STR
 	  #32)
 	- Added the _CRT_SECURE_NO_DEPRECATE definition when

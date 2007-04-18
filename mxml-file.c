@@ -1748,7 +1748,7 @@ mxml_load_data(mxml_node_t *top,	/* I - Top node */
 	  */
 
 	  mxml_error("Mismatched close tag <%s> under parent <%s>!",
-	             buffer, parent ? parent->value.element.name : "(nil)");
+	             buffer, parent ? parent->value.element.name : "(null)");
           goto error;
 	}
 
@@ -1856,8 +1856,21 @@ mxml_load_data(mxml_node_t *top,	/* I - Top node */
 
   if (parent)
   {
+    node = parent;
+
     while (parent->parent != top && parent->parent)
       parent = parent->parent;
+
+    if (node != parent)
+    {
+      mxml_error("Missing close tag </%s> under parent <%s>!",
+	         node->value.element.name,
+		 node->parent ? node->parent->value.element.name : "(null)");
+
+      mxmlDelete(first);
+
+      return (NULL);
+    }
   }
 
   return (parent);

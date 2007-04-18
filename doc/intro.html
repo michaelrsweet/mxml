@@ -48,10 +48,10 @@ on the data based upon schema files or other sources of
 definition information, nor does it support character entities
 other than those required by the XML specification.</p>
 
-<!-- NEED 4in -->
+<!-- NEED 6 -->
 <h2>Legal Stuff</h2>
 
-<p>The Mini-XML library is copyright 2003-2005 by Michael
+<p>The Mini-XML library is copyright 2003-2007 by Michael
 Sweet.</p>
 
 <p>This library is free software; you can redistribute it and/or
@@ -71,7 +71,7 @@ more details.</p>
 <h2>History</h2>
 
 <p>Mini-XML was initially developed for the <a
-href='http://gimp-print.sf.net/'>Gimp-Print</a> project to
+href='http://gutenprint.sf.net/'>Gutenprint</a> project to
 replace the rather large and unwieldy <tt>libxml2</tt> library
 with something substantially smaller and easier-to-use. It all
 began one morning in June of 2003 when Robert posted the
@@ -89,14 +89,16 @@ of code.</blockquote>
 
 <p>I took my own challenge and coded furiously for two days to
 produced the initial public release of Mini-XML, total lines of
-code: 696. Robert promptly integrated Mini-XML into Gimp-Print
+code: 696. Robert promptly integrated Mini-XML into Gutenprint
 and removed libxml2.</p>
 
 <p>Thanks to lots of feedback and support from various
 developers, Mini-XML has evolved since then to provide a more
-complete XML implementation and now stands at a whopping 2,974
+complete XML implementation and now stands at a whopping 3,441
 lines of code, compared to 103,893 lines of code for libxml2
-version 2.6.9. Aside from Gimp-Print, Mini-XML is used for the
+version 2.6.9.</p>
+
+<p>Aside from Gutenprint, Mini-XML is used for the
 following projects/software applications:</p>
 
 <ul>
@@ -159,116 +161,89 @@ appendices:</p>
 
 </ul>
 
-<!-- NEED 4in -->
+<!-- NEED 10 -->
 <h2>Notation Conventions</h2>
 
 <p>Various font and syntax conventions are used in this guide.
 Examples and their meanings and uses are explained below:</p>
 
-<center><table width='80%'>
-<tr>
-	<th>Example</th>
-	<td>&nbsp;&nbsp;&nbsp;</td>
-	<th>Description</th>
-</tr>
-<tr><td colspan='3'>&nbsp;</td></tr>
-<tr valign='top'>
-	<td><code>lpstat</code><br />
-	<code>lpstat(1)</code></td>
+<dl>
 
-	<td>&nbsp;&nbsp;&nbsp;</td>
+	<dt><code>lpstat</code><br>
+	<code>lpstat(1)</code></dt>
 
-	<td>The names of commands; the first mention of a command or
-	function in a chapter is followed by a manual page section
-	number.</td>
-</tr>
-<tr><td colspan='3'>&nbsp;</td></tr>
-<tr valign='top'>
-	<td><var>/var</var><br />
-	<var>/usr/share/cups/data/testprint.ps</var></td>
+	<dd>The names of commands; the first mention of a command
+	or function in a chapter is followed by a manual page
+	section number.<br><br></dd>
 
-	<td>&nbsp;&nbsp;&nbsp;</td>
+	<dt><var>/var</var><br>
+	<var>/usr/share/cups/data/testprint.ps</var></dt>
 
-	<td>File and directory names.</td>
-</tr>
-<tr><td colspan='3'>&nbsp;</td></tr>
-<tr valign='top'>
-	<td nowrap><tt>Request ID is Printer-123</tt></td>
+	<dd>File and directory names.<br><br></dd>
 
-	<td>&nbsp;&nbsp;&nbsp;</td>
+	<dt><tt>Request ID is Printer-123</tt></dt>
 
-	<td>Screen output.</td>
-</tr>
-<tr><td colspan='3'>&nbsp;</td></tr>
-<tr valign='top'>
-	<td nowrap><kbd>lp -d printer filename ENTER</kbd></td>
+	<dd>Screen output.<br><br></dd>
 
-	<td>&nbsp;&nbsp;&nbsp;</td>
+	<dt><kbd>lp -d printer filename ENTER</kbd></dt>
 
-	<td>Literal user input; special keys like <kbd>ENTER</kbd> are
-	in ALL CAPS.</td>
-</tr>
-<tr><td colspan='3'>&nbsp;</td></tr>
-<tr valign='top'>
-	<td>12.3</td>
+	<dd>Literal user input; special keys like
+	<kbd>ENTER</kbd> are in ALL CAPS.<br><br></dd>
 
-	<td>&nbsp;&nbsp;&nbsp;</td>
+	<dt>12.3</dt>
 
-	<td>Numbers in the text are written using the period (.) to indicate
-	the decimal point.</td>
-</tr>
-</table></center>
+	<dd>Numbers in the text are written using the period (.)
+	to indicate the decimal point.<br><br></dd>
 
-<!-- NEED 4in -->
+</dl>
+
+<!-- NEED 10 -->
 <h2>Abbreviations</h2>
 
 <p>The following abbreviations are used throughout this
 manual:</p>
 
-<blockquote>
 <dl>
 
 	<dt>Gb</dt>
-	<dd>Gigabytes, or 1073741824 bytes<br />&nbsp;</dd>
+	<dd>Gigabytes, or 1073741824 bytes<br><br></dd>
 
 	<dt>kb</dt>
-	<dd>Kilobytes, or 1024 bytes<br />&nbsp;</dd>
+	<dd>Kilobytes, or 1024 bytes<br><br></dd>
 
 	<dt>Mb</dt>
-	<dd>Megabytes, or 1048576 bytes<br />&nbsp;</dd>
+	<dd>Megabytes, or 1048576 bytes<br><br></dd>
 
 	<dt>UTF-8, UTF-16</dt>
-	<dd>Unicode Transformation Format, 8-bit or 16-bit<br />&nbsp;</dd>
+	<dd>Unicode Transformation Format, 8-bit or 16-bit<br><br></dd>
 
 	<dt>W3C</dt>
-	<dd>World Wide Web Consortium<br />&nbsp;</dd>
+	<dd>World Wide Web Consortium<br><br></dd>
 
 	<dt>XML</dt>
-	<dd>Extensible Markup Language<br />&nbsp;</dd>
+	<dd>Extensible Markup Language<br><br></dd>
 
 </dl>
-</blockquote>
 
+<!-- NEED 12 -->
 <h2>Other References</h2>
 
-<blockquote>
 <dl>
 
 	<dt>The Unicode Standard, Version 4.0, Addison-Wesley,
 	ISBN 0-321-18578-1</dt>
 
 	<dd>The definition of the Unicode character set which is
-	used for XML.<br />&nbsp;</dd>
+	used for XML.<br><br></dd>
 
 	<dt><a
 	href='http://www.w3.org/TR/2004/REC-xml-20040204/'>Extensible
 	Markup Language (XML) 1.0 (Third Edition)</a></dt>
 
 	<dd>The XML specification from the World Wide Web
-	Consortium (W3C)<br />&nbsp;</dd>
+	Consortium (W3C)<br><br></dd>
 
 </dl>
-</blockquote>
 
 </body>
 </html>

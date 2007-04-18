@@ -5,12 +5,31 @@
 and Packaging Mini-XML</a></h1>
 
 <p>This chapter describes how to build, install, and package
-Mini-XML on your system.</p>
+Mini-XML on your system from the source archive. You will need an
+ANSI/ISO-C compatible compiler to build Mini-XML - GCC works, as
+do most vendors' C compilers. If you are building Mini-XML on
+Windows, we recommend using the Visual C++ environment with the
+supplied solution file. For other operating systems, you'll need a
+POSIX-compatible shell and <tt>make</tt> program in addition to
+the C compiler.</p>
 
 <h2>Compiling Mini-XML</h2>
 
-<p>Mini-XML comes with an autoconf-based configure script; just
-type the following command to get things going:</p>
+<p>Mini-XML comes with both an autoconf-based configure script
+and a Visual C++ solution that can be used to compile the library
+and associated tools.</p>
+
+<h3>Compiling with Visual C++</h3>
+
+<p>Open the <VAR>mxml.sln</VAR> solution in the <VAR>vcnet</VAR>
+folder. Choose the desired build configuration, "Debug" (the
+default) or "Release", and then choose <VAR>Build Solution</VAR>
+from the <VAR>Build</VAR> menu.</p>
+
+<h3>Compiling with Command-Line Tools</h3>
+
+<p>Type the following command to configure the Mini-XML source
+code for your system:</p>
 
 <pre>
     <kbd>./configure ENTER</kbd>
@@ -41,16 +60,17 @@ program to verify that things are working, as follows:</p>
 
 <h2>Installing Mini-XML</h2>
 
-<p>Use the <tt>make</tt> command with the <kbd>install</kbd>
-target to install Mini-XML in the configured directories:</p>
+<p>If you are using Visual C++, copy the <VAR>mxml.lib</VAR> and
+and <VAR>mxml.h</VAR> files to the Visual C++ <VAR>lib</VAR> and
+<VAR>include<VAR> directories, respectively.</p>
+
+<p>Otherwise, use the <tt>make</tt> command with the
+<kbd>install</kbd> target to install Mini-XML in the configured
+directories:</p>
 
 <pre>
     <kbd>make install ENTER</kbd>
 </pre>
-
-<p>If you are using Mini-XML under Microsoft Windows with Visual
-C++, use the included project files in the <var>vcnet</var>
-subdirectory to build the library instead.</p>
 
 
 <h2>Creating Mini-XML Packages</h2>
@@ -86,10 +106,8 @@ to create portable and native packages for your system:</p>
 <p>The packages are stored in a subdirectory named
 <var>dist</var> for your convenience. The portable packages
 utilize scripts and tar files to install the software on the
-target system; this is especially useful when installing on
-systems with different Linux distributions. Use the
-<var>mxml.install</var> script to install the software and
-<var>mxml.remove</var> script to remove the software.</p>
+target system. After extracting the package archive, use the
+<var>mxml.install</var> script to install the software.</p>
 
 <p>The native packages will be in the local OS's native format:
 RPM for Red Hat Linux, DPKG for Debian Linux, PKG for Solaris,

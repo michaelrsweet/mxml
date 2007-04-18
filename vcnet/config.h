@@ -1,9 +1,9 @@
 /*
- * "$Id: config.h,v 1.2 2004/06/25 18:52:34 mike Exp $"
+ * "$Id$"
  *
  * Configuration file for Mini-XML, a small XML-like file parsing library.
  *
- * Copyright 2003-2004 by Michael Sweet.
+ * Copyright 2003-2007 by Michael Sweet.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -15,6 +15,17 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
+
+/*
+ * Beginning with VC2005, Microsoft breaks ISO C and POSIX conformance
+ * by deprecating a number of functions in the name of security, even
+ * when many of the affected functions are otherwise completely secure.
+ * The _CRT_SECURE_NO_DEPRECATE definition ensures that we won't get
+ * warnings from their use...
+ */
+
+#define _CRT_SECURE_NO_DEPRECATE
+
 
 /*
  * Include necessary headers...
@@ -31,7 +42,7 @@
  * Version number...
  */
 
-#define MXML_VERSION "Mini-XML v2.0"
+#define MXML_VERSION "Mini-XML v2.3"
 
 
 /*
@@ -65,5 +76,5 @@ extern int	mxml_vsnprintf(char *, size_t, const char *, va_list);
 #  endif /* !HAVE_VSNPRINTF */
 
 /*
- * End of "$Id: config.h,v 1.2 2004/06/25 18:52:34 mike Exp $".
+ * End of "$Id$".
  */

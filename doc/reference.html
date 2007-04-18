@@ -49,6 +49,7 @@
 	<li><a href='#mxmlDelete'><tt>mxmlDelete()</tt></a> </li>
 	<li><a href='#mxmlElementGetAttr'><tt>mxmlElementGetAttr()</tt></a> </li>
 	<li><a href='#mxmlElementSetAttr'><tt>mxmlElementSetAttr()</tt></a> </li>
+	<li><a href='#mxmlElementSetAttrf'><tt>mxmlElementSetAttrf()</tt></a> </li>
 	<li><a href='#mxmlEntityAddCallback'><tt>mxmlEntityAddCallback()</tt></a> </li>
 	<li><a href='#mxmlEntityGetName'><tt>mxmlEntityGetName()</tt></a> </li>
 	<li><a href='#mxmlEntityGetValue'><tt>mxmlEntityGetValue()</tt></a> </li>
@@ -190,6 +191,35 @@ mxmlElementSetAttr(
 <tr><td><tt>node</tt></td><td>Element node</td></tr>
 <tr><td><tt>name</tt></td><td>Name of attribute</td></tr>
 <tr><td><tt>value</tt></td><td>Attribute value</td></tr>
+</tbody></table></div>
+<h4>Returns</h4>
+<p>Nothing.</p>
+<!-- NEW PAGE -->
+<h3 class='title'><a name='mxmlElementSetAttrf'>mxmlElementSetAttrf()</a></h3>
+<h4>Description</h4>
+<p>Set an attribute with a formatted value.
+
+If the named attribute already exists, the value of the attribute
+is replaced by the new formatted string. The formatted string value is
+copied into the element node. This function does nothing if the node
+is not an element.</p>
+<h4>Syntax</h4>
+<pre>
+void
+mxmlElementSetAttrf(
+    <a href='#mxml_node_t'>mxml_node_t</a> * node,
+    const char * name,
+    const char * format,
+    ...);
+</pre>
+<h4>Arguments</h4>
+<div class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0'>
+<thead><tr><th>Name</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><tt>node</tt></td><td>Element node</td></tr>
+<tr><td><tt>name</tt></td><td>Name of attribute</td></tr>
+<tr><td><tt>format</tt></td><td>Printf-style attribute value</td></tr>
+<tr><td><tt>...</tt></td><td>Additional arguments as needed</td></tr>
 </tbody></table></div>
 <h4>Returns</h4>
 <p>Nothing.</p>

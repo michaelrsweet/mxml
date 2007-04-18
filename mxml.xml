@@ -76,6 +76,29 @@ not an element.</description>
       <description>Attribute value</description>
     </argument>
   </function>
+  <function name="mxmlElementSetAttrf">
+    <description>Set an attribute with a formatted value.
+
+If the named attribute already exists, the value of the attribute
+is replaced by the new formatted string. The formatted string value is
+copied into the element node. This function does nothing if the node
+is not an element.</description>
+    <argument name="node" direction="I">
+      <type>mxml_node_t *</type>
+      <description>Element node</description>
+    </argument>
+    <argument name="name" direction="I">
+      <type>const char *</type>
+      <description>Name of attribute</description>
+    </argument>
+    <argument name="format" direction="I">
+      <type>const char *</type>
+      <description>Printf-style attribute value</description>
+    </argument>
+    <argument name="..." direction="I">
+      <type />      <description>Additional arguments as needed</description>
+    </argument>
+  </function>
   <function name="mxmlEntityAddCallback">
     <returnvalue>
       <type>int</type>

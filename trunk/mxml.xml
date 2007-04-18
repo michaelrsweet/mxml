@@ -499,7 +499,7 @@ string must be nul-terminated and is formatted into the new node.</description>
 When the reference count reaches zero, the node (and any children)
 is deleted via mxmlDelete().
 
-@since Mini-XML 2.4@</description>
+@since Mini-XML 2.3@</description>
     <argument name="node" direction="I">
       <type>mxml_node_t *</type>
       <description>Node</description>
@@ -522,7 +522,7 @@ This function does nothing if the node has no parent.</description>
     </returnvalue>
     <description>Retain a node.
 
-@since Mini-XML 2.4@</description>
+@since Mini-XML 2.3@</description>
     <argument name="node" direction="I">
       <type>mxml_node_t *</type>
       <description>Node</description>
@@ -798,7 +798,7 @@ The node is not changed if it is not a text node.</description>
 
 Wrapping is disabled when &quot;column&quot; is &lt;= 0.
 
-@since Mini-XML 2.4@</description>
+@since Mini-XML 2.3@</description>
     <argument name="column" direction="I">
       <type>int</type>
       <description>Column for wrapping</description>

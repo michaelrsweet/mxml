@@ -106,6 +106,7 @@ particular node or the entire tree:</p>
     mxmlDelete(tree);
 </pre>
 
+<!-- NEED 15 -->
 <h2>Loading XML</h2>
 
 <p>You load an XML file using the <a
@@ -144,12 +145,14 @@ whitespace-separated text values.</p>
 <p>The <a href='#mxmlLoadString'><tt>mxmlLoadString()</tt></a>
 function loads XML node trees from a string:</p>
 
+<!-- NEED 10 -->
 <pre>
     char buffer[8192];
     <a href='#mxml_node_t'>mxml_node_t</a> *tree;
 
     ...
-    tree = <a href='#mxmlLoadString'>mxmlLoadString</a>(NULL, buffer, MXML_NO_CALLBACK);
+    tree = <a href='#mxmlLoadString'>mxmlLoadString</a>(NULL, buffer,
+                          MXML_NO_CALLBACK);
 </pre>
 
 <p>The first and third arguments are the same as used for
@@ -199,7 +202,8 @@ functions save XML node trees to strings:</p>
     <a href='#mxml_node_t'>mxml_node_t</a> *tree;
 
     ...
-    <a href='#mxmlSaveString'>mxmlSaveString</a>(tree, buffer, sizeof(buffer), MXML_NO_CALLBACK);
+    <a href='#mxmlSaveString'>mxmlSaveString</a>(tree, buffer, sizeof(buffer),
+                   MXML_NO_CALLBACK);
 
     ...
     ptr = <a href='#mxmlSaveAllocString'>mxmlSaveAllocString</a>(tree, MXML_NO_CALLBACK);
@@ -222,9 +226,11 @@ href='#mxmlWalkNext'><tt>mxmlWalkNext()</tt></a>functions
 can be used to iterate through the XML node tree:</p>
 
 <pre>
-    <a href='#mxml_node_t'>mxml_node_t</a> *node = <a href='#mxmlWalkPrev'>mxmlWalkPrev</a>(current, tree, MXML_DESCEND);
+    <a href='#mxml_node_t'>mxml_node_t</a> *node;
+    
+    node = <a href='#mxmlWalkPrev'>mxmlWalkPrev</a>(current, tree, MXML_DESCEND);
 
-    <a href='#mxml_node_t'>mxml_node_t</a> *node = <a href='#mxmlWalkNext'>mxmlWalkNext</a>(current, tree, MXML_DESCEND);
+    node = <a href='#mxmlWalkNext'>mxmlWalkNext</a>(current, tree, MXML_DESCEND);
 </pre>
 
 <p>In addition, you can find a named element/node using the <a
@@ -232,8 +238,11 @@ href='#mxmlFindElement'><tt>mxmlFindElement()</tt></a>
 function:</p>
 
 <pre>
-    <a href='#mxml_node_t'>mxml_node_t</a> *node = <a href='#mxmlFindElement'>mxmlFindElement</a>(tree, tree, "name", "attr",
-                                	"value", MXML_DESCEND);
+    <a href='#mxml_node_t'>mxml_node_t</a> *node;
+    
+    node = <a href='#mxmlFindElement'>mxmlFindElement</a>(tree, tree, "name",
+                           "attr", "value",
+                           MXML_DESCEND);
 </pre>
 
 <p>The <tt>name</tt>, <tt>attr</tt>, and <tt>value</tt>
@@ -242,20 +251,34 @@ e.g.:</p>
 
 <pre>
     /* Find the first "a" element */
-    node = <a href='#mxmlFindElement'>mxmlFindElement</a>(tree, tree, "a", NULL, NULL, MXML_DESCEND);
+    node = <a href='#mxmlFindElement'>mxmlFindElement</a>(tree, tree, "a",
+                           NULL, NULL,
+                           MXML_DESCEND);
 
-    /* Find the first "a" element with "href" attribute */
-    node = <a href='#mxmlFindElement'>mxmlFindElement</a>(tree, tree, "a", "href", NULL, MXML_DESCEND);
+    /* Find the first "a" element with "href"
+       attribute */
+    node = <a href='#mxmlFindElement'>mxmlFindElement</a>(tree, tree, "a",
+                           "href", NULL,
+                           MXML_DESCEND);
 
-    /* Find the first "a" element with "href" to a URL */
-    node = <a href='#mxmlFindElement'>mxmlFindElement</a>(tree, tree, "a", "href",
-                	   "http://www.easysw.com/~mike/mxml/", MXML_DESCEND);
+    /* Find the first "a" element with "href"
+       to a URL */
+    node = <a href='#mxmlFindElement'>mxmlFindElement</a>(tree, tree, "a",
+                           "href",
+                           "http://www.easysw.com/",
+                           MXML_DESCEND);
 
-    /* Find the first element with a "src" attribute*/
-    node = <a href='#mxmlFindElement'>mxmlFindElement</a>(tree, tree, NULL, "src", NULL, MXML_DESCEND);
+    /* Find the first element with a "src"
+       attribute */
+    node = <a href='#mxmlFindElement'>mxmlFindElement</a>(tree, tree, NULL,
+                           "src", NULL,
+                           MXML_DESCEND);
 
-    /* Find the first element with a "src" = "foo.jpg" */
-    node = <a href='#mxmlFindElement'>mxmlFindElement</a>(tree, tree, NULL, "src", "foo.jpg", MXML_DESCEND);
+    /* Find the first element with a "src"
+       = "foo.jpg" */
+    node = <a href='#mxmlFindElement'>mxmlFindElement</a>(tree, tree, NULL,
+                           "src", "foo.jpg",
+                           MXML_DESCEND);
 </pre>
 
 <p>You can also iterate with the same function:</p>
@@ -263,9 +286,13 @@ e.g.:</p>
 <pre>
     <a href='#mxml_node_t'>mxml_node_t</a> *node;
 
-    for (node = <a href='#mxmlFindElement'>mxmlFindElement</a>(tree, tree, "name", NULL, NULL, MXML_DESCEND);
+    for (node = <a href='#mxmlFindElement'>mxmlFindElement</a>(tree, tree, "name",
+                                NULL, NULL,
+                                MXML_DESCEND);
          node != NULL;
-         node = <a href='#mxmlFindElement'>mxmlFindElement</a>(node, tree, "name", NULL, NULL, MXML_DESCEND))
+         node = <a href='#mxmlFindElement'>mxmlFindElement</a>(node, tree, "name",
+                                NULL, NULL,
+                                MXML_DESCEND))
     {
       ... do something ...
     }

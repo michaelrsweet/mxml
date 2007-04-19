@@ -512,6 +512,22 @@ string must be nul-terminated and is formatted into the new node.</description>
       <type />      <description>Additional args as needed</description>
     </argument>
   </function>
+  <function name="mxmlNewXML">
+    <returnvalue>
+      <type>mxml_node_t *</type>
+      <description>New ?xml node</description>
+    </returnvalue>
+    <description>Create a new XML document tree.
+
+The &quot;version&quot; argument specifies the version number to put in the
+?xml element node. If NULL, version 1.0 is assumed.
+
+@since Mini-XML 2.3@</description>
+    <argument name="version" direction="I">
+      <type>const char *</type>
+      <description>Version number to use</description>
+    </argument>
+  </function>
   <function name="mxmlRelease">
     <returnvalue>
       <type>int</type>

@@ -21,11 +21,11 @@ XML data files:</p>
 
 <ul>
 
-	<li><tt>MXML_INTEGER_CALLBACK</tt> - All data nodes contain
-	whitespace-separated integers.</li>
+        <li><tt>MXML_INTEGER_CALLBACK</tt> - All data nodes
+        contain whitespace-separated integers.</li>
 
-	<li><tt>MXML_OPAQUE_CALLBACK</tt> - All data nodes contain
-	opaque strings ("CDATA").</li>
+        <li><tt>MXML_OPAQUE_CALLBACK</tt> - All data nodes
+        contain opaque strings ("CDATA").</li>
 
 	<li><tt>MXML_REAL_CALLBACK</tt> - All data nodes contain
 	whitespace-separated floating-point numbers.</li>
@@ -51,21 +51,18 @@ type to return.</p>
 child nodes:</p>
 
 <pre>
-    /*
-     * 'type_cb()' - XML data type callback for mxmlLoadFile()...
-     */
-
-    mxml_type_t                             /* O - Data type */
-    type_cb(mxml_node_t *node)              /* I - Element node */
+    mxml_type_t
+    type_cb(mxml_node_t *node)
     {
-      const char    *type;                  /* Type string */
-
+      const char *type;
 
      /*
-      * You can lookup attributes and/or use the element name, hierarchy, etc...
+      * You can lookup attributes and/or use the
+      * element name, hierarchy, etc...
       */
 
-      if ((type = mxmlElementGetAttr(node, "type")) == NULL)
+      type = mxmlElementGetAttr(node, "type");
+      if (type == NULL)
 	type = node->value.element.name;
 
       if (!strcmp(type, "integer"))
@@ -84,10 +81,10 @@ call any of the load functions:</p>
 
 <pre>
     FILE *fp;
-    <a href='#mxml_node_t'>mxml_node_t</a> *tree;
+    mxml_node_t *tree;
 
     fp = fopen("filename.xml", "r");
-    tree = <a href='#mxmlLoadFile'>mxmlLoadFile</a>(NULL, fp, <b>type_cb</b>);
+    tree = mxmlLoadFile(NULL, fp, <b>type_cb</b>);
     fclose(fp);
 </pre>
 
@@ -108,54 +105,66 @@ of <tt>MXML_WS_BEFORE_OPEN</tt>, <tt>MXML_WS_AFTER_OPEN</tt>,
 <tt>MXML_WS_BEFORE_CLOSE</tt>, or <tt>MXML_WS_AFTER_CLOSE</tt>.
 The callback function should return <tt>NULL</tt> if no
 whitespace should be added and the string to insert (spaces,
-tabs, carriage returns, and newlines) otherwise. The following
-whitespace callback can be used to add whitespace to XHTML
-output to make it more readable in a standard text editor:</p>
+tabs, carriage returns, and newlines) otherwise.</p>
 
-<!-- NEW PAGE -->
+<p>The following whitespace callback can be used to add
+whitespace to XHTML output to make it more readable in a standard
+text editor:</p>
+
 <pre>
-    /*
-     * 'whitespace_cb()' - Let the mxmlSaveFile() function know when to insert
-     *                     newlines and tabs...
-     */
-
-    const char *                            /* O - Whitespace string or NULL */
-    whitespace_cb(mxml_node_t *node,        /* I - Element node */
-        	  int         where)        /* I - Open or close tag? */
+    const char *
+    whitespace_cb(mxml_node_t *node,
+                  int where)
     {
-      const char *name;                     /* Name of element */
+      const char *name;
 
      /*
-      * We can conditionally break to a new line before or after any element.
-      * These are just common HTML elements...
+      * We can conditionally break to a new line
+      * before or after any element. These are
+      * just common HTML elements...
       */
 
       name = node->value.element.name;
 
-      if (!strcmp(name, "html") || !strcmp(name, "head") || !strcmp(name, "body") ||
-	  !strcmp(name, "pre") || !strcmp(name, "p") ||
-	  !strcmp(name, "h1") || !strcmp(name, "h2") || !strcmp(name, "h3") ||
-	  !strcmp(name, "h4") || !strcmp(name, "h5") || !strcmp(name, "h6"))
+      if (!strcmp(name, "html") ||
+          !strcmp(name, "head") ||
+          !strcmp(name, "body") ||
+	  !strcmp(name, "pre") ||
+          !strcmp(name, "p") ||
+	  !strcmp(name, "h1") ||
+          !strcmp(name, "h2") ||
+          !strcmp(name, "h3") ||
+	  !strcmp(name, "h4") ||
+          !strcmp(name, "h5") ||
+          !strcmp(name, "h6"))
       {
        /*
-	* Newlines before open and after close...
+	* Newlines before open and after
+        * close...
 	*/
 
-	if (where == MXML_WS_BEFORE_OPEN || where == MXML_WS_AFTER_CLOSE)
+	if (where == MXML_WS_BEFORE_OPEN ||
+            where == MXML_WS_AFTER_CLOSE)
 	  return ("\n");
       }
-      else if (!strcmp(name, "dl") || !strcmp(name, "ol") || !strcmp(name, "ul"))
+      else if (!strcmp(name, "dl") ||
+               !strcmp(name, "ol") ||
+               !strcmp(name, "ul"))
       {
        /*
-	* Put a newline before and after list elements...
+	* Put a newline before and after list
+        * elements...
 	*/
 
 	return ("\n");
       }
-      else if (!strcmp(name, "dd") || !strcmp(name, "dt") || !strcmp(name, "li"))
+      else if (!strcmp(name, "dd") ||
+               !strcmp(name, "dt") ||
+               !strcmp(name, "li"))
       {
        /*
-	* Put a tab before &lt;li>'s, &lt;dd>'s, and &lt;dt>'s, and a newline after them...
+	* Put a tab before &lt;li>'s, * &lt;dd>'s,
+        * and &lt;dt>'s, and a newline after them...
 	*/
 
 	if (where == MXML_WS_BEFORE_OPEN)
@@ -172,20 +181,20 @@ output to make it more readable in a standard text editor:</p>
     }
 </pre>
 
-<!-- NEW PAGE -->
 <p>To use this callback function, simply use the name when you
 call any of the save functions:</p>
 
 <pre>
     FILE *fp;
-    <a href='#mxml_node_t'>mxml_node_t</a> *tree;
+    mxml_node_t *tree;
 
     fp = fopen("filename.xml", "w");
-    <a href='#mxmlSaveFile'>mxmlSaveFile</a>(tree, fp, whitespace_cb);
+    mxmlSaveFile(tree, fp, <b>whitespace_cb</b>);
     fclose(fp);
 </pre>
 
 
+<!-- NEED 10 -->
 <h2>Custom Data Types</h2>
 
 <p>Mini-XML supports custom data types via global load and save
@@ -205,22 +214,21 @@ following:</p>
 <pre>
     typedef struct
     {
-      unsigned      year,                   /* Year */
-                    month,                  /* Month */
-                    day,                    /* Day */
-                    hour,                   /* Hour */
-                    minute,                 /* Minute */
-                    second;                 /* Second */
-      time_t        unix;                   /* UNIX time value */
+      unsigned      year,    /* Year */
+                    month,   /* Month */
+                    day,     /* Day */
+                    hour,    /* Hour */
+                    minute,  /* Minute */
+                    second;  /* Second */
+      time_t        unix;    /* UNIX time */
     } iso_date_time_t;
 
-    int                                     /* I - 0 on success, -1 on error */
-    load_custom(mxml_node_t *node,          /* I - Node */
-                const char  *data)          /* I - Value */
+    int
+    load_custom(mxml_node_t *node,
+                const char *data)
     {
-      iso_date_time_t *dt;                  /* Date/time value */
-      struct tm       tmdata;               /* UNIX time data */
-
+      iso_date_time_t *dt;
+      struct tm tmdata;
 
      /*
       * Allocate data structure...
@@ -229,16 +237,19 @@ following:</p>
       dt = calloc(1, sizeof(iso_date_time_t));
 
      /*
-      * Try reading 6 unsigned integers from the data string...
+      * Try reading 6 unsigned integers from the
+      * data string...
       */
 
       if (sscanf(data, "%u-%u-%uT%u:%u:%uZ",
-                 &(dt->year), &(dt->month), &(dt->day),
-                 &(dt->hour), &(dt->minute), &(dt->second)) != 6)
+                 &(dt->year), &(dt->month),
+                 &(dt->day), &(dt->hour),
+                 &(dt->minute),
+                 &(dt->second)) != 6)
       {
        /*
-        * Unable to read numbers, free the data structure and return an
-        * error...
+        * Unable to read numbers, free the data
+        * structure and return an error...
         */
 
         free(dt);
@@ -266,7 +277,8 @@ following:</p>
       }
 
      /*
-      * Convert ISO time to UNIX time in seconds...
+      * Convert ISO time to UNIX time in
+      * seconds...
       */
 
       tmdata.tm_year = dt->year - 1900;
@@ -276,10 +288,11 @@ following:</p>
       tmdata.tm_min  = dt->minute;
       tmdata.tm_sec  = dt->second;
 
-      dt->unix = gmtime(&tmdata);
+      dt->unix = gmtime(&amp;tmdata);
 
      /*
-      * Assign custom node data and destroy function pointers...
+      * Assign custom node data and destroy
+      * function pointers...
       */
 
       node->value.custom.data    = dt;
@@ -300,24 +313,24 @@ allocated custom data for the node and a pointer to a destructor
 function which will free the custom data when the node is
 deleted.</p>
 
-<!-- NEED 3in -->
 <p>The save callback receives the node pointer and returns an
 allocated string containing the custom data value. The following
 save callback could be used for our ISO date/time type:</p>
 
 <pre>
-    char *                                  /* I - Allocated string */
-    save_custom(mxml_node_t *node)          /* I - Node */
+    char *
+    save_custom(mxml_node_t *node)
     {
-      char            data[255];            /* Data string */
-      iso_date_time_t *dt;                  /* ISO date/time pointer */
+      char data[255];
+      iso_date_time_t *dt;
 
 
       dt = (iso_date_time_t *)node->custom.data;
 
-      snprintf(data, sizeof(data), "%04u-%02u-%02uT%02u:%02u:%02uZ",
-               dt->year, dt->month, dt->day, dt->hour,
-               dt->minute, dt->second);
+      snprintf(data, sizeof(data),
+               "%04u-%02u-%02uT%02u:%02u:%02uZ",
+               dt->year, dt->month, dt->day,
+               dt->hour, dt->minute, dt->second);
 
       return (strdup(data));
     }
@@ -328,7 +341,8 @@ href='#mxmlSetCustomHandlers'><tt>mxmlSetCustomHandlers()</tt></a>
 function:</p>
 
 <pre>
-    mxmlSetCustomHandlers(load_custom, save_custom);
+    mxmlSetCustomHandlers(<b>load_custom</b>,
+                          <b>save_custom</b>);
 </pre>
 
 
@@ -344,30 +358,32 @@ without leaking memory.</p>
 href='#mxmlSetElement'><tt>mxmlSetElement()</tt></a>, <a
 href='#mxmlSetInteger'><tt>mxmlSetInteger()</tt></a>, <a
 href='#mxmlSetOpaque'><tt>mxmlSetOpaque()</tt></a>, <a
-href='#mxmlSetReal'><tt>mxmlSetReal()</tt></a>, and <a
-href='#mxmlSetText'><tt>mxmlSetText()</tt></a> functions. For
+href='#mxmlSetReal'><tt>mxmlSetReal()</tt></a>, <a
+href='#mxmlSetText'><tt>mxmlSetText()</tt></a>, and <a
+href='#mxmlSetTextf'><tt>mxmlSetTextf()</tt></a> functions. For
 example, use the following function call to change a text node
 to contain the text "new" with leading whitespace:</p>
 
 <pre>
-    <a href='#mxml_node_t'>mxml_node_t</a> *node;
+    mxml_node_t *node;
 
-    <a href='#mxmlSetText'>mxmlSetText</a>(node, 1, "new");
+    mxmlSetText(node, 1, "new");
 </pre>
 
 
 <h2>Formatted Text</h2>
 
-<p>The <a href='#mxmlNewTextf'><tt>mxmlNewTextf()</tt></a> and
-<a href='#mxmlSetTextf'><tt>mxmlSetTextf()</tt></a> functions
-create and change text nodes, respectively, using
-<tt>printf</tt>-style format strings and arguments. For example,
-use the following function call to create a new text node:</p>
+<p>The <a href='#mxmlNewTextf'><tt>mxmlNewTextf()</tt></a> and <a
+href='#mxmlSetTextf'><tt>mxmlSetTextf()</tt></a> functions create
+and change text nodes, respectively, using <tt>printf</tt>-style
+format strings and arguments. For example, use the following
+function call to create a new text node containing a constructed
+filename:</p>
 
 <pre>
-    <a href='#mxml_node_t'>mxml_node_t</a> *node;
+    mxml_node_t</a> *node;
 
-    node = <a href='#mxmlNewTextf'>mxmlNewTextf</a>(node, 1, "%s/%s",
+    node = mxmlNewTextf(node, 1, "%s/%s",
                         path, filename);
 </pre>
 
@@ -376,7 +392,7 @@ use the following function call to create a new text node:</p>
 
 <p>Mini-XML provides functions for managing indices of nodes.
 The current implementation provides the same functionality as
-the <a href='#mxmlFindElement'><tt>mxmlFindElement()</tt></a>.
+<a href='#mxmlFindElement'><tt>mxmlFindElement()</tt></a>.
 The advantage of using an index is that searching and
 enumeration of elements is significantly faster. The only
 disadvantage is that each index is a static snapshot of the XML
@@ -392,10 +408,11 @@ href='#mxml_index_t'><tt>mxml_index_t</tt></a> structures. The
 creates a new index:</p>
 
 <pre>
-    <a href='#mxml_node_t'>mxml_node_t</a> *tree;
-    <a href='#mxml_index_t'>mxml_index_t</a> *ind;
+    mxml_node_t *tree;
+    mxml_index_t *ind;
 
-    ind = <a href='#mxmlIndexNew'>mxmlIndexNew</a>(tree, "element", "attribute");
+    ind = mxmlIndexNew(tree, "element",
+                       "attribute");
 </pre>
 
 <p>The first argument is the XML node tree to index. Normally this
@@ -424,8 +441,7 @@ function enumerates each of the nodes in the index and can be
 used in a loop as follows:</p>
 
 <pre>
-    <a href='#mxml_node_t'>mxml_node_t</a> *node;
-    <a href='#mxml_index_t'>mxml_index_t</a> *ind;
+    mxml_node_t *node;
 
     mxmlIndexReset(ind);
 
@@ -441,12 +457,13 @@ attribute value in the index. It can be used to find all
 matching elements in an index, as follows:</p>
 
 <pre>
-    <a href='#mxml_node_t'>mxml_node_t</a> *node;
-    <a href='#mxml_index_t'>mxml_index_t</a> *ind;
+    mxml_node_t *node;
 
     mxmlIndexReset(ind);
 
-    while ((node = mxmlIndexFind(ind, "element", "attr-value")) != NULL)
+    while ((node = mxmlIndexFind(ind, "element",
+                                 "attr-value"))
+                != NULL)
     {
       // do something with node
     }
@@ -458,14 +475,11 @@ to return all elements or attributes in the index. Passing
 <tt>NULL</tt> for both the element name and attribute value
 is equivalent to calling <tt>mxmlIndexEnum</tt>.</p>
 
-<!-- NEED 2in -->
 <p>When you are done using the index, delete it using the
 <a href='#mxmlIndexDelete()'><tt>mxmlIndexDelete()</tt></a>
 function:</p>
 
 <pre>
-    <a href='#mxml_index_t'>mxml_index_t</a> *ind;
-
     mxmlIndexDelete(ind);
 </pre>
 

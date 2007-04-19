@@ -613,7 +613,7 @@ whitespace_cb(mxml_node_t *node,	/* I - Element node */
     else if (where == MXML_WS_AFTER_CLOSE)
       return ("\n");
   }
-  else if (!strcmp(name, "?xml"))
+  else if (!strncmp(name, "?xml", 4))
   {
     return (NULL);
   }

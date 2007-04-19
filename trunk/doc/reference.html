@@ -71,6 +71,7 @@
 	<li><a href='#mxmlNewReal'><tt>mxmlNewReal()</tt></a> </li>
 	<li><a href='#mxmlNewText'><tt>mxmlNewText()</tt></a> </li>
 	<li><a href='#mxmlNewTextf'><tt>mxmlNewTextf()</tt></a> </li>
+	<li><a href='#mxmlNewXML'><tt>mxmlNewXML()</tt></a> <span class='info'>&nbsp;Mini-XML 2.3&nbsp;</span></li>
 	<li><a href='#mxmlRelease'><tt>mxmlRelease()</tt></a> <span class='info'>&nbsp;Mini-XML 2.3&nbsp;</span></li>
 	<li><a href='#mxmlRemove'><tt>mxmlRemove()</tt></a> </li>
 	<li><a href='#mxmlRetain'><tt>mxmlRetain()</tt></a> <span class='info'>&nbsp;Mini-XML 2.3&nbsp;</span></li>
@@ -744,6 +745,29 @@ mxmlNewTextf(
 </tbody></table></div>
 <h4>Returns</h4>
 <p>New node</p>
+<!-- NEW PAGE -->
+<h3 class='title'><span class='info'>&nbsp;Mini-XML 2.3&nbsp;</span><a name='mxmlNewXML'>mxmlNewXML()</a></h3>
+<h4>Description</h4>
+<p>Create a new XML document tree.
+
+The &quot;version&quot; argument specifies the version number to put in the
+?xml element node. If NULL, version 1.0 is assumed.
+
+</p>
+<h4>Syntax</h4>
+<pre>
+<a href='#mxml_node_t'>mxml_node_t</a> *
+mxmlNewXML(
+    const char * version);
+</pre>
+<h4>Arguments</h4>
+<div class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0'>
+<thead><tr><th>Name</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><tt>version</tt></td><td>Version number to use</td></tr>
+</tbody></table></div>
+<h4>Returns</h4>
+<p>New ?xml node</p>
 <!-- NEW PAGE -->
 <h3 class='title'><span class='info'>&nbsp;Mini-XML 2.3&nbsp;</span><a name='mxmlRelease'>mxmlRelease()</a></h3>
 <h4>Description</h4>

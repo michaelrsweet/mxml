@@ -1,11 +1,12 @@
-CHANGES - 2007-04-18
+CHANGES - 2007-04-19
 --------------------
 
 CHANGES IN Mini-XML 2.3
 
 	- Added two exceptions to the LGPL to support static
-	  linking of applications against Mini-XML.
-	- Added mxmlElementSetAttrf() function (STR #43)
+	  linking of applications against Mini-XML
+	- Added a mxmlNewXML() function
+	- Added a mxmlElementSetAttrf() function (STR #43)
 	- Added snprintf() emulation function for test program (STR
 	  #32)
 	- Added the _CRT_SECURE_NO_DEPRECATE definition when
@@ -15,31 +16,31 @@ CHANGES IN Mini-XML 2.3
 	- mxmlLoad*() did not detect missing close tags at the end
 	  of an XML document (STR #45)
 	- Added user_data and ref_count members to mxml_node_t
-	  structure.
+	  structure
 	- Added mxmlReleaseNode() and mxmlRetainNode() APIs for
-	  reference-counted nodes.
+	  reference-counted nodes
 	- Added mxmlSetWrapMargin() to control the wrapping of XML
-	  output.
+	  output
 	- Added conditional check for EINTR error code for
 	  certain Windows compilers that do not define it (STR
 	  #33)
 	- The mxmldoc program now generates correct HTML 4.0
-	  output (previously it generated invalid XHTML...)
+	  output - previously it generated invalid XHTML
 	- The mxmldoc program now supports "@deprecated@,
-	  "@private@", and "@since version@" comments.
+	  "@private@", and "@since version@" comments
 	- Fixed function and enumeration type bugs in mxmldoc.
-	- Fixed XML schema for mxmldoc.
+	- Fixed the XML schema for mxmldoc
 	- The mxmldoc program now supports --intro, --section,
-	  and --title options.
+	  and --title options
 	- The mxmlLoad*() functions could leak a node on an error
 	  (STR #27)
 	- The mxml_vsnprintf() function could get in an infinite
 	  loop on a buffer overflow (STR #25)
 	- Added new mxmlNewCDATA() and mxmlSetCDATA() functions
 	  to create and set CDATA nodes, which are really just
-	  special element nodes.
+	  special element nodes
 	- Added new MXML_IGNORE type and MXML_IGNORE_CB callback
-	  to ignore non-element nodes (i.e. whitespace)
+	  to ignore non-element nodes, e.g. whitespace
 	- mxmlLoad*() crashed when reporting an error in some
 	  invalid XML (STR #23)
 

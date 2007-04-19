@@ -207,6 +207,7 @@ extern mxml_node_t	*mxmlNewTextf(mxml_node_t *parent, int whitespace,
 __attribute__ ((__format__ (__printf__, 3, 4)))
 #    endif /* __GNUC__ */
 ;
+extern mxml_node_t	*mxmlNewXML(const char *version);
 extern int		mxmlRelease(mxml_node_t *node);
 extern void		mxmlRemove(mxml_node_t *node);
 extern int		mxmlRetain(mxml_node_t *node);

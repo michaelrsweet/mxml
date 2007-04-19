@@ -27,6 +27,7 @@
  *   mxmlNewReal()    - Create a new real number node.
  *   mxmlNewText()    - Create a new text fragment node.
  *   mxmlNewTextf()   - Create a new formatted text fragment node.
+ *   mxmlNewXML()     - Create a new XML document tree.
  *   mxmlRelease()    - Release a node.
  *   mxmlRemove()     - Remove a node from its parent.
  *   mxmlRetain()     - Retain a node.
@@ -652,6 +653,28 @@ mxmlRemove(mxml_node_t *node)		/* I - Node to remove */
   fprintf(stderr, "    AFTER: node->prev=%p\n", node->prev);
   fprintf(stderr, "    AFTER: node->next=%p\n", node->next);
 #endif /* DEBUG > 1 */
+}
+
+
+/*
+ * 'mxmlNewXML()' - Create a new XML document tree.
+ *
+ * The "version" argument specifies the version number to put in the
+ * ?xml element node. If NULL, version 1.0 is assumed.
+ *
+ * @since Mini-XML 2.3@
+ */
+
+mxml_node_t *				/* O - New ?xml node */
+mxmlNewXML(const char *version)		/* I - Version number to use */
+{
+  char	element[1024];			/* Element text */
+
+
+  snprintf(element, sizeof(element), "?xml version=\"%s\"?",
+           version ? version : "1.0");
+
+  return (mxmlNewElement(NULL, element));
 }
 
 

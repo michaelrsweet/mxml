@@ -8,12 +8,14 @@
 <ul>
 
 	<li>Added two exceptions to the LGPL to support static
-	linking of applications against Mini-XML.</li>
+	linking of applications against Mini-XML</li>
 
-	<li>Added mxmlElementSetAttrf() function (STR #43)</li>
+	<li>Added a mxmlNewXML() function</li>
 
-	<li>Added snprintf() emulation function for test program
-	(STR #32)</li>
+	<li>Added a mxmlElementSetAttrf() function (STR #43)</li>
+
+	<li>Added a snprintf() emulation function for the test
+	program (STR #32)</li>
 
 	<li>Added the _CRT_SECURE_NO_DEPRECATE definition when
 	building on VC++ 2005 (STR #36)</li>
@@ -21,52 +23,52 @@
 	<li>mxmlLoad*() did not detect missing > characters in
 	elements (STR #41)</li>
 
-	<li>mxmlLoad*() did not detect missing close tags at the end
-	of an XML document (STR #45)</li>
+	<li>mxmlLoad*() did not detect missing close tags at the
+	end of an XML document (STR #45)</li>
 
 	<li>Added user_data and ref_count members to mxml_node_t
-	structure.</li>
+	structure</li>
 
 	<li>Added mxmlReleaseNode() and mxmlRetainNode() APIs for
-	reference-counted nodes.</li>
+	reference-counted nodes</li>
 
-	<li>Added mxmlSetWrapMargin() to control the wrapping of XML
-	output.</li>
+	<li>Added mxmlSetWrapMargin() to control the wrapping of
+	XML output</li>
 
 	<li>Added conditional check for EINTR error code for
 	certain Windows compilers that do not define it (STR
 	#33)</li>
 
 	<li>The mxmldoc program now generates correct HTML 4.0
-	output (previously it generated invalid XHTML...)</li>
+	output - previously it generated invalid XHTML</li>
 
 	<li>The mxmldoc program now supports "@deprecated@,
-	"@private@", and "@since version@" comments.</li>
+	"@private@", and "@since version@" comments</li>
 
-	<li>Fixed function and enumeraion type bugs in
-	mxmldoc.</li>
+	<li>Fixed function and enumeration type bugs in
+	mxmldoc</li>
 
-	<li>Fixed XML schema for mxmldoc.</li>
+	<li>Fixed the XML schema for mxmldoc</li>
 
 	<li>The mxmldoc program now supports --intro, --section,
-	and --title options.</li>
+	and --title options</li>
 
 	<li>The mxmlLoad*() functions could leak a node on an
 	error (STR #27)</li>
 
-	<li>The mxml_vsnprintf() function could get in an infinite
-	loop on a buffer overflow (STR #25)</li>
+	<li>The mxml_vsnprintf() function could get in an
+	infinite loop on a buffer overflow (STR #25)</li>
 
 	<li>Added new mxmlNewCDATA() and mxmlSetCDATA() functions
 	to create and set CDATA nodes, which are really just
-	special element nodes.</li>
+	special element nodes</li>
 
 	<li>Added new MXML_IGNORE type and MXML_IGNORE_CB
-	callback to ignore non-element nodes (i.e.
-	whitespace)</li>
+	callback to ignore non-element nodes, e.g.
+	whitespace</li>
 
 	<li>mxmlLoad*() did not treat custom data as opaque, so
-	whitespace characters would be lost.</li>
+	whitespace characters would be lost</li>
 
 </ul>
 

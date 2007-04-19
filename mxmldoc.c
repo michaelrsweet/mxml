@@ -645,7 +645,7 @@ new_documentation(mxml_node_t **mxmldoc)/* O - mxmldoc node */
   * Create an empty XML documentation file...
   */
 
-  doc = mxmlNewElement(NULL, "?xml version=\"1.0\"?");
+  doc = mxmlNewXML(NULL);
 
   *mxmldoc = mxmlNewElement(doc, "mxmldoc");
 

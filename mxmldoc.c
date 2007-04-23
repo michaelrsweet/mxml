@@ -4,7 +4,7 @@
  * Documentation generator using Mini-XML, a small XML-like file parsing
  * library.
  *
- * Copyright 2003-2006 by Michael Sweet.
+ * Copyright 2003-2007 by Michael Sweet.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -22,6 +22,7 @@
  *   add_variable()        - Add a variable or argument.
  *   get_comment_info()    - Get info from comment.
  *   get_text()            - Get the text for a node.
+ *   load_cb()             - Set the type of child nodes.
  *   new_documentation()   - Create a new documentation tree.
  *   safe_strcpy()         - Copy a string allowing for overlapping strings.
  *   scan_file()           - Scan a source file.
@@ -29,8 +30,9 @@
  *   update_comment()      - Update a comment node.
  *   usage()               - Show program usage...
  *   write_description()   - Write the description text.
- *   write_documentation() - Write HTML documentation.
  *   write_element()       - Write an elements text nodes.
+ *   write_html()          - Write HTML documentation.
+ *   write_man()           - Write manpage documentation.
  *   write_string()        - Write a string, quoting XHTML special chars
  *                           as needed...
  *   ws_cb()               - Whitespace callback for saving.
@@ -42,6 +44,7 @@
 
 #include "config.h"
 #include "mxml.h"
+#include <time.h>
 
 
 /*
@@ -132,6 +135,15 @@
 
 
 /*
+ * Output modes...
+ */
+
+#define OUTPUT_NONE		0	/* No output */
+#define OUTPUT_HTML		1	/* Output HTML */
+#define OUTPUT_MAN		2	/* Output nroff/man */
+
+
+/*
  * Local functions...
  */
 
@@ -141,6 +153,7 @@ static mxml_node_t	*find_public(mxml_node_t *node, mxml_node_t *top,
 			             const char *name);
 static char		*get_comment_info(mxml_node_t *description);
 static char		*get_text(mxml_node_t *node, char *buffer, int buflen);
+static mxml_type_t	load_cb(mxml_node_t *node);
 static mxml_node_t	*new_documentation(mxml_node_t **mxmldoc);
 static void		safe_strcpy(char *dst, const char *src);
 static int		scan_file(const char *filename, FILE *fp,
@@ -149,13 +162,19 @@ static void		sort_node(mxml_node_t *tree, mxml_node_t *func);
 static void		update_comment(mxml_node_t *parent,
 			               mxml_node_t *comment);
 static void		usage(const char *option);
-static void		write_description(mxml_node_t *description);
-static void		write_documentation(const char *section,
-			                    const char *title,
-			                    const char *intro,
-			                    mxml_node_t *doc);
-static void		write_element(mxml_node_t *doc, mxml_node_t *element);
-static void		write_string(const char *s);
+static void		write_description(mxml_node_t *description, int mode);
+static void		write_element(mxml_node_t *doc, mxml_node_t *element,
+			              int mode);
+static void		write_html(const char *section,
+			           const char *title,
+			           const char *intro,
+			           mxml_node_t *doc);
+static void		write_man(const char *man_name,
+			          const char *section,
+			          const char *title,
+			          const char *intro,
+			          mxml_node_t *doc);
+static void		write_string(const char *s, int mode);
 static const char	*ws_cb(mxml_node_t *node, int where);
 
 
@@ -176,13 +195,15 @@ main(int  argc,				/* I - Number of command-line args */
   const char	*title;			/* Title of documentation */
   const char	*introfile;		/* Introduction file */
   const char	*xmlfile;		/* XML file */
+  const char	*name;			/* Name of manpage */
   int		update;			/* Updated XML file */
-
+  int		mode;			/* Output mode */
 
  /*
   * Check arguments...
   */
 
+  name      = NULL;
   section   = NULL;
   title     = NULL;
   introfile = NULL;
@@ -190,9 +211,18 @@ main(int  argc,				/* I - Number of command-line args */
   update    = 0;
   doc       = NULL;
   mxmldoc   = NULL;
+  mode      = OUTPUT_HTML;
 
   for (i = 1; i < argc; i ++)
-    if (!strcmp(argv[i], "--intro") && !introfile)
+    if (!strcmp(argv[i], "--help"))
+    {
+     /*
+      * Show help...
+      */
+
+      usage(NULL);
+    }
+    else if (!strcmp(argv[i], "--intro") && !introfile)
     {
      /*
       * Set intro file...
@@ -204,6 +234,23 @@ main(int  argc,				/* I - Number of command-line args */
       else
         usage(NULL);
     }
+    else if (!strcmp(argv[i], "--man") && !name)
+    {
+     /*
+      * Output manpage...
+      */
+
+      i ++;
+      if (i < argc)
+      {
+        mode = OUTPUT_MAN;
+        name = argv[i];
+      }
+      else
+        usage(NULL);
+    }
+    else if (!strcmp(argv[i], "--no-output"))
+      mode = OUTPUT_NONE;
     else if (!strcmp(argv[i], "--section") && !section)
     {
      /*
@@ -262,7 +309,7 @@ main(int  argc,				/* I - Number of command-line args */
 	    * Read the existing XML file...
 	    */
 
-	    doc = mxmlLoadFile(NULL, fp, MXML_NO_CALLBACK);
+	    doc = mxmlLoadFile(NULL, fp, load_cb);
 
 	    fclose(fp);
 
@@ -354,13 +401,26 @@ main(int  argc,				/* I - Number of command-line args */
     }
   }
 
- /*
-  * Write HTML documentation...
-  */
+  switch (mode)
+  {
+    case OUTPUT_HTML :
+       /*
+        * Write HTML documentation...
+        */
 
-  write_documentation(section, title ? title : "Documentation", introfile,
-                      mxmldoc);
+        write_html(section, title ? title : "Documentation", introfile,
+                   mxmldoc);
+        break;
 
+    case OUTPUT_MAN :
+       /*
+        * Write manpage documentation...
+        */
+
+        write_man(name, section, title, introfile, mxmldoc);
+        break;
+  }
+  
  /*
   * Delete the tree and return...
   */
@@ -533,7 +593,10 @@ find_public(mxml_node_t *node,		/* I - Current node */
     */
 
     for (comment = description->child; comment; comment = comment->next)
-      if (strstr(comment->value.text.string, "@private@"))
+      if ((comment->type == MXML_TEXT &&
+           strstr(comment->value.text.string, "@private@")) ||
+          (comment->type == MXML_OPAQUE &&
+           strstr(comment->value.opaque, "@private@")))
         break;
 
     if (!comment)
@@ -614,20 +677,46 @@ get_text(mxml_node_t *node,		/* I - Node to get */
 
   for (current = node->child; current && ptr < end; current = current->next)
   {
-    if (current->value.text.whitespace)
-      *ptr++ = ' ';
+    if (current->type == MXML_TEXT)
+    {
+      if (current->value.text.whitespace)
+        *ptr++ = ' ';
 
-    len = strlen(current->value.text.string);
-    if (len > (end - ptr))
-      len = end - ptr;
+      len = strlen(current->value.text.string);
+      if (len > (end - ptr))
+        len = end - ptr;
 
-    memcpy(ptr, current->value.text.string, len);
-    ptr += len;
+      memcpy(ptr, current->value.text.string, len);
+      ptr += len;
+    }
+    else if (current->type == MXML_OPAQUE)
+    {
+      len = strlen(current->value.opaque);
+      if (len > (end - ptr))
+        len = end - ptr;
+
+      memcpy(ptr, current->value.opaque, len);
+      ptr += len;
+    }
   }
 
   *ptr = '\0';
 
   return (buffer);
+}
+
+
+/*
+ * 'load_cb()' - Set the type of child nodes.
+ */
+
+static mxml_type_t			/* O - Node type */
+load_cb(mxml_node_t *node)		/* I - Node */
+{
+  if (!strcmp(node->value.element.name, "description"))
+    return (MXML_OPAQUE);
+  else
+    return (MXML_TEXT);
 }
 
 
@@ -2150,8 +2239,11 @@ usage(const char *option)		/* I - Unknown option */
 
   puts("Usage: mxmldoc [options] [filename.xml] [source files] >filename.html");
   puts("Options:");
+  puts("    --intro introfile          Set introduction file");
+  puts("    --man name                 Generate man page");
+  puts("    --no-output                Do no generate documentation file");
+  puts("    --section section          Set section name");
   puts("    --title title              Set documentation title");
-  puts("    --intro introfile.html     Set introduction file");
 
   exit(1);
 }
@@ -2163,17 +2255,20 @@ usage(const char *option)		/* I - Unknown option */
 
 static void
 write_description(
-    mxml_node_t *description)		/* I - Description node */
+    mxml_node_t *description,		/* I - Description node */
+    int         mode)			/* I - Output mode */
 {
   char	text[10240],			/* Text for description */
 	*ptr;				/* Pointer into text */
+  int	col;				/* Current column */
+
 
   if (!description)
     return;
 
   get_text(description, text, sizeof(text));
 
-  for (ptr = text; *ptr; ptr ++)
+  for (ptr = text, col = 0; *ptr; ptr ++)
   {
     if (*ptr == '@' &&
         (!strncmp(ptr + 1, "deprecated@", 11) ||
@@ -2186,59 +2281,133 @@ write_description(
       if (!*ptr)
         return;
     }
-    else if (*ptr == '&')
-      fputs("&amp;", stdout);
-    else if (*ptr == '<')
-      fputs("&lt;", stdout);
-    else if (*ptr == '>')
-      fputs("&gt;", stdout);
-    else if (*ptr == '\"')
-      fputs("&quot;", stdout);
-    else if (*ptr & 128)
+    else if (mode == OUTPUT_HTML)
     {
-     /*
-      * Convert UTF-8 to Unicode constant...
-      */
-
-      int	ch;			/* Unicode character */
-
-
-      ch = *ptr & 255;
-
-      if ((ch & 0xe0) == 0xc0)
-      {
-        ch = ((ch & 0x1f) << 6) | (ptr[1] & 0x3f);
-	ptr ++;
-      }
-      else if ((ch & 0xf0) == 0xe0)
-      {
-        ch = ((((ch * 0x0f) << 6) | (ptr[1] & 0x3f)) << 6) | (ptr[2] & 0x3f);
-	ptr += 2;
-      }
-
-      if (ch == 0xa0)
+      if (*ptr == '&')
+        fputs("&amp;", stdout);
+      else if (*ptr == '<')
+        fputs("&lt;", stdout);
+      else if (*ptr == '>')
+        fputs("&gt;", stdout);
+      else if (*ptr == '\"')
+        fputs("&quot;", stdout);
+      else if (*ptr & 128)
       {
        /*
-        * Handle non-breaking space as-is...
-	*/
+        * Convert UTF-8 to Unicode constant...
+        */
 
-        fputs("&nbsp;", stdout);
+        int	ch;			/* Unicode character */
+
+
+        ch = *ptr & 255;
+
+        if ((ch & 0xe0) == 0xc0)
+        {
+          ch = ((ch & 0x1f) << 6) | (ptr[1] & 0x3f);
+	  ptr ++;
+        }
+        else if ((ch & 0xf0) == 0xe0)
+        {
+          ch = ((((ch * 0x0f) << 6) | (ptr[1] & 0x3f)) << 6) | (ptr[2] & 0x3f);
+	  ptr += 2;
+        }
+
+        if (ch == 0xa0)
+        {
+         /*
+          * Handle non-breaking space as-is...
+	  */
+
+          fputs("&nbsp;", stdout);
+        }
+        else
+          printf("&#x%x;", ch);
+      }
+      else if (*ptr == '\n' && ptr[1] == '\n' && ptr[2] && ptr[2] != '@')
+      {
+        fputs("\n<p>", stdout);
+        ptr ++;
       }
       else
-        printf("&#x%x;", ch);
+        putchar(*ptr);
+    }
+    else if (*ptr == '\n' && ptr[1] == '\n' && ptr[2] && ptr[2] != '@')
+    {
+      puts("\n.PP");
+      ptr ++;
     }
     else
+    {
+      if (*ptr == '\\' || (*ptr == '.' && col == 0))
+        putchar('\\');
+
       putchar(*ptr);
+
+      if (*ptr == '\n')
+        col = 0;
+      else
+        col ++;
+    }
   }
+
+  putchar('\n');
 }
 
 
 /*
- * 'write_documentation()' - Write HTML documentation.
+ * 'write_element()' - Write an element's text nodes.
  */
 
 static void
-write_documentation(
+write_element(mxml_node_t *doc,		/* I - Document tree */
+              mxml_node_t *element,	/* I - Element to write */
+              int         mode)		/* I - Output mode */
+{
+  mxml_node_t	*node;			/* Current node */
+
+
+  if (!element)
+    return;
+
+  for (node = element->child;
+       node;
+       node = mxmlWalkNext(node, element, MXML_NO_DESCEND))
+    if (node->type == MXML_TEXT)
+    {
+      if (node->value.text.whitespace)
+	putchar(' ');
+
+      if (mode == OUTPUT_HTML &&
+          (mxmlFindElement(doc, doc, "class", "name", node->value.text.string,
+                           MXML_DESCEND) ||
+	   mxmlFindElement(doc, doc, "enumeration", "name",
+	                   node->value.text.string, MXML_DESCEND) ||
+	   mxmlFindElement(doc, doc, "struct", "name", node->value.text.string,
+                           MXML_DESCEND) ||
+	   mxmlFindElement(doc, doc, "typedef", "name", node->value.text.string,
+                           MXML_DESCEND) ||
+	   mxmlFindElement(doc, doc, "union", "name", node->value.text.string,
+                           MXML_DESCEND)))
+      {
+        printf("<a href='#");
+        write_string(node->value.text.string, mode);
+	printf("'>");
+        write_string(node->value.text.string, mode);
+	printf("</a>");
+      }
+      else
+        write_string(node->value.text.string, mode);
+    }
+}
+
+
+/*
+ * 'write_html()' - Write HTML documentation.
+ */
+
+static void
+write_html(
     const char  *section,		/* I - Section */
     const char  *title,			/* I - Title */
     const char  *introfile,		/* I - Intro file */
@@ -2371,16 +2540,15 @@ write_documentation(
       {
         fputs("<h4>Description</h4>\n"
 	      "<p>", stdout);
-	write_description(description);
-	puts("</p>");
+	write_description(description, OUTPUT_HTML);
       }
 
       printf("<h4>Definition</h4>\n"
-             "<pre>\n"
+             "<p><tt>\n"
              "class %s", cname);
       if ((parent = mxmlElementGetAttr(scut, "parent")) != NULL)
         printf(" %s", parent);
-      puts("\n{");
+      puts("<br>\n{");
 
       for (i = 0; i < 3; i ++)
       {
@@ -2395,13 +2563,14 @@ write_documentation(
           if (!inscope)
 	  {
 	    inscope = 1;
-	    printf("  %s:\n", scopes[i]);
+	    printf("&nbsp;&nbsp;%s:<br>\n", scopes[i]);
 	  }
 
-	  printf("    ");
+	  printf("&nbsp;&nbsp;&nbsp;&nbsp;");
 	  write_element(doc, mxmlFindElement(arg, arg, "type", NULL,
-                                             NULL, MXML_DESCEND_FIRST));
-	  printf(" %s;\n", mxmlElementGetAttr(arg, "name"));
+                                             NULL, MXML_DESCEND_FIRST),
+                        OUTPUT_HTML);
+	  printf(" %s;<br>\n", mxmlElementGetAttr(arg, "name"));
 	}
 
 	for (function = mxmlFindElement(scut, scut, "function", "scope",
@@ -2413,12 +2582,12 @@ write_documentation(
           if (!inscope)
 	  {
 	    inscope = 1;
-	    printf("  %s:\n", scopes[i]);
+	    printf("&nbsp;&nbsp;%s:<br>\n", scopes[i]);
 	  }
 
           name = mxmlElementGetAttr(function, "name");
 
-          printf("    ");
+          printf("&nbsp;&nbsp;&nbsp;&nbsp;");
 
 	  arg = mxmlFindElement(function, function, "returnvalue", NULL,
                         	NULL, MXML_DESCEND_FIRST);
@@ -2426,7 +2595,8 @@ write_documentation(
 	  if (arg)
 	  {
 	    write_element(doc, mxmlFindElement(arg, arg, "type", NULL,
-                                               NULL, MXML_DESCEND_FIRST));
+                                               NULL, MXML_DESCEND_FIRST),
+                          OUTPUT_HTML);
 	    putchar(' ');
 	  }
 	  else if (strcmp(cname, name) && strcmp(cname, name + 1))
@@ -2449,7 +2619,7 @@ write_documentation(
 
 	    if (type->child)
 	    {
-	      write_element(doc, type);
+	      write_element(doc, type, OUTPUT_HTML);
 	      putchar(' ');
 	    }
 	    fputs(mxmlElementGetAttr(arg, "name"), stdout);
@@ -2458,15 +2628,16 @@ write_documentation(
 	  }
 
 	  if (prefix == '(')
-	    puts("(void);");
+	    puts("(void);<br>");
 	  else
-	    puts(");");
+	    puts(");<br>");
 	}
       }
 
-      puts("};\n</pre>\n"
+      puts("};</tt></p>\n"
            "<h4>Members</h4>\n"
-           "<div class='table'><table align='center' border='1' width='80%'>\n"
+           "<div class='table'><table align='center' border='1' width='80%' "
+           "summary='Members'>\n"
            "<thead><tr><th>Name</th><th>Description</th></tr></thead>\n"
            "<tbody>");
 
@@ -2482,7 +2653,7 @@ write_documentation(
 	printf("<tr><td><tt>%s</tt> %s</td><td>",
 	       mxmlElementGetAttr(arg, "name"), get_comment_info(description));
 
-	write_description(description);
+	write_description(description, OUTPUT_HTML);
 
 	puts("</td></tr>");
       }
@@ -2500,7 +2671,7 @@ write_documentation(
 	printf("<tr><td><tt><a name='%s.%s'>%s()</a></tt> %s</td><td>",
 	       cname, name, name, get_comment_info(description));
 
-	write_description(description);
+	write_description(description, OUTPUT_HTML);
 
 	arg = mxmlFindElement(function, function, "returnvalue", NULL,
                               NULL, MXML_DESCEND_FIRST);
@@ -2509,7 +2680,8 @@ write_documentation(
 	{
 	  fputs("\n<i>Returns:</i> ", stdout);
 	  write_element(NULL, mxmlFindElement(arg, arg, "description", NULL,
-                                              NULL, MXML_DESCEND_FIRST));
+                                              NULL, MXML_DESCEND_FIRST),
+                        OUTPUT_HTML);
 	}
 
 	puts("</td></tr>");
@@ -2556,12 +2728,12 @@ write_documentation(
       {
         fputs("<h4>Description</h4>\n"
 	      "<p>", stdout);
-	write_description(description);
-	puts("</p>");
+	write_description(description, OUTPUT_HTML);
       }
 
       puts("<h4>Values</h4>\n"
-           "<div class='table'><table align='center' border='1' width='80%'>\n"
+           "<div class='table'><table align='center' border='1' width='80%' "
+           "summary='Values'>\n"
            "<thead><tr><th>Name</th><th>Description</th></tr></thead>\n"
            "<tbody>");
 
@@ -2576,7 +2748,7 @@ write_documentation(
 	printf("<tr><td><tt>%s</tt> %s</td><td>",
 	       mxmlElementGetAttr(arg, "name"), get_comment_info(description));
 
-	write_description(description);
+	write_description(description, OUTPUT_HTML);
 
 	puts("</td></tr>");
       }
@@ -2622,23 +2794,23 @@ write_documentation(
       {
         fputs("<h4>Description</h4>\n"
 	      "<p>", stdout);
-	write_description(description);
-	puts("</p>");
+	write_description(description, OUTPUT_HTML);
       }
 
       puts("<h4>Syntax</h4>\n"
-           "<pre>");
+           "<p><tt>");
 
       arg = mxmlFindElement(function, function, "returnvalue", NULL,
                             NULL, MXML_DESCEND_FIRST);
 
       if (arg)
 	write_element(doc, mxmlFindElement(arg, arg, "type", NULL,
-                                           NULL, MXML_DESCEND_FIRST));
+                                           NULL, MXML_DESCEND_FIRST),
+                      OUTPUT_HTML);
       else
 	fputs("void", stdout);
 
-      printf("\n%s", name);
+      printf("<br>\n%s", name);
       for (arg = mxmlFindElement(function, function, "argument", NULL, NULL,
                         	 MXML_DESCEND_FIRST), prefix = '(';
 	   arg;
@@ -2651,7 +2823,7 @@ write_documentation(
 	printf("%c\n    ", prefix);
 	if (type->child)
 	{
-	  write_element(doc, type);
+	  write_element(doc, type, OUTPUT_HTML);
 	  putchar(' ');
 	}
 	fputs(mxmlElementGetAttr(arg, "name"), stdout);
@@ -2660,9 +2832,9 @@ write_documentation(
       }
 
       if (prefix == '(')
-	puts("(void);\n</pre>");
+	puts("(void);\n</tt></p>");
       else
-	puts(");\n</pre>");
+	puts(");\n</tt></p>");
 
       puts("<h4>Arguments</h4>");
 
@@ -2671,7 +2843,7 @@ write_documentation(
       else
       {
 	puts("<div class='table'><table align='center' border='1' width='80%' "
-             "cellpadding='5' cellspacing='0'>\n"
+             "cellpadding='5' cellspacing='0' summary='Arguments'>\n"
 	     "<thead><tr><th>Name</th><th>Description</th></tr></thead>\n"
 	     "<tbody>");
 
@@ -2684,7 +2856,8 @@ write_documentation(
 	  printf("<tr><td><tt>%s</tt></td><td>", mxmlElementGetAttr(arg, "name"));
 
 	  write_element(NULL, mxmlFindElement(arg, arg, "description", NULL,
-                               		      NULL, MXML_DESCEND_FIRST));
+                               		      NULL, MXML_DESCEND_FIRST),
+                        OUTPUT_HTML);
 
           puts("</td></tr>");
 	}
@@ -2703,7 +2876,8 @@ write_documentation(
       {
 	fputs("<p>", stdout);
 	write_element(NULL, mxmlFindElement(arg, arg, "description", NULL,
-                                            NULL, MXML_DESCEND_FIRST));
+                                            NULL, MXML_DESCEND_FIRST),
+                      OUTPUT_HTML);
 	puts("</p>");
       }
     }
@@ -2746,23 +2920,23 @@ write_documentation(
       {
         fputs("<h4>Description</h4>\n"
 	      "<p>", stdout);
-	write_description(description);
-	puts("</p>");
+	write_description(description, OUTPUT_HTML);
       }
 
       printf("<h4>Definition</h4>\n"
-             "<pre>\n"
-	     "struct %s\n{\n", cname);
+             "<p><tt>\n"
+	     "struct %s<br>\n{<br>\n", cname);
       for (arg = mxmlFindElement(scut, scut, "variable", NULL, NULL,
                         	 MXML_DESCEND_FIRST);
 	   arg;
 	   arg = mxmlFindElement(arg, scut, "variable", NULL, NULL,
                         	 MXML_NO_DESCEND))
       {
-	printf("  ");
+	printf("&nbsp;&nbsp;");
 	write_element(doc, mxmlFindElement(arg, arg, "type", NULL,
-                                           NULL, MXML_DESCEND_FIRST));
-	printf(" %s;\n", mxmlElementGetAttr(arg, "name"));
+                                           NULL, MXML_DESCEND_FIRST),
+                      OUTPUT_HTML);
+	printf(" %s;<br>\n", mxmlElementGetAttr(arg, "name"));
       }
 
       for (function = mxmlFindElement(scut, scut, "function", NULL, NULL,
@@ -2773,7 +2947,7 @@ write_documentation(
       {
         name = mxmlElementGetAttr(function, "name");
 
-        printf("  ");
+        printf("&nbsp;&nbsp;");
 
 	arg = mxmlFindElement(function, function, "returnvalue", NULL,
                               NULL, MXML_DESCEND_FIRST);
@@ -2781,7 +2955,8 @@ write_documentation(
 	if (arg)
 	{
 	  write_element(doc, mxmlFindElement(arg, arg, "type", NULL,
-                                             NULL, MXML_DESCEND_FIRST));
+                                             NULL, MXML_DESCEND_FIRST),
+                        OUTPUT_HTML);
 	  putchar(' ');
 	}
 	else if (strcmp(cname, name) && strcmp(cname, name + 1))
@@ -2804,7 +2979,7 @@ write_documentation(
 
 	  if (type->child)
 	  {
-	    write_element(doc, type);
+	    write_element(doc, type, OUTPUT_HTML);
 	    putchar(' ');
 	  }
 	  fputs(mxmlElementGetAttr(arg, "name"), stdout);
@@ -2813,14 +2988,15 @@ write_documentation(
 	}
 
 	if (prefix == '(')
-	  puts("(void);");
+	  puts("(void);<br>");
 	else
-	  puts(");");
+	  puts(");<br>");
       }
 
-      puts("};\n</pre>\n"
+      puts("};</tt></p>\n"
            "<h4>Members</h4>\n"
-           "<div class='table'><table align='center' border='1' width='80%'>\n"
+           "<div class='table'><table align='center' border='1' width='80%' "
+           "summary='Members'>\n"
            "<thead><tr><th>Name</th><th>Description</th></tr></thead>\n"
            "<tbody>");
 
@@ -2835,7 +3011,7 @@ write_documentation(
 	printf("<tr><td><tt>%s</tt> %s</td><td>",
 	       mxmlElementGetAttr(arg, "name"), get_comment_info(description));
 
-	write_description(description);
+	write_description(description, OUTPUT_HTML);
 
 	puts("</td></tr>");
       }
@@ -2853,7 +3029,7 @@ write_documentation(
 	printf("<tr><td><tt><a name='%s.%s'>%s()</a></tt> %s</td><td>",
 	       cname, name, name, get_comment_info(description));
 
-	write_description(description);
+	write_description(description, OUTPUT_HTML);
 
 	arg = mxmlFindElement(function, function, "returnvalue", NULL,
                               NULL, MXML_DESCEND_FIRST);
@@ -2862,7 +3038,8 @@ write_documentation(
 	{
 	  fputs("\n<i>Returns:</i> ", stdout);
 	  write_element(NULL, mxmlFindElement(arg, arg, "description", NULL,
-                                              NULL, MXML_DESCEND_FIRST));
+                                              NULL, MXML_DESCEND_FIRST),
+                        OUTPUT_HTML);
 	}
 
 	puts("</td></tr>");
@@ -2909,12 +3086,11 @@ write_documentation(
       {
         fputs("<h4>Description</h4>\n"
 	      "<p>", stdout);
-	write_description(description);
-	puts("</p>");
+	write_description(description, OUTPUT_HTML);
       }
 
       fputs("<h4>Definition</h4>\n"
-            "<pre>\n"
+            "<p><tt>\n"
 	    "typedef ", stdout);
 
       type = mxmlFindElement(scut, scut, "type", NULL, NULL,
@@ -2940,13 +3116,13 @@ write_documentation(
 	                      type->value.text.string, MXML_DESCEND))
 	  {
             printf("<a href='#");
-            write_string(type->value.text.string);
+            write_string(type->value.text.string, OUTPUT_HTML);
 	    printf("'>");
-            write_string(type->value.text.string);
+            write_string(type->value.text.string, OUTPUT_HTML);
 	    printf("</a>");
 	  }
 	  else
-            write_string(type->value.text.string);
+            write_string(type->value.text.string, OUTPUT_HTML);
         }
 
       if (type)
@@ -2974,13 +3150,13 @@ write_documentation(
 	                      type->value.text.string, MXML_DESCEND))
 	  {
             printf("<a href='#");
-            write_string(type->value.text.string);
+            write_string(type->value.text.string, OUTPUT_HTML);
 	    printf("'>");
-            write_string(type->value.text.string);
+            write_string(type->value.text.string, OUTPUT_HTML);
 	    printf("</a>");
 	  }
 	  else
-            write_string(type->value.text.string);
+            write_string(type->value.text.string, OUTPUT_HTML);
         }
 
         puts(";");
@@ -2988,7 +3164,7 @@ write_documentation(
       else
 	printf(" %s;\n", name);
 
-      puts("</pre>");
+      puts("</tt></p>");
     }
   }
 
@@ -3029,28 +3205,29 @@ write_documentation(
       {
         fputs("<h4>Description</h4>\n"
 	      "<p>", stdout);
-	write_description(description);
-	puts("</p>");
+	write_description(description, OUTPUT_HTML);
       }
 
       printf("<h4>Definition</h4>\n"
-             "<pre>\n"
-	     "union %s\n{\n", name);
+             "<p><tt>\n"
+	     "union %s<br>\n{<br>\n", name);
       for (arg = mxmlFindElement(scut, scut, "variable", NULL, NULL,
                         	 MXML_DESCEND_FIRST);
 	   arg;
 	   arg = mxmlFindElement(arg, scut, "variable", NULL, NULL,
                         	 MXML_NO_DESCEND))
       {
-	printf("  ");
+	printf("&nbsp;&nbsp;");
 	write_element(doc, mxmlFindElement(arg, arg, "type", NULL,
-                                           NULL, MXML_DESCEND_FIRST));
-	printf(" %s;\n", mxmlElementGetAttr(arg, "name"));
+                                           NULL, MXML_DESCEND_FIRST),
+                      OUTPUT_HTML);
+	printf(" %s;<br>\n", mxmlElementGetAttr(arg, "name"));
       }
 
-      puts("};\n</pre>\n"
+      puts("};</tt></p>\n"
            "<h4>Members</h4>\n"
-           "<div class='table'><table align='center' border='1' width='80%'>\n"
+           "<div class='table'><table align='center' border='1' width='80%' "
+           "summary='Members'>\n"
            "<thead><tr><th>Name</th><th>Description</th></tr></thead>\n"
            "<tbody>");
 
@@ -3065,7 +3242,7 @@ write_documentation(
 	printf("<tr><td><tt>%s</tt> %s</td><td>",
 	       mxmlElementGetAttr(arg, "name"), get_comment_info(description));
 
-	write_description(description);
+	write_description(description, OUTPUT_HTML);
 
 	puts("</td></tr>");
       }
@@ -3111,19 +3288,19 @@ write_documentation(
       {
         fputs("<h4>Description</h4>\n"
 	      "<p>", stdout);
-	write_description(description);
-	puts("</p>");
+	write_description(description, OUTPUT_HTML);
       }
 
       puts("<h4>Definition</h4>\n"
-           "<pre>");
+           "<p><tt>");
 
       write_element(doc, mxmlFindElement(arg, arg, "type", NULL,
-                                         NULL, MXML_DESCEND_FIRST));
+                                         NULL, MXML_DESCEND_FIRST),
+                    OUTPUT_HTML);
       printf(" %s", mxmlElementGetAttr(arg, "name"));
       if ((defval = mxmlElementGetAttr(arg, "default")) != NULL)
 	printf(" %s", defval);
-      puts(";\n</pre>");
+      puts(";</tt></p>");
     }
   }
 
@@ -3137,104 +3314,580 @@ write_documentation(
 
 
 /*
- * 'write_element()' - Write an element's text nodes.
+ * 'write_man()' - Write manpage documentation.
  */
 
 static void
-write_element(mxml_node_t *doc,		/* I - Document tree */
-              mxml_node_t *element)	/* I - Element to write */
+write_man(
+    const char  *man_name,		/* I - Name of manpage */
+    const char  *section,		/* I - Section */
+    const char  *title,			/* I - Title */
+    const char  *introfile,		/* I - Intro file */
+    mxml_node_t *doc)			/* I - XML documentation */
 {
-  mxml_node_t	*node;			/* Current node */
+  int		i;			/* Looping var */
+  FILE		*fp;			/* File */
+  char		line[8192];		/* Line from file */
+  mxml_node_t	*function,		/* Current function */
+		*scut,			/* Struct/class/union/typedef */
+		*arg,			/* Current argument */
+		*description,		/* Description of function/var */
+		*type;			/* Type for argument */
+  const char	*name,			/* Name of function/type */
+		*cname,			/* Class name */
+		*defval,		/* Default value */
+		*parent;		/* Parent class */
+  int		inscope;		/* Variable/method scope */
+  char		prefix;			/* Prefix character */
+  time_t	curtime;		/* Current time */
+  struct tm	*curdate;		/* Current date */
+  static const char * const scopes[] =	/* Scope strings */
+		{
+		  "private",
+		  "protected",
+		  "public"
+		};
 
 
-  if (!element)
-    return;
+ /*
+  * Standard header...
+  */
 
-  for (node = element->child;
-       node;
-       node = mxmlWalkNext(node, element, MXML_NO_DESCEND))
-    if (node->type == MXML_TEXT)
+  curtime = time(NULL);
+  curdate = localtime(&curtime);
+  strftime(line, sizeof(line), "%x", curdate);
+
+  printf(".TH %s %s \"%s\" \"%s\" \"%s\"\n", man_name, section ? section : "3",
+         title ? title : "", line, title ? title : "");
+  puts(".SH NAME");
+  printf("%s \\- %s\n", man_name, title ? title : man_name);
+
+ /*
+  * Intro...
+  */
+
+  if (introfile && (fp = fopen(introfile, "r")) != NULL)
+  {
+   /*
+    * Insert intro file before contents...
+    */
+
+    while (fgets(line, sizeof(line), fp))
+      fputs(line, stdout);
+
+    fclose(fp);
+  }
+
+ /*
+  * List of classes...
+  */
+
+  if (find_public(doc, doc, "class"))
+  {
+    puts(".SH CLASSES");
+
+    for (scut = find_public(doc, doc, "class");
+	 scut;
+	 scut = find_public(scut, doc, "class"))
     {
-      if (node->value.text.whitespace)
-	putchar(' ');
+      cname       = mxmlElementGetAttr(scut, "name");
+      description = mxmlFindElement(scut, scut, "description", NULL,
+                                    NULL, MXML_DESCEND_FIRST);
+      printf(".SS %s\n", cname);
 
-      if (mxmlFindElement(doc, doc, "class", "name", node->value.text.string,
-                          MXML_DESCEND) ||
-	  mxmlFindElement(doc, doc, "enumeration", "name",
-	                  node->value.text.string, MXML_DESCEND) ||
-	  mxmlFindElement(doc, doc, "struct", "name", node->value.text.string,
-                          MXML_DESCEND) ||
-	  mxmlFindElement(doc, doc, "typedef", "name", node->value.text.string,
-                          MXML_DESCEND) ||
-	  mxmlFindElement(doc, doc, "union", "name", node->value.text.string,
-                          MXML_DESCEND))
+      printf(".nf\n"
+             "class %s", cname);
+      if ((parent = mxmlElementGetAttr(scut, "parent")) != NULL)
+        printf(" %s", parent);
+      puts("\n{");
+
+      for (i = 0; i < 3; i ++)
       {
-        printf("<a href='#");
-        write_string(node->value.text.string);
-	printf("'>");
-        write_string(node->value.text.string);
-	printf("</a>");
+        inscope = 0;
+
+	for (arg = mxmlFindElement(scut, scut, "variable", "scope", scopes[i],
+                        	   MXML_DESCEND_FIRST);
+	     arg;
+	     arg = mxmlFindElement(arg, scut, "variable", "scope", scopes[i],
+                        	   MXML_NO_DESCEND))
+	{
+          if (!inscope)
+	  {
+	    inscope = 1;
+	    printf("  %s:\n", scopes[i]);
+	  }
+
+	  printf("    ");
+	  write_element(doc, mxmlFindElement(arg, arg, "type", NULL,
+                                             NULL, MXML_DESCEND_FIRST),
+                        OUTPUT_MAN);
+	  printf(" %s;\n", mxmlElementGetAttr(arg, "name"));
+	}
+
+	for (function = mxmlFindElement(scut, scut, "function", "scope",
+	                                scopes[i], MXML_DESCEND_FIRST);
+	     function;
+	     function = mxmlFindElement(function, scut, "function", "scope",
+	                                scopes[i], MXML_NO_DESCEND))
+	{
+          if (!inscope)
+	  {
+	    inscope = 1;
+	    printf("  %s:\n", scopes[i]);
+	  }
+
+          name = mxmlElementGetAttr(function, "name");
+
+          printf("    ");
+
+	  arg = mxmlFindElement(function, function, "returnvalue", NULL,
+                        	NULL, MXML_DESCEND_FIRST);
+
+	  if (arg)
+	  {
+	    write_element(doc, mxmlFindElement(arg, arg, "type", NULL,
+                                               NULL, MXML_DESCEND_FIRST),
+                          OUTPUT_MAN);
+	    putchar(' ');
+	  }
+	  else if (strcmp(cname, name) && strcmp(cname, name + 1))
+	    fputs("void ", stdout);
+
+	  printf("%s", name);
+
+	  for (arg = mxmlFindElement(function, function, "argument", NULL, NULL,
+                        	     MXML_DESCEND_FIRST), prefix = '(';
+	       arg;
+	       arg = mxmlFindElement(arg, function, "argument", NULL, NULL,
+                        	     MXML_NO_DESCEND), prefix = ',')
+	  {
+	    type = mxmlFindElement(arg, arg, "type", NULL, NULL,
+	                	   MXML_DESCEND_FIRST);
+
+	    putchar(prefix);
+	    if (prefix == ',')
+	      putchar(' ');
+
+	    if (type->child)
+	    {
+	      write_element(doc, type, OUTPUT_MAN);
+	      putchar(' ');
+	    }
+	    fputs(mxmlElementGetAttr(arg, "name"), stdout);
+            if ((defval = mxmlElementGetAttr(arg, "default")) != NULL)
+	      printf(" %s", defval);
+	  }
+
+	  if (prefix == '(')
+	    puts("(void);");
+	  else
+	    puts(");");
+	}
+      }
+
+      puts("};\n"
+           ".fi\n"
+           ".PP");
+
+      if (description)
+	write_description(description, OUTPUT_MAN);
+    }
+  }
+
+ /*
+  * List of enumerations...
+  */
+
+  if (find_public(doc, doc, "enumeration"))
+  {
+    puts(".SH ENUMERATIONS");
+
+    for (scut = find_public(doc, doc, "enumeration");
+	 scut;
+	 scut = find_public(scut, doc, "enumeration"))
+    {
+      name        = mxmlElementGetAttr(scut, "name");
+      description = mxmlFindElement(scut, scut, "description", NULL,
+                                    NULL, MXML_DESCEND_FIRST);
+      printf(".SS %s\n", name);
+
+      if (description)
+	write_description(description, OUTPUT_MAN);
+
+      for (arg = mxmlFindElement(scut, scut, "constant", NULL, NULL,
+                        	 MXML_DESCEND_FIRST);
+	   arg;
+	   arg = mxmlFindElement(arg, scut, "constant", NULL, NULL,
+                        	 MXML_NO_DESCEND))
+      {
+	description = mxmlFindElement(arg, arg, "description", NULL,
+                                      NULL, MXML_DESCEND_FIRST);
+	printf(".TP 5\n%s\n.br\n", mxmlElementGetAttr(arg, "name"));
+	write_description(description, OUTPUT_MAN);
+      }
+    }
+  }
+
+ /*
+  * List of functions...
+  */
+
+  if (find_public(doc, doc, "function"))
+  {
+    puts(".SH FUNCTIONS");
+
+    for (function = find_public(doc, doc, "function");
+	 function;
+	 function = find_public(function, doc, "function"))
+    {
+      name        = mxmlElementGetAttr(function, "name");
+      description = mxmlFindElement(function, function, "description", NULL,
+                                    NULL, MXML_DESCEND_FIRST);
+      printf(".SS %s()\n", name);
+
+      puts(".nf");
+
+      arg = mxmlFindElement(function, function, "returnvalue", NULL,
+                            NULL, MXML_DESCEND_FIRST);
+
+      if (arg)
+	write_element(doc, mxmlFindElement(arg, arg, "type", NULL,
+                                           NULL, MXML_DESCEND_FIRST),
+                      OUTPUT_MAN);
+      else
+	fputs("void", stdout);
+
+      printf("\n%s", name);
+      for (arg = mxmlFindElement(function, function, "argument", NULL, NULL,
+                        	 MXML_DESCEND_FIRST), prefix = '(';
+	   arg;
+	   arg = mxmlFindElement(arg, function, "argument", NULL, NULL,
+                        	 MXML_NO_DESCEND), prefix = ',')
+      {
+        type = mxmlFindElement(arg, arg, "type", NULL, NULL,
+	                       MXML_DESCEND_FIRST);
+
+	printf("%c\n    ", prefix);
+	if (type->child)
+	{
+	  write_element(doc, type, OUTPUT_MAN);
+	  putchar(' ');
+	}
+	fputs(mxmlElementGetAttr(arg, "name"), stdout);
+        if ((defval = mxmlElementGetAttr(arg, "default")) != NULL)
+	  printf(" %s", defval);
+      }
+
+      if (prefix == '(')
+	puts("(void);");
+      else
+	puts(");");
+
+      puts(".fi\n.PP");
+
+      if (description)
+	write_description(description, OUTPUT_MAN);
+    }
+  }
+
+ /*
+  * List of structures...
+  */
+
+  if (find_public(doc, doc, "struct"))
+  {
+    puts(".SH STRUCTURES");
+
+    for (scut = find_public(doc, doc, "struct");
+	 scut;
+	 scut = find_public(scut, doc, "struct"))
+    {
+      cname       = mxmlElementGetAttr(scut, "name");
+      description = mxmlFindElement(scut, scut, "description", NULL,
+                                    NULL, MXML_DESCEND_FIRST);
+      printf(".SS %s\n", cname);
+
+      printf(".nf\n"
+	     "struct %s\n{\n", cname);
+      for (arg = mxmlFindElement(scut, scut, "variable", NULL, NULL,
+                        	 MXML_DESCEND_FIRST);
+	   arg;
+	   arg = mxmlFindElement(arg, scut, "variable", NULL, NULL,
+                        	 MXML_NO_DESCEND))
+      {
+	printf("  ");
+	write_element(doc, mxmlFindElement(arg, arg, "type", NULL,
+                                           NULL, MXML_DESCEND_FIRST),
+                      OUTPUT_MAN);
+	printf(" %s;\n", mxmlElementGetAttr(arg, "name"));
+      }
+
+      for (function = mxmlFindElement(scut, scut, "function", NULL, NULL,
+                                      MXML_DESCEND_FIRST);
+	   function;
+	   function = mxmlFindElement(function, scut, "function", NULL, NULL,
+                                      MXML_NO_DESCEND))
+      {
+        name = mxmlElementGetAttr(function, "name");
+
+        printf("  ");
+
+	arg = mxmlFindElement(function, function, "returnvalue", NULL,
+                              NULL, MXML_DESCEND_FIRST);
+
+	if (arg)
+	{
+	  write_element(doc, mxmlFindElement(arg, arg, "type", NULL,
+                                             NULL, MXML_DESCEND_FIRST),
+                        OUTPUT_MAN);
+	  putchar(' ');
+	}
+	else if (strcmp(cname, name) && strcmp(cname, name + 1))
+	  fputs("void ", stdout);
+
+	fputs(name, stdout);
+
+	for (arg = mxmlFindElement(function, function, "argument", NULL, NULL,
+                        	   MXML_DESCEND_FIRST), prefix = '(';
+	     arg;
+	     arg = mxmlFindElement(arg, function, "argument", NULL, NULL,
+                        	   MXML_NO_DESCEND), prefix = ',')
+	{
+	  type = mxmlFindElement(arg, arg, "type", NULL, NULL,
+	                	 MXML_DESCEND_FIRST);
+
+	  putchar(prefix);
+	  if (prefix == ',')
+	    putchar(' ');
+
+	  if (type->child)
+	  {
+	    write_element(doc, type, OUTPUT_MAN);
+	    putchar(' ');
+	  }
+	  fputs(mxmlElementGetAttr(arg, "name"), stdout);
+          if ((defval = mxmlElementGetAttr(arg, "default")) != NULL)
+	    printf(" %s", defval);
+	}
+
+	if (prefix == '(')
+	  puts("(void);");
+	else
+	  puts(");");
+      }
+
+      puts("};\n.fi\n.PP");
+
+      if (description)
+	write_description(description, OUTPUT_MAN);
+    }
+  }
+
+ /*
+  * List of types...
+  */
+
+  if (find_public(doc, doc, "typedef"))
+  {
+    puts(".SH TYPES");
+
+    for (scut = find_public(doc, doc, "typedef");
+	 scut;
+	 scut = find_public(scut, doc, "typedef"))
+    {
+      name        = mxmlElementGetAttr(scut, "name");
+      description = mxmlFindElement(scut, scut, "description", NULL,
+                                    NULL, MXML_DESCEND_FIRST);
+      printf(".SS %s\n", name);
+
+      fputs(".nf\n"
+	    "typedef ", stdout);
+
+      type = mxmlFindElement(scut, scut, "type", NULL, NULL,
+                             MXML_DESCEND_FIRST);
+
+      for (type = type->child; type; type = type->next)
+        if (!strcmp(type->value.text.string, "("))
+	  break;
+	else
+	{
+	  if (type->value.text.whitespace)
+	    putchar(' ');
+
+          write_string(type->value.text.string, OUTPUT_MAN);
+        }
+
+      if (type)
+      {
+       /*
+        * Output function type...
+	*/
+
+        printf(" (*%s", name);
+
+	for (type = type->next->next; type; type = type->next)
+	{
+	  if (type->value.text.whitespace)
+	    putchar(' ');
+
+          write_string(type->value.text.string, OUTPUT_MAN);
+        }
+
+        puts(";");
       }
       else
-        write_string(node->value.text.string);
+	printf(" %s;\n", name);
+
+      puts(".fi\n.PP");
+
+      if (description)
+	write_description(description, OUTPUT_MAN);
     }
+  }
+
+ /*
+  * List of unions...
+  */
+
+  if (find_public(doc, doc, "union"))
+  {
+    puts(".SH UNIONS");
+
+    for (scut = find_public(doc, doc, "union");
+	 scut;
+	 scut = find_public(scut, doc, "union"))
+    {
+      name        = mxmlElementGetAttr(scut, "name");
+      description = mxmlFindElement(scut, scut, "description", NULL,
+                                    NULL, MXML_DESCEND_FIRST);
+      printf(".SS %s\n", name);
+
+      printf(".nf\n"
+	     "union %s\n{\n", name);
+      for (arg = mxmlFindElement(scut, scut, "variable", NULL, NULL,
+                        	 MXML_DESCEND_FIRST);
+	   arg;
+	   arg = mxmlFindElement(arg, scut, "variable", NULL, NULL,
+                        	 MXML_NO_DESCEND))
+      {
+	printf("  ");
+	write_element(doc, mxmlFindElement(arg, arg, "type", NULL,
+                                           NULL, MXML_DESCEND_FIRST),
+                      OUTPUT_MAN);
+	printf(" %s;\n", mxmlElementGetAttr(arg, "name"));
+      }
+
+      puts("};\n.fi\n.PP");
+
+      if (description)
+	write_description(description, OUTPUT_MAN);
+    }
+  }
+
+ /*
+  * Variables...
+  */
+
+  if (find_public(doc, doc, "variable"))
+  {
+    puts(".SH VARIABLES");
+
+    for (arg = find_public(doc, doc, "variable");
+	 arg;
+	 arg = find_public(arg, doc, "variable"))
+    {
+      name        = mxmlElementGetAttr(arg, "name");
+      description = mxmlFindElement(arg, arg, "description", NULL,
+                                    NULL, MXML_DESCEND_FIRST);
+      printf(".SS %s\n", name);
+
+      puts(",nf");
+
+      write_element(doc, mxmlFindElement(arg, arg, "type", NULL,
+                                         NULL, MXML_DESCEND_FIRST),
+                    OUTPUT_MAN);
+      printf(" %s", mxmlElementGetAttr(arg, "name"));
+      if ((defval = mxmlElementGetAttr(arg, "default")) != NULL)
+	printf(" %s", defval);
+      puts(";\n.fi\n.PP");
+
+      if (description)
+	write_description(description, OUTPUT_MAN);
+    }
+  }
 }
 
 
 /*
- * 'write_string()' - Write a string, quoting XHTML special chars as needed...
+ * 'write_string()' - Write a string, quoting HTML special chars as needed...
  */
 
 static void
-write_string(const char *s)		/* I - String to write */
+write_string(const char *s,		/* I - String to write */
+             int        mode)		/* I - Output mode */
 {
-  while (*s)
+  switch (mode)
   {
-    if (*s == '&')
-      fputs("&amp;", stdout);
-    else if (*s == '<')
-      fputs("&lt;", stdout);
-    else if (*s == '>')
-      fputs("&gt;", stdout);
-    else if (*s == '\"')
-      fputs("&quot;", stdout);
-    else if (*s & 128)
-    {
-     /*
-      * Convert UTF-8 to Unicode constant...
-      */
+    case OUTPUT_HTML :
+        while (*s)
+        {
+          if (*s == '&')
+            fputs("&amp;", stdout);
+          else if (*s == '<')
+            fputs("&lt;", stdout);
+          else if (*s == '>')
+            fputs("&gt;", stdout);
+          else if (*s == '\"')
+            fputs("&quot;", stdout);
+          else if (*s & 128)
+          {
+           /*
+            * Convert UTF-8 to Unicode constant...
+            */
 
-      int	ch;			/* Unicode character */
+            int	ch;			/* Unicode character */
 
 
-      ch = *s & 255;
+            ch = *s & 255;
 
-      if ((ch & 0xe0) == 0xc0)
-      {
-        ch = ((ch & 0x1f) << 6) | (s[1] & 0x3f);
-	s ++;
-      }
-      else if ((ch & 0xf0) == 0xe0)
-      {
-        ch = ((((ch * 0x0f) << 6) | (s[1] & 0x3f)) << 6) | (s[2] & 0x3f);
-	s += 2;
-      }
+            if ((ch & 0xe0) == 0xc0)
+            {
+              ch = ((ch & 0x1f) << 6) | (s[1] & 0x3f);
+	      s ++;
+            }
+            else if ((ch & 0xf0) == 0xe0)
+            {
+              ch = ((((ch * 0x0f) << 6) | (s[1] & 0x3f)) << 6) | (s[2] & 0x3f);
+	      s += 2;
+            }
 
-      if (ch == 0xa0)
-      {
-       /*
-        * Handle non-breaking space as-is...
-	*/
+            if (ch == 0xa0)
+            {
+             /*
+              * Handle non-breaking space as-is...
+	      */
 
-        fputs("&nbsp;", stdout);
-      }
-      else
-        printf("&#x%x;", ch);
-    }
-    else
-      putchar(*s);
+              fputs("&nbsp;", stdout);
+            }
+            else
+              printf("&#x%x;", ch);
+          }
+          else
+            putchar(*s);
 
-    s ++;
+          s ++;
+        }
+        break;
+
+    case OUTPUT_MAN :
+        while (*s)
+        {
+          if (*s == '\\')
+            putchar('\\');
+
+          putchar(*s++);
+        }
+        break;
   }
 }
 

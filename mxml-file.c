@@ -24,6 +24,12 @@
  *   mxmlSaveFd()            - Save an XML tree to a file descriptor.
  *   mxmlSaveFile()          - Save an XML tree to a file.
  *   mxmlSaveString()        - Save an XML node tree to a string.
+ *   mxmlSAXLoadFd()         - Load a file descriptor into an XML node tree
+ *                             using a SAX callback.
+ *   mxmlSAXLoadFile()       - Load a file into an XML node tree
+ *                             using a SAX callback.
+ *   mxmlSAXLoadString()     - Load a string into an XML node tree
+ *                             using a SAX callback.
  *   mxmlSetCustomHandlers() - Set the handling functions for custom data.
  *   mxmlSetErrorCallback()  - Set the error message callback.
  *   mxmlSetWrapMargin()     - Set the the wrap margin when saving XML data.
@@ -75,16 +81,19 @@
 
 
 /*
- * Structures...
+ * Types and structures...
  */
 
-typedef struct mxml_fdbuf_s		/**** File descriptor buffer (@private@) ****/
+typedef int (*_mxml_getc_cb_t)(void *, int *);
+typedef int (*_mxml_putc_cb_t)(int, void *);
+
+typedef struct _mxml_fdbuf_s		/**** File descriptor buffer ****/
 {
   int		fd;			/* File descriptor */
   unsigned char	*current,		/* Current position in buffer */
 		*end,			/* End of buffer */
 		buffer[8192];		/* Character buffer */
-} mxml_fdbuf_t;
+} _mxml_fdbuf_t;
 
 
 /*
@@ -117,32 +126,32 @@ static int		mxml_add_char(int ch, char **ptr, char **buffer,
 			              int *bufsize);
 static int		mxml_fd_getc(void *p, int *encoding);
 static int		mxml_fd_putc(int ch, void *p);
-static int		mxml_fd_read(mxml_fdbuf_t *buf);
-static int		mxml_fd_write(mxml_fdbuf_t *buf);
+static int		mxml_fd_read(_mxml_fdbuf_t *buf);
+static int		mxml_fd_write(_mxml_fdbuf_t *buf);
 static int		mxml_file_getc(void *p, int *encoding);
 static int		mxml_file_putc(int ch, void *p);
 static int		mxml_get_entity(mxml_node_t *parent, void *p,
 			                int *encoding,
-					int (*getc_cb)(void *, int *));
+					_mxml_getc_cb_t getc_cb);
 static mxml_node_t	*mxml_load_data(mxml_node_t *top, void *p,
-			                mxml_type_t (*cb)(mxml_node_t *),
-			                int (*getc_cb)(void *, int *));
+			                mxml_load_cb_t cb,
+			                _mxml_getc_cb_t getc_cb,
+                                        mxml_sax_cb_t sax_cb, void *sax_data);
 static int		mxml_parse_element(mxml_node_t *node, void *p,
 			                   int *encoding,
-					   int (*getc_cb)(void *, int *));
+					   _mxml_getc_cb_t getc_cb);
 static int		mxml_string_getc(void *p, int *encoding);
 static int		mxml_string_putc(int ch, void *p);
 static int		mxml_write_name(const char *s, void *p,
-					int (*putc_cb)(int, void *));
+					_mxml_putc_cb_t putc_cb);
 static int		mxml_write_node(mxml_node_t *node, void *p,
-			                const char *(*cb)(mxml_node_t *, int),
-					int col,
-					int (*putc_cb)(int, void *));
+			                mxml_save_cb_t cb, int col,
+					_mxml_putc_cb_t putc_cb);
 static int		mxml_write_string(const char *s, void *p,
-					  int (*putc_cb)(int, void *));
+					  _mxml_putc_cb_t putc_cb);
 static int		mxml_write_ws(mxml_node_t *node, void *p, 
-			              const char *(*cb)(mxml_node_t *, int), int ws,
-				      int col, int (*putc_cb)(int, void *));
+			              mxml_save_cb_t cb, int ws,
+				      int col, _mxml_putc_cb_t putc_cb);
 
 
 /*
@@ -161,12 +170,11 @@ static int		mxml_write_ws(mxml_node_t *node, void *p,
  */
 
 mxml_node_t *				/* O - First node or NULL if the file could not be read. */
-mxmlLoadFd(mxml_node_t *top,		/* I - Top node */
-           int         fd,		/* I - File descriptor to read from */
-           mxml_type_t (*cb)(mxml_node_t *node))
-					/* I - Callback function or MXML_NO_CALLBACK */
+mxmlLoadFd(mxml_node_t    *top,		/* I - Top node */
+           int            fd,		/* I - File descriptor to read from */
+           mxml_load_cb_t cb)		/* I - Callback function or MXML_NO_CALLBACK */
 {
-  mxml_fdbuf_t	buf;			/* File descriptor buffer */
+  _mxml_fdbuf_t	buf;			/* File descriptor buffer */
 
 
  /*
@@ -181,7 +189,7 @@ mxmlLoadFd(mxml_node_t *top,		/* I - Top node */
   * Read the XML data...
   */
 
-  return (mxml_load_data(top, &buf, cb, mxml_fd_getc));
+  return (mxml_load_data(top, &buf, cb, mxml_fd_getc, MXML_NO_CALLBACK, NULL));
 }
 
 
@@ -201,16 +209,15 @@ mxmlLoadFd(mxml_node_t *top,		/* I - Top node */
  */
 
 mxml_node_t *				/* O - First node or NULL if the file could not be read. */
-mxmlLoadFile(mxml_node_t *top,		/* I - Top node */
-             FILE        *fp,		/* I - File to read from */
-             mxml_type_t (*cb)(mxml_node_t *node))
-					/* I - Callback function or MXML_NO_CALLBACK */
+mxmlLoadFile(mxml_node_t    *top,	/* I - Top node */
+             FILE           *fp,	/* I - File to read from */
+             mxml_load_cb_t cb)		/* I - Callback function or MXML_NO_CALLBACK */
 {
  /*
   * Read the XML data...
   */
 
-  return (mxml_load_data(top, fp, cb, mxml_file_getc));
+  return (mxml_load_data(top, fp, cb, mxml_file_getc, MXML_NO_CALLBACK, NULL));
 }
 
 
@@ -230,16 +237,16 @@ mxmlLoadFile(mxml_node_t *top,		/* I - Top node */
  */
 
 mxml_node_t *				/* O - First node or NULL if the string has errors. */
-mxmlLoadString(mxml_node_t *top,	/* I - Top node */
-               const char  *s,		/* I - String to load */
-               mxml_type_t (*cb)(mxml_node_t *node))
-					/* I - Callback function or MXML_NO_CALLBACK */
+mxmlLoadString(mxml_node_t    *top,	/* I - Top node */
+               const char     *s,	/* I - String to load */
+               mxml_load_cb_t cb)	/* I - Callback function or MXML_NO_CALLBACK */
 {
  /*
   * Read the XML data...
   */
 
-  return (mxml_load_data(top, &s, cb, mxml_string_getc));
+  return (mxml_load_data(top, &s, cb, mxml_string_getc, MXML_NO_CALLBACK,
+                         NULL));
 }
 
 
@@ -260,9 +267,9 @@ mxmlLoadString(mxml_node_t *top,	/* I - Top node */
  */
 
 char *					/* O - Allocated string or NULL */
-mxmlSaveAllocString(mxml_node_t *node,	/* I - Node to write */
-                    const char  *(*cb)(mxml_node_t *node, int ws))
-					/* I - Whitespace callback or MXML_NO_CALLBACK */
+mxmlSaveAllocString(
+    mxml_node_t    *node,		/* I - Node to write */
+    mxml_save_cb_t cb)			/* I - Whitespace callback or MXML_NO_CALLBACK */
 {
   int	bytes;				/* Required bytes */
   char	buffer[8192];			/* Temporary buffer */
@@ -317,13 +324,12 @@ mxmlSaveAllocString(mxml_node_t *node,	/* I - Node to write */
  */
 
 int					/* O - 0 on success, -1 on error. */
-mxmlSaveFd(mxml_node_t *node,		/* I - Node to write */
-           int         fd,		/* I - File descriptor to write to */
-	   const char  *(*cb)(mxml_node_t *node, int ws))
-					/* I - Whitespace callback or MXML_NO_CALLBACK */
+mxmlSaveFd(mxml_node_t    *node,	/* I - Node to write */
+           int            fd,		/* I - File descriptor to write to */
+	   mxml_save_cb_t cb)		/* I - Whitespace callback or MXML_NO_CALLBACK */
 {
   int		col;			/* Final column */
-  mxml_fdbuf_t	buf;			/* File descriptor buffer */
+  _mxml_fdbuf_t	buf;			/* File descriptor buffer */
 
 
  /*
@@ -364,10 +370,9 @@ mxmlSaveFd(mxml_node_t *node,		/* I - Node to write */
  */
 
 int					/* O - 0 on success, -1 on error. */
-mxmlSaveFile(mxml_node_t *node,		/* I - Node to write */
-             FILE        *fp,		/* I - File to write to */
-	     const char  *(*cb)(mxml_node_t *node, int ws))
-					/* I - Whitespace callback or MXML_NO_CALLBACK */
+mxmlSaveFile(mxml_node_t    *node,	/* I - Node to write */
+             FILE           *fp,	/* I - File to write to */
+	     mxml_save_cb_t cb)		/* I - Whitespace callback or MXML_NO_CALLBACK */
 {
   int	col;				/* Final column */
 
@@ -406,11 +411,10 @@ mxmlSaveFile(mxml_node_t *node,		/* I - Node to write */
  */
 
 int					/* O - Size of string */
-mxmlSaveString(mxml_node_t *node,	/* I - Node to write */
-               char        *buffer,	/* I - String buffer */
-               int         bufsize,	/* I - Size of string buffer */
-               const char  *(*cb)(mxml_node_t *node, int ws))
-					/* I - Whitespace callback or MXML_NO_CALLBACK */
+mxmlSaveString(mxml_node_t    *node,	/* I - Node to write */
+               char           *buffer,	/* I - String buffer */
+               int            bufsize,	/* I - Size of string buffer */
+               mxml_save_cb_t cb)	/* I - Whitespace callback or MXML_NO_CALLBACK */
 {
   int	col;				/* Final column */
   char	*ptr[2];			/* Pointers for putc_cb */
@@ -447,6 +451,130 @@ mxmlSaveString(mxml_node_t *node,	/* I - Node to write */
 
 
 /*
+ * 'mxmlSAXLoadFd()' - Load a file descriptor into an XML node tree
+ *                     using a SAX callback.
+ *
+ * The nodes in the specified file are added to the specified top node.
+ * If no top node is provided, the XML file MUST be well-formed with a
+ * single parent node like <?xml> for the entire file. The callback
+ * function returns the value type that should be used for child nodes.
+ * If MXML_NO_CALLBACK is specified then all child nodes will be either
+ * MXML_ELEMENT or MXML_TEXT nodes.
+ *
+ * The constants MXML_INTEGER_CALLBACK, MXML_OPAQUE_CALLBACK,
+ * MXML_REAL_CALLBACK, and MXML_TEXT_CALLBACK are defined for loading
+ * child nodes of the specified type.
+ *
+ * The SAX callback must call mxmlRetain() for any nodes that need to
+ * be kept for later use. Otherwise, nodes are deleted when the parent
+ * node is closed or after each data, comment, CDATA, or directive node.
+ *
+ * @since Mini-XML 2.3@
+ */
+
+mxml_node_t *				/* O - First node or NULL if the file could not be read. */
+mxmlSAXLoadFd(mxml_node_t    *top,	/* I - Top node */
+              int            fd,	/* I - File descriptor to read from */
+              mxml_load_cb_t cb,	/* I - Callback function or MXML_NO_CALLBACK */
+              mxml_sax_cb_t  sax_cb,	/* I - SAX callback or MXML_NO_CALLBACK */
+              void           *sax_data)	/* I - SAX user data */
+{
+  _mxml_fdbuf_t	buf;			/* File descriptor buffer */
+
+
+ /*
+  * Initialize the file descriptor buffer...
+  */
+
+  buf.fd      = fd;
+  buf.current = buf.buffer;
+  buf.end     = buf.buffer;
+
+ /*
+  * Read the XML data...
+  */
+
+  return (mxml_load_data(top, &buf, cb, mxml_fd_getc, sax_cb, sax_data));
+}
+
+
+/*
+ * 'mxmlSAXLoadFile()' - Load a file into an XML node tree
+ *                       using a SAX callback.
+ *
+ * The nodes in the specified file are added to the specified top node.
+ * If no top node is provided, the XML file MUST be well-formed with a
+ * single parent node like <?xml> for the entire file. The callback
+ * function returns the value type that should be used for child nodes.
+ * If MXML_NO_CALLBACK is specified then all child nodes will be either
+ * MXML_ELEMENT or MXML_TEXT nodes.
+ *
+ * The constants MXML_INTEGER_CALLBACK, MXML_OPAQUE_CALLBACK,
+ * MXML_REAL_CALLBACK, and MXML_TEXT_CALLBACK are defined for loading
+ * child nodes of the specified type.
+ *
+ * The SAX callback must call mxmlRetain() for any nodes that need to
+ * be kept for later use. Otherwise, nodes are deleted when the parent
+ * node is closed or after each data, comment, CDATA, or directive node.
+ *
+ * @since Mini-XML 2.3@
+ */
+
+mxml_node_t *				/* O - First node or NULL if the file could not be read. */
+mxmlSAXLoadFile(
+    mxml_node_t    *top,		/* I - Top node */
+    FILE           *fp,			/* I - File to read from */
+    mxml_load_cb_t cb,			/* I - Callback function or MXML_NO_CALLBACK */
+    mxml_sax_cb_t  sax_cb,		/* I - SAX callback or MXML_NO_CALLBACK */
+    void           *sax_data)		/* I - SAX user data */
+{
+ /*
+  * Read the XML data...
+  */
+
+  return (mxml_load_data(top, fp, cb, mxml_file_getc, sax_cb, sax_data));
+}
+
+
+/*
+ * 'mxmlSAXLoadString()' - Load a string into an XML node tree
+ *                         using a SAX callback.
+ *
+ * The nodes in the specified string are added to the specified top node.
+ * If no top node is provided, the XML string MUST be well-formed with a
+ * single parent node like <?xml> for the entire string. The callback
+ * function returns the value type that should be used for child nodes.
+ * If MXML_NO_CALLBACK is specified then all child nodes will be either
+ * MXML_ELEMENT or MXML_TEXT nodes.
+ *
+ * The constants MXML_INTEGER_CALLBACK, MXML_OPAQUE_CALLBACK,
+ * MXML_REAL_CALLBACK, and MXML_TEXT_CALLBACK are defined for loading
+ * child nodes of the specified type.
+ *
+ * The SAX callback must call mxmlRetain() for any nodes that need to
+ * be kept for later use. Otherwise, nodes are deleted when the parent
+ * node is closed or after each data, comment, CDATA, or directive node.
+ *
+ * @since Mini-XML 2.3@
+ */
+
+mxml_node_t *				/* O - First node or NULL if the string has errors. */
+mxmlSAXLoadString(
+    mxml_node_t    *top,		/* I - Top node */
+    const char     *s,			/* I - String to load */
+    mxml_load_cb_t cb,			/* I - Callback function or MXML_NO_CALLBACK */
+    mxml_sax_cb_t  sax_cb,		/* I - SAX callback or MXML_NO_CALLBACK */
+    void           *sax_data)		/* I - SAX user data */
+{
+ /*
+  * Read the XML data...
+  */
+
+  return (mxml_load_data(top, &s, cb, mxml_string_getc, sax_cb, sax_data));
+}
+
+
+/*
  * 'mxmlSetCustomHandlers()' - Set the handling functions for custom data.
  *
  * The load function accepts a node pointer and a data string and must
@@ -458,10 +586,9 @@ mxmlSaveString(mxml_node_t *node,	/* I - Node to write */
  */
 
 void
-mxmlSetCustomHandlers(mxml_custom_load_cb_t load,
-					/* I - Load function */
-                      mxml_custom_save_cb_t save)
-					/* I - Save function */
+mxmlSetCustomHandlers(
+    mxml_custom_load_cb_t load,		/* I - Load function */
+    mxml_custom_save_cb_t save)		/* I - Save function */
 {
   mxml_custom_load_cb = load;
   mxml_custom_save_cb = save;
@@ -473,8 +600,7 @@ mxmlSetCustomHandlers(mxml_custom_load_cb_t load,
  */
 
 void
-mxmlSetErrorCallback(void (*cb)(const char *))
-					/* I - Error callback function */
+mxmlSetErrorCallback(mxml_error_cb_t cb)/* I - Error callback function */
 {
   mxml_error_cb = cb;
 }
@@ -586,7 +712,7 @@ static int				/* O  - Character or EOF */
 mxml_fd_getc(void *p,			/* I  - File descriptor buffer */
              int  *encoding)		/* IO - Encoding */
 {
-  mxml_fdbuf_t	*buf;			/* File descriptor buffer */
+  _mxml_fdbuf_t	*buf;			/* File descriptor buffer */
   int		ch,			/* Current character */
 		temp;			/* Temporary character */
 
@@ -595,7 +721,7 @@ mxml_fd_getc(void *p,			/* I  - File descriptor buffer */
   * Grab the next character in the buffer...
   */
 
-  buf = (mxml_fdbuf_t *)p;
+  buf = (_mxml_fdbuf_t *)p;
 
   if (buf->current >= buf->end)
     if (mxml_fd_read(buf) < 0)
@@ -873,7 +999,7 @@ static int				/* O - 0 on success, -1 on error */
 mxml_fd_putc(int  ch,			/* I - Character */
              void *p)			/* I - File descriptor buffer */
 {
-  mxml_fdbuf_t	*buf;			/* File descriptor buffer */
+  _mxml_fdbuf_t	*buf;			/* File descriptor buffer */
 
 
  /*
@@ -881,7 +1007,7 @@ mxml_fd_putc(int  ch,			/* I - Character */
   * 4 characters at the end so that we can avoid a lot of extra tests...
   */
 
-  buf = (mxml_fdbuf_t *)p;
+  buf = (_mxml_fdbuf_t *)p;
 
   if (buf->current >= buf->end)
     if (mxml_fd_write(buf) < 0)
@@ -939,7 +1065,7 @@ mxml_fd_putc(int  ch,			/* I - Character */
  */
 
 static int				/* O - 0 on success, -1 on error */
-mxml_fd_read(mxml_fdbuf_t *buf)		/* I - File descriptor buffer */
+mxml_fd_read(_mxml_fdbuf_t *buf)		/* I - File descriptor buffer */
 {
   int	bytes;				/* Bytes read... */
 
@@ -982,7 +1108,7 @@ mxml_fd_read(mxml_fdbuf_t *buf)		/* I - File descriptor buffer */
  */
 
 static int				/* O - 0 on success, -1 on error */
-mxml_fd_write(mxml_fdbuf_t *buf)	/* I - File descriptor buffer */
+mxml_fd_write(_mxml_fdbuf_t *buf)	/* I - File descriptor buffer */
 {
   int		bytes;			/* Bytes written */
   unsigned char	*ptr;			/* Pointer into buffer */
@@ -1340,12 +1466,13 @@ mxml_get_entity(mxml_node_t *parent,	/* I  - Parent node */
  */
 
 static mxml_node_t *			/* O - First node or NULL if the file could not be read. */
-mxml_load_data(mxml_node_t *top,	/* I - Top node */
-               void        *p,		/* I - Pointer to data */
-               mxml_type_t (*cb)(mxml_node_t *),
-					/* I - Callback function or MXML_NO_CALLBACK */
-               int         (*getc_cb)(void *, int *))
-					/* I - Read function */
+mxml_load_data(
+    mxml_node_t     *top,		/* I - Top node */
+    void            *p,			/* I - Pointer to data */
+    mxml_load_cb_t  cb,			/* I - Callback function or MXML_NO_CALLBACK */
+    _mxml_getc_cb_t getc_cb,		/* I - Read function */
+    mxml_sax_cb_t   sax_cb,		/* I - SAX callback or MXML_NO_CALLBACK */
+    void            *sax_data)		/* I - SAX user data */
 {
   mxml_node_t	*node,			/* Current node */
 		*first,			/* First node added */
@@ -1470,6 +1597,14 @@ mxml_load_data(mxml_node_t *top,	/* I - Top node */
 	goto error;
       }
 
+      if (sax_cb)
+      {
+        (*sax_cb)(node, MXML_SAX_DATA, sax_data);
+
+        if (!mxmlRelease(node))
+          node = NULL;
+      }
+
       if (!first && node)
         first = node;
     }
@@ -1484,6 +1619,14 @@ mxml_load_data(mxml_node_t *top,	/* I - Top node */
     if (ch == '<' && whitespace && type == MXML_TEXT)
     {
       node = mxmlNewText(parent, whitespace, "");
+
+      if (sax_cb)
+      {
+        (*sax_cb)(node, MXML_SAX_DATA, sax_data);
+
+        if (!mxmlRelease(node))
+          node = NULL;
+      }
 
       if (!first && node)
         first = node;
@@ -1571,6 +1714,14 @@ mxml_load_data(mxml_node_t *top,	/* I - Top node */
 	  break;
 	}
 
+        if (sax_cb)
+        {
+          (*sax_cb)(node, MXML_SAX_COMMENT, sax_data);
+
+          if (!mxmlRelease(node))
+            node = NULL;
+        }
+
 	if (!first)
 	  first = node;
       }
@@ -1620,6 +1771,14 @@ mxml_load_data(mxml_node_t *top,	/* I - Top node */
 	  goto error;
 	}
 
+        if (sax_cb)
+        {
+          (*sax_cb)(node, MXML_SAX_CDATA, sax_data);
+
+          if (!mxmlRelease(node))
+            node = NULL;
+        }
+
 	if (!first)
 	  first = node;
       }
@@ -1651,14 +1810,13 @@ mxml_load_data(mxml_node_t *top,	/* I - Top node */
 	  goto error;
 	}
 
-
        /*
         * Otherwise add this as an element under the current parent...
 	*/
 
 	*bufptr = '\0';
 
-	if ((parent = mxmlNewElement(parent, buffer)) == NULL)
+	if ((node = mxmlNewElement(parent, buffer)) == NULL)
 	{
 	 /*
 	  * Print error and return...
@@ -1669,11 +1827,24 @@ mxml_load_data(mxml_node_t *top,	/* I - Top node */
 	  goto error;
 	}
 
-        if (!first)
-	  first = parent;
+        if (sax_cb)
+        {
+          (*sax_cb)(node, MXML_SAX_DIRECTIVE, sax_data);
 
-	if (cb)
-	  type = (*cb)(parent);
+          if (!mxmlRelease(node))
+            node = NULL;
+        }
+
+        if (node)
+        {
+          parent = node;
+
+          if (!first)
+	    first = parent;
+
+	  if (cb)
+	    type = (*cb)(parent);
+        }
       }
       else if (buffer[0] == '!')
       {
@@ -1728,17 +1899,28 @@ mxml_load_data(mxml_node_t *top,	/* I - Top node */
 	  goto error;
 	}
 
-        if (!first)
-	  first = node;
+        if (sax_cb)
+        {
+          (*sax_cb)(node, MXML_SAX_DIRECTIVE, sax_data);
 
-       /*
-	* Descend into this node, setting the value type as needed...
-	*/
+          if (!mxmlRelease(node))
+            node = NULL;
+        }
 
-	parent = node;
+        if (node)
+        {
+         /*
+	  * Descend into this node, setting the value type as needed...
+	  */
 
-	if (cb)
-	  type = (*cb)(parent);
+          if (!first)
+	    first = node;
+
+	  parent = node;
+
+	  if (cb)
+	    type = (*cb)(parent);
+        }
       }
       else if (buffer[0] == '/')
       {
@@ -1764,11 +1946,19 @@ mxml_load_data(mxml_node_t *top,	/* I - Top node */
         while (ch != '>' && ch != EOF)
 	  ch = (*getc_cb)(p, &encoding);
 
+        node   = parent;
+        parent = parent->parent;
+
+        if (sax_cb)
+        {
+          (*sax_cb)(node, MXML_SAX_ELEMENT_CLOSE, sax_data);
+
+          mxmlRelease(node);
+        }
+
        /*
 	* Ascend into the parent and set the value type as needed...
 	*/
-
-	parent = parent->parent;
 
 	if (cb && parent)
 	  type = (*cb)(parent);
@@ -1790,9 +1980,6 @@ mxml_load_data(mxml_node_t *top,	/* I - Top node */
 	  goto error;
 	}
 
-        if (!first)
-	  first = node;
-
         if (isspace(ch))
           ch = mxml_parse_element(node, p, &encoding, getc_cb);
         else if (ch == '/')
@@ -1808,6 +1995,12 @@ mxml_load_data(mxml_node_t *top,	/* I - Top node */
 	  ch = '/';
 	}
 
+        if (sax_cb)
+          (*sax_cb)(node, MXML_SAX_ELEMENT_OPEN, sax_data);
+
+        if (!first)
+	  first = node;
+
 	if (ch == EOF)
 	  break;
 
@@ -1822,6 +2015,13 @@ mxml_load_data(mxml_node_t *top,	/* I - Top node */
 	  if (cb && parent)
 	    type = (*cb)(parent);
 	}
+        else if (sax_cb)
+        {
+          (*sax_cb)(node, MXML_SAX_ELEMENT_CLOSE, sax_data);
+
+          if (!mxmlRelease(node) && first == node)
+            first = NULL;
+        }
       }
 
       bufptr  = buffer;
@@ -1899,12 +2099,11 @@ error:
  */
 
 static int				/* O  - Terminating character */
-mxml_parse_element(mxml_node_t *node,	/* I  - Element node */
-                   void        *p,	/* I  - Data to read from */
-		   int         *encoding,
-					/* IO - Encoding */
-                   int         (*getc_cb)(void *, int *))
-					/* I  - Data callback */
+mxml_parse_element(
+    mxml_node_t     *node,		/* I  - Element node */
+    void            *p,			/* I  - Data to read from */
+    int             *encoding,		/* IO - Encoding */
+    _mxml_getc_cb_t getc_cb)		/* I  - Data callback */
 {
   int	ch,				/* Current character in file */
 	quote;				/* Quoting character */
@@ -2551,12 +2750,11 @@ mxml_write_name(const char *s,		/* I - Name to write */
  */
 
 static int				/* O - Column or -1 on error */
-mxml_write_node(mxml_node_t *node,	/* I - Node to write */
-                void        *p,		/* I - File to write to */
-	        const char  *(*cb)(mxml_node_t *, int),
-					/* I - Whitespace callback */
-		int         col,	/* I - Current column */
-		int         (*putc_cb)(int, void *))
+mxml_write_node(mxml_node_t     *node,	/* I - Node to write */
+                void            *p,	/* I - File to write to */
+	        mxml_save_cb_t  cb,	/* I - Whitespace callback */
+		int             col,	/* I - Current column */
+		_mxml_putc_cb_t putc_cb)/* I - Output callback */
 {
   int		i,			/* Looping var */
 		width;			/* Width of attr + value */
@@ -2832,10 +3030,10 @@ mxml_write_node(mxml_node_t *node,	/* I - Node to write */
  */
 
 static int				/* O - 0 on success, -1 on failure */
-mxml_write_string(const char *s,	/* I - String to write */
-                  void       *p,	/* I - Write pointer */
-		  int        (*putc_cb)(int, void *))
-					/* I - Write callback */
+mxml_write_string(
+    const char      *s,			/* I - String to write */
+    void            *p,			/* I - Write pointer */
+    _mxml_putc_cb_t putc_cb)		/* I - Write callback */
 {
   const char	*name;			/* Entity name, if any */
 
@@ -2872,14 +3070,12 @@ mxml_write_string(const char *s,	/* I - String to write */
  */
 
 static int				/* O - New column */
-mxml_write_ws(mxml_node_t *node,	/* I - Current node */
-              void        *p,		/* I - Write pointer */
-              const char  *(*cb)(mxml_node_t *, int),
-					/* I - Callback function */
-	      int         ws,		/* I - Where value */
-	      int         col,		/* I - Current column */
-              int         (*putc_cb)(int, void *))
-					/* I - Write callback */
+mxml_write_ws(mxml_node_t     *node,	/* I - Current node */
+              void            *p,	/* I - Write pointer */
+              mxml_save_cb_t  cb,	/* I - Callback function */
+	      int             ws,	/* I - Where value */
+	      int             col,	/* I - Current column */
+              _mxml_putc_cb_t putc_cb)	/* I - Write callback */
 {
   const char	*s;			/* Whitespace string */
 

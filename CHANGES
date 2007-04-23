@@ -1,10 +1,11 @@
-CHANGES - 2007-04-19
+CHANGES - 2007-04-22
 --------------------
 
 CHANGES IN Mini-XML 2.3
 
 	- Added two exceptions to the LGPL to support static
 	  linking of applications against Mini-XML
+	- The mxmldoc utility can now generate man pages, too.
 	- Added a mxmlNewXML() function
 	- Added a mxmlElementSetAttrf() function (STR #43)
 	- Added snprintf() emulation function for test program (STR

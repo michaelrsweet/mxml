@@ -82,7 +82,9 @@ not an element.</description>
 If the named attribute already exists, the value of the attribute
 is replaced by the new formatted string. The formatted string value is
 copied into the element node. This function does nothing if the node
-is not an element.</description>
+is not an element.
+
+@since Mini-XML 2.3@</description>
     <argument name="node" direction="I">
       <type>mxml_node_t *</type>
       <description>Element node</description>
@@ -285,6 +287,10 @@ child nodes of the specified type.</description>
       <type>int</type>
       <description>File descriptor to read from</description>
     </argument>
+    <argument name="cb" direction="I">
+      <type>mxml_load_cb_t</type>
+      <description>Callback function or MXML_NO_CALLBACK</description>
+    </argument>
   </function>
   <function name="mxmlLoadFile">
     <returnvalue>
@@ -311,6 +317,10 @@ child nodes of the specified type.</description>
       <type>FILE *</type>
       <description>File to read from</description>
     </argument>
+    <argument name="cb" direction="I">
+      <type>mxml_load_cb_t</type>
+      <description>Callback function or MXML_NO_CALLBACK</description>
+    </argument>
   </function>
   <function name="mxmlLoadString">
     <returnvalue>
@@ -336,6 +346,10 @@ child nodes of the specified type.</description>
     <argument name="s" direction="I">
       <type>const char *</type>
       <description>String to load</description>
+    </argument>
+    <argument name="cb" direction="I">
+      <type>mxml_load_cb_t</type>
+      <description>Callback function or MXML_NO_CALLBACK</description>
     </argument>
   </function>
   <function name="mxmlNewCDATA">
@@ -380,6 +394,10 @@ node is not dynamically allocated or is separately managed.
     <argument name="data" direction="I">
       <type>void *</type>
       <description>Pointer to data</description>
+    </argument>
+    <argument name="destroy" direction="I">
+      <type>mxml_custom_destroy_cb_t</type>
+      <description>Function to destroy data</description>
     </argument>
   </function>
   <function name="mxmlNewElement">
@@ -567,6 +585,141 @@ This function does nothing if the node has no parent.</description>
       <description>Node</description>
     </argument>
   </function>
+  <function name="mxmlSAXLoadFd">
+    <returnvalue>
+      <type>mxml_node_t *</type>
+      <description>First node or NULL if the file could not be read.</description>
+    </returnvalue>
+    <description>Load a file descriptor into an XML node tree
+using a SAX callback.
+
+The nodes in the specified file are added to the specified top node.
+If no top node is provided, the XML file MUST be well-formed with a
+single parent node like &lt;?xml&gt; for the entire file. The callback
+function returns the value type that should be used for child nodes.
+If MXML_NO_CALLBACK is specified then all child nodes will be either
+MXML_ELEMENT or MXML_TEXT nodes.
+
+The constants MXML_INTEGER_CALLBACK, MXML_OPAQUE_CALLBACK,
+MXML_REAL_CALLBACK, and MXML_TEXT_CALLBACK are defined for loading
+child nodes of the specified type.
+
+The SAX callback must call mxmlRetain() for any nodes that need to
+be kept for later use. Otherwise, nodes are deleted when the parent
+node is closed or after each data, comment, CDATA, or directive node.
+
+@since Mini-XML 2.3@</description>
+    <argument name="top" direction="I">
+      <type>mxml_node_t *</type>
+      <description>Top node</description>
+    </argument>
+    <argument name="fd" direction="I">
+      <type>int</type>
+      <description>File descriptor to read from</description>
+    </argument>
+    <argument name="cb" direction="I">
+      <type>mxml_load_cb_t</type>
+      <description>Callback function or MXML_NO_CALLBACK</description>
+    </argument>
+    <argument name="sax_cb" direction="I">
+      <type>mxml_sax_cb_t</type>
+      <description>SAX callback or MXML_NO_CALLBACK</description>
+    </argument>
+    <argument name="sax_data" direction="I">
+      <type>void *</type>
+      <description>SAX user data</description>
+    </argument>
+  </function>
+  <function name="mxmlSAXLoadFile">
+    <returnvalue>
+      <type>mxml_node_t *</type>
+      <description>First node or NULL if the file could not be read.</description>
+    </returnvalue>
+    <description>Load a file into an XML node tree
+using a SAX callback.
+
+The nodes in the specified file are added to the specified top node.
+If no top node is provided, the XML file MUST be well-formed with a
+single parent node like &lt;?xml&gt; for the entire file. The callback
+function returns the value type that should be used for child nodes.
+If MXML_NO_CALLBACK is specified then all child nodes will be either
+MXML_ELEMENT or MXML_TEXT nodes.
+
+The constants MXML_INTEGER_CALLBACK, MXML_OPAQUE_CALLBACK,
+MXML_REAL_CALLBACK, and MXML_TEXT_CALLBACK are defined for loading
+child nodes of the specified type.
+
+The SAX callback must call mxmlRetain() for any nodes that need to
+be kept for later use. Otherwise, nodes are deleted when the parent
+node is closed or after each data, comment, CDATA, or directive node.
+
+@since Mini-XML 2.3@</description>
+    <argument name="top" direction="I">
+      <type>mxml_node_t *</type>
+      <description>Top node</description>
+    </argument>
+    <argument name="fp" direction="I">
+      <type>FILE *</type>
+      <description>File to read from</description>
+    </argument>
+    <argument name="cb" direction="I">
+      <type>mxml_load_cb_t</type>
+      <description>Callback function or MXML_NO_CALLBACK</description>
+    </argument>
+    <argument name="sax_cb" direction="I">
+      <type>mxml_sax_cb_t</type>
+      <description>SAX callback or MXML_NO_CALLBACK</description>
+    </argument>
+    <argument name="sax_data" direction="I">
+      <type>void *</type>
+      <description>SAX user data</description>
+    </argument>
+  </function>
+  <function name="mxmlSAXLoadString">
+    <returnvalue>
+      <type>mxml_node_t *</type>
+      <description>First node or NULL if the string has errors.</description>
+    </returnvalue>
+    <description>Load a string into an XML node tree
+using a SAX callback.
+
+The nodes in the specified string are added to the specified top node.
+If no top node is provided, the XML string MUST be well-formed with a
+single parent node like &lt;?xml&gt; for the entire string. The callback
+function returns the value type that should be used for child nodes.
+If MXML_NO_CALLBACK is specified then all child nodes will be either
+MXML_ELEMENT or MXML_TEXT nodes.
+
+The constants MXML_INTEGER_CALLBACK, MXML_OPAQUE_CALLBACK,
+MXML_REAL_CALLBACK, and MXML_TEXT_CALLBACK are defined for loading
+child nodes of the specified type.
+
+The SAX callback must call mxmlRetain() for any nodes that need to
+be kept for later use. Otherwise, nodes are deleted when the parent
+node is closed or after each data, comment, CDATA, or directive node.
+
+@since Mini-XML 2.3@</description>
+    <argument name="top" direction="I">
+      <type>mxml_node_t *</type>
+      <description>Top node</description>
+    </argument>
+    <argument name="s" direction="I">
+      <type>const char *</type>
+      <description>String to load</description>
+    </argument>
+    <argument name="cb" direction="I">
+      <type>mxml_load_cb_t</type>
+      <description>Callback function or MXML_NO_CALLBACK</description>
+    </argument>
+    <argument name="sax_cb" direction="I">
+      <type>mxml_sax_cb_t</type>
+      <description>SAX callback or MXML_NO_CALLBACK</description>
+    </argument>
+    <argument name="sax_data" direction="I">
+      <type>void *</type>
+      <description>SAX user data</description>
+    </argument>
+  </function>
   <function name="mxmlSaveAllocString">
     <returnvalue>
       <type>char *</type>
@@ -589,6 +742,10 @@ element tags.</description>
       <type>mxml_node_t *</type>
       <description>Node to write</description>
     </argument>
+    <argument name="cb" direction="I">
+      <type>mxml_save_cb_t</type>
+      <description>Whitespace callback or MXML_NO_CALLBACK</description>
+    </argument>
   </function>
   <function name="mxmlSaveFd">
     <returnvalue>
@@ -610,6 +767,10 @@ element tags.</description>
       <type>int</type>
       <description>File descriptor to write to</description>
     </argument>
+    <argument name="cb" direction="I">
+      <type>mxml_save_cb_t</type>
+      <description>Whitespace callback or MXML_NO_CALLBACK</description>
+    </argument>
   </function>
   <function name="mxmlSaveFile">
     <returnvalue>
@@ -630,6 +791,10 @@ element tags.</description>
     <argument name="fp" direction="I">
       <type>FILE *</type>
       <description>File to write to</description>
+    </argument>
+    <argument name="cb" direction="I">
+      <type>mxml_save_cb_t</type>
+      <description>Whitespace callback or MXML_NO_CALLBACK</description>
     </argument>
   </function>
   <function name="mxmlSaveString">
@@ -659,6 +824,10 @@ element tags.</description>
     <argument name="bufsize" direction="I">
       <type>int</type>
       <description>Size of string buffer</description>
+    </argument>
+    <argument name="cb" direction="I">
+      <type>mxml_save_cb_t</type>
+      <description>Whitespace callback or MXML_NO_CALLBACK</description>
     </argument>
   </function>
   <function name="mxmlSetCDATA">
@@ -698,6 +867,10 @@ The node is not changed if it is not a custom node.
       <type>void *</type>
       <description>New data pointer</description>
     </argument>
+    <argument name="destroy" direction="I">
+      <type>mxml_custom_destroy_cb_t</type>
+      <description>New destructor function</description>
+    </argument>
   </function>
   <function name="mxmlSetCustomHandlers">
     <description>Set the handling functions for custom data.
@@ -735,6 +908,10 @@ The node is not changed if it is not an element node.</description>
   </function>
   <function name="mxmlSetErrorCallback">
     <description>Set the error message callback.</description>
+    <argument name="cb" direction="I">
+      <type>mxml_error_cb_t</type>
+      <description>Error callback function</description>
+    </argument>
   </function>
   <function name="mxmlSetInteger">
     <returnvalue>
@@ -904,6 +1081,10 @@ the walk to the node's children.</description>
     <type>struct mxml_attr_s</type>
     <description>Data types...</description>
   </typedef>
+  <typedef name="mxml_custom_destroy_cb_t">
+    <type>void(*)(void *)</type>
+    <description>Custom data destructor</description>
+  </typedef>
   <typedef name="mxml_custom_load_cb_t">
     <type>int(*)(mxml_node_t *, const char *)</type>
     <description>Custom data load callback function</description>
@@ -914,12 +1095,14 @@ the walk to the node's children.</description>
       <type>void *</type>
       <description>Pointer to (allocated) custom data</description>
     </variable>
+    <variable name="destroy">
+      <type>mxml_custom_destroy_cb_t</type>
+      <description>Pointer to destructor function</description>
+    </variable>
   </struct>
   <typedef name="mxml_custom_save_cb_t">
     <type>char *(*)(mxml_node_t *)</type>
     <description>Custom data save callback function</description>
-    <description>C++ support...</description>
-    <description>End of &quot;$Id$&quot;.</description>
   </typedef>
   <typedef name="mxml_custom_t">
     <type>struct mxml_custom_s</type>
@@ -944,20 +1127,10 @@ the walk to the node's children.</description>
     <type>struct mxml_element_s</type>
     <description>An XML element value.</description>
   </typedef>
-  <struct name="mxml_fdbuf_s">
-    <description>File descriptor buffer (@private@)</description>
-    <variable name="buffer[8192]">
-      <type>unsigned char *current, *end,</type>
-      <description>Character buffer</description>
-    </variable>
-    <variable name="fd">
-      <type>int</type>
-      <description>File descriptor</description>
-    </variable>
-  </struct>
-  <typedef name="mxml_fdbuf_t">
-    <type>struct mxml_fdbuf_s</type>
-    <description>File descriptor buffer (@private@)</description>
+  <typedef name="mxml_error_cb_t">
+    <type>void(*)(const char *)</type>
+    <description>Error callback function</description>
+    <description>An XML element attribute value.</description>
   </typedef>
   <struct name="mxml_index_s">
     <description>An XML node index.</description>
@@ -985,6 +1158,10 @@ the walk to the node's children.</description>
   <typedef name="mxml_index_t">
     <type>struct mxml_index_s</type>
     <description>An XML node index.</description>
+  </typedef>
+  <typedef name="mxml_load_cb_t">
+    <type>mxml_type_t(*)(mxml_node_t *)</type>
+    <description>Load callback function</description>
   </typedef>
   <struct name="mxml_node_s">
     <description>An XML node.</description>
@@ -1028,6 +1205,41 @@ the walk to the node's children.</description>
   <typedef name="mxml_node_t">
     <type>struct mxml_node_s</type>
     <description>An XML node.</description>
+  </typedef>
+  <typedef name="mxml_save_cb_t">
+    <type>const char *(*)(mxml_node_t *, int)</type>
+    <description>Save callback function</description>
+  </typedef>
+  <typedef name="mxml_sax_cb_t">
+    <type>void(*)(mxml_node_t *, mxml_sax_event_t, void *)</type>
+    <description>SAX callback function</description>
+    <description>C++ support...</description>
+    <description>End of &quot;$Id$&quot;.</description>
+  </typedef>
+  <enumeration name="mxml_sax_event_e">
+    <description>SAX event type.</description>
+    <constant name="MXML_SAX_CDATA">
+      <description>CDATA node</description>
+    </constant>
+    <constant name="MXML_SAX_COMMENT">
+      <description>Comment node</description>
+    </constant>
+    <constant name="MXML_SAX_DATA">
+      <description>Data node</description>
+    </constant>
+    <constant name="MXML_SAX_DIRECTIVE">
+      <description>Processing directive node</description>
+    </constant>
+    <constant name="MXML_SAX_ELEMENT_CLOSE">
+      <description>Element closed</description>
+    </constant>
+    <constant name="MXML_SAX_ELEMENT_OPEN">
+      <description>Element opened</description>
+    </constant>
+  </enumeration>
+  <typedef name="mxml_sax_event_t">
+    <type>enum mxml_sax_event_e</type>
+    <description>SAX event type.</description>
   </typedef>
   <struct name="mxml_text_s">
     <description>An XML text value.</description>

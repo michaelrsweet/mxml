@@ -71,6 +71,16 @@
  * Data types...
  */
 
+typedef enum mxml_sax_event_e		/**** SAX event type. ****/
+{
+  MXML_SAX_CDATA,			/* CDATA node */
+  MXML_SAX_COMMENT,			/* Comment node */
+  MXML_SAX_DATA,			/* Data node */
+  MXML_SAX_DIRECTIVE,			/* Processing directive node */
+  MXML_SAX_ELEMENT_CLOSE,		/* Element closed */
+  MXML_SAX_ELEMENT_OPEN			/* Element opened */
+} mxml_sax_event_t;
+
 typedef enum mxml_type_e		/**** The XML node type. ****/
 {
   MXML_IGNORE = -1,			/* Ignore/throw away node @since Mini-XML 2.3@ */
@@ -81,6 +91,12 @@ typedef enum mxml_type_e		/**** The XML node type. ****/
   MXML_TEXT,				/* Text fragment */
   MXML_CUSTOM				/* Custom data @since Mini-XML 2.1@ */
 } mxml_type_t;
+
+typedef void (*mxml_custom_destroy_cb_t)(void *);
+					/**** Custom data destructor ****/
+
+typedef void (*mxml_error_cb_t)(const char *);  
+					/**** Error callback function ****/
 
 typedef struct mxml_attr_s		/**** An XML element attribute value. ****/
 {
@@ -104,8 +120,7 @@ typedef struct mxml_text_s		/**** An XML text value. ****/
 typedef struct mxml_custom_s		/**** An XML custom value. @since Mini-XML 2.1@ ****/
 {
   void			*data;		/* Pointer to (allocated) custom data */
-  void			(*destroy)(void *);
-					/* Pointer to destructor function */
+  mxml_custom_destroy_cb_t destroy;	/* Pointer to destructor function */
 } mxml_custom_t;
 
 typedef union mxml_value_u		/**** An XML node value. ****/
@@ -145,6 +160,15 @@ typedef int (*mxml_custom_load_cb_t)(mxml_node_t *, const char *);
 
 typedef char *(*mxml_custom_save_cb_t)(mxml_node_t *);  
 					/**** Custom data save callback function ****/
+
+typedef mxml_type_t (*mxml_load_cb_t)(mxml_node_t *);
+					/**** Load callback function ****/
+
+typedef const char *(*mxml_save_cb_t)(mxml_node_t *, int);
+					/**** Save callback function ****/
+
+typedef void (*mxml_sax_cb_t)(mxml_node_t *, mxml_sax_event_t, void *);  
+					/**** SAX callback function ****/
 
 
 /*
@@ -194,7 +218,7 @@ extern mxml_node_t	*mxmlLoadString(mxml_node_t *top, const char *s,
 			                mxml_type_t (*cb)(mxml_node_t *));
 extern mxml_node_t	*mxmlNewCDATA(mxml_node_t *parent, const char *string);
 extern mxml_node_t	*mxmlNewCustom(mxml_node_t *parent, void *data,
-			               void (*destroy)(void *));
+			               mxml_custom_destroy_cb_t destroy);
 extern mxml_node_t	*mxmlNewElement(mxml_node_t *parent, const char *name);
 extern mxml_node_t	*mxmlNewInteger(mxml_node_t *parent, int integer);
 extern mxml_node_t	*mxmlNewOpaque(mxml_node_t *parent, const char *opaque);
@@ -212,21 +236,29 @@ extern int		mxmlRelease(mxml_node_t *node);
 extern void		mxmlRemove(mxml_node_t *node);
 extern int		mxmlRetain(mxml_node_t *node);
 extern char		*mxmlSaveAllocString(mxml_node_t *node,
-			        	     const char *(*cb)(mxml_node_t *, int));
+			        	     mxml_save_cb_t cb);
 extern int		mxmlSaveFd(mxml_node_t *node, int fd,
-			           const char *(*cb)(mxml_node_t *, int));
+			           mxml_save_cb_t cb);
 extern int		mxmlSaveFile(mxml_node_t *node, FILE *fp,
-			             const char *(*cb)(mxml_node_t *, int));
+			             mxml_save_cb_t cb);
 extern int		mxmlSaveString(mxml_node_t *node, char *buffer,
-			               int bufsize,
-			               const char *(*cb)(mxml_node_t *, int));
+			               int bufsize, mxml_save_cb_t cb);
+extern mxml_node_t	*mxmlSAXLoadFd(mxml_node_t *top, int fd,
+			               mxml_type_t (*cb)(mxml_node_t *),
+			               mxml_sax_cb_t sax, void *sax_data);
+extern mxml_node_t	*mxmlSAXLoadFile(mxml_node_t *top, FILE *fp,
+			                 mxml_type_t (*cb)(mxml_node_t *),
+			                 mxml_sax_cb_t sax, void *sax_data);
+extern mxml_node_t	*mxmlSAXLoadString(mxml_node_t *top, const char *s,
+			                   mxml_type_t (*cb)(mxml_node_t *),
+			                   mxml_sax_cb_t sax, void *sax_data);
 extern int		mxmlSetCDATA(mxml_node_t *node, const char *data);
 extern int		mxmlSetCustom(mxml_node_t *node, void *data,
-			              void (*destroy)(void *));
+			              mxml_custom_destroy_cb_t destroy);
 extern void		mxmlSetCustomHandlers(mxml_custom_load_cb_t load,
 			                      mxml_custom_save_cb_t save);
 extern int		mxmlSetElement(mxml_node_t *node, const char *name);
-extern void		mxmlSetErrorCallback(void (*cb)(const char *));
+extern void		mxmlSetErrorCallback(mxml_error_cb_t cb);
 extern int		mxmlSetInteger(mxml_node_t *node, int integer);
 extern int		mxmlSetOpaque(mxml_node_t *node, const char *opaque);
 extern int		mxmlSetReal(mxml_node_t *node, double real);

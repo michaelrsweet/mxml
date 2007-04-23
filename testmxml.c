@@ -3,7 +3,7 @@
  *
  * Test program for Mini-XML, a small XML-like file parsing library.
  *
- * Copyright 2003-2005 by Michael Sweet.
+ * Copyright 2003-2007 by Michael Sweet.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -18,6 +18,7 @@
  * Contents:
  *
  *   main()          - Main entry for test program.
+ *   sax_cb()        - SAX callback.
  *   type_cb()       - XML data type callback for mxmlLoadFile()...
  *   whitespace_cb() - Let the mxmlSaveFile() function know when to insert
  *                     newlines and tabs...
@@ -41,9 +42,17 @@
 
 
 /*
+ * Globals...
+ */
+
+int		event_counts[6];
+
+
+/*
  * Local functions...
  */
 
+void		sax_cb(mxml_node_t *node, mxml_sax_event_t event, void *data);
 mxml_type_t	type_cb(mxml_node_t *node);
 const char	*whitespace_cb(mxml_node_t *node, int where);
 
@@ -524,10 +533,96 @@ main(int  argc,				/* I - Number of command-line args */
   }
 
  /*
+  * Test SAX methods...
+  */
+
+  memset(event_counts, 0, sizeof(event_counts));
+
+  if (argv[1][0] == '<')
+    tree = mxmlSAXLoadString(NULL, argv[1], type_cb, sax_cb, NULL);
+  else if ((fp = fopen(argv[1], "rb")) == NULL)
+  {
+    perror(argv[1]);
+    return (1);
+  }
+  else
+  {
+   /*
+    * Read the file...
+    */
+
+    tree = mxmlSAXLoadFile(NULL, fp, type_cb, sax_cb, NULL);
+
+    fclose(fp);
+  }
+
+  if (!strcmp(argv[1], "test.xml"))
+  {
+    if (event_counts[MXML_SAX_CDATA] != 1)
+    {
+      fprintf(stderr, "MXML_SAX_CDATA seen %d times, expected 1 times!\n",
+              event_counts[MXML_SAX_CDATA]);
+      return (1);
+    }
+
+    if (event_counts[MXML_SAX_COMMENT] != 1)
+    {
+      fprintf(stderr, "MXML_SAX_COMMENT seen %d times, expected 1 times!\n",
+              event_counts[MXML_SAX_COMMENT]);
+      return (1);
+    }
+
+    if (event_counts[MXML_SAX_DATA] != 61)
+    {
+      fprintf(stderr, "MXML_SAX_DATA seen %d times, expected 61 times!\n",
+              event_counts[MXML_SAX_DATA]);
+      return (1);
+    }
+
+    if (event_counts[MXML_SAX_DIRECTIVE] != 1)
+    {
+      fprintf(stderr, "MXML_SAX_DIRECTIVE seen %d times, expected 1 times!\n",
+              event_counts[MXML_SAX_DIRECTIVE]);
+      return (1);
+    }
+
+    if (event_counts[MXML_SAX_ELEMENT_CLOSE] != 20)
+    {
+      fprintf(stderr, "MXML_SAX_ELEMENT_CLOSE seen %d times, expected 20 times!\n",
+              event_counts[MXML_SAX_ELEMENT_CLOSE]);
+      return (1);
+    }
+
+    if (event_counts[MXML_SAX_ELEMENT_OPEN] != 20)
+    {
+      fprintf(stderr, "MXML_SAX_ELEMENT_OPEN seen %d times, expected 20 times!\n",
+              event_counts[MXML_SAX_ELEMENT_OPEN]);
+      return (1);
+    }
+  }
+
+ /*
   * Return...
   */
 
   return (0);
+}
+
+
+/*
+ * 'sax_cb()' - Process nodes via SAX.
+ */
+
+void
+sax_cb(mxml_node_t      *node,		/* I - Current node */
+       mxml_sax_event_t event,		/* I - SAX event */
+       void             *data)		/* I - SAX user data */
+{
+ /*
+  * This SAX callback just counts the different events.
+  */
+
+  event_counts[event] ++;
 }
 
 

@@ -331,10 +331,10 @@ mxmlNewCDATA(mxml_node_t *parent,	/* I - Parent node or MXML_NO_PARENT */
  */
 
 mxml_node_t *				/* O - New node */
-mxmlNewCustom(mxml_node_t *parent,	/* I - Parent node or MXML_NO_PARENT */
-              void        *data,	/* I - Pointer to data */
-	      void        (*destroy)(void *))
-					/* I - Function to destroy data */
+mxmlNewCustom(
+    mxml_node_t              *parent,	/* I - Parent node or MXML_NO_PARENT */
+    void                     *data,	/* I - Pointer to data */
+    mxml_custom_destroy_cb_t destroy)	/* I - Function to destroy data */
 {
   mxml_node_t	*node;			/* New node */
 

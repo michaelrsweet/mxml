@@ -417,27 +417,31 @@ three constants:</p>
 	<li><tt>MXML_NO_DESCEND</tt> means to not to look at any
 	child nodes in the element hierarchy, just look at
 	siblings at the same level or parent nodes until the top
-	node or top-of-tree is reached. The previous node from
-	"group" would be the "node" element to the left, while
-	the next node from "group" would be the "node" element
-	to the right.<br><br></li>
+	node or top-of-tree is reached.
 
-	<li><tt>MXML_DESCEND_FIRST</tt> means that it is OK to
-	descend to the first child of a node, but not to descend
-	further when searching. You'll normally use this when
-	iterating through direct children of a parent node, e.g.
-	all of the "node" elements under the "?xml" parent node
-	in the example above. This mode is only applicable to
-	the search function; the walk functions treat this as
-	<tt>MXML_DESCEND</tt> since every call is a first
-	time.<br><br></li>
+        <p>The previous node from "group" would be the "node"
+        element to the left, while the next node from "group" would
+        be the "node" element to the right.<br><br></p></li>
+
+        <li><tt>MXML_DESCEND_FIRST</tt> means that it is OK to
+        descend to the first child of a node, but not to descend
+        further when searching. You'll normally use this when
+        iterating through direct children of a parent node, e.g. all
+        of the "node" and "group" elements under the "?xml" parent
+        node in the example above.
+
+        <p>This mode is only applicable to the search function; the
+        walk functions treat this as <tt>MXML_DESCEND</tt> since
+        every call is a first time.<br><br></p></li>
 
         <li><tt>MXML_DESCEND</tt> means to keep descending until
         you hit the bottom of the tree. The previous node from
         "group" would be the "val3" node and the next node would
-        be the first node element under "group". If you were to
-        walk from the root node "?xml" to the end of the tree
-        with <tt>mxmlWalkNext()</tt>, the order would be:
+        be the first node element under "group".
+
+        <p>If you were to walk from the root node "?xml" to the end
+        of the tree with <tt>mxmlWalkNext()</tt>, the order would
+        be:</p>
 
         <p><tt>?xml data node val1 node val2 node val3 group node
         val4 node val5 node val6 node val7 node val8</tt></p>

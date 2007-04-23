@@ -113,7 +113,7 @@ all:		Makefile config.h $(TARGETS)
 #
 
 clean:
-	$(RM) $(OBJS) $(TARGETS)
+	$(RM) $(OBJS) $(TARGETS) doc/mxml.man
 	$(RM) mxmldoc-static libmxml.a
 
 
@@ -347,6 +347,16 @@ valgrind:	mxmldoc-static
 	valgrind --tool=memcheck --leak-check=yes ./mxmldoc-static \
 		valgrind.xml mxml.h $(PUBLIBOBJS:.o=.c) \
 		>valgrind.html 2>valgrind.out
+
+
+#
+# doc/mxml.man
+#
+
+doc/mxml.man: mxmldoc-static mxml.xml
+	$(RM) doc/mxml.man
+	./mxmldoc-static --man mxml --title "Mini-XML API" \
+		--intro doc/intro.man mxml.xml >doc/mxml.man
 
 
 #

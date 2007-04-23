@@ -3,7 +3,7 @@
  *
  * Node set functions for Mini-XML, a small XML-like file parsing library.
  *
- * Copyright 2003-2005 by Michael Sweet.
+ * Copyright 2003-2007 by Michael Sweet.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -44,10 +44,10 @@
  */
 
 int					/* O - 0 on success, -1 on failure */
-mxmlSetCustom(mxml_node_t *node,	/* I - Node to set */
-              void        *data,	/* I - New data pointer */
-	      void        (*destroy)(void *))
-					/* I - New destructor function */
+mxmlSetCustom(
+    mxml_node_t              *node,	/* I - Node to set */
+    void                     *data,	/* I - New data pointer */
+    mxml_custom_destroy_cb_t destroy)	/* I - New destructor function */
 {
  /*
   * Range check input...

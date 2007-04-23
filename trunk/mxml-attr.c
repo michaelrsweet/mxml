@@ -145,6 +145,8 @@ mxmlElementSetAttr(mxml_node_t *node,	/* I - Element node */
  * is replaced by the new formatted string. The formatted string value is
  * copied into the element node. This function does nothing if the node
  * is not an element.
+ *
+ * @since Mini-XML 2.3@
  */
 
 void

@@ -504,7 +504,8 @@ a user data pointer you supply:</p>
 
 <pre>
     void
-    sax_cb(mxml_node_t *node, mxml_sax_event_t event,
+    sax_cb(mxml_node_t *node,
+           mxml_sax_event_t event,
            void *data)
     {
       ... do something ...
@@ -538,7 +539,8 @@ simulating a normal in-memory load:</p>
 
 <pre>
     void
-    sax_cb(mxml_node_t *node, mxml_sax_event_t event,
+    sax_cb(mxml_node_t *node,
+           mxml_sax_event_t event,
            void *data)
     {
       if (event != MXML_SAX_ELEMENT_CLOSE)

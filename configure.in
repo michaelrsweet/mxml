@@ -75,15 +75,6 @@ AC_PATH_PROG(AR,ar)
 AC_PATH_PROG(CP,cp)
 AC_PATH_PROG(LN,ln)
 AC_PATH_PROG(MKDIR,mkdir)
-AC_PATH_PROG(NROFF,nroff)
-if test x$NROFF = x; then
-	AC_PATH_PROG(GROFF,groff)
-	if test x$GROFF = x; then
-        	NROFF="echo"
-	else
-        	NROFF="$GROFF -T ascii"
-	fi
-fi
 AC_PATH_PROG(RM,rm)
 
 dnl Flags for "ar" command...
@@ -262,29 +253,6 @@ if test "$mandir" = "\${prefix}/man" -a "$prefix" = "/usr"; then
         		;;
 	esac
 fi
-
-dnl More manpage stuff...
-case "$uname" in
-        *BSD* | Darwin*)
-        	# *BSD
-        	CAT1EXT="0"
-        	MAN1EXT="1"
-        	CAT3EXT="0"
-        	MAN3EXT="3"
-        	;;
-        *)
-        	# All others
-        	CAT1EXT="1"
-        	MAN1EXT="1"
-        	CAT3EXT="3"
-        	MAN3EXT="3"
-        	;;
-esac
-
-AC_SUBST(CAT1EXT)
-AC_SUBST(CAT3EXT)
-AC_SUBST(MAN1EXT)
-AC_SUBST(MAN3EXT)
 
 dnl pkg-config stuff...
 if test "$includedir" != /usr/include; then

@@ -136,10 +136,12 @@ else
 
 <h1>Documentation</h1>
 
-<p>You can view the Mini-XML documentation in a number of
-formats on-line:</p>
+<p>You can view the Mini-XML documentation in a single HTML file or in
+multiple files with comments on-line:</p>
 
 <ul>
+
+	<li><a href='mxml.html'>HTML in one file (140k)</a></li>
 
 	<li><a href='documentation.php/toc.html'>HTML in
 	separate files with Comments</a>
@@ -150,42 +152,34 @@ formats on-line:</p>
 		href='documentation.php/Introduction.html'>Introduction</a></li>
 
 		<li><a
-		href='documentation.php/1BuildingInstallingandPackagingMiniXML.html'>1
-		- Building, Installing, and Packaging
-		Mini-XML</a></li>
+		href='documentation.php/BuildingInstallingandPackagingMiniXML.html'>Building,
+		Installing, and Packaging Mini-XML</a></li>
 
 		<li><a
-		href='documentation.php/2GettingStartedwithMiniXML.html'>2
-		- Getting Started with Mini-XML</a></li>
+		href='documentation.php/GettingStartedwithMiniXML.html'>Getting
+		Started with Mini-XML</a></li>
 
 		<li><a
-		href='documentation.php/3MoreMiniXMLProgrammingTechniques.html'>3
-		- More Mini-XML Programming Techniques</a></li>
+		href='documentation.php/MoreMiniXMLProgrammingTechniques.html'>More
+		Mini-XML Programming Techniques</a></li>
 
 		<li><a
-		href='documentation.php/4UsingthemxmldocUtility.html'>4
-		- Using the mxmldoc Utility</a></li>
+		href='documentation.php/UsingthemxmldocUtility.html'>Using
+		the mxmldoc Utility</a></li>
 
 		<li><a
-		href='documentation.php/AGNULibraryGeneralPublicLicense.html'>A
-		- GNU Library General Public License</a></li>
+		href='documentation.php/MiniXMLLicense.html'>Mini-XML
+		License</a></li>
 
 		<li><a
-		href='documentation.php/BReleaseNotes.html'>B -
-		Release Notes</a></li>
+		href='documentation.php/ReleaseNotes.html'>Release
+		Notes</a></li>
 
 		<li><a
-		href='documentation.php/CLibraryReference.html'>C
-		- Library Reference</a></li>
+		href='documentation.php/LibraryReference.html'>Library
+		Reference</a></li>
 
 	</ul></li>
-
-	<li><a href='mxml.html'>HTML in one file (140k)</a></li>
-
-	<li><a href='mxml.pdf'>PDF (108 pages, 202k)</a></li>
-
-	<li><a href='mxml.ps.gz'>PostScript (108 pages, gzip'd,
-	61k)</a></li>
 
 </ul>
 

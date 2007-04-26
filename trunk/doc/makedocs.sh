@@ -4,7 +4,7 @@
 #
 # Script to make documentation...
 #
-# Copyright 2003-2005 by Michael Sweet.
+# Copyright 2003-2007 by Michael Sweet.
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Library General Public
@@ -17,17 +17,13 @@
 # GNU General Public License for more details.
 #
 
-htmldoc --verbose --batch mxml.book --no-embedfonts -f mxml.pdf
+htmldoc --verbose --path hires:. --batch mxml.book -f mxml.pdf
 
-htmldoc --verbose --batch mxml.book -f mxml.html
-
-htmldoc --verbose --batch mxml.book --gray --no-embedfonts -f mxml.ps
-rm -f mxml.ps.gz
-gzip -v9 mxml.ps
+htmldoc --verbose --batch mxml.book --no-title -f mxml.html
 
 rm -rf mxml.d
 mkdir mxml.d
-htmldoc --verbose --batch mxml.book -t htmlsep -d mxml.d
+htmldoc --verbose --batch mxml.book --no-title -t htmlsep -d mxml.d
 
 #
 # End of "$Id$".

@@ -1,11 +1,41 @@
 <html>
 <body>
 
-<h1 align='right'><a name='BASICS'>2 - Getting Started with
-Mini-XML</a></h1>
+<h1 align='right'><a name='BASICS'><img src="2.gif" align="right"
+hspace="10" width="100" height="100" alt="2"></a>Getting Started
+with Mini-XML</h1>
 
-<p>This chapter describes how to write programs that use
-Mini-XML to access data in an XML file.</p>
+<p>This chapter describes how to write programs that use Mini-XML to
+access data in an XML file. Mini-XML provides the following
+functionality:</p>
+
+<ul>
+
+	<li>Functions for creating and managing XML documents
+	in memory.</li>
+
+	<li>Reading of UTF-8 and UTF-16 encoded XML files and
+	strings.</li>
+
+	<li>Writing of UTF-8 encoded XML files and strings.</li>
+
+	<li>Support for arbitrary element names, attributes, and
+	attribute values with no preset limits, just available
+	memory.</li>
+
+	<li>Support for integer, real, opaque ("cdata"), and text
+	data types in "leaf" nodes.</li>
+
+	<li>"Find", "index", and "walk" functions for easily
+	accessing data in an XML document.</li>
+
+</ul>
+
+<p>Mini-XML doesn't do validation or other types of processing
+on the data based upon schema files or other sources of
+definition information, nor does it support character entities
+other than those required by the XML specification.</p>
+
 
 <h2>The Basics</h2>
 
@@ -43,24 +73,64 @@ defines the node type (element, integer, opaque, real, or text)
 which determines which value you want to look at in the <a
 href='#mxml_value_t'><tt>value</tt></a> union.</p>
 
-<p>New nodes can be created using the <a
-href='#mxmlNewElement'><tt>mxmlNewElement()</tt></a>, <a
-href='#mxmlNewInteger'><tt>mxmlNewInteger()</tt></a>, <a
-href='#mxmlNewOpaque'><tt>mxmlNewOpaque()</tt></a>, <a
-href='#mxmlNewReal'><tt>mxmlNewReal()</tt></a>, <a
-href='#mxmlNewText'><tt>mxmlNewText()</tt></a> <a
-href='#mxmlNewTextf'><tt>mxmlNewTextf()</tt></a> <a
-href='#mxmlNewXML'><tt>mxmlNewXML()</tt></a> functions. Only
-elements can have child nodes, and the top node must be an
-element, usually <tt>&lt;?xml version="1.0"?&gt;</tt>.</p>
+<!-- NEED 10 -->
+<center><table width="80%" border="1" cellpadding="5" cellspacing="0" summary="Mini-XML Node Value Members">
+<caption align="bottom"><i>Table 2-1: Mini-XML Node Value Members</i></caption>
+<tr bgcolor="#cccccc">
+	<th>Value</th>
+	<th>Type</th>
+	<th>Node member</th>
+</tr>
+<tr>
+	<td>Custom</td>
+	<td><tt>void *</tt></td>
+	<td><tt>node-&gt;value.custom.data</tt></td>
+</tr>
+<tr>
+	<td>Element</td>
+	<td><tt>char *</tt></td>
+	<td><tt>node-&gt;value.element.name</tt></td>
+</tr>
+<tr>
+	<td>Integer</td>
+	<td><tt>int</tt></td>
+	<td><tt>node-&gt;value.integer</tt></td>
+</tr>
+<tr>
+	<td>Opaque (string)</td>
+	<td><tt>char *</tt></td>
+	<td><tt>node-&gt;value.opaque</tt></td>
+</tr>
+<tr>
+	<td>Real</td>
+	<td><tt>double</tt></td>
+	<td><tt>node-&gt;value.real</tt></td>
+</tr>
+<tr>
+	<td>Text</td>
+	<td><tt>char *</tt></td>
+	<td><tt>node-&gt;value.text.string</tt></td>
+</tr>
+</table></center>
 
-<p>Each node has a <tt>user_data</tt> member which allows you to
-associate application-specific data with each node as needed.</p>
+<p>Each node also has a <tt>user_data</tt> member which allows you
+to associate application-specific data with each node as needed.</p>
 
-<p>Node also have pointers for the node above (<tt>parent</tt>),
-below (<tt>child</tt>), to the left (<tt>prev</tt>), and to the
-right (<tt>next</tt>) of the current node. If you have an XML
-file like the following:</p>
+<p>New nodes are created using the <a
+href='#mxmlNewElement'><tt>mxmlNewElement</tt></a>, <a
+href='#mxmlNewInteger'><tt>mxmlNewInteger</tt></a>, <a
+href='#mxmlNewOpaque'><tt>mxmlNewOpaque</tt></a>, <a
+href='#mxmlNewReal'><tt>mxmlNewReal</tt></a>, <a
+href='#mxmlNewText'><tt>mxmlNewText</tt></a> <a
+href='#mxmlNewTextf'><tt>mxmlNewTextf</tt></a> <a
+href='#mxmlNewXML'><tt>mxmlNewXML</tt></a> functions. Only
+elements can have child nodes, and the top node must be an element,
+usually the <tt>&lt;?xml version="1.0"?&gt;</tt> node created by
+<tt>mxmlNewXML()</tt>.</p>
+
+<p>Nodes have pointers to the node above (<tt>parent</tt>), below
+(<tt>child</tt>), left (<tt>prev</tt>), and  right (<tt>next</tt>)
+of the current node. If you have an XML file like the following:</p>
 
 <pre>
     &lt;?xml version="1.0"?&gt;
@@ -99,9 +169,9 @@ memory:</p>
 to the first child node.</p>
 
 <p>Once you are done with the XML data, use the <a
-href='#mxmlDelete'><tt>mxmlDelete()</tt></a>
-function to recursively free the memory that is used for a
-particular node or the entire tree:</p>
+href='#mxmlDelete'><tt>mxmlDelete</tt></a> function to recursively
+free the memory that is used for a particular node or the entire
+tree:</p>
 
 <pre>
     mxmlDelete(tree);
@@ -184,7 +254,7 @@ processed just like one loaded from disk or a string.</p>
 <h2>Loading XML</h2>
 
 <p>You load an XML file using the <a
-href='#mxmlLoadFile'><tt>mxmlLoadFile()</tt></a>
+href='#mxmlLoadFile'><tt>mxmlLoadFile</tt></a>
 function:</p>
 
 <pre>
@@ -221,7 +291,7 @@ values. Other standard callbacks include
 <tt>MXML_OPAQUE_CALLBACK</tt>, and 
 <tt>MXML_REAL_CALLBACK</tt>.</p>
 
-<p>The <a href='#mxmlLoadString'><tt>mxmlLoadString()</tt></a>
+<p>The <a href='#mxmlLoadString'><tt>mxmlLoadString</tt></a>
 function loads XML node trees from a string:</p>
 
 <!-- NEED 10 -->
@@ -245,7 +315,7 @@ is <tt>NULL</tt>.</p>
 <h2>Saving XML</h2>
 
 <p>You save an XML file using the <a
-href='#mxmlSaveFile'><tt>mxmlSaveFile()</tt></a> function:</p>
+href='#mxmlSaveFile'><tt>mxmlSaveFile</tt></a> function:</p>
 
 <pre>
     FILE *fp;
@@ -272,8 +342,8 @@ uses the <tt>MXML_NO_CALLBACK</tt> constant to specify that no
 special whitespace handling is required.</p>
 
 <p>The <a
-href='#mxmlSaveAllocString'><tt>mxmlSaveAllocString()</tt></a>,
-and <a href='#mxmlSaveString'><tt>mxmlSaveString()</tt></a>
+href='#mxmlSaveAllocString'><tt>mxmlSaveAllocString</tt></a>,
+and <a href='#mxmlSaveString'><tt>mxmlSaveString</tt></a>
 functions save XML node trees to strings:</p>
 
 <pre>
@@ -290,7 +360,7 @@ functions save XML node trees to strings:</p>
 </pre>
 
 <p>The first and last arguments are the same as used for
-<tt>mxmlSaveFile()</tt>. The <tt>mxmlSaveString()</tt> function
+<tt>mxmlSaveFile()</tt>. The <tt>mxmlSaveString</tt> function
 takes pointer and size arguments for saving the XML document to
 a fixed-size buffer, while <tt>mxmlSaveAllocString()</tt>
 returns a string buffer that was allocated using
@@ -317,9 +387,9 @@ overrides the default wrap margin:</p>
 <h2>Finding and Iterating Nodes</h2>
 
 <p>The <a
-href='#mxmlWalkPrev'><tt>mxmlWalkPrev()</tt></a>
+href='#mxmlWalkPrev'><tt>mxmlWalkPrev</tt></a>
 and <a
-href='#mxmlWalkNext'><tt>mxmlWalkNext()</tt></a>functions
+href='#mxmlWalkNext'><tt>mxmlWalkNext</tt></a>functions
 can be used to iterate through the XML node tree:</p>
 
 <pre>
@@ -333,7 +403,7 @@ can be used to iterate through the XML node tree:</p>
 </pre>
 
 <p>In addition, you can find a named element/node using the <a
-href='#mxmlFindElement'><tt>mxmlFindElement()</tt></a>
+href='#mxmlFindElement'><tt>mxmlFindElement</tt></a>
 function:</p>
 
 <pre>

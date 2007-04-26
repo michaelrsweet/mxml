@@ -13,16 +13,16 @@ html_header();
 
 print("<h1 align='center'>Mini-XML Home Page</h1>");
 
-print("<p><table width='100%' height='100%' border='0' cellpadding='0' "
-     ."cellspacing='0'>\n"
+print("<table width='100%' style='height: 100%' border='0' cellpadding='0' "
+     ."cellspacing='0' summary=''>\n"
      ."<tr><td valign='top' width='30%'>");
 
-html_start_table(array("Quick Info"), "100%", "100%");
+html_start_table(array("Quick Info"), "100%");
 html_start_row();
 print("<td>"
      ."<p align='center'>"
-     ."Stable Release: <a href='software.php?2.2.2'>v2.2.2</a></p>"
-     ."<small><p>Mini-XML is a small XML parsing library that you can use to "
+     ."Stable Release: <a href='software.php?2.3'>v2.3</a></p>"
+     ."<p>Mini-XML is a small XML parsing library that you can use to "
      ."read XML and XML-like data files in your application without "
      ."requiring large non-standard libraries. Mini-XML only requires "
      ."an ANSI C compatible compiler (GCC works, as do most vendors' "
@@ -41,23 +41,10 @@ print("<td>"
      ."<li>Functions for creating, indexing, and managing trees of data.</li>\n"
      ."<li>\"Find\" and \"walk\" functions for easily locating and "
      ."navigating trees of data.</li>\n"
-     ."</ul></small>\n"
+     ."</ul>\n"
      ."</td>");
 html_end_row();
 html_end_table();
-
-$poll = get_recent_poll();
-if ($poll > 0)
-{
-  html_start_table(array("Current Poll [&nbsp;<a href='poll.php'>"
-                	."Show&nbsp;All</a>&nbsp;]"));
-  html_start_row();
-  print("<td>");
-  show_poll($poll);
-  print("</td>");
-  html_end_row();
-  html_end_table();
-}
 
 print("</td><td>&nbsp;&nbsp;&nbsp;&nbsp;</td>"
      ."<td valign='top' width='70%'>"
@@ -95,7 +82,7 @@ else
 db_free($result);
 
 print("</td></tr>\n"
-     ."</table></p>\n");
+     ."</table>\n");
 
 html_footer();
 

@@ -1,8 +1,9 @@
 <html>
 <body>
 
-<h1 align='right'><a name='ADVANCED'>3 - More Mini-XML
-Programming Techniques</a></h1>
+<h1 align='right'><a name='ADVANCED'><img src="3.gif" align="right"
+hspace="10" width="100" height="100" alt="3"></a>More Mini-XML
+Programming Techniques</h1>
 
 <p>This chapter shows additional ways to use the Mini-XML
 library in your programs.</p>
@@ -567,7 +568,7 @@ directives like  <tt>&lt;?xml ... ?&gt;</tt> and  <tt>&lt;!DOCTYPE ... &gt;</tt>
         * Retain headings and titles...
         */
 
-        const char *name = node->value.element.name;
+        char *name = node->value.element.name;
 
         if (!strcmp(name, "html") ||
             !strcmp(name, "head") ||

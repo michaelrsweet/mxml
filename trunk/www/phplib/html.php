@@ -87,16 +87,16 @@ html_header($title = "",		// I - Additional document title
     $html_title = "";
 
   print("  <title>$html_title Mini-XML</title>\n"
-       ."  <meta http-equiv='Pragma' content='no-cache'/>\n"
+       ."  <meta http-equiv='Pragma' content='no-cache'>\n"
        ."  <meta http-equiv='Content-Type' content='text/html; "
-       ."charset=iso-8859-1'/>\n"
-       ."  <link rel='stylesheet' type='text/css' href='${path}style.css'/>\n"
+       ."charset=iso-8859-1'>\n"
+       ."  <link rel='stylesheet' type='text/css' href='${path}style.css'>\n"
        ."  <link rel='shortcut icon' href='${path}favicon.ico' "
-       ."type='image/x-icon'/>\n");
+       ."type='image/x-icon'>\n");
 
   // If refresh URL is specified, add the META tag...
   if ($refresh != "")
-    print("  <meta http-equiv='refresh' content='3; $refresh'/>\n");
+    print("  <meta http-equiv='refresh' content='3; $refresh'>\n");
 
   // Search engine keywords...
   reset($html_keywords);
@@ -107,19 +107,19 @@ html_header($title = "",		// I - Additional document title
   while (list($key, $val) = each($html_keywords))
     print(",$val");
 
-  print("'/>\n");
+  print("'>\n");
 
   print("</head>\n"
        ."<body>\n");
 
   // Standard navigation stuff...
-  print("<p><table width='100%' height='100%' border='0' cellspacing='0' "
-       ."cellpadding='0'>\n"
-       ."<tr class='header' height='40'>"
+  print("<table width='100%' style='height: 100%' border='0' cellspacing='0' "
+       ."cellpadding='0' summary=''>\n"
+       ."<tr class='header' style='height: 40'>"
        ."<td valign='top'><img src='${path}images/top-left.gif' width='15' "
-       ."height='15' alt=''/></td>"
-       ."<td><img src='${path}images/logo.jpg' width='32' height='32' "
-       ."alt='Mini-XML' align='middle'/>&nbsp;&nbsp;&nbsp;</td>"
+       ."height='15' alt=''></td>"
+       ."<td><img src='${path}images/logo.gif' width='32' height='32' "
+       ."alt='Mini-XML' align='middle'>&nbsp;&nbsp;&nbsp;</td>"
        ."<td width='100%'>[&nbsp;<a href='${path}index.php'>Home</a> | "
        ."<a href='${path}articles.php'>Articles</a> | "
        ."<a href='${path}str.php'>Bugs &amp; Features</a> | "
@@ -136,13 +136,13 @@ html_header($title = "",		// I - Additional document title
 
   print("&nbsp;]</td>"
        ."<td valign='top'><img src='${path}images/top-right.gif' width='15' "
-       ."height='15' alt=''/></td>"
+       ."height='15' alt=''></td>"
        ."</tr>\n");
 
-  print("<tr class='page' height='100%'><td></td>"
+  print("<tr class='page' style='height: 100%'><td></td>"
        ."<td colspan='3' valign='top'>"
-       ."<table width='100%' height='100%' border='0' cellpadding='5' "
-       ."cellspacing='0'><tr><td valign='top'>");
+       ."<table width='100%' style='height: 100%' border='0' cellpadding='5' "
+       ."cellspacing='0' summary=''><tr><td valign='top'>");
 }
 
 
@@ -157,18 +157,18 @@ html_footer($path = "")			// I - Relative path to root
   print("<tr class='page'><td colspan='5'>&nbsp;</td></tr>\n");
   print("<tr class='header'>"
        ."<td valign='bottom'><img src='${path}images/bottom-left.gif' "
-       ."width='15' height='15' alt=''/></td>"
-       ."<td colspan='3'><small> <br />"
-       ."Copyright 2003-2005 by Michael Sweet. This library is free "
+       ."width='15' height='15' alt=''></td>"
+       ."<td colspan='3'><small> <br>"
+       ."Copyright 2003-2007 by Michael Sweet. This library is free "
        ."software; you can redistribute it and/or modify it "
        ."under the terms of the GNU Library General Public "
        ."License as published by the Free Software Foundation; "
        ."either version 2 of the License, or (at your option) "
-       ."any later version.<br />&nbsp;</small></td>"
+       ."any later version.<br>&nbsp;</small></td>"
        ."<td valign='bottom'><img src='${path}images/bottom-right.gif' "
-       ."width='15' height='15' alt=''/></td>"
+       ."width='15' height='15' alt=''></td>"
        ."</tr>\n");
-  print("</table></p>\n");
+  print("</table>\n");
   print("</body>\n"
        ."</html>\n");
 }
@@ -249,15 +249,15 @@ html_start_table($headings,		// I - Array of heading strings
   global $html_row, $html_cols;
 
 
-  print("<p><table");
+  print("<br><table");
   if ($width != "")
     print(" width='$width'");
   if ($height != "")
-    print(" height='$height'");
-  print(" border='0' cellpadding='0' cellspacing='0'>"
+    print(" style='height: $height'");
+  print(" border='0' cellpadding='0' cellspacing='0' summary=''>"
        ."<tr class='header'><th align='left' valign='top'>"
        ."<img src='images/hdr-top-left.gif' width='16' height='16' "
-       ."alt=''/></th>");
+       ."alt=''></th>");
 
   $html_row  = 0;
   $html_cols = count($headings);
@@ -315,7 +315,7 @@ html_start_table($headings,		// I - Array of heading strings
 
   print("<th align='right' valign='top'>"
        ."<img src='images/hdr-top-right.gif' "
-       ."width='16' height='16' alt=''/></th></tr>\n");
+       ."width='16' height='16' alt=''></th></tr>\n");
 }
 
 
@@ -330,11 +330,11 @@ html_end_table()
 
   print("<tr class='header'><th align='left' valign='bottom'>"
        ."<img src='images/hdr-bottom-left.gif' width='16' height='16' "
-       ."alt=''/></th>"
+       ."alt=''></th>"
        ."<th colspan='$html_cols'>&nbsp;</th>"
        ."<th align='right' valign='bottom'><img src='images/hdr-bottom-right.gif' "
-       ."width='16' height='16' alt=''/></th></tr>\n"
-       ."</table></p>\n");
+       ."width='16' height='16' alt=''></th></tr>\n"
+       ."</table>\n");
 }
 
 
@@ -365,7 +365,7 @@ html_end_row()
 
   $html_row = 1 - $html_row;
 
-  print("</td><td>&nbsp;</td></tr>\n");
+  print("<td>&nbsp;</td></tr>\n");
 }
 
 

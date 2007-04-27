@@ -1,0 +1,176 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML>
+<HEAD>
+<TITLE>Mini-XML Programmers Manual, Version 2.3</TITLE>
+<META NAME="author" CONTENT="Michael R. Sweet">
+<META NAME="copyright" CONTENT="Copyright 2003-2007">
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; CHARSET=iso-iso-8859-1">
+<LINK REL="Start" HREF="index.html">
+<LINK REL="Contents" HREF="index.html">
+<LINK REL="Prev" HREF="SaveCallbacks.html">
+<LINK REL="Next" HREF="ChangingNodeValues.html">
+<STYLE TYPE="text/css"><!--
+BODY { font-family: sans-serif }
+H1 { font-family: sans-serif }
+H2 { font-family: sans-serif }
+H3 { font-family: sans-serif }
+H4 { font-family: sans-serif }
+H5 { font-family: sans-serif }
+H6 { font-family: sans-serif }
+SUB { font-size: smaller }
+SUP { font-size: smaller }
+PRE { font-family: monospace }
+A { text-decoration: none }
+--></STYLE>
+</HEAD>
+<BODY>
+<A HREF="index.html">Contents</A>
+<A HREF="SaveCallbacks.html">Previous</A>
+<A HREF="ChangingNodeValues.html">Next</A>
+<HR NOSHADE>
+<H2><A NAME="4_3">Custom Data Types</A></H2>
+<P>Mini-XML supports custom data types via global load and save
+ callbacks. Only a single set of callbacks can be active at any time,
+ however your callbacks can store additional information in order to
+ support multiple custom data types as needed. The <TT>MXML_CUSTOM</TT>
+ node type identifies custom data nodes.</P>
+<P>The load callback receives a pointer to the current data node and a
+ string of opaque character data from the XML source with character
+ entities converted to the corresponding UTF-8 characters. For example,
+ if we wanted to support a custom date/time type whose value is encoded
+ as &quot;yyyy-mm-ddThh:mm:ssZ&quot; (ISO format), the load callback would look
+ like the following:</P>
+<PRE>
+    typedef struct
+    {
+      unsigned      year,    /* Year */
+                    month,   /* Month */
+                    day,     /* Day */
+                    hour,    /* Hour */
+                    minute,  /* Minute */
+                    second;  /* Second */
+      time_t        unix;    /* UNIX time */
+    } iso_date_time_t;
+
+    int
+    load_custom(mxml_node_t *node,
+                const char *data)
+    {
+      iso_date_time_t *dt;
+      struct tm tmdata;
+
+     /*
+      * Allocate data structure...
+      */
+
+      dt = calloc(1, sizeof(iso_date_time_t));
+
+     /*
+      * Try reading 6 unsigned integers from the
+      * data string...
+      */
+
+      if (sscanf(data, &quot;%u-%u-%uT%u:%u:%uZ&quot;,
+                 &amp;(dt-&gt;year), &amp;(dt-&gt;month),
+                 &amp;(dt-&gt;day), &amp;(dt-&gt;hour),
+                 &amp;(dt-&gt;minute),
+                 &amp;(dt-&gt;second)) != 6)
+      {
+       /*
+        * Unable to read numbers, free the data
+        * structure and return an error...
+        */
+
+        free(dt);
+
+        return (-1);
+      }
+
+     /*
+      * Range check values...
+      */
+
+      if (dt-&gt;month &lt;1 || dt-&gt;month &gt; 12 ||
+          dt-&gt;day  &lt;1 || dt-&gt;day &gt; 31 ||
+          dt-&gt;hour  &lt;0 || dt-&gt;hour &gt; 23 ||
+          dt-&gt;minute  &lt;0 || dt-&gt;minute &gt; 59 ||
+          dt-&gt;second  &lt;0 || dt-&gt;second &gt; 59)
+      {
+       /*
+        * Date information is out of range...
+        */
+
+        free(dt);
+
+        return (-1);
+      }
+
+     /*
+      * Convert ISO time to UNIX time in
+      * seconds...
+      */
+
+      tmdata.tm_year = dt-&gt;year - 1900;
+      tmdata.tm_mon  = dt-&gt;month - 1;
+      tmdata.tm_day  = dt-&gt;day;
+      tmdata.tm_hour = dt-&gt;hour;
+      tmdata.tm_min  = dt-&gt;minute;
+      tmdata.tm_sec  = dt-&gt;second;
+
+      dt-&gt;unix = gmtime(&amp;tmdata);
+
+     /*
+      * Assign custom node data and destroy
+      * function pointers...
+      */
+
+      node-&gt;value.custom.data    = dt;
+      node-&gt;value.custom.destroy = free;
+
+     /*
+      * Return with no errors...
+      */
+
+      return (0);
+    }
+</PRE>
+<P>The function itself can return 0 on success or -1 if it is unable to
+ decode the custom data or the data contains an error. Custom data nodes
+ contain a <TT>void</TT> pointer to the allocated custom data for the
+ node and a pointer to a destructor function which will free the custom
+ data when the node is deleted.</P>
+<P>The save callback receives the node pointer and returns an allocated
+ string containing the custom data value. The following save callback
+ could be used for our ISO date/time type:</P>
+<PRE>
+    char *
+    save_custom(mxml_node_t *node)
+    {
+      char data[255];
+      iso_date_time_t *dt;
+
+
+      dt = (iso_date_time_t *)node-&gt;custom.data;
+
+      snprintf(data, sizeof(data),
+               &quot;%04u-%02u-%02uT%02u:%02u:%02uZ&quot;,
+               dt-&gt;year, dt-&gt;month, dt-&gt;day,
+               dt-&gt;hour, dt-&gt;minute, dt-&gt;second);
+
+      return (strdup(data));
+    }
+</PRE>
+<P>You register the callback functions using the <A href="mxmlSetCustomHandlers.html#mxmlSetCustomHandlers">
+<TT>mxmlSetCustomHandlers()</TT></A> function:</P>
+<PRE>
+    mxmlSetCustomHandlers(<B>load_custom</B>,
+                          <B>save_custom</B>);
+</PRE>
+
+<!-- NEED 20 -->
+<HR NOSHADE>
+<A HREF="index.html">Contents</A>
+<A HREF="SaveCallbacks.html">Previous</A>
+<A HREF="ChangingNodeValues.html">Next</A>
+</BODY>
+</HTML>

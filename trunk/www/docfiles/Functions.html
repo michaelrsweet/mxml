@@ -1,0 +1,147 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML>
+<HEAD>
+<TITLE>Mini-XML Programmers Manual, Version 2.3</TITLE>
+<META NAME="author" CONTENT="Michael R. Sweet">
+<META NAME="copyright" CONTENT="Copyright 2003-2007">
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; CHARSET=iso-iso-8859-1">
+<LINK REL="Start" HREF="index.html">
+<LINK REL="Contents" HREF="index.html">
+<LINK REL="Prev" HREF="mxmltypee.html">
+<LINK REL="Next" HREF="mxmlAdd.html">
+<STYLE TYPE="text/css"><!--
+BODY { font-family: sans-serif }
+H1 { font-family: sans-serif }
+H2 { font-family: sans-serif }
+H3 { font-family: sans-serif }
+H4 { font-family: sans-serif }
+H5 { font-family: sans-serif }
+H6 { font-family: sans-serif }
+SUB { font-size: smaller }
+SUP { font-size: smaller }
+PRE { font-family: monospace }
+A { text-decoration: none }
+--></STYLE>
+</HEAD>
+<BODY>
+<A HREF="index.html">Contents</A>
+<A HREF="mxmltypee.html">Previous</A>
+<A HREF="mxmlAdd.html">Next</A>
+<HR NOSHADE>
+<H2 class="title"><A name="FUNCTIONS">Functions</A></H2>
+<UL>
+<LI><A href="mxmlAdd.html#mxmlAdd"><TT>mxmlAdd()</TT></A></LI>
+<LI><A href="mxmlDelete.html#mxmlDelete"><TT>mxmlDelete()</TT></A></LI>
+<LI><A href="mxmlElementGetAttr.html#mxmlElementGetAttr"><TT>
+mxmlElementGetAttr()</TT></A></LI>
+<LI><A href="mxmlElementSetAttr.html#mxmlElementSetAttr"><TT>
+mxmlElementSetAttr()</TT></A></LI>
+<LI><A href="MiniXML23mxmlElementSetAttrf.html#mxmlElementSetAttrf"><TT>
+mxmlElementSetAttrf()</TT></A>
+<!--span class='info'-->
+ &nbsp;Mini-XML 2.3&nbsp;</LI>
+<LI><A href="mxmlEntityAddCallback.html#mxmlEntityAddCallback"><TT>
+mxmlEntityAddCallback()</TT></A></LI>
+<LI><A href="mxmlEntityGetName.html#mxmlEntityGetName"><TT>
+mxmlEntityGetName()</TT></A></LI>
+<LI><A href="mxmlEntityGetValue.html#mxmlEntityGetValue"><TT>
+mxmlEntityGetValue()</TT></A></LI>
+<LI><A href="mxmlEntityRemoveCallback.html#mxmlEntityRemoveCallback"><TT>
+mxmlEntityRemoveCallback()</TT></A></LI>
+<LI><A href="mxmlFindElement.html#mxmlFindElement"><TT>mxmlFindElement()</TT>
+</A></LI>
+<LI><A href="mxmlIndexDelete.html#mxmlIndexDelete"><TT>mxmlIndexDelete()</TT>
+</A></LI>
+<LI><A href="mxmlIndexEnum.html#mxmlIndexEnum"><TT>mxmlIndexEnum()</TT></A>
+</LI>
+<LI><A href="mxmlIndexFind.html#mxmlIndexFind"><TT>mxmlIndexFind()</TT></A>
+</LI>
+<LI><A href="mxmlIndexNew.html#mxmlIndexNew"><TT>mxmlIndexNew()</TT></A></LI>
+<LI><A href="mxmlIndexReset.html#mxmlIndexReset"><TT>mxmlIndexReset()</TT>
+</A></LI>
+<LI><A href="mxmlLoadFd.html#mxmlLoadFd"><TT>mxmlLoadFd()</TT></A></LI>
+<LI><A href="mxmlLoadFile.html#mxmlLoadFile"><TT>mxmlLoadFile()</TT></A></LI>
+<LI><A href="mxmlLoadString.html#mxmlLoadString"><TT>mxmlLoadString()</TT>
+</A></LI>
+<LI><A href="MiniXML23mxmlNewCDATA.html#mxmlNewCDATA"><TT>mxmlNewCDATA()</TT>
+</A>
+<!--span class='info'-->
+ &nbsp;Mini-XML 2.3&nbsp;</LI>
+<LI><A href="MiniXML21mxmlNewCustom.html#mxmlNewCustom"><TT>
+mxmlNewCustom()</TT></A>
+<!--span class='info'-->
+ &nbsp;Mini-XML 2.1&nbsp;</LI>
+<LI><A href="mxmlNewElement.html#mxmlNewElement"><TT>mxmlNewElement()</TT>
+</A></LI>
+<LI><A href="mxmlNewInteger.html#mxmlNewInteger"><TT>mxmlNewInteger()</TT>
+</A></LI>
+<LI><A href="mxmlNewOpaque.html#mxmlNewOpaque"><TT>mxmlNewOpaque()</TT></A>
+</LI>
+<LI><A href="mxmlNewReal.html#mxmlNewReal"><TT>mxmlNewReal()</TT></A></LI>
+<LI><A href="mxmlNewText.html#mxmlNewText"><TT>mxmlNewText()</TT></A></LI>
+<LI><A href="mxmlNewTextf.html#mxmlNewTextf"><TT>mxmlNewTextf()</TT></A></LI>
+<LI><A href="MiniXML23mxmlNewXML.html#mxmlNewXML"><TT>mxmlNewXML()</TT></A>
+<!--span class='info'-->
+ &nbsp;Mini-XML 2.3&nbsp;</LI>
+<LI><A href="MiniXML23mxmlRelease.html#mxmlRelease"><TT>mxmlRelease()</TT>
+</A>
+<!--span class='info'-->
+ &nbsp;Mini-XML 2.3&nbsp;</LI>
+<LI><A href="mxmlRemove.html#mxmlRemove"><TT>mxmlRemove()</TT></A></LI>
+<LI><A href="MiniXML23mxmlRetain.html#mxmlRetain"><TT>mxmlRetain()</TT></A>
+<!--span class='info'-->
+ &nbsp;Mini-XML 2.3&nbsp;</LI>
+<LI><A href="MiniXML23mxmlSAXLoadFd.html#mxmlSAXLoadFd"><TT>
+mxmlSAXLoadFd()</TT></A>
+<!--span class='info'-->
+ &nbsp;Mini-XML 2.3&nbsp;</LI>
+<LI><A href="MiniXML23mxmlSAXLoadFile.html#mxmlSAXLoadFile"><TT>
+mxmlSAXLoadFile()</TT></A>
+<!--span class='info'-->
+ &nbsp;Mini-XML 2.3&nbsp;</LI>
+<LI><A href="MiniXML23mxmlSAXLoadString.html#mxmlSAXLoadString"><TT>
+mxmlSAXLoadString()</TT></A>
+<!--span class='info'-->
+ &nbsp;Mini-XML 2.3&nbsp;</LI>
+<LI><A href="mxmlSaveAllocString.html#mxmlSaveAllocString"><TT>
+mxmlSaveAllocString()</TT></A></LI>
+<LI><A href="mxmlSaveFd.html#mxmlSaveFd"><TT>mxmlSaveFd()</TT></A></LI>
+<LI><A href="mxmlSaveFile.html#mxmlSaveFile"><TT>mxmlSaveFile()</TT></A></LI>
+<LI><A href="mxmlSaveString.html#mxmlSaveString"><TT>mxmlSaveString()</TT>
+</A></LI>
+<LI><A href="MiniXML23mxmlSetCDATA.html#mxmlSetCDATA"><TT>mxmlSetCDATA()</TT>
+</A>
+<!--span class='info'-->
+ &nbsp;Mini-XML 2.3&nbsp;</LI>
+<LI><A href="MiniXML21mxmlSetCustom.html#mxmlSetCustom"><TT>
+mxmlSetCustom()</TT></A>
+<!--span class='info'-->
+ &nbsp;Mini-XML 2.1&nbsp;</LI>
+<LI><A href="mxmlSetCustomHandlers.html#mxmlSetCustomHandlers"><TT>
+mxmlSetCustomHandlers()</TT></A></LI>
+<LI><A href="mxmlSetElement.html#mxmlSetElement"><TT>mxmlSetElement()</TT>
+</A></LI>
+<LI><A href="mxmlSetErrorCallback.html#mxmlSetErrorCallback"><TT>
+mxmlSetErrorCallback()</TT></A></LI>
+<LI><A href="mxmlSetInteger.html#mxmlSetInteger"><TT>mxmlSetInteger()</TT>
+</A></LI>
+<LI><A href="mxmlSetOpaque.html#mxmlSetOpaque"><TT>mxmlSetOpaque()</TT></A>
+</LI>
+<LI><A href="mxmlSetReal.html#mxmlSetReal"><TT>mxmlSetReal()</TT></A></LI>
+<LI><A href="mxmlSetText.html#mxmlSetText"><TT>mxmlSetText()</TT></A></LI>
+<LI><A href="mxmlSetTextf.html#mxmlSetTextf"><TT>mxmlSetTextf()</TT></A></LI>
+<LI><A href="MiniXML23mxmlSetWrapMargin.html#mxmlSetWrapMargin"><TT>
+mxmlSetWrapMargin()</TT></A>
+<!--span class='info'-->
+ &nbsp;Mini-XML 2.3&nbsp;</LI>
+<LI><A href="mxmlWalkNext.html#mxmlWalkNext"><TT>mxmlWalkNext()</TT></A></LI>
+<LI><A href="mxmlWalkPrev.html#mxmlWalkPrev"><TT>mxmlWalkPrev()</TT></A></LI>
+</UL>
+
+<!-- NEW PAGE -->
+<HR NOSHADE>
+<A HREF="index.html">Contents</A>
+<A HREF="mxmltypee.html">Previous</A>
+<A HREF="mxmlAdd.html">Next</A>
+</BODY>
+</HTML>

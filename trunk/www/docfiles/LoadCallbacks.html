@@ -1,0 +1,101 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML>
+<HEAD>
+<TITLE>Mini-XML Programmers Manual, Version 2.3</TITLE>
+<META NAME="author" CONTENT="Michael R. Sweet">
+<META NAME="copyright" CONTENT="Copyright 2003-2007">
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; CHARSET=iso-iso-8859-1">
+<LINK REL="Start" HREF="index.html">
+<LINK REL="Contents" HREF="index.html">
+<LINK REL="Prev" HREF="MoreMiniXMLProgrammingTechniques.html">
+<LINK REL="Next" HREF="SaveCallbacks.html">
+<STYLE TYPE="text/css"><!--
+BODY { font-family: sans-serif }
+H1 { font-family: sans-serif }
+H2 { font-family: sans-serif }
+H3 { font-family: sans-serif }
+H4 { font-family: sans-serif }
+H5 { font-family: sans-serif }
+H6 { font-family: sans-serif }
+SUB { font-size: smaller }
+SUP { font-size: smaller }
+PRE { font-family: monospace }
+A { text-decoration: none }
+--></STYLE>
+</HEAD>
+<BODY>
+<A HREF="index.html">Contents</A>
+<A HREF="MoreMiniXMLProgrammingTechniques.html">Previous</A>
+<A HREF="SaveCallbacks.html">Next</A>
+<HR NOSHADE>
+<H2><A name="LOAD_CALLBACKS">Load Callbacks</A></H2>
+<P><A href="#LOAD_XML">Chapter 2</A> introduced the <A href="mxmlLoadFile.html#mxmlLoadFile">
+<TT>mxmlLoadFile()</TT></A> and <A href="mxmlLoadString.html#mxmlLoadString">
+<TT>mxmlLoadString()</TT></A> functions. The last argument to these
+ functions is a callback function which is used to determine the value
+ type of each data node in an XML document.</P>
+<P>Mini-XML defines several standard callbacks for simple XML data
+ files:</P>
+<UL>
+<LI><TT>MXML_INTEGER_CALLBACK</TT> - All data nodes contain
+ whitespace-separated integers.</LI>
+<LI><TT>MXML_OPAQUE_CALLBACK</TT> - All data nodes contain opaque
+ strings (&quot;CDATA&quot;).</LI>
+<LI><TT>MXML_REAL_CALLBACK</TT> - All data nodes contain
+ whitespace-separated floating-point numbers.</LI>
+<LI><TT>MXML_TEXT_CALLBACK</TT> - All data nodes contain
+ whitespace-separated strings.</LI>
+</UL>
+<P>You can provide your own callback functions for more complex XML
+ documents. Your callback function will receive a pointer to the current
+ element node and must return the value type of the immediate children
+ for that element node: <TT>MXML_INTEGER</TT>, <TT>MXML_OPAQUE</TT>, <TT>
+MXML_REAL</TT>, or <TT>MXML_TEXT</TT>. The function is called<I> after</I>
+ the element and its attributes have been read, so you can look at the
+ element name, attributes, and attribute values to determine the proper
+ value type to return.</P>
+
+<!-- NEED 2in -->
+<P>The following callback function looks for an attribute named &quot;type&quot;
+ or the element name to determine the value type for its child nodes:</P>
+<PRE>
+    mxml_type_t
+    type_cb(mxml_node_t *node)
+    {
+      const char *type;
+
+     /*
+      * You can lookup attributes and/or use the
+      * element name, hierarchy, etc...
+      */
+
+      type = mxmlElementGetAttr(node, &quot;type&quot;);
+      if (type == NULL)
+	type = node-&gt;value.element.name;
+
+      if (!strcmp(type, &quot;integer&quot;))
+	return (MXML_INTEGER);
+      else if (!strcmp(type, &quot;opaque&quot;))
+	return (MXML_OPAQUE);
+      else if (!strcmp(type, &quot;real&quot;))
+	return (MXML_REAL);
+      else
+	return (MXML_TEXT);
+    }
+</PRE>
+<P>To use this callback function, simply use the name when you call any
+ of the load functions:</P>
+<PRE>
+    FILE *fp;
+    mxml_node_t *tree;
+
+    fp = fopen(&quot;filename.xml&quot;, &quot;r&quot;);
+    tree = mxmlLoadFile(NULL, fp, <B>type_cb</B>);
+    fclose(fp);
+</PRE>
+<HR NOSHADE>
+<A HREF="index.html">Contents</A>
+<A HREF="MoreMiniXMLProgrammingTechniques.html">Previous</A>
+<A HREF="SaveCallbacks.html">Next</A>
+</BODY>
+</HTML>

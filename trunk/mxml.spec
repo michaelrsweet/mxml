@@ -3,7 +3,7 @@
 #
 # RPM "spec" file for Mini-XML, a small XML library.
 #
-# Copyright 2003-2005 by Michael Sweet.
+# Copyright 2003-2007 by Michael Sweet.
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Library General Public
@@ -85,10 +85,6 @@ rm -rf $RPM_BUILD_ROOT
 /usr/lib/pkgconfig/mxml.pc
 %dir /usr/share/doc/mxml
 /usr/share/doc/mxml/*
-%dir /usr/share/man/cat1
-/usr/share/man/cat1/*
-%dir /usr/share/man/cat3
-/usr/share/man/cat3/*
 %dir /usr/share/man/man1
 /usr/share/man/man1/*
 %dir /usr/share/man/man3

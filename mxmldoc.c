@@ -1425,7 +1425,7 @@ scan_file(const char  *filename,	/* I - Filename */
 			        	 mxmlNewText(description, 0, buffer));
 			}
 
-//			typedefnode = NULL;
+			typedefnode = NULL;
 		      }
 		      else if (strcmp(tree->value.element.name, "mxmldoc") &&
 		               !mxmlFindElement(tree, tree, "description",
@@ -1545,7 +1545,7 @@ scan_file(const char  *filename,	/* I - Filename */
 			             mxmlNewText(description, 0, buffer));
 		    }
 
-//		    typedefnode = NULL;
+		    typedefnode = NULL;
 		  }
 		  else if (strcmp(tree->value.element.name, "mxmldoc") &&
 		           !mxmlFindElement(tree, tree, "description",

@@ -1067,7 +1067,7 @@ the walk to the node's children.</description>
     </argument>
   </function>
   <struct name="mxml_attr_s">
-    <description>Data types...</description>
+    <description>An XML element attribute value.</description>
     <variable name="name">
       <type>char *</type>
       <description>Attribute name</description>
@@ -1079,7 +1079,7 @@ the walk to the node's children.</description>
   </struct>
   <typedef name="mxml_attr_t">
     <type>struct mxml_attr_s</type>
-    <description>Data types...</description>
+    <description>An XML element attribute value.</description>
   </typedef>
   <typedef name="mxml_custom_destroy_cb_t">
     <type>void(*)(void *)</type>
@@ -1130,7 +1130,6 @@ the walk to the node's children.</description>
   <typedef name="mxml_error_cb_t">
     <type>void(*)(const char *)</type>
     <description>Error callback function</description>
-    <description>An XML element attribute value.</description>
   </typedef>
   <struct name="mxml_index_s">
     <description>An XML node index.</description>
@@ -1213,8 +1212,6 @@ the walk to the node's children.</description>
   <typedef name="mxml_sax_cb_t">
     <type>void(*)(mxml_node_t *, mxml_sax_event_t, void *)</type>
     <description>SAX callback function</description>
-    <description>C++ support...</description>
-    <description>End of &quot;$Id$&quot;.</description>
   </typedef>
   <enumeration name="mxml_sax_event_e">
     <description>SAX event type.</description>

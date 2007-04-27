@@ -20,7 +20,7 @@ Summary: Miniature XML development library
 Name: mxml
 Version: 2.3
 Release: 1
-Copyright: GPL
+License: LGPL
 Group: Development/Libraries
 Source: http://www.easysw.com/~mike/mxml/mxml-%{version}.tar.gz
 Url: http://www.easysw.com/~mike/mxml/

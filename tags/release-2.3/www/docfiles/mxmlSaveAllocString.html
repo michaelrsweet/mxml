@@ -1,0 +1,69 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML>
+<HEAD>
+<TITLE>Mini-XML Programmers Manual, Version 2.3</TITLE>
+<META NAME="author" CONTENT="Michael R. Sweet">
+<META NAME="copyright" CONTENT="Copyright 2003-2007">
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; CHARSET=iso-iso-8859-1">
+<LINK REL="Start" HREF="index.html">
+<LINK REL="Contents" HREF="index.html">
+<LINK REL="Prev" HREF="MiniXML23mxmlSAXLoadString.html">
+<LINK REL="Next" HREF="mxmlSaveFd.html">
+<STYLE TYPE="text/css"><!--
+BODY { font-family: sans-serif }
+H1 { font-family: sans-serif }
+H2 { font-family: sans-serif }
+H3 { font-family: sans-serif }
+H4 { font-family: sans-serif }
+H5 { font-family: sans-serif }
+H6 { font-family: sans-serif }
+SUB { font-size: smaller }
+SUP { font-size: smaller }
+PRE { font-family: monospace }
+A { text-decoration: none }
+--></STYLE>
+</HEAD>
+<BODY>
+<A HREF="index.html">Contents</A>
+<A HREF="MiniXML23mxmlSAXLoadString.html">Previous</A>
+<A HREF="mxmlSaveFd.html">Next</A>
+<HR NOSHADE>
+<H3 class="title"><A name="mxmlSaveAllocString">mxmlSaveAllocString()</A>
+</H3>
+<H4>Description</H4>
+<P>Save an XML node tree to an allocated string.</P>
+<P>This function returns a pointer to a string containing the textual
+ representation of the XML node tree. The string should be freed using
+ the free() function when you are done with it. NULL is returned if the
+ node would produce an empty string or if the string cannot be
+ allocated.</P>
+<P>The callback argument specifies a function that returns a whitespace
+ string or NULL before and after each element. If MXML_NO_CALLBACK is
+ specified, whitespace will only be added before MXML_TEXT nodes with
+ leading whitespace and before attribute names inside opening element
+ tags.</P>
+<H4>Syntax</H4>
+<P> <TT>char *
+<BR> mxmlSaveAllocString( <A href="mxmlnodet.html#mxml_node_t">
+mxml_node_t</A> * node, <A href="mxmlsavecbt.html#mxml_save_cb_t">
+mxml_save_cb_t</A> cb);</TT></P>
+<H4>Arguments</H4>
+<DIV class="table">
+<TABLE align="center" border="1" cellpadding="5" cellspacing="0" summary="Arguments"
+width="80%"><THEAD></THEAD>
+<TR><TH>Name</TH><TH>Description</TH></TR>
+<TBODY></TBODY>
+<TR><TD><TT>node</TT></TD><TD>Node to write</TD></TR>
+<TR><TD><TT>cb</TT></TD><TD>Whitespace callback or MXML_NO_CALLBACK</TD></TR>
+</TABLE>
+</DIV>
+<H4>Returns</H4>
+<P>Allocated string or NULL</P>
+
+<!-- NEW PAGE -->
+<HR NOSHADE>
+<A HREF="index.html">Contents</A>
+<A HREF="MiniXML23mxmlSAXLoadString.html">Previous</A>
+<A HREF="mxmlSaveFd.html">Next</A>
+</BODY>
+</HTML>

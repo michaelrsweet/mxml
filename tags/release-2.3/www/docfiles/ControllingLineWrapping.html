@@ -1,0 +1,50 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML>
+<HEAD>
+<TITLE>Mini-XML Programmers Manual, Version 2.3</TITLE>
+<META NAME="author" CONTENT="Michael R. Sweet">
+<META NAME="copyright" CONTENT="Copyright 2003-2007">
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; CHARSET=iso-iso-8859-1">
+<LINK REL="Start" HREF="index.html">
+<LINK REL="Contents" HREF="index.html">
+<LINK REL="Prev" HREF="SavingXML.html">
+<LINK REL="Next" HREF="FindingandIteratingNodes.html">
+<STYLE TYPE="text/css"><!--
+BODY { font-family: sans-serif }
+H1 { font-family: sans-serif }
+H2 { font-family: sans-serif }
+H3 { font-family: sans-serif }
+H4 { font-family: sans-serif }
+H5 { font-family: sans-serif }
+H6 { font-family: sans-serif }
+SUB { font-size: smaller }
+SUP { font-size: smaller }
+PRE { font-family: monospace }
+A { text-decoration: none }
+--></STYLE>
+</HEAD>
+<BODY>
+<A HREF="index.html">Contents</A>
+<A HREF="SavingXML.html">Previous</A>
+<A HREF="FindingandIteratingNodes.html">Next</A>
+<HR NOSHADE>
+<H3><A NAME="3_5_1">Controlling Line Wrapping</A></H3>
+<P>When saving XML documents, Mini-XML normally wraps output lines at
+ column 75 so that the text is readable in terminal windows. The <A href="MiniXML23mxmlSetWrapMargin.html#mxmlSetWrapMargin">
+<TT>mxmlSetWrapMargin</TT></A> function overrides the default wrap
+ margin:</P>
+<PRE>
+    /* Set the margin to 132 columns */
+    mxmlSetWrapMargin(132);
+
+    /* Disable wrapping */
+    mxmlSetWrapMargin(0);
+</PRE>
+
+<!-- NEW PAGE-->
+<HR NOSHADE>
+<A HREF="index.html">Contents</A>
+<A HREF="SavingXML.html">Previous</A>
+<A HREF="FindingandIteratingNodes.html">Next</A>
+</BODY>
+</HTML>

@@ -1,0 +1,84 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML>
+<HEAD>
+<TITLE>Mini-XML Programmers Manual, Version 2.3</TITLE>
+<META NAME="author" CONTENT="Michael R. Sweet">
+<META NAME="copyright" CONTENT="Copyright 2003-2007">
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; CHARSET=iso-iso-8859-1">
+<LINK REL="Start" HREF="index.html">
+<LINK REL="Contents" HREF="index.html">
+<LINK REL="Prev" HREF="CreatingXMLDocuments.html">
+<LINK REL="Next" HREF="SavingXML.html">
+<STYLE TYPE="text/css"><!--
+BODY { font-family: sans-serif }
+H1 { font-family: sans-serif }
+H2 { font-family: sans-serif }
+H3 { font-family: sans-serif }
+H4 { font-family: sans-serif }
+H5 { font-family: sans-serif }
+H6 { font-family: sans-serif }
+SUB { font-size: smaller }
+SUP { font-size: smaller }
+PRE { font-family: monospace }
+A { text-decoration: none }
+--></STYLE>
+</HEAD>
+<BODY>
+<A HREF="index.html">Contents</A>
+<A HREF="CreatingXMLDocuments.html">Previous</A>
+<A HREF="SavingXML.html">Next</A>
+<HR NOSHADE>
+<H2><A NAME="3_4">Loading XML</A></H2>
+<P>You load an XML file using the <A href="mxmlLoadFile.html#mxmlLoadFile">
+<TT>mxmlLoadFile</TT></A> function:</P>
+<PRE>
+    FILE *fp;
+    mxml_node_t *tree;
+
+    fp = fopen(&quot;filename.xml&quot;, &quot;r&quot;);
+    tree = mxmlLoadFile(NULL, fp,
+                        MXML_TEXT_CALLBACK);
+    fclose(fp);
+</PRE>
+<P>The first argument specifies an existing XML parent node, if any.
+ Normally you will pass <TT>NULL</TT> for this argument unless you are
+ combining multiple XML sources. The XML file must contain a complete
+ XML document including the <TT>?xml</TT> element if the parent node is <TT>
+NULL</TT>.</P>
+<P>The second argument specifies the stdio file to read from, as opened
+ by <TT>fopen()</TT> or <TT>popen()</TT>. You can also use <TT>stdin</TT>
+ if you are implementing an XML filter program.</P>
+<P>The third argument specifies a callback function which returns the
+ value type of the immediate children for a new element node: <TT>
+MXML_CUSTOM</TT>, <TT>MXML_IGNORE</TT>, <TT>MXML_INTEGER</TT>, <TT>
+MXML_OPAQUE</TT>, <TT>MXML_REAL</TT>, or <TT>MXML_TEXT</TT>. Load
+ callbacks are described in detail in <A href="LoadCallbacks.html#LOAD_CALLBACKS">
+Chapter 3</A>. The example code uses the <TT>MXML_TEXT_CALLBACK</TT>
+ constant which specifies that all data nodes in the document contain
+ whitespace-separated text values. Other standard callbacks include <TT>
+MXML_IGNORE_CALLBACK</TT>, <TT>MXML_INTEGER_CALLBACK</TT>, <TT>
+MXML_OPAQUE_CALLBACK</TT>, and <TT>MXML_REAL_CALLBACK</TT>.</P>
+<P>The <A href="mxmlLoadString.html#mxmlLoadString"><TT>mxmlLoadString</TT>
+</A> function loads XML node trees from a string:</P>
+
+<!-- NEED 10 -->
+<PRE>
+    char buffer[8192];
+    mxml_node_t *tree;
+
+    ...
+    tree = mxmlLoadString(NULL, buffer,
+                          MXML_TEXT_CALLBACK);
+</PRE>
+<P>The first and third arguments are the same as used for <TT>
+mxmlLoadFile()</TT>. The second argument specifies the string or
+ character buffer to load and must be a complete XML document including
+ the <TT>?xml</TT> element if the parent node is <TT>NULL</TT>.</P>
+
+<!-- NEW PAGE -->
+<HR NOSHADE>
+<A HREF="index.html">Contents</A>
+<A HREF="CreatingXMLDocuments.html">Previous</A>
+<A HREF="SavingXML.html">Next</A>
+</BODY>
+</HTML>

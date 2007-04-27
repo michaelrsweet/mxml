@@ -1,0 +1,63 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML>
+<HEAD>
+<TITLE>Mini-XML Programmers Manual, Version 2.3</TITLE>
+<META NAME="author" CONTENT="Michael R. Sweet">
+<META NAME="copyright" CONTENT="Copyright 2003-2007">
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; CHARSET=iso-iso-8859-1">
+<LINK REL="Start" HREF="index.html">
+<LINK REL="Contents" HREF="index.html">
+<LINK REL="Prev" HREF="mxmlIndexFind.html">
+<LINK REL="Next" HREF="mxmlIndexReset.html">
+<STYLE TYPE="text/css"><!--
+BODY { font-family: sans-serif }
+H1 { font-family: sans-serif }
+H2 { font-family: sans-serif }
+H3 { font-family: sans-serif }
+H4 { font-family: sans-serif }
+H5 { font-family: sans-serif }
+H6 { font-family: sans-serif }
+SUB { font-size: smaller }
+SUP { font-size: smaller }
+PRE { font-family: monospace }
+A { text-decoration: none }
+--></STYLE>
+</HEAD>
+<BODY>
+<A HREF="index.html">Contents</A>
+<A HREF="mxmlIndexFind.html">Previous</A>
+<A HREF="mxmlIndexReset.html">Next</A>
+<HR NOSHADE>
+<H3 class="title"><A name="mxmlIndexNew">mxmlIndexNew()</A></H3>
+<H4>Description</H4>
+<P>Create a new index.</P>
+<P>The index will contain all nodes that contain the named element
+ and/or attribute. If both &quot;element&quot; and &quot;attr&quot; are NULL, then the index
+ will contain a sorted list of the elements in the node tree. Nodes are
+ sorted by element name and optionally by attribute value if the &quot;attr&quot;
+ argument is not NULL.</P>
+<H4>Syntax</H4>
+<P> <TT><A href="mxmlindext.html#mxml_index_t">mxml_index_t</A> *
+<BR> mxmlIndexNew( <A href="mxmlnodet.html#mxml_node_t">mxml_node_t</A>
+ * node, const char * element, const char * attr);</TT></P>
+<H4>Arguments</H4>
+<DIV class="table">
+<TABLE align="center" border="1" cellpadding="5" cellspacing="0" summary="Arguments"
+width="80%"><THEAD></THEAD>
+<TR><TH>Name</TH><TH>Description</TH></TR>
+<TBODY></TBODY>
+<TR><TD><TT>node</TT></TD><TD>XML node tree</TD></TR>
+<TR><TD><TT>element</TT></TD><TD>Element to index or NULL for all</TD></TR>
+<TR><TD><TT>attr</TT></TD><TD>Attribute to index or NULL for none</TD></TR>
+</TABLE>
+</DIV>
+<H4>Returns</H4>
+<P>New index</P>
+
+<!-- NEW PAGE -->
+<HR NOSHADE>
+<A HREF="index.html">Contents</A>
+<A HREF="mxmlIndexFind.html">Previous</A>
+<A HREF="mxmlIndexReset.html">Next</A>
+</BODY>
+</HTML>

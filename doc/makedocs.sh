@@ -17,7 +17,7 @@
 # GNU General Public License for more details.
 #
 
-htmldoc --verbose --path hires:. --batch mxml.book -f mxml.pdf
+htmldoc --verbose --path "hires;." --batch mxml.book -f mxml.pdf
 
 htmldoc --verbose --batch mxml.book --no-title -f mxml.html
 

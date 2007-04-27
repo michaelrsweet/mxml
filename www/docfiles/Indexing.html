@@ -1,0 +1,111 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML>
+<HEAD>
+<TITLE>Mini-XML Programmers Manual, Version 2.3</TITLE>
+<META NAME="author" CONTENT="Michael R. Sweet">
+<META NAME="copyright" CONTENT="Copyright 2003-2007">
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; CHARSET=iso-iso-8859-1">
+<LINK REL="Start" HREF="index.html">
+<LINK REL="Contents" HREF="index.html">
+<LINK REL="Prev" HREF="FormattedText.html">
+<LINK REL="Next" HREF="SAXStreamLoadingofDocuments.html">
+<STYLE TYPE="text/css"><!--
+BODY { font-family: sans-serif }
+H1 { font-family: sans-serif }
+H2 { font-family: sans-serif }
+H3 { font-family: sans-serif }
+H4 { font-family: sans-serif }
+H5 { font-family: sans-serif }
+H6 { font-family: sans-serif }
+SUB { font-size: smaller }
+SUP { font-size: smaller }
+PRE { font-family: monospace }
+A { text-decoration: none }
+--></STYLE>
+</HEAD>
+<BODY>
+<A HREF="index.html">Contents</A>
+<A HREF="FormattedText.html">Previous</A>
+<A HREF="SAXStreamLoadingofDocuments.html">Next</A>
+<HR NOSHADE>
+<H2><A NAME="4_6">Indexing</A></H2>
+<P>Mini-XML provides functions for managing indices of nodes. The
+ current implementation provides the same functionality as <A href="mxmlFindElement.html#mxmlFindElement">
+<TT>mxmlFindElement()</TT></A>. The advantage of using an index is that
+ searching and enumeration of elements is significantly faster. The only
+ disadvantage is that each index is a static snapshot of the XML
+ document, so indices are not well suited to XML data that is updated
+ more often than it is searched. The overhead of creating an index is
+ approximately equal to walking the XML document tree. Nodes in the
+ index are sorted by element name and attribute value.</P>
+<P>Indices are stored in <A href="mxmlindext.html#mxml_index_t"><TT>
+mxml_index_t</TT></A> structures. The <A href="mxmlIndexNew.html#mxmlIndexNew">
+<TT>mxmlIndexNew()</TT></A> function creates a new index:</P>
+<PRE>
+    mxml_node_t *tree;
+    mxml_index_t *ind;
+
+    ind = mxmlIndexNew(tree, &quot;element&quot;,
+                       &quot;attribute&quot;);
+</PRE>
+<P>The first argument is the XML node tree to index. Normally this will
+ be a pointer to the <TT>?xml</TT> element.</P>
+<P>The second argument contains the element to index; passing <TT>NULL</TT>
+ indexes all element nodes alphabetically.</P>
+<P>The third argument contains the attribute to index; passing <TT>NULL</TT>
+ causes only the element name to be indexed.</P>
+<P>Once the index is created, the <A href="mxmlIndexEnum.html#mxmlIndexEnum">
+<TT>mxmlIndexEnum()</TT></A>, <A href="mxmlIndexFind.html#mxmlIndexFind">
+<TT>mxmlIndexFind()</TT></A>, and <A href="mxmlIndexReset.html#mxmlIndexReset">
+<TT>mxmlIndexReset()</TT></A> functions are used to access the nodes in
+ the index. The <A href="mxmlIndexReset.html#mxmlIndexReset"><TT>
+mxmlIndexReset()</TT></A> function resets the &quot;current&quot; node pointer in
+ the index, allowing you to do new searches and enumerations on the same
+ index. Typically you will call this function prior to your calls to <A href="mxmlIndexEnum.html#mxmlIndexEnum">
+<TT>mxmlIndexEnum()</TT></A> and <A href="mxmlIndexFind.html#mxmlIndexFind">
+<TT>mxmlIndexFind()</TT></A>.</P>
+<P>The <A href="mxmlIndexEnum.html#mxmlIndexEnum"><TT>mxmlIndexEnum()</TT>
+</A> function enumerates each of the nodes in the index and can be used
+ in a loop as follows:</P>
+<PRE>
+    mxml_node_t *node;
+
+    mxmlIndexReset(ind);
+
+    while ((node = mxmlIndexEnum(ind)) != NULL)
+    {
+      // do something with node
+    }
+</PRE>
+<P>The <A href="mxmlIndexFind.html#mxmlIndexFind"><TT>mxmlIndexFind()</TT>
+</A> function locates the next occurrence of the named element and
+ attribute value in the index. It can be used to find all matching
+ elements in an index, as follows:</P>
+<PRE>
+    mxml_node_t *node;
+
+    mxmlIndexReset(ind);
+
+    while ((node = mxmlIndexFind(ind, &quot;element&quot;,
+                                 &quot;attr-value&quot;))
+                != NULL)
+    {
+      // do something with node
+    }
+</PRE>
+<P>The second and third arguments represent the element name and
+ attribute value, respectively. A <TT>NULL</TT> pointer is used to
+ return all elements or attributes in the index. Passing <TT>NULL</TT>
+ for both the element name and attribute value is equivalent to calling <TT>
+mxmlIndexEnum</TT>.</P>
+<P>When you are done using the index, delete it using the <A href="#mxmlIndexDelete()">
+<TT>mxmlIndexDelete()</TT></A> function:</P>
+<PRE>
+    mxmlIndexDelete(ind);
+</PRE>
+<HR NOSHADE>
+<A HREF="index.html">Contents</A>
+<A HREF="FormattedText.html">Previous</A>
+<A HREF="SAXStreamLoadingofDocuments.html">Next</A>
+</BODY>
+</HTML>

@@ -1,0 +1,66 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML>
+<HEAD>
+<TITLE>Mini-XML Programmers Manual, Version 2.3</TITLE>
+<META NAME="author" CONTENT="Michael R. Sweet">
+<META NAME="copyright" CONTENT="Copyright 2003-2007">
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; CHARSET=iso-iso-8859-1">
+<LINK REL="Start" HREF="index.html">
+<LINK REL="Contents" HREF="index.html">
+<LINK REL="Prev" HREF="CommentingYourCode.html">
+<LINK REL="Next" HREF="MiniXMLLicense.html">
+<STYLE TYPE="text/css"><!--
+BODY { font-family: sans-serif }
+H1 { font-family: sans-serif }
+H2 { font-family: sans-serif }
+H3 { font-family: sans-serif }
+H4 { font-family: sans-serif }
+H5 { font-family: sans-serif }
+H6 { font-family: sans-serif }
+SUB { font-size: smaller }
+SUP { font-size: smaller }
+PRE { font-family: monospace }
+A { text-decoration: none }
+--></STYLE>
+</HEAD>
+<BODY>
+<A HREF="index.html">Contents</A>
+<A HREF="CommentingYourCode.html">Previous</A>
+<A HREF="MiniXMLLicense.html">Next</A>
+<HR NOSHADE>
+<H2><A NAME="5_3">Titles, Sections, and Introductions</A></H2>
+<P><TT>Mxmldoc</TT> also provides options to set the title, section, and
+ introduction text for the generated documentation. The <TT>--title text</TT>
+ option specifies the title for the documentation. The title string is
+ usually put in quotes:</P>
+<PRE>
+    <KBD>mxmldoc filename.xml \
+        --title &quot;My Famous Documentation&quot; \
+        &gt;filename.html ENTER</KBD>
+</PRE>
+<P>The <TT>--section name</TT> option specifies the section for the
+ documentation. For HTML documentation, the name is placed in a HTML
+ comment such as:</P>
+<PRE>
+    &lt;!-- SECTION: name --&gt;
+</PRE>
+<P>For man pages, the section name is usually just a number (&quot;3&quot;), or a
+ number followed by a vendor name (&quot;3acme&quot;). The section name is used in
+ the <TT>.TH</TT> directive in the man page:</P>
+<PRE>
+    .TH mylibrary 3acme &quot;My Title&quot; ...
+</PRE>
+<P>The default section name for man page output is &quot;3&quot;. There is no
+ default section name for HTML output.</P>
+<P>Finally, the <TT>--intro filename</TT> option specifies a file to
+ embed after the title and section but before the generated
+ documentation. For HTML documentation, the file must consist of valid
+ HTML without the usual <TT>DOCTYPE</TT>, <TT>html</TT>, and <TT>body</TT>
+ elements. For man page documentation, the file must consist of valid <TT>
+nroff(1)</TT> text.</P>
+<HR NOSHADE>
+<A HREF="index.html">Contents</A>
+<A HREF="CommentingYourCode.html">Previous</A>
+<A HREF="MiniXMLLicense.html">Next</A>
+</BODY>
+</HTML>

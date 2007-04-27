@@ -1,0 +1,102 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML>
+<HEAD>
+<TITLE>Mini-XML Programmers Manual, Version 2.3</TITLE>
+<META NAME="author" CONTENT="Michael R. Sweet">
+<META NAME="copyright" CONTENT="Copyright 2003-2007">
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; CHARSET=iso-iso-8859-1">
+<LINK REL="Start" HREF="index.html">
+<LINK REL="Contents" HREF="index.html">
+<LINK REL="Prev" HREF="TheBasics1.html">
+<LINK REL="Next" HREF="TitlesSectionsandIntroductions.html">
+<STYLE TYPE="text/css"><!--
+BODY { font-family: sans-serif }
+H1 { font-family: sans-serif }
+H2 { font-family: sans-serif }
+H3 { font-family: sans-serif }
+H4 { font-family: sans-serif }
+H5 { font-family: sans-serif }
+H6 { font-family: sans-serif }
+SUB { font-size: smaller }
+SUP { font-size: smaller }
+PRE { font-family: monospace }
+A { text-decoration: none }
+--></STYLE>
+</HEAD>
+<BODY>
+<A HREF="index.html">Contents</A>
+<A HREF="TheBasics1.html">Previous</A>
+<A HREF="TitlesSectionsandIntroductions.html">Next</A>
+<HR NOSHADE>
+<H2><A NAME="5_2">Commenting Your Code</A></H2>
+<P>As noted previously, <TT>mxmldoc</TT> looks for in-line comments to
+ describe the functions, types, and constants in your code. <TT>Mxmldoc</TT>
+ will document all public names it finds in your source files - any
+ names starting with the underscore character (_) or names that are
+ documented with the <A HREF="#ATDIRECTIVES">@private@</A> directive are
+ treated as private and are undocumented.</P>
+<P>Comments appearing directly before a function or type definition are
+ used to document that function or type. Comments appearing after
+ argument, definition, return type, or variable declarations are used to
+ document that argument, definition, return type, or variable. For
+ example, the following code excerpt defines a key/value structure and a
+ function that creates a new instance of that structure:</P>
+<PRE>
+    /* A key/value pair. This is used with the
+       dictionary structure. */
+
+    struct keyval
+    {
+      char *key; /* Key string */
+      char *val; /* Value string */
+    };
+
+    /* Create a new key/value pair. */
+
+    struct keyval * /* New key/value pair */
+    new_keyval(
+        const char *key, /* Key string */
+	const char *val) /* Value string */
+    {
+      ...
+    }
+</PRE>
+<P><TT>Mxmldoc</TT> also knows to remove extra asterisks (*) from the
+ comment string, so the comment string:</P>
+<PRE>
+    /*
+     * Compute the value of PI.
+     *
+     * The function connects to an Internet server
+     * that streams audio of mathematical monks
+     * chanting the first 100 digits of PI.
+     */
+</PRE>
+<P>will be shown as:</P>
+<PRE>
+    Compute the value of PI.
+
+    The function connects to an Internet server
+    that streams audio of mathematical monks
+    chanting the first 100 digits of PI.
+</PRE>
+<P><A name="ATDIRECTIVES">Comments</A> can also include the following
+ special <TT>@name ...@</TT> directive strings:</P>
+<UL>
+<LI><TT>@deprecated@</TT> - flags the item as deprecated to discourage
+ its use</LI>
+<LI><TT>@private@</TT> - flags the item as private so it will not be
+ included in the documentation</LI>
+<LI><TT>@since ...@</TT> - flags the item as new since a particular
+ release. The text following the <TT>@since</TT> up to the closing <TT>@</TT>
+ is highlighted in the generated documentation, e.g. <TT>@since CUPS
+ 1.3@</TT>.</LI>
+</UL>
+
+<!-- NEED 10 -->
+<HR NOSHADE>
+<A HREF="index.html">Contents</A>
+<A HREF="TheBasics1.html">Previous</A>
+<A HREF="TitlesSectionsandIntroductions.html">Next</A>
+</BODY>
+</HTML>

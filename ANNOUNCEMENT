@@ -1,5 +1,8 @@
-Mini-XML 2.2.2 is now available for download from:
+Mini-XML 2.3 is now available for download from:
 
     http://www.easysw.com/~mike/mxml/software.php
 
-Mini-XML 2.2.2 fixes a bug in the reading of custom data nodes.
+Mini-XML 2.3 adds a SAX API, more convenience functions, a user data
+pointer to the mxml_node_t structure, and improved HTML and new man
+page output from mxmldoc. The new release now also offers relaxed
+LGPL licensing that allows static linking.

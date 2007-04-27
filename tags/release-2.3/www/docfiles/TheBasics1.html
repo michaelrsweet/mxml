@@ -1,0 +1,80 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML>
+<HEAD>
+<TITLE>Mini-XML Programmers Manual, Version 2.3</TITLE>
+<META NAME="author" CONTENT="Michael R. Sweet">
+<META NAME="copyright" CONTENT="Copyright 2003-2007">
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; CHARSET=iso-iso-8859-1">
+<LINK REL="Start" HREF="index.html">
+<LINK REL="Contents" HREF="index.html">
+<LINK REL="Prev" HREF="UsingthemxmldocUtility.html">
+<LINK REL="Next" HREF="CommentingYourCode.html">
+<STYLE TYPE="text/css"><!--
+BODY { font-family: sans-serif }
+H1 { font-family: sans-serif }
+H2 { font-family: sans-serif }
+H3 { font-family: sans-serif }
+H4 { font-family: sans-serif }
+H5 { font-family: sans-serif }
+H6 { font-family: sans-serif }
+SUB { font-size: smaller }
+SUP { font-size: smaller }
+PRE { font-family: monospace }
+A { text-decoration: none }
+--></STYLE>
+</HEAD>
+<BODY>
+<A HREF="index.html">Contents</A>
+<A HREF="UsingthemxmldocUtility.html">Previous</A>
+<A HREF="CommentingYourCode.html">Next</A>
+<HR NOSHADE>
+<H2><A NAME="5_1">The Basics</A></H2>
+<P>Originally developed to generate the Mini-XML and CUPS API
+ documentation, <TT>mxmldoc</TT> is now a general-purpose utility which
+ scans C and C++ source files to produce HTML and man page documentation
+ along with an XML file representing the functions, types, and
+ definitions in those source files. Unlike popular documentation
+ generators like Doxygen or Javadoc, <TT>mxmldoc</TT> uses in-line
+ comments rather than comment headers, allowing for more &quot;natural&quot; code
+ documentation.</P>
+<P>By default, <TT>mxmldoc</TT> produces HTML documentation. For
+ example, the following command will scan all of the C source and header
+ files in the current directory and produce a HTML documentation file
+ called<VAR> filename.html</VAR>:</P>
+<PRE>
+    <KBD>mxmldoc *.h *.c &gt;filename.html ENTER</KBD>
+</PRE>
+<P>You can also specify an XML file to create which contains all of the
+ information from the source files. For example, the following command
+ creates an XML file called<VAR> filename.xml</VAR> in addition to the
+ HTML file:</P>
+<PRE>
+    <KBD>mxmldoc filename.xml *.h *.c &gt;filename.html ENTER</KBD>
+</PRE>
+<P>The <TT>--no-output</TT> option disables the normal HTML output:</P>
+<PRE>
+    <KBD>mxmldoc --no-output filename.xml *.h *.c ENTER</KBD>
+</PRE>
+<P>You can then run <TT>mxmldoc</TT> again with the XML file alone to
+ generate the HTML documentation:</P>
+<PRE>
+    <KBD>mxmldoc filename.xml &gt;filename.html ENTER</KBD>
+</PRE>
+<P>The <TT>--man filename</TT> option tells <TT>mxmldoc</TT> to create a
+ man page instead of HTML documentation, for example:</P>
+<PRE>
+    <KBD>mxmldoc --man filename filename.xml \
+        &gt;filename.man ENTER</KBD>
+
+    <KBD>mxmldoc --man filename *.h *.c \
+        &gt;filename.man ENTER</KBD>
+
+    <KBD>mxmldoc --man filename filename.xml *.h *.c \
+        &gt;filename.man ENTER</KBD>
+</PRE>
+<HR NOSHADE>
+<A HREF="index.html">Contents</A>
+<A HREF="UsingthemxmldocUtility.html">Previous</A>
+<A HREF="CommentingYourCode.html">Next</A>
+</BODY>
+</HTML>

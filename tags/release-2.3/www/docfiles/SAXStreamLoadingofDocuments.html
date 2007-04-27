@@ -1,0 +1,164 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML>
+<HEAD>
+<TITLE>Mini-XML Programmers Manual, Version 2.3</TITLE>
+<META NAME="author" CONTENT="Michael R. Sweet">
+<META NAME="copyright" CONTENT="Copyright 2003-2007">
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; CHARSET=iso-iso-8859-1">
+<LINK REL="Start" HREF="index.html">
+<LINK REL="Contents" HREF="index.html">
+<LINK REL="Prev" HREF="Indexing.html">
+<LINK REL="Next" HREF="UsingthemxmldocUtility.html">
+<STYLE TYPE="text/css"><!--
+BODY { font-family: sans-serif }
+H1 { font-family: sans-serif }
+H2 { font-family: sans-serif }
+H3 { font-family: sans-serif }
+H4 { font-family: sans-serif }
+H5 { font-family: sans-serif }
+H6 { font-family: sans-serif }
+SUB { font-size: smaller }
+SUP { font-size: smaller }
+PRE { font-family: monospace }
+A { text-decoration: none }
+--></STYLE>
+</HEAD>
+<BODY>
+<A HREF="index.html">Contents</A>
+<A HREF="Indexing.html">Previous</A>
+<A HREF="UsingthemxmldocUtility.html">Next</A>
+<HR NOSHADE>
+<H2><A NAME="4_7">SAX (Stream) Loading of Documents</A></H2>
+<P>Mini-XML supports an implementation of the Simple API for XML (SAX)
+ which allows you to load and process an XML document as a stream of
+ nodes. Aside from allowing you to process XML documents of any size,
+ the Mini-XML implementation also allows you to retain portions of the
+ document in memory for later processing.</P>
+<P>The <A href="#mxmlSAXLoad"><TT>mxmlSAXLoadFd</TT></A>, <A href="MiniXML23mxmlSAXLoadFile.html#mxmlSAXLoadFile">
+<TT>mxmlSAXLoadFile</TT></A>, and <A href="MiniXML23mxmlSAXLoadString.html#mxmlSAXLoadString">
+<TT>mxmlSAXLoadString</TT></A> functions provide the SAX loading APIs.
+ Each function works like the corresponding <TT>mxmlLoad</TT> function
+ but uses a callback to process each node as it is read.</P>
+<P>The callback function receives the node, an event code, and a user
+ data pointer you supply:</P>
+<PRE>
+    void
+    sax_cb(mxml_node_t *node,
+           mxml_sax_event_t event,
+           void *data)
+    {
+      ... do something ...
+    }
+</PRE>
+<P>The event will be one of the following:</P>
+<UL>
+<LI><TT>MXML_SAX_CDATA</TT> - CDATA was just read</LI>
+<LI><TT>MXML_SAX_COMMENT</TT> - A comment was just read</LI>
+<LI><TT>MXML_SAX_DATA</TT> - Data (custom, integer, opaque, real, or
+ text) was just read</LI>
+<LI><TT>MXML_SAX_DIRECTIVE</TT> - A processing directive was just read</LI>
+<LI><TT>MXML_SAX_ELEMENT_CLOSE</TT> - An open element was just read (<TT>
+&lt;element&gt;</TT>)</LI>
+<LI><TT>MXML_SAX_ELEMENT_OPEN</TT> - A close element was just read (<TT>
+&lt;/element&gt;</TT>)</LI>
+</UL>
+<P>Elements are<EM> released</EM> after the close element is processed.
+ All other nodes are released after they are processed. The SAX callback
+ can<EM> retain</EM> the node using the <A href="MiniXML23mxmlRetain.html#mxmlRetain">
+<TT>mxmlRetain</TT></A> function. For example, the following SAX
+ callback will retain all nodes, effectively simulating a normal
+ in-memory load:</P>
+<PRE>
+    void
+    sax_cb(mxml_node_t *node,
+           mxml_sax_event_t event,
+           void *data)
+    {
+      if (event != MXML_SAX_ELEMENT_CLOSE)
+        mxmlRetain(node);
+    }
+</PRE>
+<P>More typically the SAX callback will only retain a small portion of
+ the document that is needed for post-processing. For example, the
+ following SAX callback will retain the title and headings in an XHTML
+ file. It also retains the (parent) elements like <TT>&lt;html&gt;</TT>, <TT>
+&lt;head&gt;</TT>, and <TT>&lt;body&gt;</TT>, and processing directives like <TT>
+&lt;?xml ... ?&gt;</TT> and <TT>&lt;!DOCTYPE ... &gt;</TT>:</P>
+
+<!-- NEED 10 -->
+<PRE>
+    void
+    sax_cb(mxml_node_t *node,
+           mxml_sax_event_t event,
+           void *data)
+    {
+      if (event == MXML_SAX_ELEMENT_OPEN)
+      {
+       /*
+        * Retain headings and titles...
+        */
+
+        char *name = node-&gt;value.element.name;
+
+        if (!strcmp(name, &quot;html&quot;) ||
+            !strcmp(name, &quot;head&quot;) ||
+            !strcmp(name, &quot;title&quot;) ||
+            !strcmp(name, &quot;body&quot;) ||
+            !strcmp(name, &quot;h1&quot;) ||
+            !strcmp(name, &quot;h2&quot;) ||
+            !strcmp(name, &quot;h3&quot;) ||
+            !strcmp(name, &quot;h4&quot;) ||
+            !strcmp(name, &quot;h5&quot;) ||
+            !strcmp(name, &quot;h6&quot;))
+          mxmlRetain(node);
+      }
+      else if (event == MXML_SAX_DIRECTIVE)
+        mxmlRetain(node);
+      else if (event == MXML_SAX_DATA &amp;&amp;
+               node-&gt;parent-&gt;ref_count &gt; 1)
+      {
+       /*
+        * If the parent was retained, then retain
+        * this data node as well.
+        */
+
+        mxmlRetain(node);
+      }
+    }
+</PRE>
+<P>The resulting skeleton document tree can then be searched just like
+ one loaded using the <TT>mxmlLoad</TT> functions. For example, a filter
+ that reads an XHTML document from stdin and then shows the title and
+ headings in the document would look like:</P>
+<PRE>
+    mxml_node_t *doc, *title, *body, *heading;
+
+    doc = mxmlSAXLoadFd(NULL, 0,
+                        MXML_TEXT_CALLBACK,
+                        <B>sax_cb</B>, NULL);
+
+    title = mxmlFindElement(doc, doc, &quot;title&quot;,
+                            NULL, NULL,
+                            MXML_DESCEND);
+
+    if (title)
+      print_children(title);
+
+    body = mxmlFindElement(doc, doc, &quot;body&quot;,
+                           NULL, NULL,
+                           MXML_DESCEND);
+
+    if (body)
+    {
+      for (heading = body-&gt;child;
+           heading;
+           heading = heading-&gt;next)
+        print_children(heading);
+    }
+</PRE>
+<HR NOSHADE>
+<A HREF="index.html">Contents</A>
+<A HREF="Indexing.html">Previous</A>
+<A HREF="UsingthemxmldocUtility.html">Next</A>
+</BODY>
+</HTML>

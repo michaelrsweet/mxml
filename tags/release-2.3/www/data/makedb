@@ -1,0 +1,12 @@
+#!/bin/sh
+
+if test -f mxml.db; then
+	rm -f mxml.db.old
+	mv mxml.db mxml.db.old
+fi
+
+sqlite mxml.db <mxml.sql
+
+chmod 775 .
+chmod 664 mxml.db
+chgrp apache . mxml.db

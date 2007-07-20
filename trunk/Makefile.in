@@ -22,12 +22,13 @@
 
 AR		=	@AR@
 ARFLAGS		=	@ARFLAGS@
+ARCHFLAGS	=	@ARCHFLAGS@
 CC		=	@CC@
-CFLAGS		=	$(OPTIM) @CFLAGS@ @CPPFLAGS@
+CFLAGS		=	$(OPTIM) $(ARCHFLAGS) @CFLAGS@ @CPPFLAGS@
 CP		=	@CP@
 DSO		=	@DSO@
 DSOFLAGS	=	@DSOFLAGS@
-LDFLAGS		=	$(OPTIM) @LDFLAGS@
+LDFLAGS		=	$(OPTIM) $(ARCHFLAGS) @LDFLAGS@
 INSTALL		=	@INSTALL@
 LIBMXML		=	@LIBMXML@
 LN		=	@LN@ -s
@@ -45,6 +46,7 @@ SHELL		=	/bin/sh
 prefix		=	@prefix@
 exec_prefix	=	@exec_prefix@
 bindir		=	@bindir@
+datarootdir	=	@datarootdir@
 includedir	=	@includedir@
 libdir		=	@libdir@
 mandir		=	@mandir@

@@ -128,7 +128,7 @@ if ($REQUEST_METHOD == "POST")
 
     db_free($result);
   }
-  else if (argc == 0 && $username != "" && $password != "")
+  else if ($argc == 0 && $username != "" && $password != "")
     if (auth_login($username, $password) == "")
       $usererror = "Login failed!";
 }

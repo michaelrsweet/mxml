@@ -241,8 +241,8 @@ switch ($op)
 
 	html_start_links(1);
 	html_link("Return to Articles", "$PHP_SELF?L$options");
-	html_link("View Article #$id</A>", "$PHP_SELF?L$id$options");
-	html_link("Modify Article #$id</A>", "$PHP_SELF?M$id$options");
+	html_link("View Article #$id", "$PHP_SELF?L$id$options");
+	html_link("Modify Article #$id", "$PHP_SELF?M$id$options");
 	html_end_links();
 
         print("<h1>Delete Article #$id</h1>\n");
@@ -299,8 +299,8 @@ switch ($op)
 	if ($LOGIN_LEVEL >= AUTH_DEVEL ||
 	    $row['create_user'] == $LOGIN_USER)
 	{
-	  html_link("Modify Article</A>", "$PHP_SELF?M$id$options");
-	  html_link("Delete Article</A>", "$PHP_SELF?D$id$options");
+	  html_link("Modify Article", "$PHP_SELF?M$id$options");
+	  html_link("Delete Article", "$PHP_SELF?D$id$options");
 	}
 	html_end_links();
 

@@ -14,11 +14,8 @@ include_once "phplib/html.php";
 
 // List of download servers...
 $sitelist = array(
-//  "http://ftp.easysw.com/pub" => "Oregon, USA via HTTP",
-//  "ftp://ftp.easysw.com/pub" => "Oregon, USA via FTP",
-//  "http://ftp2.easysw.com/pub" => "Maryland, USA via HTTP",
-  "ftp://ftp.easysw.com/pub" => "Maryland, USA via FTP",
-  "ftp://ftp3.easysw.com/pub" => "California, USA via FTP",
+  "ftp://ftp.easysw.com/pub" => "California, USA via FTP",
+  "http://ftp.easysw.com/pub" => "California, USA via HTTP",
   "http://www.nu6.org/_/mirror/ftp.easysw.com/pub" => "Gustavsberg, Sweden via HTTP",
   "http://ftp.funet.fi/pub/mirrors/ftp.easysw.com/pub" => "Espoo, Finland via HTTP",
   "ftp://ftp.funet.fi/pub/mirrors/ftp.easysw.com/pub" => "Espoo, Finland via FTP",
@@ -171,7 +168,7 @@ else
     else
       print("$cs$ce");
 
-    $kbytes = (int)((filesize("/home/ftp/pub/$filename") + 1023) / 1024);
+    $kbytes = (int)((filesize("/home/ftp.easysw.com/pub/$filename") + 1023) / 1024);
 
     print("$cs<a href='$PHP_SELF?VERSION=$version&amp;FILE=$filename'>"
          ."<tt>$basename</tt></a>$ce"

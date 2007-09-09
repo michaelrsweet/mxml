@@ -1,18 +1,21 @@
 BODY {
   background: #ffffff;
   color: #000000;
-  font-family: serif;
-  text-align: justify;
+  font-family: sans-serif;
 }
 
 P, TD, TH {
   color: #000000;
-  font-family: serif;
+  font-family: sans-serif;
 }
 
 H1, H2, H3, H4, H5, H6 {
   color: #000000;
   font-family: sans-serif;
+}
+
+H2, H3, H4, H5, H6 {
+  font-style: italic;
 }
 
 KBD {
@@ -30,23 +33,11 @@ SUB, SUP {
   font-size: smaller;
 }
 
-TR.header, TR.header TH, TH.header {
-  background-color: #cccccc;
+FORM {
+  display: inline;
 }
 
-TR.page {
-  background-color: #f4f4f4;
-}
-
-TR.data0, TD.data0 {
-  background-color: #e8e8e8;
-}
-
-TR.data1, TD.data1 {
-  background-color: #e0e0e0;
-}
-
-INPUT[TYPE="TEXT"], TEXTAREA {
+INPUT[TYPE="TEXT"], INPUT[TYPE="PASSWORD"], INPUT[TYPE="SEARCH"], TEXTAREA {
   font-family: monospace;
 }
 
@@ -74,6 +65,80 @@ A:active {
   color: #ff0000;
 }
 
-TR.header TD A {
+TD.unsel, TD.sel {
+  border-bottom: solid 1px black;
+  padding: 1px 10px;
+  vertical-align: bottom;
+}
+
+TD.unsel A, TD.sel A {
   font-weight: bold;
+  padding: 1px 10px;
+}
+
+TD.sel A {
+  border-bottom: solid 3px black;
+}
+
+TD.unsel A:hover, TD.sel A:hover {
+  background: #f4f4f4;
+  border-bottom: solid 3px #999999;
+}
+
+TD.page {
+  height: 100%;
+  padding: 10px 0px;
+  vertical-align: top;
+}
+
+TD.footer {
+  border-top: solid thin #666666;
+  color: #666666;
+  font-size: 80%;
+  padding: 5px;
+}
+
+P.links {
+  border-bottom: solid 1px #999999;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0px 10px;
+  text-align: center;
+  vertical-align: bottom;
+  width: 80%;
+}
+
+P.links A {
+  padding: 0px 5px;
+}
+
+P.links A:hover {
+  background: #f8f8f8;
+  border-bottom: solid 3px #cccccc;
+}
+
+TABLE.standard {
+  border-bottom: solid thin black;
+  border-collapse: collapse;
+}
+
+TR.header TH {
+  border-bottom: solid thin black;
+  padding: 0px 5px;
+  vertical-align: bottom;
+}
+
+TR.data0 TD, TR.data0 TH {
+  background-color: #f8f8f8;
+  padding: 2px;
+}
+
+TR.data1 TD, TR.data1 TH {
+  background-color: #f4f4f4;
+  padding: 2px;
+}
+
+.dateinfo {
+  font-size: 80%;
+  font-style: italic;
 }

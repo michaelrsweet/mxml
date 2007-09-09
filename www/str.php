@@ -50,6 +50,7 @@ $subsystems = array(
 $versions = array(
   "Trunk",
   "+2.4",
+  "+2.3.1",
   "2.3",
   "2.2.2",
   "2.2.1",
@@ -433,8 +434,6 @@ switch ($op)
 
         html_end_links();
 
-        print("<h1>STR #$id</h1>\n");
-
 	$create_user  = sanitize_email($row['create_user']);
 	$manager_email = sanitize_email($row['manager_email']);
 	$subsystem     = $row['subsystem'];
@@ -454,7 +453,9 @@ switch ($op)
         if ($fix_version == "")
 	  $fix_version = "<i>Unassigned</i>";
 
-        print("<p><table width='100%' cellpadding='5' cellspacing='0' border='0'>\n");
+        print("<table width='100%' cellpadding='5' cellspacing='0' border='0'>\n");
+
+        print("<tr><th align='right'>ID:</th><td>$id</td></tr>\n");
 
         if ($row['master_id'] > 0)
           print("<tr><th align='right'>Duplicate Of:</th>"
@@ -485,15 +486,15 @@ switch ($op)
 	     ."<form method='POST' action='$PHP_SELF?U$id$options'>"
 	     ."<input type='text' size='40' maxsize='128' name='EMAIL' value='$email'>"
 	     ."<input type='submit' value='Change Notification Status'>"
-	     ."<br /><input type='radio' name='NOTIFICATION' checked value='ON'>Receive EMails "
+	     ."<br><input type='radio' name='NOTIFICATION' checked value='ON'>Receive EMails "
 	     ."<input type='radio' name='NOTIFICATION' value='OFF'>Don't Receive EMails"
 	     ."</form>"
 	     ."</td></tr>\n");
-        print("</table></p>\n");
+        print("</table>\n");
 
         db_free($result);
 
-	print("<hr noshade/><p><b>Trouble Report Files:</b></p>\n");
+	print("<p><b>Trouble Report Files:</b></p>\n");
         if ($row['status'] >= $STR_STATUS_ACTIVE)
 	{
 	  html_start_links();
@@ -518,7 +519,7 @@ switch ($op)
 	    $filename = htmlspecialchars($row['filename']);
 
             html_start_row();
-	    print("<td align='center' valign='top'>$email<br />$time $date</td>"
+	    print("<td align='center' valign='top'>$email<br>$time $date</td>"
 		 ."<td align='center' valign='top'>"
 		 ."<a href='strfiles/$id/$filename'>$filename</a></td>");
             html_end_row();
@@ -529,7 +530,7 @@ switch ($op)
 
 	db_free($result);
 
-	print("<hr noshade/><p><b>Trouble Report Dialog:</b></p>\n");
+	print("<p><b>Trouble Report Dialog:</b></p>\n");
         if ($row['status'] >= $STR_STATUS_ACTIVE)
 	{
 	  html_start_links();
@@ -554,7 +555,7 @@ switch ($op)
 	    $contents = quote_text($row['contents']);
 
 	    html_start_row();
-	    print("<td align='center' valign='top'>$email<br />$time $date</td>"
+	    print("<td align='center' valign='top'>$email<br>$time $date</td>"
 		 ."<td valign='top'><tt>$contents</tt></td>");
 	    html_end_row();
 	  }
@@ -571,8 +572,6 @@ switch ($op)
         html_start_links(1);
 	html_link("Submit Bug or Feature Request", "$PHP_SELF?N$options'");
 	html_end_links();
-
-        print("<h1>Bugs &amp; Features</h1>\n");
 
         print("<form method='POST' action='$PHP_SELF'><p align='center'>"
 	     ."Search&nbsp;Words: &nbsp;<input type='text' size='60' name='SEARCH' value='$search'>"
@@ -637,7 +636,6 @@ switch ($op)
         }
 
         print("</p></form>\n");
-	print("<hr noshade/>\n");
 
         $query = "";
 	$prefix = "WHERE ";
@@ -728,6 +726,7 @@ switch ($op)
             {
               $query .= "$prefix$logic (";
               $subpre = "";
+	      $word   = db_escape($word);
 
               if (ereg("[0-9]+", $word))
               {
@@ -762,8 +761,8 @@ switch ($op)
 	  print("<p>No STRs found.</p>\n");
 
 	  if (($priority || $status || $scope) && $search != "")
-	    print("<p>[ <a href='$PHP_SELF?L+S0+Q" . urlencode($search)
-	         ."'>Search for \"<i>$search</i>\" in all STRs</a> ]</p>\n");
+	    print("<p><a href='$PHP_SELF?L+S0+Q" . urlencode($search)
+	         ."'>Search for \"<i>$search</i>\" in all STRs</a></p>\n");
 
 	  html_footer();
 	  exit();
@@ -784,33 +783,33 @@ switch ($op)
 	  $prev = 0;
 	$next = $index + $PAGE_MAX;
 
-        print("<p>$count STR(s) found, showing $start to $end:</p>\n");
+        print("<p>$count STR(s) found, showing $start to $end:\n");
 
         if ($LOGIN_LEVEL >= AUTH_DEVEL)
 	  print("<form method='POST' action='$PHP_SELF?B$options'>\n");
 
         if ($count > $PAGE_MAX)
 	{
-          print("<p><table border='0' cellspacing='0' cellpadding='0' "
+          print("<table border='0' cellspacing='0' cellpadding='0' "
 	       ."width='100%'>\n");
 
           print("<tr><td>");
 	  if ($index > 0)
-	    print("[&nbsp;<a href='$PHP_SELF?L+P$priority+S$status+C$scope+I$prev+"
+	    print("<a href='$PHP_SELF?L+P$priority+S$status+C$scope+I$prev+"
 		 ."E$femail+Q"
 		 . urlencode($search)
-		 ."'>Previous&nbsp;$PAGE_MAX</a>&nbsp;]");
+		 ."'>Previous&nbsp;$PAGE_MAX</a>");
           print("</td><td align='right'>");
 	  if ($end < $count)
 	  {
 	    $next_count = min($PAGE_MAX, $count - $end);
-	    print("[&nbsp;<a href='$PHP_SELF?L+P$priority+S$status+C$scope+I$next+"
+	    print("<a href='$PHP_SELF?L+P$priority+S$status+C$scope+I$next+"
 		 ."E$femail+Q"
 		 . urlencode($search)
-		 ."'>Next&nbsp;$next_count</a>&nbsp;]");
+		 ."'>Next&nbsp;$next_count</a>");
           }
           print("</td></tr>\n");
-	  print("</table></p>\n");
+	  print("</table>\n");
         }
 
         html_start_table(array("Id", "Priority", "Status", "Scope",
@@ -833,7 +832,7 @@ switch ($op)
 
           if ($row['is_published'] == 0)
 	    $summabbr .= " <img src='images/private.gif' width='16' height='16' "
-	                ."border='0' align='middle' alt='Private'/>";
+	                ."border='0' align='absmiddle' alt='Private'>";
 
           print("<td nowrap>");
           if ($LOGIN_LEVEL >= AUTH_DEVEL)
@@ -881,26 +880,24 @@ switch ($op)
 	}
 
         db_free($result);
+	html_end_table();
 
         if ($LOGIN_LEVEL >= AUTH_DEVEL)
 	{
-	  html_start_row("header");
-	  print("<th colspan='8'>&nbsp;<br />");
-
-          print("Status:&nbsp;<select name='STATUS'>"
-	       ."<option value=''>No Change</option>");
+	  print("<p><select name='STATUS'>"
+	       ."<option value=''>Status</option>");
 	  for ($i = 1; $i <= 5; $i ++)
 	    print("<option value='$i'>$status_text[$i]</option>");
           print("</select>\n");
 
-	  print("Priority:&nbsp;<select name='PRIORITY'>"
-	       ."<option value=''>No Change</option>");
+	  print("<select name='PRIORITY'>"
+	       ."<option value=''>Priority</option>");
           for ($i = 1; $i <= 5; $i ++)
 	    print("<option value='$i'>$priority_text[$i]</option>");
           print("</select>\n");
 
-	  print("Assigned To:&nbsp;<select name='MANAGER_EMAIL'>"
-	       ."<option value=''>No Change</option>");
+	  print("<select name='MANAGER_EMAIL'>"
+	       ."<option value=''>Assigned To</option>");
 	  reset($managers);
 	  while (list($key, $val) = each($managers))
 	  {
@@ -910,8 +907,8 @@ switch ($op)
 	  }
           print("</select>\n");
 
-	  print("<br />Text:&nbsp;<select name='MESSAGE'>"
-	       ."<option value=''>No Message</option>");
+	  print("<select name='MESSAGE'>"
+	       ."<option value=''>Text</option>");
 	  reset($messages);
 	  while (list($key, $val) = each($messages))
 	  {
@@ -921,34 +918,31 @@ switch ($op)
           print("</select>\n");
 
 	  print("<input type='submit' value='Modify Selected STRs'>");
-	  print("</th>\n");
-	  html_end_row();
+	  print("</p>\n");
         }
-
-        html_end_table();
 
         if ($count > $PAGE_MAX)
 	{
-          print("<p><table border='0' cellspacing='0' cellpadding='0' "
+          print("<table border='0' cellspacing='0' cellpadding='0' "
 	       ."width='100%'>\n");
 
           print("<tr><td>");
 	  if ($index > 0)
-	    print("[&nbsp;<a href='$PHP_SELF?L+P$priority+S$status+C$scope+I$prev+"
+	    print("<a href='$PHP_SELF?L+P$priority+S$status+C$scope+I$prev+"
 		 ."E$femail+Q"
 		 . urlencode($search)
-		 ."'>Previous&nbsp;$PAGE_MAX</a>&nbsp;]");
+		 ."'>Previous&nbsp;$PAGE_MAX</a>");
           print("</td><td align='right'>");
 	  if ($end < $count)
 	  {
 	    $next_count = min($PAGE_MAX, $count - $end);
-	    print("[&nbsp;<a href='$PHP_SELF?L+P$priority+S$status+C$scope+I$next+"
+	    print("<a href='$PHP_SELF?L+P$priority+S$status+C$scope+I$next+"
 		 ."E$femail+Q"
 		 . urlencode($search)
-		 ."'>Next&nbsp;$next_count</a>&nbsp;]");
+		 ."'>Next&nbsp;$next_count</a>");
           }
           print("</td></tr>\n");
-	  print("</table></p>\n");
+	  print("</table>\n");
         }
 
 	if ($LOGIN_LEVEL >= AUTH_DEVEL)
@@ -959,7 +953,7 @@ switch ($op)
 	     ."OS = Operating System, "
 	     ."STR = Software Trouble Report, "
 	     ."<img src='images/private.gif' width='16' height='16' "
-	     ."align='middle' alt='private'/> = hidden from public view</p>\n");
+	     ."align='absmiddle' alt='private'> = hidden from public view</p>\n");
       }
 
       html_footer();
@@ -1047,8 +1041,6 @@ switch ($op)
 	html_link("Post File", "$PHP_SELF?F$id$options");
 	html_end_links();
 
-        print("<h1>Modify STR #$id</h1>\n");
-
         $result = db_query("SELECT * FROM str WHERE id = $id");
 	if (db_count($result) != 1)
 	{
@@ -1064,7 +1056,9 @@ switch ($op)
 	$summary       = htmlspecialchars($row['summary'], ENT_QUOTES);
 
         print("<form method='POST' action='$PHP_SELF?M$id$options'>"
-	     ."<p><table width='100%' cellpadding='5' cellspacing='0' border='0'>\n");
+	     ."<table width='100%' cellpadding='5' cellspacing='0' border='0'>\n");
+
+        print("<tr><th align='right'>ID:</th><td>$id</td></tr>\n");
 
         print("<tr><th align='right'>Duplicate Of:</th>"
 	     ."<td><input type='text' name='MASTER_ID' "
@@ -1190,17 +1184,17 @@ switch ($op)
 	  $temp = abbreviate($val, 72);
 	  print("<option value='$key'>$temp</option>");
 	}
-        print("</select><br />\n");
+        print("</select><br>\n");
 
 	print("<textarea name='CONTENTS' cols='72' rows='12' wrap='virtual'>"
              ."</textarea></td></tr>\n");
 
         print("<tr><th align='center' colspan='2'>"
-	     ."<input type='submit' value='Update Trouble Report'/></th></tr>\n");
-        print("</table></p></form>\n");
+	     ."<input type='submit' value='Update Trouble Report'></th></tr>\n");
+        print("</table></form>\n");
 
-	print("<hr noshade/><p><b>Trouble Report Files:</b> "
-	     ."[ <a href='$PHP_SELF?F$id$options'>Post&nbsp;File</a> ]"
+	print("<p><b>Trouble Report Files:</b> "
+	     ."<a href='$PHP_SELF?F$id$options'>Post&nbsp;File</a>"
 	     ."</p>\n");
 
 	$result = db_query("SELECT * FROM strfile WHERE str_id = $id");
@@ -1209,7 +1203,7 @@ switch ($op)
 	  print("<p><i>No files</i></p>\n");
 	else
 	{
-	  print("<p><table width='100%' border='0' cellpadding='5' "
+	  print("<table width='100%' border='0' cellpadding='5' "
 	       ."cellspacing='0'>\n"
 	       ."<tr class='header'><th>Name/Time/Date</th>"
 	       ."<th>Filename</th></tr>\n");
@@ -1223,7 +1217,7 @@ switch ($op)
 	    $filename = htmlspecialchars($row['filename']);
 
 	    print("<tr class='data$line'>"
-	         ."<td align='center' valign='top'>$email<br />$time $date<br />"
+	         ."<td align='center' valign='top'>$email<br>$time $date<br>"
 		 ."<form method='POST' action='$PHP_SELF?M$id$options'>"
 		 ."<input type='hidden' name='FILE_ID' value='$row[id]'>");
 
@@ -1241,13 +1235,13 @@ switch ($op)
 
 	    $line = 1 - $line;
 	  }
-          print("</table></p>\n");
+          print("</table>\n");
         }
 
 	db_free($result);
 
-	print("<hr noshade/><p><b>Trouble Report Dialog:</b> "
-	     ."[ <a href='$PHP_SELF?T$id$options'>Post&nbsp;Text</a> ]"
+	print("<p><b>Trouble Report Dialog:</b> "
+	     ."<a href='$PHP_SELF?T$id$options'>Post&nbsp;Text</a>"
 	     ."</p>\n");
 
 	$result = db_query("SELECT * FROM strtext WHERE "
@@ -1257,7 +1251,7 @@ switch ($op)
 	  print("<p><i>No text</i></p>\n");
 	else
 	{
-	  print("<p><table width='100%' border='0' cellpadding='5' "
+	  print("<table width='100%' border='0' cellpadding='5' "
 	       ."cellspacing='0'>\n"
 	       ."<tr class='header'><th>Name/Time/Date</th>"
 	       ."<th>Text</th></tr>\n");
@@ -1272,7 +1266,7 @@ switch ($op)
 	    $contents = quote_text($row['contents']);
 
 	    print("<tr class='data$line'>"
-	         ."<td align='center' valign='top'>$email<br />$time $date<br />"
+	         ."<td align='center' valign='top'>$email<br>$time $date<br>"
 		 ."<form method='POST' action='$PHP_SELF?M$id$options'>"
 		 ."<input type='hidden' name='TEXT_ID' value='$row[id]'>");
 
@@ -1289,7 +1283,7 @@ switch ($op)
 
 	    $line = 1 - $line;
 	  }
-          print("</table></p>\n");
+          print("</table>\n");
 	}
 
 	db_free($result);
@@ -1364,27 +1358,23 @@ switch ($op)
 	html_link("Return to STR #$id", "$PHP_SELF?L$id$options");
 	html_end_links();
 
-        print("<h1>Post Text for STR #$id</h1>\n");
-
         if ($REQUEST_METHOD == "POST")
 	{
 	  print("<p><b>Error:</b> Please fill in the fields marked in "
 	       ."<b><font color='red'>bold red</font></b> below and resubmit "
-	       ."your trouble report.</p><hr noshade/>\n");
+	       ."your trouble report.</p>\n");
 
 	  $hstart = "<font color='red'>";
 	  $hend   = "</font>";
 	}
 	else
 	{
-	  print("<hr noshade/>\n");
-
 	  $hstart = "";
 	  $hend   = "";
 	}
 
         print("<form method='POST' action='$PHP_SELF?T$id$options'>"
-	     ."<p><table width='100%' cellpadding='5' cellspacing='0' border='0'>\n");
+	     ."<table width='100%' cellpadding='5' cellspacing='0' border='0'>\n");
 
 	print("<tr><th align='right'>");
 	if ($email != "")
@@ -1408,7 +1398,7 @@ switch ($op)
 
         print("<tr><th align='center' colspan='2'>"
 	     ."<input type='submit' value='Post Text to Trouble Report'></th></tr>\n");
-        print("</table></p></form>\n");
+        print("</table></form>\n");
         html_footer();
       }
       break;
@@ -1515,21 +1505,17 @@ switch ($op)
 	html_link("Return to STR #$id", "$PHP_SELF?L$id$options");
 	html_end_links();
 
-        print("<h1>Post File For STR #$id</h1>\n");
-
         if ($REQUEST_METHOD == "POST")
 	{
 	  print("<p><b>Error:</b> Please fill in the fields marked in "
 	       ."<b><font color='red'>bold red</font></b> below and resubmit "
-	       ."your trouble report.</p><hr noshade/>\n");
+	       ."your trouble report.</p>\n");
 
 	  $hstart = "<font color='red'>";
 	  $hend   = "</font>";
 	}
 	else
 	{
-	  print("<hr noshade/>\n");
-
 	  $hstart = "";
 	  $hend   = "";
 	}
@@ -1538,7 +1524,7 @@ switch ($op)
 	     ."enctype='multipart/form-data'>"
 	     ."<input type='hidden' name='MAX_FILE_SIZE' value='10000000'>");
 
-	print("<p><table width='100%' cellpadding='5' cellspacing='0' "
+	print("<table width='100%' cellpadding='5' cellspacing='0' "
              ."border='0'>\n");
 
 	print("<tr><th align='right'>");
@@ -1561,7 +1547,7 @@ switch ($op)
 
         print("<tr><th align='center' colspan='2'>"
 	     ."<input type='submit' value='Post File to Trouble Report'></th></tr>\n");
-        print("</table></p></form>\n");
+        print("</table></form>\n");
         html_footer();
       }
       break;
@@ -1688,13 +1674,11 @@ switch ($op)
 	html_link("Return to Bugs &amp; Features", "$PHP_SELF?L$options");
 	html_end_links();
 
-        print("<h1>Submit Bug or Feature Request</h1>\n");
-
         if ($REQUEST_METHOD == "POST")
 	{
 	  print("<p><b>Error:</b> Please fill in the fields marked in "
 	       ."<b><font color='red'>bold red</font></b> below and resubmit "
-	       ."your trouble report.</p><hr noshade/>\n");
+	       ."your trouble report.</p>\n");
 
 	  $hstart = "<font color='red'>";
 	  $hend   = "</font>";
@@ -1706,7 +1690,7 @@ switch ($op)
 	       ."the operating system, compiler, sample programs and/or "
 	       ."files, and any other information you can about your "
 	       ."problem. <i>Thank you</i> for helping us to improve "
-	       ."$PROJECT_NAME!</p><hr noshade/>\n");
+	       ."$PROJECT_NAME!</p>\n");
 
 	  $hstart = "";
 	  $hend   = "";
@@ -1716,7 +1700,7 @@ switch ($op)
 	     ."enctype='multipart/form-data'>"
 	     ."<input type='hidden' name='MAX_FILE_SIZE' value='10000000'>");
 
-        print("<p><table width='100%' cellpadding='5' cellspacing='0' "
+        print("<table width='100%' cellpadding='5' cellspacing='0' "
 	      ."border='0'>\n");
 
         print("<tr><th align='right'>Security Advisory:</th><td>"
@@ -1737,7 +1721,7 @@ switch ($op)
 	  print("<input type='radio' name='PRIORITY' value='$i'");
           if ($npriority == $i)
 	    print(" checked");
-	  print(">$priority_long[$i]<br />");
+	  print(">$priority_long[$i]<br>");
 	}
 	print("</td></tr>\n");
 
@@ -1751,7 +1735,7 @@ switch ($op)
 	  print("<input type='radio' name='SCOPE' value='$i'");
           if ($nscope == $i)
 	    print(" checked");
-	  print(">$scope_long[$i]<br />");
+	  print(">$scope_long[$i]<br>");
 	}
 	print("</td></tr>\n");
 
@@ -1819,7 +1803,7 @@ switch ($op)
 
         print("<tr><th align='center' colspan='2'>"
 	     ."<input type='submit' value='Submit Bug or Feature Request'></th></tr>\n");
-        print("</table></p></form>\n");
+        print("</table></form>\n");
         html_footer();
       }
       break;
@@ -1860,8 +1844,6 @@ switch ($op)
       html_start_links();
       html_link("Return to STR #$id", "$PHP_SELF?L$id$options");
       html_end_links();
-
-      print("<h1>STR #$id Notifications</h1>\n");
 
       if ($notification == "ON")
       {

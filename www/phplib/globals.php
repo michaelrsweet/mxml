@@ -1,6 +1,6 @@
 <?php
 //
-// "$Id: globals.php,v 1.9 2004/05/20 21:37:57 mike Exp $"
+// "$Id$"
 //
 // Global PHP constants and variables...
 //
@@ -33,11 +33,11 @@ $SERVER_NAME    = $_SERVER["SERVER_NAME"];
 $REMOTE_ADDR    = $_SERVER["REMOTE_ADDR"];
 
 if (array_key_exists("ISHTTPS", $_SERVER))
-  $PHP_URL = "https://$_SERVER[SERVER_NAME]:$_SERVER[SERVER_PORT]$_SERVER[PHP_SELF]";
+  $PHP_URL = "https://$_SERVER[SERVER_NAME]$_SERVER[PHP_SELF]";
 else
   $PHP_URL = "http://$_SERVER[SERVER_NAME]:$_SERVER[SERVER_PORT]$_SERVER[PHP_SELF]";
 
 //
-// End of "$Id: globals.php,v 1.9 2004/05/20 21:37:57 mike Exp $".
+// End of "$Id$".
 //
 ?>

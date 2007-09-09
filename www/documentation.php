@@ -36,12 +36,11 @@ if (array_key_exists("PATH_INFO", $_SERVER) &&
   {
     if ($type == "html")
     {
-      html_header("Documentation Error", "../");
+      html_header("Documentation Error");
 
-      print("<h1>Documentation Error</h1>\n"
-           ."<p>The path '$path' is bad.</p>\n");
+      print("<p>The path '$path' is bad.</p>\n");
 
-      html_footer("../");
+      html_footer();
     }
   }
   else
@@ -51,17 +50,16 @@ if (array_key_exists("PATH_INFO", $_SERVER) &&
     {
       if ($type == "html")
       {
-	html_header("Documentation Error", "../");
+	html_header("Documentation Error");
 
-	print("<h1>Documentation Error</h1>\n"
-             ."<p>Unable to open path '$path'.</p>\n");
+	print("<p>Unable to open path '$path'.</p>\n");
 
-	html_footer("../");
+	html_footer();
       }
     }
     else if ($type == "html")
     {
-      html_header("Documentation", "../");
+      html_header("Documentation");
 
       $saw_body = 0;
       $last_nav = 0;
@@ -78,23 +76,25 @@ if (array_key_exists("PATH_INFO", $_SERVER) &&
 	}
 	else if ($saw_body)
 	{
-	  if (strstr($line, ">Contents</A") ||
+	  if (strstr($line, "<A HREF=\"index.html\">Contents</A") ||
 	      strstr($line, ">Previous</A>") ||
 	      strstr($line, ">Next</A>"))
 	  {
 	    if ($last_nav)
-	      print("|\n");
+	      print("&middot\n");
 	    else
-	      print("[ <A HREF='#_USER_COMMENTS'>Comments</a></li> |\n");
+	      print("<p class='links'><A HREF='#_USER_COMMENTS'>Comments</a> "
+	           ."&middot;\n");
 
             $last_nav = 1;
 	  }
 	  else if (strstr($line, "<HR"))
 	  {
 	    if ($last_nav)
-	      print("]\n");
+	      print("</p>\n");
 
 	    $last_nav = 0;
+	    $line     = "";
 	  }
 
 	  print($line);
@@ -104,19 +104,18 @@ if (array_key_exists("PATH_INFO", $_SERVER) &&
       fclose($fp);
 
       if ($last_nav)
-        print("]\n");
+        print("</p>\n");
 
-      print("<hr noshade/>\n"
-           ."<h2><a name='_USER_COMMENTS'>User Comments</a> [&nbsp;"
-	   ."<a href='../comment.php?r0+pdocumentation.php$path'>Add&nbsp;Comment</a>"
-	   ."&nbsp;]</h2>\n");
+      print("<h1><a name='_USER_COMMENTS'>User Comments</a></h1>\n"
+	   ."<p><a href='$html_path/comment.php?r0+pdocumentation.php$path'>"
+	   ."Add&nbsp;Comment</a></p>\n");
 
-      $num_comments = show_comments("documentation.php$path", "../");
+      $num_comments = show_comments("documentation.php$path");
 
       if ($num_comments == 0)
         print("<p>No comments for this page.</p>\n");
 
-      html_footer("../");
+      html_footer();
     }
     else
     {
@@ -132,9 +131,71 @@ else
 {
   html_header("Documentation");
 
-?>
+  if (array_key_exists("CLEAR", $_GET))
+    $q = "";
+  else if (array_key_exists("Q", $_GET))
+    $q = $_GET["Q"];
+  else
+    $q = "";
 
-<h1>Documentation</h1>
+  $html = htmlspecialchars($q, ENT_QUOTES);
+
+  if (stripos($_SERVER["HTTP_USER_AGENT"], "webkit") !== FALSE)
+  {
+    // Use Safari search box...
+    $search = "<input type='search' name='Q' value='$html' size='50' "
+	     ."autosave='com.easysw.mxml.search' results='5' "
+             ."placeholder='Search'>";
+  }
+  else
+  {
+    // Use standard HTML text field...
+    $search = "<input type='text' name='Q' value='$html' size='40' "
+             ."title='Search'> "
+	     ."<input type='submit' value='Search'> "
+	     ."<input type='submit' name='CLEAR' value='Clear'>";
+  }
+
+  print("<form action='$PHP_SELF' method='GET'>\n"
+       ."<p align='center'>$search</p>\n"
+       ."</form>\n");
+
+  if ($q != "")
+  {
+    // Run htmlsearch to search the documentation...
+    $matches = array();
+    $fp      = popen("/home/mike/bin/htmlsearch " . escapeshellarg($q), "r");
+
+    while ($line = fgets($fp, 1024))
+    {
+      $data              = explode(":", $line);
+      $matches[$data[0]] = $data[1];
+    }
+
+    pclose($fp);
+
+    // Show the results...
+    if (sizeof($matches) == 1)
+      $total = "1 match";
+    else
+      $total = sizeof($matches) . " matches";
+
+    print("<p>$total found:</p>\n"
+         ."<ol>\n");
+
+    reset($matches);
+    foreach ($matches as $file => $text)
+    {
+      $link = "$PHP_SELF/$file";
+
+      print("<li><a href='$link'>$text</a></li>\n");
+    }
+
+    print("</ol>\n");
+  }
+  else
+  {
+?>
 
 <p>You can view the Mini-XML documentation in a single HTML file or in
 multiple files with comments on-line:</p>
@@ -149,34 +210,30 @@ multiple files with comments on-line:</p>
 	<ul>
 
 		<li><a
-		href='documentation.php/Introduction.html'>Introduction</a></li>
+		href='documentation.php/intro.html'>Introduction</a></li>
 
 		<li><a
-		href='documentation.php/BuildingInstallingandPackagingMiniXML.html'>Building,
+		href='documentation.php/install.html'>Building,
 		Installing, and Packaging Mini-XML</a></li>
 
-		<li><a
-		href='documentation.php/GettingStartedwithMiniXML.html'>Getting
+		<li><a href='documentation.php/basics.html'>Getting
 		Started with Mini-XML</a></li>
 
-		<li><a
-		href='documentation.php/MoreMiniXMLProgrammingTechniques.html'>More
+		<li><a href='documentation.php/advanced.html'>More
 		Mini-XML Programming Techniques</a></li>
 
-		<li><a
-		href='documentation.php/UsingthemxmldocUtility.html'>Using
+		<li><a href='documentation.php/mxmldoc.html'>Using
 		the mxmldoc Utility</a></li>
 
 		<li><a
-		href='documentation.php/MiniXMLLicense.html'>Mini-XML
+		href='documentation.php/license.html'>Mini-XML
 		License</a></li>
 
 		<li><a
-		href='documentation.php/ReleaseNotes.html'>Release
+		href='documentation.php/relnotes.html'>Release
 		Notes</a></li>
 
-		<li><a
-		href='documentation.php/LibraryReference.html'>Library
+		<li><a href='documentation.php/refapp.html'>Library
 		Reference</a></li>
 
 	</ul></li>
@@ -184,6 +241,7 @@ multiple files with comments on-line:</p>
 </ul>
 
 <?php
+  }
 
   html_footer();
 }

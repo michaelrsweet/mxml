@@ -245,9 +245,8 @@ switch ($op)
 	html_link("Modify Article #$id", "$PHP_SELF?M$id$options");
 	html_end_links();
 
-        print("<h1>Delete Article #$id</h1>\n");
         print("<form method='post' action='$PHP_SELF?D$id'>"
-	     ."<p><table width='100%' cellpadding='5' cellspacing='0' border='0'>\n");
+	     ."<table width='100%' cellpadding='5' cellspacing='0' border='0'>\n");
 
         if (!$row['is_published'])
 	  print("<tr><th align='center' colspan='2'>This article is "
@@ -264,7 +263,7 @@ switch ($op)
 
         print("<tr><th colspan='2'>"
 	     ."<input type='submit' value='Confirm Delete Article'></th></tr>\n");
-        print("</table></p></form>\n");
+        print("</table></form>\n");
 
         html_footer();
       }
@@ -308,12 +307,9 @@ switch ($op)
 	  print("<p align='center'><b>This article is currently hidden from "
 	       ."public view.</b></p>\n");
 
-        print("<h1>Article #$id: $title</h1>\n"
-	     ."<p><i>$date by $create_user</i><br />$abstract</p>\n"
-	     ."<hr noshade/>\n"
+        print("<p><i>$date by $create_user</i><br>$abstract</p>\n"
 	     ."$contents\n"
-	     ."<hr noshade/>\n"
-	     ."<h2><a name='_USER_COMMENTS'>Comments</a></h2>\n");
+	     ."<h1><a name='_USER_COMMENTS'>Comments</a></h1>\n");
 
 	html_start_links();
 	html_link("Submit Comment", "comment.php?r0+particles.php_L$id");
@@ -331,14 +327,10 @@ switch ($op)
 	html_link("Submit Article", "$PHP_SELF?N$options");
 	html_end_links();
 
-        print("<h1>Articles</h1>\n");
-
         print("<form method='POST' action='$PHP_SELF'><p align='center'>"
 	     ."Search&nbsp;Words: &nbsp;<input type='text' size='60' "
 	     ."name='SEARCH' value='$search'>"
 	     ."<input type='submit' value='Search Articles'></p></form>\n");
-
-	print("<hr noshade/>\n");
 
         $query = "";
 	$prefix = "WHERE ";
@@ -440,22 +432,22 @@ switch ($op)
 
         if ($count > $PAGE_MAX)
 	{
-          print("<p><table border='0' cellspacing='0' cellpadding='0' "
+          print("<table border='0' cellspacing='0' cellpadding='0' "
 	       ."width='100%'>\n");
 
           print("<tr><td>");
 	  if ($index > 0)
-	    print("[&nbsp;<a href='$PHP_SELF?L+I$prev+Q" . urlencode($search)
-		 ."'>Previous&nbsp;$PAGE_MAX</a>&nbsp;]");
+	    print("<a href='$PHP_SELF?L+I$prev+Q" . urlencode($search)
+		 ."'>Previous&nbsp;$PAGE_MAX</a>");
           print("</td><td align='right'>");
 	  if ($end < $count)
 	  {
 	    $next_count = min($PAGE_MAX, $count - $end);
-	    print("[&nbsp;<a href='$PHP_SELF?L+I$next+Q" . urlencode($search)
-		 ."'>Next&nbsp;$next_count</a>&nbsp;]");
+	    print("<a href='$PHP_SELF?L+I$next+Q" . urlencode($search)
+		 ."'>Next&nbsp;$next_count</a>");
           }
           print("</td></tr>\n");
-	  print("</table></p>\n");
+	  print("</table>\n");
         }
 
         html_start_table(array("ID","Title","Last Modified", "Comment(s)"));
@@ -476,7 +468,7 @@ switch ($op)
           $temp = htmlspecialchars($row['title']);
           if ($row['is_published'] == 0)
 	    $temp .= " <img src='images/private.gif' width='16' height='16' "
-	            ."border='0' align='middle' alt='Private'/>";
+	            ."border='0' align='absmiddle' alt='Private'>";
 
           print("<td align='center' width='67%'>$link$temp</a></td>");
 
@@ -494,41 +486,37 @@ switch ($op)
           html_end_row();
 	}
 
+        html_end_table();
+
         if ($LOGIN_LEVEL > 0)
 	{
-	  html_start_row("header");
-
-	  print("<th colspan='4'>&nbsp;<br />Published:&nbsp;");
+	  print("<p>Published:&nbsp;");
 	  select_is_published();
-	  print("<input type='submit' value='Modify Selected Articles'/></th>\n");
-
-	  html_end_row();
+	  print("<input type='submit' value='Modify Selected Articles'></p>\n");
         }
-
-        html_end_table();
 
         if ($count > $PAGE_MAX)
 	{
-          print("<p><table border='0' cellspacing='0' cellpadding='0' "
+          print("<table border='0' cellspacing='0' cellpadding='0' "
 	       ."width='100%'>\n");
 
           print("<tr><td>");
 	  if ($index > 0)
-	    print("[&nbsp;<a href='$PHP_SELF?L+I$prev+Q" . urlencode($search)
-		 ."'>Previous&nbsp;$PAGE_MAX</a>&nbsp;]");
+	    print("<a href='$PHP_SELF?L+I$prev+Q" . urlencode($search)
+		 ."'>Previous&nbsp;$PAGE_MAX</a>");
           print("</td><td align='right'>");
 	  if ($end < $count)
 	  {
 	    $next_count = min($PAGE_MAX, $count - $end);
-	    print("[&nbsp;<a href='$PHP_SELF?L+I$next+Q" . urlencode($search)
-		 ."'>Next&nbsp;$next_count</a>&nbsp;]");
+	    print("<a href='$PHP_SELF?L+I$next+Q" . urlencode($search)
+		 ."'>Next&nbsp;$next_count</a>");
           }
           print("</td></tr>\n");
-	  print("</table></p>\n");
+	  print("</table>\n");
         }
 
         print("<p><img src='images/private.gif' width='16' height='16' "
-	     ."align='middle' alt='private'/> = hidden from public view</p>\n");
+	     ."align='absmiddle' alt='private'> = hidden from public view</p>\n");
       }
 
       html_footer();
@@ -617,13 +605,11 @@ switch ($op)
 	html_link("Article #$id", "$PHP_SELF?L$id$options");
 	html_end_links();
 
-        print("<h1>Modify Article #$id</h1>\n");
-
 	if ($REQUEST_METHOD == "POST")
 	{
 	  print("<p><b>Error:</b> Please fill in the fields marked in "
 	       ."<b><font color='red'>bold red</font></b> below and resubmit "
-	       ."your article.</p><hr noshade/>\n");
+	       ."your article.</p>\n");
 
 	  $hstart = "<font color='red'>";
 	  $hend   = "</font>";
@@ -635,7 +621,7 @@ switch ($op)
 	}
 
         print("<form method='post' action='$PHP_SELF?M$id$options'>"
-	     ."<p><table width='100%' cellpadding='5' cellspacing='0' border='0'>\n");
+	     ."<table width='100%' cellpadding='5' cellspacing='0' border='0'>\n");
 
 	if ($LOGIN_LEVEL >= AUTH_DEVEL)
 	{
@@ -644,7 +630,7 @@ switch ($op)
           print("</td></tr>\n");
 	}
 	else
-          print("<input type='hidden' name='IS_PUBLISHED' value='0'/>\n");
+          print("<input type='hidden' name='IS_PUBLISHED' value='0'>\n");
 
 	$title = htmlspecialchars($title, ENT_QUOTES);
 
@@ -653,7 +639,7 @@ switch ($op)
 	else
 	  print("<tr><th align='right'>Title:</th>");
 	print("<td><input type='text' name='TITLE' "
-	     ."size='80' value='$title'/></td></tr>\n");
+	     ."size='80' value='$title'></td></tr>\n");
 
 	$abstract = htmlspecialchars($abstract, ENT_QUOTES);
 
@@ -662,7 +648,7 @@ switch ($op)
 	else
 	  print("<tr><th align='right'>Abstract:</th>");
 	print("<td><input type='text' name='ABSTRACT' "
-	     ."size='80' value='$abstract'/></td></tr>\n");
+	     ."size='80' value='$abstract'></td></tr>\n");
 
 	$contents = htmlspecialchars($contents, ENT_QUOTES);
 
@@ -681,8 +667,8 @@ switch ($op)
 	     ."<tt>TT</tt>, <tt>U</tt>, <tt>UL</tt></p></td></tr>\n");
 
         print("<tr><th colspan='2'>"
-	     ."<input type='submit' value='Motify Article'/></th></tr>\n");
-        print("</table></p></form>\n");
+	     ."<input type='submit' value='Motify Article'></th></tr>\n");
+        print("</table></form>\n");
 
         html_footer();
       }
@@ -771,13 +757,11 @@ switch ($op)
       html_link("Return to Articles", "$PHP_SELF?L$options");
       html_end_links();
 
-      print("<h1>Submit Article</h1>\n");
-
       if ($REQUEST_METHOD == "POST")
       {
 	print("<p><b>Error:</b> Please fill in the fields marked in "
 	     ."<b><font color='red'>bold red</font></b> below and resubmit "
-	     ."your article.</p><hr noshade/>\n");
+	     ."your article.</p>\n");
 
 	$hstart = "<font color='red'>";
 	$hend   = "</font>";
@@ -788,15 +772,14 @@ switch ($op)
              ."examples, and case studies showing how you use $PROJECT_NAME. "
 	     ."We will proofread your article, and if we determine it is "
 	     ."appropriate for the site, we will make the article public "
-	     ."on the site. <i>Thank you</i> for supporting $PROJECT_NAME!</p>\n"
-	     ."<hr noshade/>\n");
+	     ."on the site. <i>Thank you</i> for supporting $PROJECT_NAME!</p>\n");
 
 	$hstart = "";
 	$hend   = "";
       }
 
       print("<form method='post' action='$PHP_SELF?N$options'>"
-	   ."<p><table width='100%' cellpadding='5' cellspacing='0' border='0'>\n");
+	   ."<table width='100%' cellpadding='5' cellspacing='0' border='0'>\n");
 
       if ($LOGIN_LEVEL >= AUTH_DEVEL)
       {
@@ -805,7 +788,7 @@ switch ($op)
         print("</td></tr>\n");
       }
       else
-        print("<input type='hidden' name='IS_PUBLISHED' value='0'/>\n");
+        print("<input type='hidden' name='IS_PUBLISHED' value='0'>\n");
 
       $title = htmlspecialchars($title, ENT_QUOTES);
 
@@ -814,7 +797,7 @@ switch ($op)
       else
 	print("<tr><th align='right'>Title:</th>");
       print("<td><input type='text' name='TITLE' "
-	   ."size='80' value='$title'/></td></tr>\n");
+	   ."size='80' value='$title'></td></tr>\n");
 
       $abstract = htmlspecialchars($abstract, ENT_QUOTES);
 
@@ -823,7 +806,7 @@ switch ($op)
       else
 	print("<tr><th align='right'>Abstract:</th>");
       print("<td><input type='text' name='ABSTRACT' "
-	   ."size='80' value='$abstract'/></td></tr>\n");
+	   ."size='80' value='$abstract'></td></tr>\n");
 
       $create_user = htmlspecialchars($create_user, ENT_QUOTES);
 
@@ -834,10 +817,10 @@ switch ($op)
 
       if ($LOGIN_USER != "" && $LOGIN_LEVEL < AUTH_DEVEL)
 	print("<td><input type='hidden' name='CREATE_USER' "
-	     ."value='$create_user'/>$create_user</td></tr>\n");
+	     ."value='$create_user'>$create_user</td></tr>\n");
       else
 	print("<td><input type='text' name='CREATE_USER' "
-	     ."size='40' value='$create_user'/></td></tr>\n");
+	     ."size='40' value='$create_user'></td></tr>\n");
 
       $contents = htmlspecialchars($contents, ENT_QUOTES);
 
@@ -856,8 +839,8 @@ switch ($op)
 	   ."<tt>TT</tt>, <tt>U</tt>, <tt>UL</tt></p></td></tr>\n");
 
       print("<tr><th colspan='2'>"
-	   ."<input type='submit' value='Submit Article'/></th></tr>\n");
-      print("</table></p></form>\n");
+	   ."<input type='submit' value='Submit Article'></th></tr>\n");
+      print("</table></form>\n");
 
       html_footer();
       break;

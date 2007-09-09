@@ -67,10 +67,9 @@ else
   {
     case 'd' : // Delete comment
         html_header("Delete Comment #$id");
-	print("<h1>Delete Comment #$id</h1>\n");
 	print("<p>Click the button below to confirm the deletion.</p>\n"
 	     ."<form method='POST' action='$PHP_SELF?D$id+p$path'>"
-	     ."<center><input type='submit' value='Delete Comment'/></center>"
+	     ."<center><input type='submit' value='Delete Comment'></center>"
 	     ."</form>\n");
 	html_footer();
 	break;
@@ -193,15 +192,9 @@ else
 	else
 	{
           if ($id)
-	  {
             html_header("Edit Comment");
-	    print("<h1>Edit Comment</h1>\n");
-	  }
 	  else
-	  {
             html_header("Add Comment");
-	    print("<h1>Add Comment</h1>\n");
-	  }
 
           if ($REQUEST_METHOD == "POST")
 	  {
@@ -228,11 +221,11 @@ else
 	  if ($create_user == "")
 	    print("<tr><th align='right'>${hstart}Author:${hend}</th>"
 		 ."<td><input type='text' name='AUTHOR' value='$create_user' "
-		 ."size='40'/></td></tr>\n");
+		 ."size='40'></td></tr>\n");
 	  else
 	    print("<tr><th align='right'>Author:</th>"
 		 ."<td><input type='text' name='AUTHOR' value='$create_user' "
-		 ."size='40'/></td></tr>\n");
+		 ."size='40'></td></tr>\n");
 
           $contents = htmlspecialchars($contents);
 	  if ($contents == "")
@@ -255,7 +248,7 @@ else
 	  {
 	    print("<tr><th align='right' nowrap>File Path:</th>"
 		 ."<td><input type='text' name='FILE' value='$path' "
-		 ."size='40'/></td></tr>\n");
+		 ."size='40'></td></tr>\n");
 	    print("<tr><th align='right'>Score:</th>"
 		 ."<td><select name='STATUS'>");
             for ($i = 0; $i <= 5; $i ++)
@@ -267,14 +260,14 @@ else
           }
 	  else
 	  {
-	    print("<input type='hidden' name='FILE' value='$path'/>\n");
-	    print("<input type='hidden' name='STATUS' value='2'/>\n");
+	    print("<input type='hidden' name='FILE' value='$path'>\n");
+	    print("<input type='hidden' name='STATUS' value='2'>\n");
 	  }
 
           if ($id)
-            print("<tr><th></th><td><input type='submit' value='Update'/></td></tr>\n");
+            print("<tr><th></th><td><input type='submit' value='Update Comment'></td></tr>\n");
           else
-            print("<tr><th></th><td><input type='submit' value='Add'/></td></tr>\n");
+            print("<tr><th></th><td><input type='submit' value='Add Comment'></td></tr>\n");
 
           print("</table></center>\n"
 	       ."</form>\n");
@@ -286,7 +279,6 @@ else
     case 'L' : // List all comments...
     case 'l' : // List unapproved comments...
         html_header("Comments");
-	print("<h1>Comments</h1>\n");
 
         if ($LOGIN_LEVEL < AUTH_DEVEL)
 	{
@@ -299,13 +291,13 @@ else
 	  {
 	    $result = db_query("SELECT * FROM comment WHERE "
 	                      ."url LIKE '${listpath}%' ORDER BY id");
-	    print("<p>[&nbsp;<a href='$PHP_SELF?l'>Show Hidden Comments</a>&nbsp;]</p>\n");
+	    print("<p><a href='$PHP_SELF?l'>Show Hidden Comments</a></p>\n");
 	  }
           else
 	  {
 	    $result = db_query("SELECT * FROM comment WHERE status = 0 AND "
                               ."url LIKE '${listpath}%' ORDER BY id");
-	    print("<p>[&nbsp;<a href='$PHP_SELF?L'>Show All Comments</a>&nbsp;]</p>\n");
+	    print("<p><a href='$PHP_SELF?L'>Show All Comments</a></p>\n");
 	  }
         }
 
@@ -329,9 +321,9 @@ else
 
 	    print("<li><a href='$location'>$row[url]</a> "
 	         ." by $create_user on $create_date "
-	         ."[&nbsp;<a href='$PHP_SELF?e$row[id]+p$row[url]'>Edit</a> "
-	         ."| <a href='$PHP_SELF?d$row[id]+p$row[url]'>Delete</a>&nbsp;"
-		 ."]<br /><tt>$contents</tt></li>\n");
+	         ."<a href='$PHP_SELF?e$row[id]+p$row[url]'>Edit</a> "
+	         ."&middot; <a href='$PHP_SELF?d$row[id]+p$row[url]'>Delete</a>"
+		 ."<br><tt>$contents</tt></li>\n");
 	  }
 
           print("</ul>\n");

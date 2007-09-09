@@ -33,10 +33,15 @@ include_once "globals.php";
 include_once "auth.php";
 
 
-//
-// Search keywords...
-//
+// Check for a logout on the command-line...
+if ($argc == 1 && $argv[0] == "logout")
+{
+  auth_logout();
+  $argc = 0;
+}
 
+
+// Search keywords...
 $html_keywords = array(
   "documentation",
   "functions",
@@ -52,6 +57,19 @@ $html_keywords = array(
   "xml"
 );
 
+// Figure out the base path...
+$html_path = dirname($PHP_SELF);
+
+if (array_key_exists("PATH_INFO", $_SERVER))
+{
+  $i = -1;
+  while (($i = strpos($_SERVER["PATH_INFO"], "/", $i + 1)) !== FALSE)
+    $html_path = dirname($html_path);
+}
+
+if ($html_path == "/")
+  $html_path = "";
+
 
 //
 // 'html_header()' - Show the standard page header and navbar...
@@ -59,21 +77,13 @@ $html_keywords = array(
 
 function				// O - User information
 html_header($title = "",		// I - Additional document title
-            $path = "",			// I - Relative path to root
 	    $refresh = "")		// I - Refresh URL
 {
-  global $html_keywords, $argc, $argv, $PHP_SELF, $LOGIN_USER;
+  global $html_keywords, $html_path, $_GET, $LOGIN_USER, $PHP_SELF, $_SERVER;
 
-
-  // Check for a logout on the command-line...
-  if ($argc == 1 && $argv[0] == "logout")
-  {
-    auth_logout();
-    $argc = 0;
-  }
 
   // Common stuff...
-  header("Cache-Control: no-cache");
+//  header("Cache-Control: no-cache");
 
   print("<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.0 Transitional//EN' "
        ."'http://www.w3.org/TR/REC-html40/loose.dtd'>\n");
@@ -89,9 +99,9 @@ html_header($title = "",		// I - Additional document title
   print("  <title>$html_title Mini-XML</title>\n"
        ."  <meta http-equiv='Pragma' content='no-cache'>\n"
        ."  <meta http-equiv='Content-Type' content='text/html; "
-       ."charset=iso-8859-1'>\n"
-       ."  <link rel='stylesheet' type='text/css' href='${path}style.css'>\n"
-       ."  <link rel='shortcut icon' href='${path}favicon.ico' "
+       ."charset=utf-8'>\n"
+       ."  <link rel='stylesheet' type='text/css' href='$html_path/style.css'>\n"
+       ."  <link rel='shortcut icon' href='$html_path/favicon.ico' "
        ."type='image/x-icon'>\n");
 
   // If refresh URL is specified, add the META tag...
@@ -113,36 +123,60 @@ html_header($title = "",		// I - Additional document title
        ."<body>\n");
 
   // Standard navigation stuff...
-  print("<table width='100%' style='height: 100%' border='0' cellspacing='0' "
-       ."cellpadding='0' summary=''>\n"
-       ."<tr class='header' style='height: 40'>"
-       ."<td valign='top'><img src='${path}images/top-left.gif' width='15' "
-       ."height='15' alt=''></td>"
-       ."<td><img src='${path}images/logo.gif' width='32' height='32' "
-       ."alt='Mini-XML' align='middle'>&nbsp;&nbsp;&nbsp;</td>"
-       ."<td width='100%'>[&nbsp;<a href='${path}index.php'>Home</a> | "
-       ."<a href='${path}articles.php'>Articles</a> | "
-       ."<a href='${path}str.php'>Bugs &amp; Features</a> | "
-       ."<a href='${path}documentation.php'>Documentation</a> | "
-       ."<a href='${path}software.php'>Download</a> | "
-       ."<a href='${path}links.php'>Links</a>&nbsp;]</td>"
-       ."<td align='right'>[&nbsp;");
+  if (array_key_exists("Q", $_GET))
+    $q = htmlspecialchars($_GET["Q"], ENT_QUOTES);
+  else
+    $q = "";
 
+  if (stripos($_SERVER["HTTP_USER_AGENT"], "webkit") !== FALSE)
+  {
+    // Use Safari search box...
+    $search = "<input type='search' name='Q' value='$q' size='25' "
+	     ."autosave='com.easysw.mxml.search' results='5' "
+             ."placeholder='Search'>";
+  }
+  else
+  {
+    // Use standard HTML text field...
+    $search = "<input type='text' name='Q' value='$q' size='15' "
+             ."title='Search'><input type='submit' value='Search'>";
+  }
+
+  $classes = array("unsel", "unsel", "unsel", "unsel", "unsel");
+  if (strpos($PHP_SELF, "/account.php") !== FALSE ||
+      strpos($PHP_SELF, "/login.php") !== FALSE)
+    $classes[0] = "sel";
+  else if (strpos($PHP_SELF, "/str.php") !== FALSE)
+    $classes[2] = "sel";
+  else if (strpos($PHP_SELF, "/documentation.php") !== FALSE)
+    $classes[3] = "sel";
+  else if (strpos($PHP_SELF, "/software.php") !== FALSE)
+    $classes[4] = "sel";
+  else
+    $classes[1] = "sel";
+
+  print("<table width='100%' style='height: 100%;' border='0' cellspacing='0' "
+       ."cellpadding='0' summary=''>\n"
+       ."<tr>"
+       ."<td class='unsel'><img src='$html_path/images/logo.gif' width='32' "
+       ."height='32' alt=''></td>"
+       ."<td class='$classes[0]'>");
 
   if ($LOGIN_USER)
-    print("<a href='${path}account.php'>$LOGIN_USER</a>");
+    print("<a href='$html_path/account.php'>$LOGIN_USER</a>");
   else
-    print("<a href='${path}login.php'>Login</a>");
+    print("<a href='$html_path/login.php'>Login</a>");
 
-  print("&nbsp;]</td>"
-       ."<td valign='top'><img src='${path}images/top-right.gif' width='15' "
-       ."height='15' alt=''></td>"
-       ."</tr>\n");
-
-  print("<tr class='page' style='height: 100%'><td></td>"
-       ."<td colspan='3' valign='top'>"
-       ."<table width='100%' style='height: 100%' border='0' cellpadding='5' "
-       ."cellspacing='0' summary=''><tr><td valign='top'>");
+  print("</td>"
+       ."<td class='$classes[1]'><a href='$html_path/index.php'>Home</a></td>"
+       ."<td class='$classes[2]'><a href='$html_path/str.php'>Bugs&nbsp;&amp;&nbsp;Features</a></td>"
+       ."<td class='$classes[3]'><a href='$html_path/documentation.php'>Documentation</a></td>"
+       ."<td class='$classes[4]'><a href='$html_path/software.php'>Download</a></td>"
+       ."<td class='unsel' align='right' width='100%'>"
+       ."<form action='$html_path/documentation.php' method='GET'>"
+       ."$search</form></td>"
+       ."</tr>\n"
+       ."<tr><td class='page' colspan='7'>");
 }
 
 
@@ -151,25 +185,18 @@ html_header($title = "",		// I - Additional document title
 //
 
 function
-html_footer($path = "")			// I - Relative path to root
+html_footer()
 {
-  print("</td></tr></table></td><td></td></tr>\n");
-  print("<tr class='page'><td colspan='5'>&nbsp;</td></tr>\n");
-  print("<tr class='header'>"
-       ."<td valign='bottom'><img src='${path}images/bottom-left.gif' "
-       ."width='15' height='15' alt=''></td>"
-       ."<td colspan='3'><small> <br>"
+  print("</td></tr>\n"
+       ."<td class='footer' colspan='7'>"
        ."Copyright 2003-2007 by Michael Sweet. This library is free "
        ."software; you can redistribute it and/or modify it "
        ."under the terms of the GNU Library General Public "
        ."License as published by the Free Software Foundation; "
        ."either version 2 of the License, or (at your option) "
-       ."any later version.<br>&nbsp;</small></td>"
-       ."<td valign='bottom'><img src='${path}images/bottom-right.gif' "
-       ."width='15' height='15' alt=''></td>"
-       ."</tr>\n");
-  print("</table>\n");
-  print("</body>\n"
+       ."any later version.</td></tr>\n"
+       ."</table>\n"
+       ."</body>\n"
        ."</html>\n");
 }
 
@@ -179,16 +206,16 @@ html_footer($path = "")			// I - Relative path to root
 //
 
 function
-html_start_links($center = 0)		// I - 1 for centered, 0 for in-line
+html_start_links($center = FALSE)	// I - Center links?
 {
   global $html_firstlink;
 
   $html_firstlink = 1;
 
   if ($center)
-    print("<p class='center' align='center'>[&nbsp;");
+    print("<p class='links'>");
   else
-    print("<p>[&nbsp;");
+    print("<p>");
 }
 
 
@@ -199,7 +226,7 @@ html_start_links($center = 0)		// I - 1 for centered, 0 for in-line
 function
 html_end_links()
 {
-  print("&nbsp;]</p>\n");
+  print("</p>\n");
 }
 
 
@@ -216,7 +243,7 @@ html_link($text,			// I - Text for hyperlink
   if ($html_firstlink)
     $html_firstlink = 0;
   else
-    print(" | ");
+    print(" &middot; ");
 
   $safetext = str_replace(" ", "&nbsp;", $text);
 
@@ -246,21 +273,18 @@ html_start_table($headings,		// I - Array of heading strings
                  $width = "100%",	// I - Width of table
 		 $height = "")		// I - Height of table
 {
-  global $html_row, $html_cols;
+  global $html_row;
 
 
-  print("<br><table");
+  print("<table class='standard'");
   if ($width != "")
     print(" width='$width'");
   if ($height != "")
     print(" style='height: $height'");
-  print(" border='0' cellpadding='0' cellspacing='0' summary=''>"
-       ."<tr class='header'><th align='left' valign='top'>"
-       ."<img src='images/hdr-top-left.gif' width='16' height='16' "
-       ."alt=''></th>");
+  print(" summary=''>"
+       ."<tr class='header'>");
 
-  $html_row  = 0;
-  $html_cols = count($headings);
+  $html_row = 0;
 
   reset($headings);
   for ($i = 0; $i < count($headings); $i ++)
@@ -294,12 +318,7 @@ html_start_table($headings,		// I - Array of heading strings
         $s_align = "align=$data[1]";
 
       if ($data[2] > 1)
-      {
         $s_colspan = "colspan=$data[2]";
-
-        if ($data[2] > 1)
-          $html_cols += $data[2] - 1;
-      }
 
       if ($data[3] > 0)
         $s_width = "width=$data[3]%";
@@ -313,9 +332,7 @@ html_start_table($headings,		// I - Array of heading strings
       print("<th $s_colspan $s_width>&nbsp;</th>");
   }
 
-  print("<th align='right' valign='top'>"
-       ."<img src='images/hdr-top-right.gif' "
-       ."width='16' height='16' alt=''></th></tr>\n");
+  print("</tr>\n");
 }
 
 
@@ -326,15 +343,7 @@ html_start_table($headings,		// I - Array of heading strings
 function
 html_end_table()
 {
-  global $html_cols;
-
-  print("<tr class='header'><th align='left' valign='bottom'>"
-       ."<img src='images/hdr-bottom-left.gif' width='16' height='16' "
-       ."alt=''></th>"
-       ."<th colspan='$html_cols'>&nbsp;</th>"
-       ."<th align='right' valign='bottom'><img src='images/hdr-bottom-right.gif' "
-       ."width='16' height='16' alt=''></th></tr>\n"
-       ."</table>\n");
+  print("</table>\n");
 }
 
 
@@ -349,8 +358,10 @@ html_start_row($classname = "")		// I - HTML class to use
 
   if ($classname == "")
     $classname = "data$html_row";
+  else
+    $html_row = 1 - $html_row;
 
-  print("<tr class='$classname'><td>&nbsp;</td>");
+  print("<tr class='$classname'>");
 }
 
 
@@ -365,7 +376,7 @@ html_end_row()
 
   $html_row = 1 - $html_row;
 
-  print("<td>&nbsp;</td></tr>\n");
+  print("</tr>\n");
 }
 
 
@@ -387,7 +398,7 @@ html_search_words($search = "")		// I - Search string
       case "\"" :
           if ($temp != "")
 	  {
-	    $words[sizeof($words)] = db_escape(strtolower($temp));
+	    $words[sizeof($words)] = strtolower($temp);
 	    $temp = "";
 	  }
 
@@ -399,7 +410,7 @@ html_search_words($search = "")		// I - Search string
 	    $i ++;
 	  }
 
-	  $words[sizeof($words)] = db_escape(strtolower($temp));
+	  $words[sizeof($words)] = strtolower($temp);
 	  $temp = "";
           break;
 
@@ -408,7 +419,7 @@ html_search_words($search = "")		// I - Search string
       case "\n" :
           if ($temp != "")
 	  {
-	    $words[sizeof($words)] = db_escape(strtolower($temp));
+	    $words[sizeof($words)] = strtolower($temp);
 	    $temp = "";
 	  }
 	  break;
@@ -420,7 +431,7 @@ html_search_words($search = "")		// I - Search string
   }
 
   if ($temp != "")
-    $words[sizeof($words)] = db_escape(strtolower($temp));
+    $words[sizeof($words)] = strtolower($temp);
 
   return ($words);
 }

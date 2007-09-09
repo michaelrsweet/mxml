@@ -58,7 +58,7 @@ else
 
 // Show the standard header...
 if ($site != "" && $file != "")
-  html_header("Download", "", "$site/$file");
+  html_header("Download", "$site/$file");
 else
   html_header("Download");
 
@@ -82,28 +82,26 @@ html_link("Subversion", "$PHP_SELF#SVN");
 
 html_end_links();
 
-print("<h1>Download</h1>\n");
-
 // Show files or sites...
 if ($file != "")
 {
+  print("<h1>Download</h1>\n");
+
   if ($site != "")
     print("<p>Your download should begin shortly. If not, please "
          ."<a href='$site/$file'>click here</a> to download the file "
-	 ."from the current mirror.</p>\n"
-	 ."<h2>Change Mirror Site:</h2>\n");
+	 ."from the current mirror.</p>\n");
   else
-    print("<p>Please select a mirror site below to begin the download.</p>\n"
-         ."<h2>Select Mirror Site:</h2>\n");
+    print("<p>Please select a mirror site below to begin the download.</p>\n");
 
   print("<form action='$PHP_SELF' method='GET' name='download'>\n"
        ."<input type='hidden' name='FILE' value='"
-       . htmlspecialchars($file, ENT_QUOTES) . "'/>\n"
+       . htmlspecialchars($file, ENT_QUOTES) . "'>\n"
        ."<input type='hidden' name='VERSION' value='"
-       . htmlspecialchars($version, ENT_QUOTES) . "'/>\n");
+       . htmlspecialchars($version, ENT_QUOTES) . "'>\n");
 
   if ($site == "")
-    print("<input type='radio' name='SITE' value='' checked/>None<br />\n");
+    print("<input type='radio' name='SITE' value='' checked>None<br>\n");
 
   reset($sitelist);
   while (list($key, $val) = each($sitelist))
@@ -112,20 +110,20 @@ if ($file != "")
          ."onClick='document.download.submit();'");
     if ($site == $key)
       print("  checked");
-    print("/>$val<br />\n");
+    print(">$val<br>\n");
   }
 
   if ($site != "")
-    print("<input type='submit' value='Change Mirror Site'/>\n");
+    print("<p><input type='submit' value='Change Mirror Site'>\n");
   else
-    print("<input type='submit' value='Select Mirror Site'/>\n");
+    print("<p><input type='submit' value='Select Mirror Site'>\n");
 
   print("</form>\n");
 }
 else
 {
   // Show files...
-  print("<h2>Releases</h2>\n");
+  print("<h1>Releases</h1>\n");
 
   html_start_table(array("Version", "Filename", "Size", "MD5 Sum"));
 
@@ -139,8 +137,6 @@ else
     $fversion = $data[1];
     $filename = $data[2];
     $basename = basename($filename);
-
-    html_start_row();
 
     if ($fversion == $version)
     {
@@ -157,18 +153,25 @@ else
     {
       if ($curversion != "")
       {
-	print("<td colspan='4'></td>");
+        html_start_row("header");
+	print("<th colspan='4'></th>");
 	html_end_row();
-	html_start_row();
       }
 
       $curversion = $fversion;
+      html_start_row();
       print("$cs<a name='$fversion'>$fversion</a>$ce");
     }
     else
+    {
+      html_start_row();
       print("$cs$ce");
+    }
 
-    $kbytes = (int)((filesize("/home/ftp.easysw.com/pub/$filename") + 1023) / 1024);
+    if (file_exists("/home/ftp.easysw.com/pub/$filename"))
+      $kbytes = (int)((filesize("/home/ftp.easysw.com/pub/$filename") + 1023) / 1024);
+    else
+      $kbytes = "???";
 
     print("$cs<a href='$PHP_SELF?VERSION=$version&amp;FILE=$filename'>"
          ."<tt>$basename</tt></a>$ce"
@@ -180,7 +183,7 @@ else
 
   html_end_table();
 
-  print("<h2><a name='SVN'>Subversion Access</a></h2>\n"
+  print("<h1><a name='SVN'>Subversion Access</a></h1>\n"
        ."<p>The $PROJECT_NAME software is available via Subversion "
        ."using the following URL:</p>\n"
        ."<pre>\n"

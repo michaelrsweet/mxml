@@ -3,6 +3,8 @@ CHANGES - 2007-09-09
 
 CHANGES IN Mini-XML 2.3.1
 
+	- mxmlLoad*() incorrectly allowed attributes without values
+	  (STR #47)
 	- Fixed Visual C++ build problems (STR #49)
 	- mxmlLoad*() did not return NULL when an element contained
 	  an error (STR #46)

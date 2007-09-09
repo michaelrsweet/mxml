@@ -2255,7 +2255,7 @@ mxml_parse_element(
       {
         mxml_error("Missing value for attribute '%s' in element %s!",
 	           name, node->value.element.name);
-        return (EOF);
+        goto error;
       }
 
       if (ch == '\'' || ch == '\"')
@@ -2315,11 +2315,9 @@ mxml_parse_element(
     }
     else
     {
-     /*
-      * Set the attribute with a NULL value...
-      */
-
-      mxmlElementSetAttr(node, name, NULL);
+      mxml_error("Missing value for attribute '%s' in element %s!",
+	         name, node->value.element.name);
+      goto error;
     }
 
    /*

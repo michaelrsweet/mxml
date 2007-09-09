@@ -136,7 +136,7 @@ static int		mxml_get_entity(mxml_node_t *parent, void *p,
 static inline int	mxml_isspace(int ch)
 			{
 			  return (ch == ' ' || ch == '\t' || ch == '\r' ||
-			          ch == '\n' || ch == '\f' || ch == '\v');
+			          ch == '\n');
 			}
 static mxml_node_t	*mxml_load_data(mxml_node_t *top, void *p,
 			                mxml_load_cb_t cb,

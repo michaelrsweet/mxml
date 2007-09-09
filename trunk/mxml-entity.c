@@ -4,7 +4,7 @@
  * Character entity support code for Mini-XML, a small XML-like
  * file parsing library.
  *
- * Copyright 2003-2005 by Michael Sweet.
+ * Copyright 2003-2007 by Michael Sweet.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -245,6 +245,7 @@ default_callback(const char *name)	/* I - Entity name */
     { "amp",		'&' },
     { "and",		8743 },
     { "ang",		8736 },
+    { "apos",           '\'' },
     { "aring",		229 },
     { "asymp",		8776 },
     { "atilde",		227 },

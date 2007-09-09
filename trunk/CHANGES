@@ -3,6 +3,7 @@ CHANGES - 2007-09-09
 
 CHANGES IN Mini-XML 2.3.1
 
+	- Added support for the apos character entity (STR #54)
 	- Fixed whitespace detection with Unicode characters (STR
 	  #48)
 	- mxmlWalkNext() and mxmlWalkPrev() did not work correctly

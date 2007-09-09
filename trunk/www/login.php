@@ -85,8 +85,7 @@ if ($REQUEST_METHOD == "POST")
       html_link("Enable Account", "$PHP_SELF?E");
       html_end_links();
 
-      print("<h1>Login Registration</h1>\n"
-           ."Thank you for requesting an account.  You should receive an "
+      print("Thank you for requesting an account.  You should receive an "
 	   ."email from $PROJECT_EMAIL shortly with instructions on "
 	   ."completing your registration.</p>\n");
       html_footer();
@@ -148,13 +147,12 @@ else if ($argc == 0 || $argv[0] != "E")
   // Header + start of table...
   html_header("Login");
 
-  print("<h1>Login</h1>\n"
-       ."<p><table width='100%' height='100%' border='0' cellpadding='0' "
+  print("<table width='100%' height='100%' border='0' cellpadding='0' "
        ."cellspacing='0'>\n"
        ."<tr><td valign='top'>\n");
 
   // Existing users...
-  print("<h2>Current Users</h2>\n");
+  print("<h1>Current Users</h1>\n");
 
   if ($argc == 0 && $usererror != "")
     print("<p><b>$usererror</b></p>\n");
@@ -162,29 +160,29 @@ else if ($argc == 0 || $argv[0] != "E")
   print("<p>If you are a registered $PROJECT_NAME developer, please enter "
        ."your username and password to login:</p>\n"
        ."<form method='POST' action='$PHP_SELF'>"
-       ."<p><table width='100%'>\n"
+       ."<table width='100%'>\n"
        ."<tr><th align='right'>Username:</th>"
        ."<td><input type='text' name='USERNAME' size='16' maxsize='255'");
 
   if (array_key_exists("USERNAME", $_POST))
     print(" value='" . htmlspecialchars($_POST["USERNAME"], ENT_QUOTES) . "'");
 
-  print("/></td></tr>\n"
+  print("></td></tr>\n"
        ."<tr><th align='right'>Password:</th>"
-       ."<td><input type='password' name='PASSWORD' size='16' maxsize='255'/>"
+       ."<td><input type='password' name='PASSWORD' size='16' maxsize='255'>"
        ."</td></tr>\n"
-       ."<tr><th></th><td><input type='submit' value='Login'/></td></tr>\n"
-       ."</table></p></form>\n");
+       ."<tr><th></th><td><input type='submit' value='Login'></td></tr>\n"
+       ."</table></form>\n");
 
   // Separator...
   print("</td>"
        ."<td>&nbsp;&nbsp;&nbsp;&nbsp;"
-       ."<img src='images/black.gif' width='1' height='80%' alt=''/>"
+       ."<img src='images/black.gif' width='1' height='80%' alt=''>"
        ."&nbsp;&nbsp;&nbsp;&nbsp;</td>"
        ."<td valign='top'>\n");
 
   // New users...
-  print("<h2>New Users</h2>\n");
+  print("<h1>New Users</h1>\n");
 
   if ($argc == 1 && $usererror != "")
     print("<p><b>$usererror</b></p>\n");
@@ -196,33 +194,31 @@ else if ($argc == 0 || $argv[0] != "E")
        ."in the form below to register. An email will be sent to the "
        ."address you supply to confirm the registration:</p>\n"
        ."<form method='POST' action='$PHP_SELF?A'>"
-       ."<p><table width='100%'>\n"
+       ."<table width='100%'>\n"
        ."<tr><th align='right'>Username:</th>"
        ."<td><input type='text' name='USERNAME' size='16' maxsize='255' "
-       ." value='$username'/></td></tr>\n"
+       ." value='$username'></td></tr>\n"
        ."<tr><th align='right'>EMail:</th>"
        ."<td><input type='text' name='EMAIL' size='16' maxsize='255' "
-       ." value='$email'/></td></tr>\n"
+       ." value='$email'></td></tr>\n"
        ."<tr><th align='right'>Password:</th>"
-       ."<td><input type='password' name='PASSWORD' size='16' maxsize='255'/>"
+       ."<td><input type='password' name='PASSWORD' size='16' maxsize='255'>"
        ."</td></tr>\n"
        ."<tr><th align='right'>Password Again:</th>"
-       ."<td><input type='password' name='PASSWORD2' size='16' maxsize='255'/>"
+       ."<td><input type='password' name='PASSWORD2' size='16' maxsize='255'>"
        ."</td></tr>\n"
-       ."<tr><th></th><td><input type='submit' value='Request Account'/></td></tr>\n"
-       ."</table></p></form>\n");
+       ."<tr><th></th><td><input type='submit' value='Request Account'></td></tr>\n"
+       ."</table></form>\n");
 
   // End table
   print("</td></tr>\n"
-       ."</table></p>\n");
+       ."</table>\n");
 
   html_footer();
 }
 else
 {
   html_header("Enable Account");
-
-  print("<h1>Enable Account</h1>\n");
 
   if ($usererror != NULL)
     print("<p><b>$usererror</b></p>\n");
@@ -236,15 +232,15 @@ else
        ."<center><table width='100%'>\n"
        ."<tr><th align='right'>Registration Code:</th>"
        ."<td><input type='text' name='REGISTER' size='32' maxsize='32' "
-       ."value = '$register'/>"
+       ."value = '$register'>"
        ."</td></tr>\n"
        ."<tr><th align='right'>Username:</th>"
        ."<td><input type='text' name='USERNAME' size='16' maxsize='255' "
-       ."value='$username'/></td></tr>\n"
+       ."value='$username'></td></tr>\n"
        ."<tr><th align='right'>Password:</th>"
-       ."<td><input type='password' name='PASSWORD' size='16' maxsize='255'/>"
+       ."<td><input type='password' name='PASSWORD' size='16' maxsize='255'>"
        ."</td></tr>\n"
-       ."<tr><th></th><td><input type='submit' value='Enable Account'/></td></tr>\n"
+       ."<tr><th></th><td><input type='submit' value='Enable Account'></td></tr>\n"
        ."</table></center></form>\n");
 
   html_footer();

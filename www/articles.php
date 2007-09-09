@@ -382,6 +382,8 @@ switch ($op)
 	    }
 	    else
 	    {
+	      $keyword = db_escape($keyword);
+
               if ($keyword == (int)$keyword)
 	        $idsearch = " OR id = " . (int)$keyword;
               else

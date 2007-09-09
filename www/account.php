@@ -1,6 +1,6 @@
 <?php
 //
-// "$Id: account.php,v 1.10 2004/05/20 21:37:57 mike Exp $"
+// "$Id$"
 //
 // Account management page...
 //
@@ -45,8 +45,6 @@ account_header($title)
     html_link("New/Pending", "$PHP_SELF?L");
   html_link("Logout", "$PHP_SELF?X");
   html_end_links();
-
-  print("<h1>$title</h1>\n");
 }
 
 
@@ -157,17 +155,17 @@ switch ($op)
 	  $email = htmlspecialchars($email, ENT_QUOTES);
 
 	  print("<form method='POST' action='$PHP_SELF?Aadd'>"
-	       ."<p><table width='100%'>\n"
+	       ."<table width='100%'>\n"
 	       ."<tr><th align='right'>Published:</th>"
 	       ."<td>");
           select_is_published($is_published);
 	  print("</td></tr>\n"
 	       ."<tr><th align='right'>Username:</th>"
 	       ."<td><input type='text' name='NAME' size='40' "
-	       ."maxsize='255' value='$name'/></td></tr>\n"
+	       ."maxsize='255' value='$name'></td></tr>\n"
 	       ."<tr><th align='right'>EMail:</th>"
 	       ."<td><input type='text' name='EMAIL' size='40' "
-	       ."maxsize='255' value='$email'/></td></tr>\n"
+	       ."maxsize='255' value='$email'></td></tr>\n"
 	       ."<tr><th align='right'>Access Level:</th>"
 	       ."<td><select name='LEVEL'>");
 
@@ -183,13 +181,13 @@ switch ($op)
 	  print("</select></td></tr>\n"
 	       ."<tr><th align='right'>Password:</th>"
 	       ."<td><input type='password' name='PASSWORD' size='16' "
-	       ."maxsize='255'/></td></tr>\n"
+	       ."maxsize='255'></td></tr>\n"
 	       ."<tr><th align='right'>Password Again:</th>"
 	       ."<td><input type='password' name='PASSWORD2' size='16' "
-	       ."maxsize='255'/></td></tr>\n"
-	       ."<tr><th></th><td><input type='submit' value='Add Account'/>"
+	       ."maxsize='255'></td></tr>\n"
+	       ."<tr><th></th><td><input type='submit' value='Add Account'>"
 	       ."</td></tr>\n"
-               ."</table></p></form>\n");
+               ."</table></form>\n");
 	}
 
 	html_footer();
@@ -319,7 +317,7 @@ switch ($op)
 	  $email = htmlspecialchars($email, ENT_QUOTES);
 
 	  print("<form method='POST' action='$PHP_SELF?Amodify+$name'>"
-	       ."<p><table width='100%'>\n"
+	       ."<table width='100%'>\n"
 	       ."<tr><th align='right'>Published:</th>"
 	       ."<td>");
           select_is_published($is_published);
@@ -328,12 +326,12 @@ switch ($op)
 	       ."<td>$name</td></tr>\n"
 	       ."<tr><th align='right'>EMail:</th>"
 	       ."<td><input type='text' name='EMAIL' size='40' "
-	       ."maxsize='255' value='$email'/></td></tr>\n"
+	       ."maxsize='255' value='$email'></td></tr>\n"
 	       ."<tr><th align='right'>Access Level:</th>"
 	       ."<td>");
 
           if ($LOGIN_USER == $name)
-	    print("<input type='hidden' name='LEVEL' value='$level'/>"
+	    print("<input type='hidden' name='LEVEL' value='$level'>"
 	         . $levels[$level]);
 	  else
 	  {
@@ -354,13 +352,13 @@ switch ($op)
 	  print("</td></tr>\n"
 	       ."<tr><th align='right'>Password:</th>"
 	       ."<td><input type='password' name='PASSWORD' size='16' "
-	       ."maxsize='255'/></td></tr>\n"
+	       ."maxsize='255'></td></tr>\n"
 	       ."<tr><th align='right'>Password Again:</th>"
 	       ."<td><input type='password' name='PASSWORD2' size='16' "
-	       ."maxsize='255'/></td></tr>\n"
-	       ."<tr><th></th><td><input type='submit' value='Modify Account'/>"
+	       ."maxsize='255'></td></tr>\n"
+	       ."<tr><th></th><td><input type='submit' value='Modify Account'>"
 	       ."</td></tr>\n"
-               ."</table></p></form>\n");
+               ."</table></form>\n");
 	}
 
 	html_footer();
@@ -384,10 +382,10 @@ switch ($op)
 
           if ($row["is_published"] == 0)
 	    $email .= " <img src='images/private.gif' width='16' height='16' "
-	             ."border='0' align='middle' alt='Private'/>";
+	             ."border='0' align='middle' alt='Private'>";
 
 	  html_start_row();
-	  print("<td nowrap><input type='checkbox' name='ID_$row[id]'/>"
+	  print("<td nowrap><input type='checkbox' name='ID_$row[id]'>"
 	       ."<a href='$PHP_SELF?Amodify+$name'>$name</a></td>"
 	       ."<td align='center'><a href='$PHP_SELF?Amodify+$name'>"
 	       ."$email</a></td>"
@@ -396,15 +394,13 @@ switch ($op)
 	  html_end_row();
 	}
 
-        html_start_row("header");
-	print("<td align='center' colspan='3'>&nbsp;<br /><select name='OP'>"
+	html_end_table();
+
+	print("<p align='center'><select name='OP'>"
 	     ."<option value='disable'>Disable</option>"
 	     ."<option value='enable'>Enable</option>"
 	     ."</select>"
-	     ."<input type='submit' value='Checked Accounts'/></td>");
-	html_end_row();
-
-	html_end_table();
+	     ."<input type='submit' value='Checked Accounts'></p>");
 
 	html_start_links(1);
 	html_link("Add Account", "$PHP_SELF?Aadd");
@@ -443,7 +439,7 @@ switch ($op)
 	  $id       = $row['id'];
           $title    = htmlspecialchars($row['title'], ENT_QUOTES) .
 	              " <img src='images/private.gif' width='16' height='16' "
-	             ."border='0' align='middle' alt='Private'/>";
+	             ."border='0' align='middle' alt='Private'>";
           $abstract = htmlspecialchars($row['abstract'], ENT_QUOTES);
 	  $date     = date("M d, Y", $row['modify_date']);
 
@@ -488,7 +484,7 @@ switch ($op)
           $title    = htmlspecialchars($row['name'], ENT_QUOTES) . " " .
 	              htmlspecialchars($row['version'], ENT_QUOTES) .
 	              " <img src='images/private.gif' width='16' height='16' "
-	             ."border='0' align='middle' alt='Private'/>";
+	             ."border='0' align='middle' alt='Private'>";
 	  $date     = date("M d, Y", $row['modify_date']);
 
           if ($row["is_category"])
@@ -537,7 +533,7 @@ switch ($op)
 
           if ($row['is_published'] == 0)
 	    $summabbr .= " <img src='images/private.gif' width='16' height='16' "
-	                ."border='0' align='middle' alt='Private'/>";
+	                ."border='0' align='middle' alt='Private'>";
 
           html_start_row();
 
@@ -580,16 +576,16 @@ switch ($op)
 
         while ($row = db_next($result))
 	{
-	  $create_date  = date("M d, Y", $row['date']);
+	  $create_date  = date("M d, Y", $row['create_date']);
 	  $create_user  = sanitize_email($row['create_user']);
 	  $contents     = sanitize_text($row['contents']);
           $location     = str_replace("_", "?", $row['url']);
 
 	  print("<li><a href='$location'>$row[url]</a> "
 	       ." by $create_user on $create_date "
-	       ."[&nbsp;<a href='comment.php?e$row[id]+p$row[url]'>Edit</a> "
-	       ."| <a href='comment.php?d$row[id]+p$row[url]'>Delete</a>&nbsp;"
-	       ."]<br /><tt>$contents</tt></li>\n");
+	       ."<a href='comment.php?e$row[id]+p$row[url]'>Edit</a> "
+	       ."&middot; <a href='comment.php?d$row[id]+p$row[url]'>Delete</a>"
+	       ."<br><tt>$contents</tt></li>\n");
 	}
 
         print("</ul>\n");
@@ -615,16 +611,16 @@ switch ($op)
       else
       {
 	print("<form method='POST' action='$PHP_SELF?P'>"
-	     ."<p><table width='100%'>\n"
+	     ."<table width='100%'>\n"
 	     ."<tr><th align='right'>Password:</th>"
 	     ."<td><input type='password' name='PASSWORD' size='16' "
-	     ."maxsize='255'/></td></tr>\n"
+	     ."maxsize='255'></td></tr>\n"
 	     ."<tr><th align='right'>Password Again:</th>"
 	     ."<td><input type='password' name='PASSWORD2' size='16' "
-	     ."maxsize='255'/></td></tr>\n"
-	     ."<tr><th></th><td><input type='submit' value='Change Password'/>"
+	     ."maxsize='255'></td></tr>\n"
+	     ."<tr><th></th><td><input type='submit' value='Change Password'>"
 	     ."</td></tr>\n"
-             ."</table></p></form>\n");
+             ."</table></form>\n");
       }
 
       html_footer();
@@ -652,6 +648,6 @@ switch ($op)
 
 
 //
-// End of "$Id: account.php,v 1.10 2004/05/20 21:37:57 mike Exp $".
+// End of "$Id$".
 //
 ?>

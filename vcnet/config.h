@@ -42,7 +42,7 @@
  * Version number...
  */
 
-#define MXML_VERSION "Mini-XML v2.3"
+#define MXML_VERSION "Mini-XML v2.3.1"
 
 
 /*
@@ -65,11 +65,11 @@
  */
 
 #  ifndef HAVE_STRDUP
-extern char	*mxml_strdup(const char *);
-#    define strdup mxml_strdup
+extern char	*_mxml_strdup(const char *);
+#    define strdup _mxml_strdup
 #  endif /* !HAVE_STRDUP */
 
-extern char	*mxml_strdupf(const char *, va_list);
+extern char	*_mxml_strdupf(const char *, va_list);
 
 #  ifndef HAVE_SNPRINTF
 extern int	_mxml_snprintf(char *, size_t, const char *, ...);
@@ -77,8 +77,8 @@ extern int	_mxml_snprintf(char *, size_t, const char *, ...);
 #  endif /* !HAVE_SNPRINTF */
 
 #  ifndef HAVE_VSNPRINTF
-extern int	mxml_vsnprintf(char *, size_t, const char *, va_list);
-#    define vsnprintf mxml_vsnprintf
+extern int	_mxml_vsnprintf(char *, size_t, const char *, va_list);
+#    define vsnprintf _mxml_vsnprintf
 #  endif /* !HAVE_VSNPRINTF */
 
 /*

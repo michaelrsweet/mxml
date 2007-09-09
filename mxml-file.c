@@ -1986,7 +1986,10 @@ mxml_load_data(
 	}
 
         if (mxml_isspace(ch))
-          ch = mxml_parse_element(node, p, &encoding, getc_cb);
+        {
+	  if ((ch = mxml_parse_element(node, p, &encoding, getc_cb)) == EOF)
+	    goto error;
+        }
         else if (ch == '/')
 	{
 	  if ((ch = (*getc_cb)(p, &encoding)) != '>')

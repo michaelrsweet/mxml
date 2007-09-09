@@ -23,7 +23,7 @@ htmldoc --verbose --batch mxml.book --no-title -f mxml.html
 
 rm -rf mxml.d
 mkdir mxml.d
-htmldoc --verbose --batch mxml.book --no-title -t htmlsep -d mxml.d
+htmldoc --verbose --batch mxml.book --no-title -t html -d mxml.d
 
 #
 # End of "$Id$".

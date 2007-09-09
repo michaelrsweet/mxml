@@ -4,7 +4,7 @@
  * Search/navigation functions for Mini-XML, a small XML-like file
  * parsing library.
  *
- * Copyright 2003-2005 by Michael Sweet.
+ * Copyright 2003-2007 by Michael Sweet.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -135,6 +135,8 @@ mxmlWalkNext(mxml_node_t *node,		/* I - Current node */
     return (NULL);
   else if (node->child && descend)
     return (node->child);
+  else if (node == top)
+    return (NULL);
   else if (node->next)
     return (node->next);
   else if (node->parent && node->parent != top)
@@ -167,7 +169,7 @@ mxmlWalkPrev(mxml_node_t *node,		/* I - Current node */
              mxml_node_t *top,		/* I - Top node */
              int         descend)	/* I - Descend into tree - MXML_DESCEND, MXML_NO_DESCEND, or MXML_DESCEND_FIRST */
 {
-  if (!node)
+  if (!node || node == top)
     return (NULL);
   else if (node->prev)
   {

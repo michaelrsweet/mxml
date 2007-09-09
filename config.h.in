@@ -35,6 +35,13 @@
 
 
 /*
+ * Inline function support...
+ */
+
+#define inline
+
+
+/*
  * Do we have the snprintf() and vsnprintf() functions?
  */
 

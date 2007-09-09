@@ -3,6 +3,8 @@ CHANGES - 2007-09-09
 
 CHANGES IN Mini-XML 2.3.1
 
+	- Fixed whitespace detection with Unicode characters (STR
+	  #48)
 	- mxmlWalkNext() and mxmlWalkPrev() did not work correctly
 	  when called with a node with no children as the top node
 	  (STR #53)

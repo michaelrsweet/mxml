@@ -133,6 +133,11 @@ static int		mxml_file_putc(int ch, void *p);
 static int		mxml_get_entity(mxml_node_t *parent, void *p,
 			                int *encoding,
 					_mxml_getc_cb_t getc_cb);
+static inline int	mxml_isspace(int ch)
+			{
+			  return (ch == ' ' || ch == '\t' || ch == '\r' ||
+			          ch == '\n' || ch == '\f' || ch == '\v');
+			}
 static mxml_node_t	*mxml_load_data(mxml_node_t *top, void *p,
 			                mxml_load_cb_t cb,
 			                _mxml_getc_cb_t getc_cb,
@@ -1520,7 +1525,7 @@ mxml_load_data(
   while ((ch = (*getc_cb)(p, &encoding)) != EOF)
   {
     if ((ch == '<' ||
-         (isspace(ch) && type != MXML_OPAQUE && type != MXML_CUSTOM)) &&
+         (mxml_isspace(ch) && type != MXML_OPAQUE && type != MXML_CUSTOM)) &&
         bufptr > buffer)
     {
      /*
@@ -1584,7 +1589,7 @@ mxml_load_data(
       }
 
       bufptr     = buffer;
-      whitespace = isspace(ch) && type == MXML_TEXT;
+      whitespace = mxml_isspace(ch) && type == MXML_TEXT;
 
       if (!node && type != MXML_IGNORE)
       {
@@ -1608,7 +1613,7 @@ mxml_load_data(
       if (!first && node)
         first = node;
     }
-    else if (isspace(ch) && type == MXML_TEXT)
+    else if (mxml_isspace(ch) && type == MXML_TEXT)
       whitespace = 1;
 
    /*
@@ -1643,7 +1648,7 @@ mxml_load_data(
       bufptr = buffer;
 
       while ((ch = (*getc_cb)(p, &encoding)) != EOF)
-        if (isspace(ch) || ch == '>' || (ch == '/' && bufptr > buffer))
+        if (mxml_isspace(ch) || ch == '>' || (ch == '/' && bufptr > buffer))
 	  break;
 	else if (ch == '<')
 	{
@@ -1980,7 +1985,7 @@ mxml_load_data(
 	  goto error;
 	}
 
-        if (isspace(ch))
+        if (mxml_isspace(ch))
           ch = mxml_parse_element(node, p, &encoding, getc_cb);
         else if (ch == '/')
 	{
@@ -2038,7 +2043,7 @@ mxml_load_data(
       if (mxml_add_char(ch, &bufptr, &buffer, &bufsize))
 	goto error;
     }
-    else if (type == MXML_OPAQUE || type == MXML_CUSTOM || !isspace(ch))
+    else if (type == MXML_OPAQUE || type == MXML_CUSTOM || !mxml_isspace(ch))
     {
      /*
       * Add character to current buffer...
@@ -2151,7 +2156,7 @@ mxml_parse_element(
     * Skip leading whitespace...
     */
 
-    if (isspace(ch))
+    if (mxml_isspace(ch))
       continue;
 
    /*
@@ -2218,7 +2223,8 @@ mxml_parse_element(
       */
 
       while ((ch = (*getc_cb)(p, encoding)) != EOF)
-	if (isspace(ch) || ch == '=' || ch == '/' || ch == '>' || ch == '?')
+	if (mxml_isspace(ch) || ch == '=' || ch == '/' || ch == '>' ||
+	    ch == '?')
           break;
 	else
 	{
@@ -2283,7 +2289,7 @@ mxml_parse_element(
 	ptr      = value + 1;
 
 	while ((ch = (*getc_cb)(p, encoding)) != EOF)
-	  if (isspace(ch) || ch == '=' || ch == '/' || ch == '>')
+	  if (mxml_isspace(ch) || ch == '=' || ch == '/' || ch == '>')
             break;
 	  else
 	  {

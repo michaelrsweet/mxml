@@ -12,8 +12,9 @@
 //
 
 $PROJECT_NAME = "Mini-XML";		// Title of project
-$PROJECT_EMAIL = "mxml@easysw.com";	// Default notification address
-$PROJECT_REGISTER = "mxml-register@easysw.com";
+$PROJECT_EMAIL = "webmaster@minixml.org";
+					// Default notification address
+$PROJECT_REGISTER = "webmaster@minixml.org";
 					// User registration email
 $PROJECT_MODULE = "mxml";		// CVS module
 $PAGE_MAX = 10; 			// Max items per page

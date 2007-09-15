@@ -239,7 +239,7 @@ mxmlElementSetAttrf(mxml_node_t *node,	/* I - Element node */
   value = _mxml_vstrdupf(format, ap);
   va_end(ap);
 
-  if (value)
+  if (!value)
     mxml_error("Unable to allocate memory for attribute '%s' in element %s!",
                name, node->value.element.name);
   else if (mxml_set_attr(node, name, value))

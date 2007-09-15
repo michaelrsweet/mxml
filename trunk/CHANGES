@@ -4,6 +4,7 @@ CHANGES - 2007-09-15
 CHANGES IN Mini-XML 2.4
 
 	- Added mxmlElementDeleteAttr() function (STR #59)
+	- mxmlElementSetAttrf() did not work (STR #57)
 	- mxmlLoad*() incorrectly treated declarations as parent
 	  elements (STR #56)
 	- mxmlLoad*() incorrectly allowed attributes without values

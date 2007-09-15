@@ -1727,7 +1727,7 @@ mxml_load_data(
             node = NULL;
         }
 
-	if (!first)
+	if (node && !first)
 	  first = node;
       }
       else if (!strcmp(buffer, "![CDATA["))
@@ -1784,7 +1784,7 @@ mxml_load_data(
             node = NULL;
         }
 
-	if (!first)
+	if (node && !first)
 	  first = node;
       }
       else if (buffer[0] == '?')
@@ -1841,11 +1841,11 @@ mxml_load_data(
         }
 
         if (node)
-        {
-          parent = node;
+	{
+	  if (!first)
+	    first = node;
 
-          if (!first)
-	    first = parent;
+	  parent = node;
 
 	  if (cb)
 	    type = (*cb)(parent);
@@ -1912,20 +1912,8 @@ mxml_load_data(
             node = NULL;
         }
 
-        if (node)
-        {
-         /*
-	  * Descend into this node, setting the value type as needed...
-	  */
-
-          if (!first)
-	    first = node;
-
-	  parent = node;
-
-	  if (cb)
-	    type = (*cb)(parent);
-        }
+        if (node && !first)
+          first = node;
       }
       else if (buffer[0] == '/')
       {
@@ -2086,7 +2074,10 @@ mxml_load_data(
     }
   }
 
-  return (parent);
+  if (parent)
+    return (parent);
+  else
+    return (first);
 
  /*
   * Common error return...

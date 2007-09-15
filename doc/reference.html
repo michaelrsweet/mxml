@@ -2,7 +2,7 @@
 <html>
 <head>
 	<title>Documentation</title>
-	<meta name='creator' content='Mini-XML v2.3.1'>
+	<meta name='creator' content='Mini-XML v2.4'>
 	<style type='text/css'><!--
 	h1, h2, h3, p { font-family: sans-serif; text-align: justify; }
 	tt, pre a:link, pre a:visited, tt a:link, tt a:visited { font-weight: bold; color: #7f0000; }
@@ -76,6 +76,7 @@
 <ul>
 	<li><a href='#mxmlAdd'><tt>mxmlAdd()</tt></a> </li>
 	<li><a href='#mxmlDelete'><tt>mxmlDelete()</tt></a> </li>
+	<li><a href='#mxmlElementDeleteAttr'><tt>mxmlElementDeleteAttr()</tt></a> <span class='info'>&nbsp;Mini-XML 2.4&nbsp;</span></li>
 	<li><a href='#mxmlElementGetAttr'><tt>mxmlElementGetAttr()</tt></a> </li>
 	<li><a href='#mxmlElementSetAttr'><tt>mxmlElementSetAttr()</tt></a> </li>
 	<li><a href='#mxmlElementSetAttrf'><tt>mxmlElementSetAttrf()</tt></a> <span class='info'>&nbsp;Mini-XML 2.3&nbsp;</span></li>
@@ -172,6 +173,28 @@ mxmlDelete(
 <thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td><tt>node</tt></td><td>Node to delete</td></tr>
+</tbody></table></div>
+<h4>Returns</h4>
+<p>Nothing.</p>
+<!-- NEW PAGE -->
+<h3 class='title'><span class='info'>&nbsp;Mini-XML 2.4&nbsp;</span><a name='mxmlElementDeleteAttr'>mxmlElementDeleteAttr()</a></h3>
+<h4>Description</h4>
+<p>Delete an attribute.
+
+
+<h4>Syntax</h4>
+<p><tt>
+void<br>
+mxmlElementDeleteAttr(
+    <a href='#mxml_node_t'>mxml_node_t</a> * node,
+    const char * name);
+</tt></p>
+<h4>Arguments</h4>
+<div class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' summary='Arguments'>
+<thead><tr><th>Name</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><tt>node</tt></td><td>Element</td></tr>
+<tr><td><tt>name</tt></td><td>Attribute name</td></tr>
 </tbody></table></div>
 <h4>Returns</h4>
 <p>Nothing.</p>

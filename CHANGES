@@ -1,8 +1,11 @@
-CHANGES - 2007-09-09
+CHANGES - 2007-09-15
 --------------------
 
-CHANGES IN Mini-XML 2.3.1
+CHANGES IN Mini-XML 2.4
 
+	- Added mxmlElementDeleteAttr() function (STR #59)
+	- mxmlLoad*() incorrectly treated declarations as parent
+	  elements (STR #56)
 	- mxmlLoad*() incorrectly allowed attributes without values
 	  (STR #47)
 	- Fixed Visual C++ build problems (STR #49)

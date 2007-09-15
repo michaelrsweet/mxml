@@ -17,10 +17,11 @@
  *
  * Contents:
  *
- *   mxmlElementGetAttr()  - Get an attribute.
- *   mxmlElementSetAttr()  - Set an attribute.
- *   mxmlElementSetAttrf() - Set an attribute with a formatted value.
- *   mxml_set_attr()       - Set or add an attribute name/value pair.
+ *   mxmlElementDeleteAttr() - Delete an attribute.
+ *   mxmlElementGetAttr()    - Get an attribute.
+ *   mxmlElementSetAttr()    - Set an attribute.
+ *   mxmlElementSetAttrf()   - Set an attribute with a formatted value.
+ *   mxml_set_attr()         - Set or add an attribute name/value pair.
  */
 
 /*
@@ -40,6 +41,64 @@ static int	mxml_set_attr(mxml_node_t *node, const char *name,
 
 
 /*
+ * 'mxmlElementDeleteAttr()' - Delete an attribute.
+ *
+ * @since Mini-XML 2.4@
+ */
+
+void
+mxmlElementDeleteAttr(mxml_node_t *node,/* I - Element */
+                      const char  *name)/* I - Attribute name */
+{
+  int		i;			/* Looping var */
+  mxml_attr_t	*attr;			/* Cirrent attribute */
+
+
+#ifdef DEBUG
+  fprintf(stderr, "mxmlElementDeleteAttr(node=%p, name=\"%s\")\n",
+          node, name ? name : "(null)");
+#endif /* DEBUG */
+
+ /*
+  * Range check input...
+  */
+
+  if (!node || node->type != MXML_ELEMENT || !name)
+    return;
+
+ /*
+  * Look for the attribute...
+  */
+
+  for (i = node->value.element.num_attrs, attr = node->value.element.attrs;
+       i > 0;
+       i --, attr ++)
+  {
+#ifdef DEBUG
+    printf("    %s=\"%s\"\n", attr->name, attr->value);
+#endif /* DEBUG */
+
+    if (!strcmp(attr->name, name))
+    {
+     /*
+      * Delete this attribute...
+      */
+
+      free(attr->name);
+      free(attr->value);
+
+      i --;
+      if (i > 0)
+        memmove(attr, attr + 1, i * sizeof(mxml_attr_t));
+
+      node->value.element.num_attrs --;
+      return;
+    }
+  }
+}
+
+
+/*
  * 'mxmlElementGetAttr()' - Get an attribute.
  *
  * This function returns NULL if the node is not an element or the
@@ -50,7 +109,7 @@ const char *				/* O - Attribute value or NULL */
 mxmlElementGetAttr(mxml_node_t *node,	/* I - Element node */
                    const char  *name)	/* I - Name of attribute */
 {
-  int	i;				/* Looping var */
+  int		i;			/* Looping var */
   mxml_attr_t	*attr;			/* Cirrent attribute */
 
 

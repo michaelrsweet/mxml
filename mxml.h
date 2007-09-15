@@ -186,6 +186,8 @@ extern "C" {
 extern void		mxmlAdd(mxml_node_t *parent, int where,
 			        mxml_node_t *child, mxml_node_t *node);
 extern void		mxmlDelete(mxml_node_t *node);
+extern void		mxmlElementDeleteAttr(mxml_node_t *node,
+			                      const char *name);
 extern const char	*mxmlElementGetAttr(mxml_node_t *node, const char *name);
 extern void		mxmlElementSetAttr(mxml_node_t *node, const char *name,
 			                   const char *value);

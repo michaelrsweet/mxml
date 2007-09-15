@@ -38,6 +38,19 @@ node from its parent using the mxmlRemove() function.</description>
       <description>Node to delete</description>
     </argument>
   </function>
+  <function name="mxmlElementDeleteAttr">
+    <description>Delete an attribute.
+
+@since Mini-XML 2.4@</description>
+    <argument name="node" direction="I">
+      <type>mxml_node_t *</type>
+      <description>Element</description>
+    </argument>
+    <argument name="name" direction="I">
+      <type>const char *</type>
+      <description>Attribute name</description>
+    </argument>
+  </function>
   <function name="mxmlElementGetAttr">
     <returnvalue>
       <type>const char *</type>

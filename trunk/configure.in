@@ -23,7 +23,7 @@ dnl Set the name of the config header file...
 AC_CONFIG_HEADER(config.h)
 
 dnl Version number...
-VERSION=2.3.1
+VERSION=2.4
 AC_SUBST(VERSION)
 AC_DEFINE_UNQUOTED(MXML_VERSION, "Mini-XML v$VERSION")
 
@@ -119,7 +119,7 @@ if test x$enable_shared = xyes; then
 	case "$uname" in
 		SunOS* | UNIX_S*)
 			AC_MSG_RESULT(yes)
-			LIBMXML="libmxml.so.1.3"
+			LIBMXML="libmxml.so.1.4"
 			DSO="\$(CC)"
 			DSOFLAGS="$DSOFLAGS -Wl,-h,libmxml.so.1 -G -R\$(libdir) \$(OPTIM)"
 			LDFLAGS="$LDFLAGS -R\$(libdir)"
@@ -127,7 +127,7 @@ if test x$enable_shared = xyes; then
 
 		HP-UX*)
 			AC_MSG_RESULT(yes)
-			LIBMXML="libmxml.sl.2"
+			LIBMXML="libmxml.sl.1"
 			DSO="ld"
 			DSOFLAGS="$DSOFLAGS -b -z +h libmxml.sl.1 +s +b \$(libdir)"
 			LDFLAGS="$LDFLAGS -Wl,+s,+b,\$(libdir)"
@@ -135,14 +135,14 @@ if test x$enable_shared = xyes; then
 
 		IRIX)
 			AC_MSG_RESULT(yes)
-			LIBMXML="libmxml.so.1.3"
+			LIBMXML="libmxml.so.1.4"
 			DSO="\$(CC)"
 			DSOFLAGS="$DSOFLAGS -Wl,-rpath,\$(libdir),-set_version,sgi1.0,-soname,libmxml.so.1 -shared \$(OPTIM)"
 			;;
 
 		OSF1* | Linux | GNU)
 			AC_MSG_RESULT(yes)
-			LIBMXML="libmxml.so.1.3"
+			LIBMXML="libmxml.so.1.4"
 			DSO="\$(CC)"
 			DSOFLAGS="$DSOFLAGS -Wl,-soname,libmxml.so.1,-rpath,\$(libdir) -shared \$(OPTIM)"
                         LDFLAGS="$LDFLAGS -Wl,-rpath,\$(libdir)"
@@ -150,7 +150,7 @@ if test x$enable_shared = xyes; then
 
 		*BSD*)
 			AC_MSG_RESULT(yes)
-			LIBMXML="libmxml.so.1.3"
+			LIBMXML="libmxml.so.1.4"
 			DSO="\$(CC)"
 			DSOFLAGS="$DSOFLAGS -Wl,-soname,libmxml.so.1,-R\$(libdir) -shared \$(OPTIM)"
 			LDFLAGS="$LDFLAGS -Wl,-R\$(libdir)"

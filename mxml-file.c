@@ -55,8 +55,7 @@
  * Include necessary headers...
  */
 
-#include "config.h"
-#include "mxml.h"
+#include "mxml-private.h"
 #ifdef WIN32
 #  include <io.h>
 #else
@@ -97,28 +96,6 @@ typedef struct _mxml_fdbuf_s		/**** File descriptor buffer ****/
 
 
 /*
- * Global error handler...
- */
-
-extern void	(*mxml_error_cb)(const char *);
-
-
-/*
- * Settings...
- */
-
-static int			mxml_wrap = 72;
-
-
-/*
- * Custom data handlers...
- */
-
-static mxml_custom_load_cb_t	mxml_custom_load_cb = NULL;
-static mxml_custom_save_cb_t	mxml_custom_save_cb = NULL;
-
-
-/*
  * Local functions...
  */
 
@@ -151,7 +128,8 @@ static int		mxml_write_name(const char *s, void *p,
 					_mxml_putc_cb_t putc_cb);
 static int		mxml_write_node(mxml_node_t *node, void *p,
 			                mxml_save_cb_t cb, int col,
-					_mxml_putc_cb_t putc_cb);
+					_mxml_putc_cb_t putc_cb,
+					_mxml_global_t *global);
 static int		mxml_write_string(const char *s, void *p,
 					  _mxml_putc_cb_t putc_cb);
 static int		mxml_write_ws(mxml_node_t *node, void *p, 
@@ -335,6 +313,8 @@ mxmlSaveFd(mxml_node_t    *node,	/* I - Node to write */
 {
   int		col;			/* Final column */
   _mxml_fdbuf_t	buf;			/* File descriptor buffer */
+  _mxml_global_t *global = _mxml_global();
+					/* Global data */
 
 
  /*
@@ -349,7 +329,7 @@ mxmlSaveFd(mxml_node_t    *node,	/* I - Node to write */
   * Write the node...
   */
 
-  if ((col = mxml_write_node(node, &buf, cb, 0, mxml_fd_putc)) < 0)
+  if ((col = mxml_write_node(node, &buf, cb, 0, mxml_fd_putc, global)) < 0)
     return (-1);
 
   if (col > 0)
@@ -380,13 +360,15 @@ mxmlSaveFile(mxml_node_t    *node,	/* I - Node to write */
 	     mxml_save_cb_t cb)		/* I - Whitespace callback or MXML_NO_CALLBACK */
 {
   int	col;				/* Final column */
+  _mxml_global_t *global = _mxml_global();
+					/* Global data */
 
 
  /*
   * Write the node...
   */
 
-  if ((col = mxml_write_node(node, fp, cb, 0, mxml_file_putc)) < 0)
+  if ((col = mxml_write_node(node, fp, cb, 0, mxml_file_putc, global)) < 0)
     return (-1);
 
   if (col > 0)
@@ -423,6 +405,8 @@ mxmlSaveString(mxml_node_t    *node,	/* I - Node to write */
 {
   int	col;				/* Final column */
   char	*ptr[2];			/* Pointers for putc_cb */
+  _mxml_global_t *global = _mxml_global();
+					/* Global data */
 
 
  /*
@@ -432,7 +416,7 @@ mxmlSaveString(mxml_node_t    *node,	/* I - Node to write */
   ptr[0] = buffer;
   ptr[1] = buffer + bufsize;
 
-  if ((col = mxml_write_node(node, ptr, cb, 0, mxml_string_putc)) < 0)
+  if ((col = mxml_write_node(node, ptr, cb, 0, mxml_string_putc, global)) < 0)
     return (-1);
 
   if (col > 0)
@@ -595,8 +579,12 @@ mxmlSetCustomHandlers(
     mxml_custom_load_cb_t load,		/* I - Load function */
     mxml_custom_save_cb_t save)		/* I - Save function */
 {
-  mxml_custom_load_cb = load;
-  mxml_custom_save_cb = save;
+  _mxml_global_t *global = _mxml_global();
+					/* Global data */
+
+
+  global->custom_load_cb = load;
+  global->custom_save_cb = save;
 }
 
 
@@ -607,7 +595,11 @@ mxmlSetCustomHandlers(
 void
 mxmlSetErrorCallback(mxml_error_cb_t cb)/* I - Error callback function */
 {
-  mxml_error_cb = cb;
+  _mxml_global_t *global = _mxml_global();
+					/* Global data */
+
+
+  global->error_cb = cb;
 }
 
 
@@ -622,10 +614,14 @@ mxmlSetErrorCallback(mxml_error_cb_t cb)/* I - Error callback function */
 void
 mxmlSetWrapMargin(int column)		/* I - Column for wrapping */
 {
+  _mxml_global_t *global = _mxml_global();
+					/* Global data */
+
+
   if (column <= 0)
-    mxml_wrap = 2147483647;
+    global->wrap = 2147483647;
   else
-    mxml_wrap = column;
+    global->wrap = column;
 }
 
 
@@ -1489,6 +1485,8 @@ mxml_load_data(
   int		bufsize;		/* Size of buffer */
   mxml_type_t	type;			/* Current node type */
   int		encoding;		/* Character encoding */
+  _mxml_global_t *global = _mxml_global();
+					/* Global data */
   static const char * const types[] =	/* Type strings... */
 		{
 		  "MXML_ELEMENT",	/* XML element with attributes */
@@ -1553,7 +1551,7 @@ mxml_load_data(
 	    break;
 
 	case MXML_CUSTOM :
-	    if (mxml_custom_load_cb)
+	    if (global->custom_load_cb)
 	    {
 	     /*
 	      * Use the callback to fill in the custom data...
@@ -1561,7 +1559,7 @@ mxml_load_data(
 
               node = mxmlNewCustom(parent, NULL, NULL);
 
-	      if ((*mxml_custom_load_cb)(node, buffer))
+	      if ((*global->custom_load_cb)(node, buffer))
 	      {
 	        mxml_error("Bad custom value '%s' in parent <%s>!",
 		           buffer, parent ? parent->value.element.name : "null");
@@ -2752,7 +2750,8 @@ mxml_write_node(mxml_node_t     *node,	/* I - Node to write */
                 void            *p,	/* I - File to write to */
 	        mxml_save_cb_t  cb,	/* I - Whitespace callback */
 		int             col,	/* I - Current column */
-		_mxml_putc_cb_t putc_cb)/* I - Output callback */
+		_mxml_putc_cb_t putc_cb,/* I - Output callback */
+		_mxml_global_t  *global)/* I - Global data */
 {
   int		i,			/* Looping var */
 		width;			/* Width of attr + value */
@@ -2794,7 +2793,7 @@ mxml_write_node(mxml_node_t     *node,	/* I - Node to write */
 	    */
 
             if (!strncmp(node->value.element.name, "?xml", 4))
-              col = mxml_wrap;
+              col = global->wrap;
 	  }
 	  else if (mxml_write_name(node->value.element.name, p, putc_cb) < 0)
 	    return (-1);
@@ -2810,7 +2809,7 @@ mxml_write_node(mxml_node_t     *node,	/* I - Node to write */
 	    if (attr->value)
 	      width += strlen(attr->value) + 3;
 
-	    if ((col + width) > mxml_wrap)
+	    if ((col + width) > global->wrap)
 	    {
 	      if ((*putc_cb)('\n', p) < 0)
 	        return (-1);
@@ -2856,7 +2855,8 @@ mxml_write_node(mxml_node_t     *node,	/* I - Node to write */
 
             col = mxml_write_ws(node, p, cb, MXML_WS_AFTER_OPEN, col, putc_cb);
 
-	    if ((col = mxml_write_node(node->child, p, cb, col, putc_cb)) < 0)
+	    if ((col = mxml_write_node(node->child, p, cb, col, putc_cb,
+	                               global)) < 0)
 	      return (-1);
 
            /*
@@ -2914,7 +2914,7 @@ mxml_write_node(mxml_node_t     *node,	/* I - Node to write */
       case MXML_INTEGER :
 	  if (node->prev)
 	  {
-	    if (col > mxml_wrap)
+	    if (col > global->wrap)
 	    {
 	      if ((*putc_cb)('\n', p) < 0)
 	        return (-1);
@@ -2944,7 +2944,7 @@ mxml_write_node(mxml_node_t     *node,	/* I - Node to write */
       case MXML_REAL :
 	  if (node->prev)
 	  {
-	    if (col > mxml_wrap)
+	    if (col > global->wrap)
 	    {
 	      if ((*putc_cb)('\n', p) < 0)
 	        return (-1);
@@ -2967,7 +2967,7 @@ mxml_write_node(mxml_node_t     *node,	/* I - Node to write */
       case MXML_TEXT :
 	  if (node->value.text.whitespace && col > 0)
 	  {
-	    if (col > mxml_wrap)
+	    if (col > global->wrap)
 	    {
 	      if ((*putc_cb)('\n', p) < 0)
 	        return (-1);
@@ -2987,13 +2987,13 @@ mxml_write_node(mxml_node_t     *node,	/* I - Node to write */
           break;
 
       case MXML_CUSTOM :
-          if (mxml_custom_save_cb)
+          if (global->custom_save_cb)
 	  {
 	    char	*data;		/* Custom data string */
 	    const char	*newline;	/* Last newline in string */
 
 
-            if ((data = (*mxml_custom_save_cb)(node)) == NULL)
+            if ((data = (*global->custom_save_cb)(node)) == NULL)
 	      return (-1);
 
             if (mxml_write_string(data, p, putc_cb) < 0)

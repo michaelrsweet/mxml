@@ -3,7 +3,7 @@
  *
  * Private functions for Mini-XML, a small XML-like file parsing library.
  *
- * Copyright 2003-2005 by Michael Sweet.
+ * Copyright 2003-2007 by Michael Sweet.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -18,6 +18,7 @@
  * Contents:
  *
  *   mxml_error()      - Display an error message.
+ *   mxml_global()     - Get global data.
  *   mxml_integer_cb() - Default callback for integer values.
  *   mxml_opaque_cb()  - Default callback for opaque values.
  *   mxml_real_cb()    - Default callback for real number values.
@@ -27,15 +28,7 @@
  * Include necessary headers...
  */
 
-#include "config.h"
-#include "mxml.h"
-
-
-/*
- * Error callback function...
- */
-
-void	(*mxml_error_cb)(const char *) = NULL;
+#include "mxml-private.h"
 
 
 /*
@@ -48,6 +41,8 @@ mxml_error(const char *format,		/* I - Printf-style format string */
 {
   va_list	ap;			/* Pointer to arguments */
   char		s[1024];		/* Message string */
+  _mxml_global_t *global = _mxml_global();
+					/* Global data */
 
 
  /*
@@ -71,10 +66,32 @@ mxml_error(const char *format,		/* I - Printf-style format string */
   * And then display the error message...
   */
 
-  if (mxml_error_cb)
-    (*mxml_error_cb)(s);
+  if (global->error_cb)
+    (*global->error_cb)(s);
   else
     fprintf(stderr, "mxml: %s\n", s);
+}
+
+
+/*
+ * 'mxml_global()' - Get global data.
+ */
+
+_mxml_global_t *			/* O - Global data */
+_mxml_global(void)
+{
+  static _mxml_global_t	global =	/* Global data */
+  {
+    NULL,				/* error_cb */
+    1,					/* num_entity_cbs */
+    { _mxml_entity_cb },		/* entity_cbs */
+    72,					/* wrap */
+    NULL,				/* custom_load_cb */
+    NULL				/* custom_save_cb */
+  };
+
+
+  return (&global);
 }
 
 

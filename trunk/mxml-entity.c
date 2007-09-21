@@ -25,33 +25,14 @@
  *   mxmlEntityGetValue()       - Get the character corresponding to a named
  *                                entity.
  *   mxmlEntityRemoveCallback() - Remove a callback.
- *   default_callback()         - Lookup standard (X)HTML entities.
+ *   _mxml_entity_cb()          - Lookup standard (X)HTML entities.
  */
 
 /*
  * Include necessary headers...
  */
 
-#include "config.h"
-#include "mxml.h"
-
-
-/*
- * Local functions...
- */
-
-static int	default_callback(const char *name);
-
-
-/*
- * Callback array...
- */
-
-static int	num_callbacks = 1;
-static int	(*callbacks[100])(const char *name) =
-		{
-		  default_callback
-		};
+#include "mxml-private.h"
 
 
 /*
@@ -59,13 +40,17 @@ static int	(*callbacks[100])(const char *name) =
  */
 
 int					/* O - 0 on success, -1 on failure */
-mxmlEntityAddCallback(int (*cb)(const char *name))
-					/* I - Callback function to add */
+mxmlEntityAddCallback(
+    int (*cb)(const char *name))	/* I - Callback function to add */
 {
-  if (num_callbacks < (int)(sizeof(callbacks) / sizeof(callbacks[0])))
+  _mxml_global_t *global = _mxml_global();
+					/* Global data */
+
+
+  if (global->num_entity_cbs < (int)(sizeof(global->entity_cbs) / sizeof(global->entity_cbs[0])))
   {
-    callbacks[num_callbacks] = cb;
-    num_callbacks ++;
+    global->entity_cbs[global->num_entity_cbs] = cb;
+    global->num_entity_cbs ++;
 
     return (0);
   }
@@ -117,12 +102,14 @@ mxmlEntityGetName(int val)		/* I - Character value */
 int					/* O - Character value or -1 on error */
 mxmlEntityGetValue(const char *name)	/* I - Entity name */
 {
-  int	i;				/* Looping var */
-  int	ch;				/* Character value */
+  int		i;			/* Looping var */
+  int		ch;			/* Character value */
+  _mxml_global_t *global = _mxml_global();
+					/* Global data */
 
 
-  for (i = 0; i < num_callbacks; i ++)
-    if ((ch = (callbacks[i])(name)) >= 0)
+  for (i = 0; i < global->num_entity_cbs; i ++)
+    if ((ch = (global->entity_cbs[i])(name)) >= 0)
       return (ch);
 
   return (-1);
@@ -137,21 +124,23 @@ void
 mxmlEntityRemoveCallback(int (*cb)(const char *name))
 					/* I - Callback function to remove */
 {
-  int	i;				/* Looping var */
+  int		i;			/* Looping var */
+  _mxml_global_t *global = _mxml_global();
+					/* Global data */
 
 
-  for (i = 0; i < num_callbacks; i ++)
-    if (cb == callbacks[i])
+  for (i = 0; i < global->num_entity_cbs; i ++)
+    if (cb == global->entity_cbs[i])
     {
      /*
       * Remove the callback...
       */
 
-      num_callbacks --;
+      global->num_entity_cbs --;
 
-      if (i < num_callbacks)
-        memmove(callbacks + i, callbacks + i + 1,
-	        (num_callbacks - i) * sizeof(callbacks[0]));
+      if (i < global->num_entity_cbs)
+        memmove(global->entity_cbs + i, global->entity_cbs + i + 1,
+	        (global->num_entity_cbs - i) * sizeof(global->entity_cbs[0]));
 
       return;
     }
@@ -159,11 +148,11 @@ mxmlEntityRemoveCallback(int (*cb)(const char *name))
 
 
 /*
- * 'default_callback()' - Lookup standard (X)HTML entities.
+ * '_mxml_entity_cb()' - Lookup standard (X)HTML entities.
  */
 
-static int				/* O - Unicode value or -1 */
-default_callback(const char *name)	/* I - Entity name */
+int					/* O - Unicode value or -1 */
+_mxml_entity_cb(const char *name)	/* I - Entity name */
 {
   int	diff,				/* Difference between names */
 	current,			/* Current entity in search */

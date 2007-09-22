@@ -1,8 +1,11 @@
-CHANGES - 2007-09-15
+CHANGES - 2007-09-22
 --------------------
 
 CHANGES IN Mini-XML 2.4
 
+	- All global settings (custom, error, and entity callbacks
+	  and the wrap margin) are now managed separately for each
+	  thread.
 	- Added mxmlElementDeleteAttr() function (STR #59)
 	- mxmlElementSetAttrf() did not work (STR #57)
 	- mxmlLoad*() incorrectly treated declarations as parent

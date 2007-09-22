@@ -24,13 +24,14 @@ AR		=	@AR@
 ARFLAGS		=	@ARFLAGS@
 ARCHFLAGS	=	@ARCHFLAGS@
 CC		=	@CC@
-CFLAGS		=	$(OPTIM) $(ARCHFLAGS) @CFLAGS@ @CPPFLAGS@
+CFLAGS		=	$(OPTIM) $(ARCHFLAGS) @CFLAGS@ @CPPFLAGS@ @PTHREAD_FLAGS@
 CP		=	@CP@
 DSO		=	@DSO@
 DSOFLAGS	=	@DSOFLAGS@
 LDFLAGS		=	$(OPTIM) $(ARCHFLAGS) @LDFLAGS@
 INSTALL		=	@INSTALL@
 LIBMXML		=	@LIBMXML@
+LIBS		=	@LIBS@ @PTHREAD_LIBS@
 LN		=	@LN@ -s
 MKDIR		=	@MKDIR@
 OPTIM		=	@OPTIM@
@@ -279,10 +280,10 @@ libmxml.1.dylib:	$(LIBOBJS)
 #
 
 mxmldoc:	$(LIBMXML) mxmldoc.o
-	$(CC) -L. $(LDFLAGS) -o $@ mxmldoc.o -lmxml
+	$(CC) -L. $(LDFLAGS) -o $@ mxmldoc.o -lmxml $(LIBS)
 
 mxmldoc-static:	libmxml.a mxmldoc.o
-	$(CC) $(LDFLAGS) -o $@ mxmldoc.o libmxml.a
+	$(CC) $(LDFLAGS) -o $@ mxmldoc.o libmxml.a $(LIBS)
 
 mxmldoc.o:	mxml.h
 
@@ -292,7 +293,7 @@ mxmldoc.o:	mxml.h
 #
 
 testmxml:	libmxml.a testmxml.o
-	$(CC) $(LDFLAGS) -o $@ testmxml.o libmxml.a
+	$(CC) $(LDFLAGS) -o $@ testmxml.o libmxml.a $(LIBS)
 	@echo Testing library...
 	./testmxml test.xml >temp1.xml 2>temp1s.xml
 	./testmxml temp1.xml >temp2.xml 2>temp2s.xml

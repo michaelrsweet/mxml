@@ -57,6 +57,13 @@
 
 
 /*
+ * Do we have threading support?
+ */
+
+#undef HAVE_PTHREAD_H
+
+
+/*
  * Define prototypes for string functions as needed...
  */
 

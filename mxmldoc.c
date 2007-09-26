@@ -62,7 +62,7 @@
  * <?xml version="1.0"?>
  * <mxmldoc xmlns="http://www.easysw.com"
  *  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
- *  xsi:schemaLocation="http://www.easysw.com/~mike/mxml/mxmldoc.xsd">
+ *  xsi:schemaLocation="http://www.minixml.org/mxmldoc.xsd">
  *
  *   <namespace name="">                        [optional...]
  *     <constant name="">
@@ -742,7 +742,7 @@ new_documentation(mxml_node_t **mxmldoc)/* O - mxmldoc node */
   mxmlElementSetAttr(*mxmldoc, "xmlns:xsi",
                      "http://www.w3.org/2001/XMLSchema-instance");
   mxmlElementSetAttr(*mxmldoc, "xsi:schemaLocation",
-                     "http://www.easysw.com/~mike/mxml/mxmldoc.xsd");
+                     "http://www.minixml.org/mxmldoc.xsd");
 
   return (doc);
 }
@@ -2855,9 +2855,9 @@ write_html(
 	{
 	  printf("<tr><td><tt>%s</tt></td><td>", mxmlElementGetAttr(arg, "name"));
 
-	  write_element(NULL, mxmlFindElement(arg, arg, "description", NULL,
-                               		      NULL, MXML_DESCEND_FIRST),
-                        OUTPUT_HTML);
+	  write_description(mxmlFindElement(arg, arg, "description", NULL,
+                               		    NULL, MXML_DESCEND_FIRST),
+                            OUTPUT_HTML);
 
           puts("</td></tr>");
 	}

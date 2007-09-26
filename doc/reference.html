@@ -149,10 +149,14 @@ mxmlAdd(
 <div class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' summary='Arguments'>
 <thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
-<tr><td><tt>parent</tt></td><td>Parent node</td></tr>
-<tr><td><tt>where</tt></td><td>Where to add, MXML_ADD_BEFORE or MXML_ADD_AFTER</td></tr>
-<tr><td><tt>child</tt></td><td>Child node for where or MXML_ADD_TO_PARENT</td></tr>
-<tr><td><tt>node</tt></td><td>Node to add</td></tr>
+<tr><td><tt>parent</tt></td><td>Parent node
+</td></tr>
+<tr><td><tt>where</tt></td><td>Where to add, MXML_ADD_BEFORE or MXML_ADD_AFTER
+</td></tr>
+<tr><td><tt>child</tt></td><td>Child node for where or MXML_ADD_TO_PARENT
+</td></tr>
+<tr><td><tt>node</tt></td><td>Node to add
+</td></tr>
 </tbody></table></div>
 <h4>Returns</h4>
 <p>Nothing.</p>
@@ -172,7 +176,8 @@ mxmlDelete(
 <div class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' summary='Arguments'>
 <thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
-<tr><td><tt>node</tt></td><td>Node to delete</td></tr>
+<tr><td><tt>node</tt></td><td>Node to delete
+</td></tr>
 </tbody></table></div>
 <h4>Returns</h4>
 <p>Nothing.</p>
@@ -193,8 +198,10 @@ mxmlElementDeleteAttr(
 <div class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' summary='Arguments'>
 <thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
-<tr><td><tt>node</tt></td><td>Element</td></tr>
-<tr><td><tt>name</tt></td><td>Attribute name</td></tr>
+<tr><td><tt>node</tt></td><td>Element
+</td></tr>
+<tr><td><tt>name</tt></td><td>Attribute name
+</td></tr>
 </tbody></table></div>
 <h4>Returns</h4>
 <p>Nothing.</p>
@@ -215,8 +222,10 @@ mxmlElementGetAttr(
 <div class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' summary='Arguments'>
 <thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
-<tr><td><tt>node</tt></td><td>Element node</td></tr>
-<tr><td><tt>name</tt></td><td>Name of attribute</td></tr>
+<tr><td><tt>node</tt></td><td>Element node
+</td></tr>
+<tr><td><tt>name</tt></td><td>Name of attribute
+</td></tr>
 </tbody></table></div>
 <h4>Returns</h4>
 <p>Attribute value or NULL</p>
@@ -240,9 +249,12 @@ mxmlElementSetAttr(
 <div class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' summary='Arguments'>
 <thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
-<tr><td><tt>node</tt></td><td>Element node</td></tr>
-<tr><td><tt>name</tt></td><td>Name of attribute</td></tr>
-<tr><td><tt>value</tt></td><td>Attribute value</td></tr>
+<tr><td><tt>node</tt></td><td>Element node
+</td></tr>
+<tr><td><tt>name</tt></td><td>Name of attribute
+</td></tr>
+<tr><td><tt>value</tt></td><td>Attribute value
+</td></tr>
 </tbody></table></div>
 <h4>Returns</h4>
 <p>Nothing.</p>
@@ -269,10 +281,14 @@ mxmlElementSetAttrf(
 <div class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' summary='Arguments'>
 <thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
-<tr><td><tt>node</tt></td><td>Element node</td></tr>
-<tr><td><tt>name</tt></td><td>Name of attribute</td></tr>
-<tr><td><tt>format</tt></td><td>Printf-style attribute value</td></tr>
-<tr><td><tt>...</tt></td><td>Additional arguments as needed</td></tr>
+<tr><td><tt>node</tt></td><td>Element node
+</td></tr>
+<tr><td><tt>name</tt></td><td>Name of attribute
+</td></tr>
+<tr><td><tt>format</tt></td><td>Printf-style attribute value
+</td></tr>
+<tr><td><tt>...</tt></td><td>Additional arguments as needed
+</td></tr>
 </tbody></table></div>
 <h4>Returns</h4>
 <p>Nothing.</p>
@@ -304,7 +320,8 @@ mxmlEntityGetName(
 <div class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' summary='Arguments'>
 <thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
-<tr><td><tt>val</tt></td><td>Character value</td></tr>
+<tr><td><tt>val</tt></td><td>Character value
+</td></tr>
 </tbody></table></div>
 <h4>Returns</h4>
 <p>Entity name or NULL</p>
@@ -324,7 +341,8 @@ mxmlEntityGetValue(
 <div class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' summary='Arguments'>
 <thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
-<tr><td><tt>name</tt></td><td>Entity name</td></tr>
+<tr><td><tt>name</tt></td><td>Entity name
+</td></tr>
 </tbody></table></div>
 <h4>Returns</h4>
 <p>Character value or -1 on error</p>
@@ -368,12 +386,18 @@ mxmlFindElement(
 <div class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' summary='Arguments'>
 <thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
-<tr><td><tt>node</tt></td><td>Current node</td></tr>
-<tr><td><tt>top</tt></td><td>Top node</td></tr>
-<tr><td><tt>name</tt></td><td>Element name or NULL for any</td></tr>
-<tr><td><tt>attr</tt></td><td>Attribute name, or NULL for none</td></tr>
-<tr><td><tt>value</tt></td><td>Attribute value, or NULL for any</td></tr>
-<tr><td><tt>descend</tt></td><td>Descend into tree - MXML_DESCEND, MXML_NO_DESCEND, or MXML_DESCEND_FIRST</td></tr>
+<tr><td><tt>node</tt></td><td>Current node
+</td></tr>
+<tr><td><tt>top</tt></td><td>Top node
+</td></tr>
+<tr><td><tt>name</tt></td><td>Element name or NULL for any
+</td></tr>
+<tr><td><tt>attr</tt></td><td>Attribute name, or NULL for none
+</td></tr>
+<tr><td><tt>value</tt></td><td>Attribute value, or NULL for any
+</td></tr>
+<tr><td><tt>descend</tt></td><td>Descend into tree - MXML_DESCEND, MXML_NO_DESCEND, or MXML_DESCEND_FIRST
+</td></tr>
 </tbody></table></div>
 <h4>Returns</h4>
 <p>Element node or NULL</p>
@@ -391,7 +415,8 @@ mxmlIndexDelete(
 <div class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' summary='Arguments'>
 <thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
-<tr><td><tt>ind</tt></td><td>Index to delete</td></tr>
+<tr><td><tt>ind</tt></td><td>Index to delete
+</td></tr>
 </tbody></table></div>
 <h4>Returns</h4>
 <p>Nothing.</p>
@@ -410,7 +435,8 @@ mxmlIndexEnum(
 <div class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' summary='Arguments'>
 <thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
-<tr><td><tt>ind</tt></td><td>Index to enumerate</td></tr>
+<tr><td><tt>ind</tt></td><td>Index to enumerate
+</td></tr>
 </tbody></table></div>
 <h4>Returns</h4>
 <p>Next node or NULL if there is none</p>
@@ -434,9 +460,12 @@ mxmlIndexFind(
 <div class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' summary='Arguments'>
 <thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
-<tr><td><tt>ind</tt></td><td>Index to search</td></tr>
-<tr><td><tt>element</tt></td><td>Element name to find, if any</td></tr>
-<tr><td><tt>value</tt></td><td>Attribute value, if any</td></tr>
+<tr><td><tt>ind</tt></td><td>Index to search
+</td></tr>
+<tr><td><tt>element</tt></td><td>Element name to find, if any
+</td></tr>
+<tr><td><tt>value</tt></td><td>Attribute value, if any
+</td></tr>
 </tbody></table></div>
 <h4>Returns</h4>
 <p>Node or NULL if none found</p>
@@ -461,9 +490,12 @@ mxmlIndexNew(
 <div class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' summary='Arguments'>
 <thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
-<tr><td><tt>node</tt></td><td>XML node tree</td></tr>
-<tr><td><tt>element</tt></td><td>Element to index or NULL for all</td></tr>
-<tr><td><tt>attr</tt></td><td>Attribute to index or NULL for none</td></tr>
+<tr><td><tt>node</tt></td><td>XML node tree
+</td></tr>
+<tr><td><tt>element</tt></td><td>Element to index or NULL for all
+</td></tr>
+<tr><td><tt>attr</tt></td><td>Attribute to index or NULL for none
+</td></tr>
 </tbody></table></div>
 <h4>Returns</h4>
 <p>New index</p>
@@ -484,7 +516,8 @@ mxmlIndexReset(
 <div class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' summary='Arguments'>
 <thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
-<tr><td><tt>ind</tt></td><td>Index to reset</td></tr>
+<tr><td><tt>ind</tt></td><td>Index to reset
+</td></tr>
 </tbody></table></div>
 <h4>Returns</h4>
 <p>First node or NULL if there is none</p>
@@ -513,9 +546,12 @@ mxmlLoadFd(
 <div class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' summary='Arguments'>
 <thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
-<tr><td><tt>top</tt></td><td>Top node</td></tr>
-<tr><td><tt>fd</tt></td><td>File descriptor to read from</td></tr>
-<tr><td><tt>cb</tt></td><td>Callback function or MXML_NO_CALLBACK</td></tr>
+<tr><td><tt>top</tt></td><td>Top node
+</td></tr>
+<tr><td><tt>fd</tt></td><td>File descriptor to read from
+</td></tr>
+<tr><td><tt>cb</tt></td><td>Callback function or MXML_NO_CALLBACK
+</td></tr>
 </tbody></table></div>
 <h4>Returns</h4>
 <p>First node or NULL if the file could not be read.</p>
@@ -544,9 +580,12 @@ mxmlLoadFile(
 <div class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' summary='Arguments'>
 <thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
-<tr><td><tt>top</tt></td><td>Top node</td></tr>
-<tr><td><tt>fp</tt></td><td>File to read from</td></tr>
-<tr><td><tt>cb</tt></td><td>Callback function or MXML_NO_CALLBACK</td></tr>
+<tr><td><tt>top</tt></td><td>Top node
+</td></tr>
+<tr><td><tt>fp</tt></td><td>File to read from
+</td></tr>
+<tr><td><tt>cb</tt></td><td>Callback function or MXML_NO_CALLBACK
+</td></tr>
 </tbody></table></div>
 <h4>Returns</h4>
 <p>First node or NULL if the file could not be read.</p>
@@ -575,9 +614,12 @@ mxmlLoadString(
 <div class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' summary='Arguments'>
 <thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
-<tr><td><tt>top</tt></td><td>Top node</td></tr>
-<tr><td><tt>s</tt></td><td>String to load</td></tr>
-<tr><td><tt>cb</tt></td><td>Callback function or MXML_NO_CALLBACK</td></tr>
+<tr><td><tt>top</tt></td><td>Top node
+</td></tr>
+<tr><td><tt>s</tt></td><td>String to load
+</td></tr>
+<tr><td><tt>cb</tt></td><td>Callback function or MXML_NO_CALLBACK
+</td></tr>
 </tbody></table></div>
 <h4>Returns</h4>
 <p>First node or NULL if the string has errors.</p>
@@ -602,8 +644,10 @@ mxmlNewCDATA(
 <div class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' summary='Arguments'>
 <thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
-<tr><td><tt>parent</tt></td><td>Parent node or MXML_NO_PARENT</td></tr>
-<tr><td><tt>data</tt></td><td>Data string</td></tr>
+<tr><td><tt>parent</tt></td><td>Parent node or MXML_NO_PARENT
+</td></tr>
+<tr><td><tt>data</tt></td><td>Data string
+</td></tr>
 </tbody></table></div>
 <h4>Returns</h4>
 <p>New node</p>
@@ -629,9 +673,12 @@ mxmlNewCustom(
 <div class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' summary='Arguments'>
 <thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
-<tr><td><tt>parent</tt></td><td>Parent node or MXML_NO_PARENT</td></tr>
-<tr><td><tt>data</tt></td><td>Pointer to data</td></tr>
-<tr><td><tt>destroy</tt></td><td>Function to destroy data</td></tr>
+<tr><td><tt>parent</tt></td><td>Parent node or MXML_NO_PARENT
+</td></tr>
+<tr><td><tt>data</tt></td><td>Pointer to data
+</td></tr>
+<tr><td><tt>destroy</tt></td><td>Function to destroy data
+</td></tr>
 </tbody></table></div>
 <h4>Returns</h4>
 <p>New node</p>
@@ -653,8 +700,10 @@ mxmlNewElement(
 <div class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' summary='Arguments'>
 <thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
-<tr><td><tt>parent</tt></td><td>Parent node or MXML_NO_PARENT</td></tr>
-<tr><td><tt>name</tt></td><td>Name of element</td></tr>
+<tr><td><tt>parent</tt></td><td>Parent node or MXML_NO_PARENT
+</td></tr>
+<tr><td><tt>name</tt></td><td>Name of element
+</td></tr>
 </tbody></table></div>
 <h4>Returns</h4>
 <p>New node</p>
@@ -676,8 +725,10 @@ mxmlNewInteger(
 <div class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' summary='Arguments'>
 <thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
-<tr><td><tt>parent</tt></td><td>Parent node or MXML_NO_PARENT</td></tr>
-<tr><td><tt>integer</tt></td><td>Integer value</td></tr>
+<tr><td><tt>parent</tt></td><td>Parent node or MXML_NO_PARENT
+</td></tr>
+<tr><td><tt>integer</tt></td><td>Integer value
+</td></tr>
 </tbody></table></div>
 <h4>Returns</h4>
 <p>New node</p>
@@ -700,8 +751,10 @@ mxmlNewOpaque(
 <div class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' summary='Arguments'>
 <thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
-<tr><td><tt>parent</tt></td><td>Parent node or MXML_NO_PARENT</td></tr>
-<tr><td><tt>opaque</tt></td><td>Opaque string</td></tr>
+<tr><td><tt>parent</tt></td><td>Parent node or MXML_NO_PARENT
+</td></tr>
+<tr><td><tt>opaque</tt></td><td>Opaque string
+</td></tr>
 </tbody></table></div>
 <h4>Returns</h4>
 <p>New node</p>
@@ -723,8 +776,10 @@ mxmlNewReal(
 <div class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' summary='Arguments'>
 <thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
-<tr><td><tt>parent</tt></td><td>Parent node or MXML_NO_PARENT</td></tr>
-<tr><td><tt>real</tt></td><td>Real number value</td></tr>
+<tr><td><tt>parent</tt></td><td>Parent node or MXML_NO_PARENT
+</td></tr>
+<tr><td><tt>real</tt></td><td>Real number value
+</td></tr>
 </tbody></table></div>
 <h4>Returns</h4>
 <p>New node</p>
@@ -749,9 +804,12 @@ mxmlNewText(
 <div class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' summary='Arguments'>
 <thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
-<tr><td><tt>parent</tt></td><td>Parent node or MXML_NO_PARENT</td></tr>
-<tr><td><tt>whitespace</tt></td><td>1 = leading whitespace, 0 = no whitespace</td></tr>
-<tr><td><tt>string</tt></td><td>String</td></tr>
+<tr><td><tt>parent</tt></td><td>Parent node or MXML_NO_PARENT
+</td></tr>
+<tr><td><tt>whitespace</tt></td><td>1 = leading whitespace, 0 = no whitespace
+</td></tr>
+<tr><td><tt>string</tt></td><td>String
+</td></tr>
 </tbody></table></div>
 <h4>Returns</h4>
 <p>New node</p>
@@ -777,10 +835,14 @@ mxmlNewTextf(
 <div class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' summary='Arguments'>
 <thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
-<tr><td><tt>parent</tt></td><td>Parent node or MXML_NO_PARENT</td></tr>
-<tr><td><tt>whitespace</tt></td><td>1 = leading whitespace, 0 = no whitespace</td></tr>
-<tr><td><tt>format</tt></td><td>Printf-style frmat string</td></tr>
-<tr><td><tt>...</tt></td><td>Additional args as needed</td></tr>
+<tr><td><tt>parent</tt></td><td>Parent node or MXML_NO_PARENT
+</td></tr>
+<tr><td><tt>whitespace</tt></td><td>1 = leading whitespace, 0 = no whitespace
+</td></tr>
+<tr><td><tt>format</tt></td><td>Printf-style frmat string
+</td></tr>
+<tr><td><tt>...</tt></td><td>Additional args as needed
+</td></tr>
 </tbody></table></div>
 <h4>Returns</h4>
 <p>New node</p>
@@ -802,7 +864,8 @@ mxmlNewXML(
 <div class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' summary='Arguments'>
 <thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
-<tr><td><tt>version</tt></td><td>Version number to use</td></tr>
+<tr><td><tt>version</tt></td><td>Version number to use
+</td></tr>
 </tbody></table></div>
 <h4>Returns</h4>
 <p>New ?xml node</p>
@@ -824,7 +887,8 @@ mxmlRelease(
 <div class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' summary='Arguments'>
 <thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
-<tr><td><tt>node</tt></td><td>Node</td></tr>
+<tr><td><tt>node</tt></td><td>Node
+</td></tr>
 </tbody></table></div>
 <h4>Returns</h4>
 <p>New reference count</p>
@@ -844,7 +908,8 @@ mxmlRemove(
 <div class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' summary='Arguments'>
 <thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
-<tr><td><tt>node</tt></td><td>Node to remove</td></tr>
+<tr><td><tt>node</tt></td><td>Node to remove
+</td></tr>
 </tbody></table></div>
 <h4>Returns</h4>
 <p>Nothing.</p>
@@ -864,7 +929,8 @@ mxmlRetain(
 <div class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' summary='Arguments'>
 <thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
-<tr><td><tt>node</tt></td><td>Node</td></tr>
+<tr><td><tt>node</tt></td><td>Node
+</td></tr>
 </tbody></table></div>
 <h4>Returns</h4>
 <p>New reference count</p>
@@ -901,11 +967,16 @@ mxmlSAXLoadFd(
 <div class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' summary='Arguments'>
 <thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
-<tr><td><tt>top</tt></td><td>Top node</td></tr>
-<tr><td><tt>fd</tt></td><td>File descriptor to read from</td></tr>
-<tr><td><tt>cb</tt></td><td>Callback function or MXML_NO_CALLBACK</td></tr>
-<tr><td><tt>sax_cb</tt></td><td>SAX callback or MXML_NO_CALLBACK</td></tr>
-<tr><td><tt>sax_data</tt></td><td>SAX user data</td></tr>
+<tr><td><tt>top</tt></td><td>Top node
+</td></tr>
+<tr><td><tt>fd</tt></td><td>File descriptor to read from
+</td></tr>
+<tr><td><tt>cb</tt></td><td>Callback function or MXML_NO_CALLBACK
+</td></tr>
+<tr><td><tt>sax_cb</tt></td><td>SAX callback or MXML_NO_CALLBACK
+</td></tr>
+<tr><td><tt>sax_data</tt></td><td>SAX user data
+</td></tr>
 </tbody></table></div>
 <h4>Returns</h4>
 <p>First node or NULL if the file could not be read.</p>
@@ -942,11 +1013,16 @@ mxmlSAXLoadFile(
 <div class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' summary='Arguments'>
 <thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
-<tr><td><tt>top</tt></td><td>Top node</td></tr>
-<tr><td><tt>fp</tt></td><td>File to read from</td></tr>
-<tr><td><tt>cb</tt></td><td>Callback function or MXML_NO_CALLBACK</td></tr>
-<tr><td><tt>sax_cb</tt></td><td>SAX callback or MXML_NO_CALLBACK</td></tr>
-<tr><td><tt>sax_data</tt></td><td>SAX user data</td></tr>
+<tr><td><tt>top</tt></td><td>Top node
+</td></tr>
+<tr><td><tt>fp</tt></td><td>File to read from
+</td></tr>
+<tr><td><tt>cb</tt></td><td>Callback function or MXML_NO_CALLBACK
+</td></tr>
+<tr><td><tt>sax_cb</tt></td><td>SAX callback or MXML_NO_CALLBACK
+</td></tr>
+<tr><td><tt>sax_data</tt></td><td>SAX user data
+</td></tr>
 </tbody></table></div>
 <h4>Returns</h4>
 <p>First node or NULL if the file could not be read.</p>
@@ -983,11 +1059,16 @@ mxmlSAXLoadString(
 <div class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' summary='Arguments'>
 <thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
-<tr><td><tt>top</tt></td><td>Top node</td></tr>
-<tr><td><tt>s</tt></td><td>String to load</td></tr>
-<tr><td><tt>cb</tt></td><td>Callback function or MXML_NO_CALLBACK</td></tr>
-<tr><td><tt>sax_cb</tt></td><td>SAX callback or MXML_NO_CALLBACK</td></tr>
-<tr><td><tt>sax_data</tt></td><td>SAX user data</td></tr>
+<tr><td><tt>top</tt></td><td>Top node
+</td></tr>
+<tr><td><tt>s</tt></td><td>String to load
+</td></tr>
+<tr><td><tt>cb</tt></td><td>Callback function or MXML_NO_CALLBACK
+</td></tr>
+<tr><td><tt>sax_cb</tt></td><td>SAX callback or MXML_NO_CALLBACK
+</td></tr>
+<tr><td><tt>sax_data</tt></td><td>SAX user data
+</td></tr>
 </tbody></table></div>
 <h4>Returns</h4>
 <p>First node or NULL if the string has errors.</p>
@@ -1016,8 +1097,10 @@ mxmlSaveAllocString(
 <div class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' summary='Arguments'>
 <thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
-<tr><td><tt>node</tt></td><td>Node to write</td></tr>
-<tr><td><tt>cb</tt></td><td>Whitespace callback or MXML_NO_CALLBACK</td></tr>
+<tr><td><tt>node</tt></td><td>Node to write
+</td></tr>
+<tr><td><tt>cb</tt></td><td>Whitespace callback or MXML_NO_CALLBACK
+</td></tr>
 </tbody></table></div>
 <h4>Returns</h4>
 <p>Allocated string or NULL</p>
@@ -1042,9 +1125,12 @@ mxmlSaveFd(
 <div class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' summary='Arguments'>
 <thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
-<tr><td><tt>node</tt></td><td>Node to write</td></tr>
-<tr><td><tt>fd</tt></td><td>File descriptor to write to</td></tr>
-<tr><td><tt>cb</tt></td><td>Whitespace callback or MXML_NO_CALLBACK</td></tr>
+<tr><td><tt>node</tt></td><td>Node to write
+</td></tr>
+<tr><td><tt>fd</tt></td><td>File descriptor to write to
+</td></tr>
+<tr><td><tt>cb</tt></td><td>Whitespace callback or MXML_NO_CALLBACK
+</td></tr>
 </tbody></table></div>
 <h4>Returns</h4>
 <p>0 on success, -1 on error.</p>
@@ -1069,9 +1155,12 @@ mxmlSaveFile(
 <div class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' summary='Arguments'>
 <thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
-<tr><td><tt>node</tt></td><td>Node to write</td></tr>
-<tr><td><tt>fp</tt></td><td>File to write to</td></tr>
-<tr><td><tt>cb</tt></td><td>Whitespace callback or MXML_NO_CALLBACK</td></tr>
+<tr><td><tt>node</tt></td><td>Node to write
+</td></tr>
+<tr><td><tt>fp</tt></td><td>File to write to
+</td></tr>
+<tr><td><tt>cb</tt></td><td>Whitespace callback or MXML_NO_CALLBACK
+</td></tr>
 </tbody></table></div>
 <h4>Returns</h4>
 <p>0 on success, -1 on error.</p>
@@ -1100,10 +1189,14 @@ mxmlSaveString(
 <div class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' summary='Arguments'>
 <thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
-<tr><td><tt>node</tt></td><td>Node to write</td></tr>
-<tr><td><tt>buffer</tt></td><td>String buffer</td></tr>
-<tr><td><tt>bufsize</tt></td><td>Size of string buffer</td></tr>
-<tr><td><tt>cb</tt></td><td>Whitespace callback or MXML_NO_CALLBACK</td></tr>
+<tr><td><tt>node</tt></td><td>Node to write
+</td></tr>
+<tr><td><tt>buffer</tt></td><td>String buffer
+</td></tr>
+<tr><td><tt>bufsize</tt></td><td>Size of string buffer
+</td></tr>
+<tr><td><tt>cb</tt></td><td>Whitespace callback or MXML_NO_CALLBACK
+</td></tr>
 </tbody></table></div>
 <h4>Returns</h4>
 <p>Size of string</p>
@@ -1125,8 +1218,10 @@ mxmlSetCDATA(
 <div class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' summary='Arguments'>
 <thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
-<tr><td><tt>node</tt></td><td>Node to set</td></tr>
-<tr><td><tt>data</tt></td><td>New data string</td></tr>
+<tr><td><tt>node</tt></td><td>Node to set
+</td></tr>
+<tr><td><tt>data</tt></td><td>New data string
+</td></tr>
 </tbody></table></div>
 <h4>Returns</h4>
 <p>0 on success, -1 on failure</p>
@@ -1149,9 +1244,12 @@ mxmlSetCustom(
 <div class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' summary='Arguments'>
 <thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
-<tr><td><tt>node</tt></td><td>Node to set</td></tr>
-<tr><td><tt>data</tt></td><td>New data pointer</td></tr>
-<tr><td><tt>destroy</tt></td><td>New destructor function</td></tr>
+<tr><td><tt>node</tt></td><td>Node to set
+</td></tr>
+<tr><td><tt>data</tt></td><td>New data pointer
+</td></tr>
+<tr><td><tt>destroy</tt></td><td>New destructor function
+</td></tr>
 </tbody></table></div>
 <h4>Returns</h4>
 <p>0 on success, -1 on failure</p>
@@ -1174,8 +1272,10 @@ mxmlSetCustomHandlers(
 <div class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' summary='Arguments'>
 <thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
-<tr><td><tt>load</tt></td><td>Load function</td></tr>
-<tr><td><tt>save</tt></td><td>Save function</td></tr>
+<tr><td><tt>load</tt></td><td>Load function
+</td></tr>
+<tr><td><tt>save</tt></td><td>Save function
+</td></tr>
 </tbody></table></div>
 <h4>Returns</h4>
 <p>Nothing.</p>
@@ -1195,8 +1295,10 @@ mxmlSetElement(
 <div class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' summary='Arguments'>
 <thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
-<tr><td><tt>node</tt></td><td>Node to set</td></tr>
-<tr><td><tt>name</tt></td><td>New name string</td></tr>
+<tr><td><tt>node</tt></td><td>Node to set
+</td></tr>
+<tr><td><tt>name</tt></td><td>New name string
+</td></tr>
 </tbody></table></div>
 <h4>Returns</h4>
 <p>0 on success, -1 on failure</p>
@@ -1214,7 +1316,8 @@ mxmlSetErrorCallback(
 <div class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' summary='Arguments'>
 <thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
-<tr><td><tt>cb</tt></td><td>Error callback function</td></tr>
+<tr><td><tt>cb</tt></td><td>Error callback function
+</td></tr>
 </tbody></table></div>
 <h4>Returns</h4>
 <p>Nothing.</p>
@@ -1234,8 +1337,10 @@ mxmlSetInteger(
 <div class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' summary='Arguments'>
 <thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
-<tr><td><tt>node</tt></td><td>Node to set</td></tr>
-<tr><td><tt>integer</tt></td><td>Integer value</td></tr>
+<tr><td><tt>node</tt></td><td>Node to set
+</td></tr>
+<tr><td><tt>integer</tt></td><td>Integer value
+</td></tr>
 </tbody></table></div>
 <h4>Returns</h4>
 <p>0 on success, -1 on failure</p>
@@ -1255,8 +1360,10 @@ mxmlSetOpaque(
 <div class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' summary='Arguments'>
 <thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
-<tr><td><tt>node</tt></td><td>Node to set</td></tr>
-<tr><td><tt>opaque</tt></td><td>Opaque string</td></tr>
+<tr><td><tt>node</tt></td><td>Node to set
+</td></tr>
+<tr><td><tt>opaque</tt></td><td>Opaque string
+</td></tr>
 </tbody></table></div>
 <h4>Returns</h4>
 <p>0 on success, -1 on failure</p>
@@ -1276,8 +1383,10 @@ mxmlSetReal(
 <div class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' summary='Arguments'>
 <thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
-<tr><td><tt>node</tt></td><td>Node to set</td></tr>
-<tr><td><tt>real</tt></td><td>Real number value</td></tr>
+<tr><td><tt>node</tt></td><td>Node to set
+</td></tr>
+<tr><td><tt>real</tt></td><td>Real number value
+</td></tr>
 </tbody></table></div>
 <h4>Returns</h4>
 <p>0 on success, -1 on failure</p>
@@ -1298,9 +1407,12 @@ mxmlSetText(
 <div class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' summary='Arguments'>
 <thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
-<tr><td><tt>node</tt></td><td>Node to set</td></tr>
-<tr><td><tt>whitespace</tt></td><td>1 = leading whitespace, 0 = no whitespace</td></tr>
-<tr><td><tt>string</tt></td><td>String</td></tr>
+<tr><td><tt>node</tt></td><td>Node to set
+</td></tr>
+<tr><td><tt>whitespace</tt></td><td>1 = leading whitespace, 0 = no whitespace
+</td></tr>
+<tr><td><tt>string</tt></td><td>String
+</td></tr>
 </tbody></table></div>
 <h4>Returns</h4>
 <p>0 on success, -1 on failure</p>
@@ -1322,10 +1434,14 @@ mxmlSetTextf(
 <div class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' summary='Arguments'>
 <thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
-<tr><td><tt>node</tt></td><td>Node to set</td></tr>
-<tr><td><tt>whitespace</tt></td><td>1 = leading whitespace, 0 = no whitespace</td></tr>
-<tr><td><tt>format</tt></td><td>Printf-style format string</td></tr>
-<tr><td><tt>...</tt></td><td>Additional arguments as needed</td></tr>
+<tr><td><tt>node</tt></td><td>Node to set
+</td></tr>
+<tr><td><tt>whitespace</tt></td><td>1 = leading whitespace, 0 = no whitespace
+</td></tr>
+<tr><td><tt>format</tt></td><td>Printf-style format string
+</td></tr>
+<tr><td><tt>...</tt></td><td>Additional arguments as needed
+</td></tr>
 </tbody></table></div>
 <h4>Returns</h4>
 <p>0 on success, -1 on failure</p>
@@ -1346,7 +1462,8 @@ mxmlSetWrapMargin(
 <div class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' summary='Arguments'>
 <thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
-<tr><td><tt>column</tt></td><td>Column for wrapping</td></tr>
+<tr><td><tt>column</tt></td><td>Column for wrapping
+</td></tr>
 </tbody></table></div>
 <h4>Returns</h4>
 <p>Nothing.</p>
@@ -1369,9 +1486,12 @@ mxmlWalkNext(
 <div class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' summary='Arguments'>
 <thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
-<tr><td><tt>node</tt></td><td>Current node</td></tr>
-<tr><td><tt>top</tt></td><td>Top node</td></tr>
-<tr><td><tt>descend</tt></td><td>Descend into tree - MXML_DESCEND, MXML_NO_DESCEND, or MXML_DESCEND_FIRST</td></tr>
+<tr><td><tt>node</tt></td><td>Current node
+</td></tr>
+<tr><td><tt>top</tt></td><td>Top node
+</td></tr>
+<tr><td><tt>descend</tt></td><td>Descend into tree - MXML_DESCEND, MXML_NO_DESCEND, or MXML_DESCEND_FIRST
+</td></tr>
 </tbody></table></div>
 <h4>Returns</h4>
 <p>Next node or NULL</p>
@@ -1394,9 +1514,12 @@ mxmlWalkPrev(
 <div class='table'><table align='center' border='1' width='80%' cellpadding='5' cellspacing='0' summary='Arguments'>
 <thead><tr><th>Name</th><th>Description</th></tr></thead>
 <tbody>
-<tr><td><tt>node</tt></td><td>Current node</td></tr>
-<tr><td><tt>top</tt></td><td>Top node</td></tr>
-<tr><td><tt>descend</tt></td><td>Descend into tree - MXML_DESCEND, MXML_NO_DESCEND, or MXML_DESCEND_FIRST</td></tr>
+<tr><td><tt>node</tt></td><td>Current node
+</td></tr>
+<tr><td><tt>top</tt></td><td>Top node
+</td></tr>
+<tr><td><tt>descend</tt></td><td>Descend into tree - MXML_DESCEND, MXML_NO_DESCEND, or MXML_DESCEND_FIRST
+</td></tr>
 </tbody></table></div>
 <h4>Returns</h4>
 <p>Previous node or NULL</p>

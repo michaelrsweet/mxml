@@ -289,7 +289,7 @@ main(int  argc,				/* I - Number of command-line args */
       * Process XML or source file...
       */
 
-      len = strlen(argv[i]);
+      len = (int)strlen(argv[i]);
       if (len > 4 && !strcmp(argv[i] + len - 4, ".xml"))
       {
        /*
@@ -682,18 +682,18 @@ get_text(mxml_node_t *node,		/* I - Node to get */
       if (current->value.text.whitespace)
         *ptr++ = ' ';
 
-      len = strlen(current->value.text.string);
-      if (len > (end - ptr))
-        len = end - ptr;
+      len = (int)strlen(current->value.text.string);
+      if (len > (int)(end - ptr))
+        len = (int)(end - ptr);
 
       memcpy(ptr, current->value.text.string, len);
       ptr += len;
     }
     else if (current->type == MXML_OPAQUE)
     {
-      len = strlen(current->value.opaque);
-      if (len > (end - ptr))
-        len = end - ptr;
+      len = (int)strlen(current->value.opaque);
+      if (len > (int)(end - ptr))
+        len = (int)(end - ptr);
 
       memcpy(ptr, current->value.opaque, len);
       ptr += len;

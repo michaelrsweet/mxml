@@ -42,7 +42,14 @@
  * Version number...
  */
 
-#define MXML_VERSION "Mini-XML v2.3.1"
+#define MXML_VERSION "Mini-XML v2.4"
+
+
+/*
+ * Inline function support...
+ */
+
+#define inline _inline
 
 
 /*
@@ -69,7 +76,8 @@ extern char	*_mxml_strdup(const char *);
 #    define strdup _mxml_strdup
 #  endif /* !HAVE_STRDUP */
 
-extern char	*_mxml_strdupf(const char *, va_list);
+extern char	*_mxml_strdupf(const char *, ...);
+extern char	*_mxml_vstrdupf(const char *, va_list);
 
 #  ifndef HAVE_SNPRINTF
 extern int	_mxml_snprintf(char *, size_t, const char *, ...);

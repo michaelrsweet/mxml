@@ -31,7 +31,7 @@
 #include "config.h"
 
 
-#ifdef HAVE_SNPRINTF
+#ifndef HAVE_SNPRINTF
 /*
  * '_mxml_snprintf()' - Format a string.
  */
@@ -52,7 +52,7 @@ _mxml_snprintf(char       *buffer,	/* I - Output buffer */
 
   return (bytes);
 }
-#endif /* HAVE_SNPRINTF */
+#endif /* !HAVE_SNPRINTF */
 
 
 /*

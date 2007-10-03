@@ -228,7 +228,7 @@ mxmlLoadString(mxml_node_t    *top,	/* I - Top node */
   * Read the XML data...
   */
 
-  return (mxml_load_data(top, &s, cb, mxml_string_getc, MXML_NO_CALLBACK,
+  return (mxml_load_data(top, (void *)&s, cb, mxml_string_getc, MXML_NO_CALLBACK,
                          NULL));
 }
 
@@ -559,7 +559,7 @@ mxmlSAXLoadString(
   * Read the XML data...
   */
 
-  return (mxml_load_data(top, &s, cb, mxml_string_getc, sax_cb, sax_data));
+  return (mxml_load_data(top, (void *)&s, cb, mxml_string_getc, sax_cb, sax_data));
 }
 
 

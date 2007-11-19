@@ -257,7 +257,7 @@ libmxml.so.1.4:	$(LIBOBJS)
 
 libmxml.sl.1:	$(LIBOBJS)
 	$(DSO) $(DSOFLAGS) -o libmxml.sl.1 $(LIBOBJS)
-	$(RM) libmxml.sl libmxml.sl.1
+	$(RM) libmxml.sl
 	$(LN) libmxml.sl.1 libmxml.sl
 
 
@@ -271,7 +271,7 @@ libmxml.1.dylib:	$(LIBOBJS)
 		-current_version 1.4.0 \
 		-compatibility_version 1.0.0 \
 		$(LIBOBJS)
-	$(RM) libmxml.dylib libmxml.1.dylib
+	$(RM) libmxml.dylib
 	$(LN) libmxml.1.dylib libmxml.dylib
 
 

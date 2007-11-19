@@ -1,10 +1,13 @@
-LIBRARY "MXML1.DLL"
+LIBRARY "MXML1"
 EXPORTS
  _mxml_snprintf
- _mxml_strdup
  _mxml_strdupf
  _mxml_vsnprintf
  _mxml_vstrdupf
+ mxml_ignore_cb
+ mxml_integer_cb
+ mxml_opaque_cb
+ mxml_real_cb
  mxmlAdd
  mxmlDelete
  mxmlElementDeleteAttr

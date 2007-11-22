@@ -183,6 +183,79 @@ _mxml_destructor(void *g)		/* I - Global data */
 }
 
 
+#elif defined(WIN32)			/**** WIN32 threading ****/
+#  include <windows.h>
+
+static DWORD _mxml_tls_index;		/* Index for global storage */
+
+
+/*
+ * 'DllMain()' - Main entry for library.
+ */
+ 
+BOOL WINAPI				/* O - Success/failure */
+DllMain(HINSTANCE hinst,		/* I - DLL module handle */
+        DWORD     reason,		/* I - Reason */
+        LPVOID    reserved)		/* I - Unused */
+{
+  _mxml_global_t	*global;	/* Global data */
+
+
+  (void)hinst;
+  (void)reserved;
+
+  switch (reason) 
+  { 
+    case DLL_PROCESS_ATTACH :		/* Called on library initialization */
+        if ((_mxml_tls_index = TlsAlloc()) == TLS_OUT_OF_INDEXES) 
+          return (FALSE); 
+        break; 
+
+    case DLL_THREAD_DETACH :		/* Called when a thread terminates */
+        if ((global = (_mxml_global_t *)TlsGetValue(_mxml_tls_index)) != NULL)
+          free(global);
+        break; 
+
+    case DLL_PROCESS_DETACH :		/* Called when library is unloaded */
+        if ((global = (_mxml_global_t *)TlsGetValue(_mxml_tls_index)) != NULL)
+          free(global);
+
+        TlsFree(_mxml_tls_index); 
+        break; 
+
+    default: 
+        break; 
+  } 
+
+  return (TRUE);
+}
+
+
+/*
+ * '_mxml_global()' - Get global data.
+ */
+
+_mxml_global_t *			/* O - Global data */
+_mxml_global(void)
+{
+  _mxml_global_t	*global;	/* Global data */
+
+
+  if ((global = (_mxml_global_t *)TlsGetValue(_mxml_tls_index)) == NULL)
+  {
+    global = (_mxml_global_t *)calloc(1, sizeof(_mxml_global_t));
+
+    global->num_entity_cbs = 1;
+    global->entity_cbs[0]  = _mxml_entity_cb;
+    global->wrap           = 72;
+
+    TlsSetValue(_mxml_tls_index, (LPVOID)global); 
+  }
+
+  return (global);
+}
+
+
 #else					/**** No threading ****/
 /*
  * '_mxml_global()' - Get global data.

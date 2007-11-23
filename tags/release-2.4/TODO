@@ -1,0 +1,10 @@
+TODO - 2007-11-22
+-----------------
+
+	- Add access methods and make node structure opaque.
+	  -- To allow for C++ migration
+	  -- To make future binary compatibility easier
+	- Add C++ class/struct.
+	  -- Make this the core implementation which the C API accesses?
+	  -- Class would allow for subclassing, is that necessary?
+	- Binary XML support???

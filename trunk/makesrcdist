@@ -33,7 +33,7 @@ echo "Removing Subversion files and directories..."
 
 rm -f makesrcdist TODO mvalidate.c
 rm -rf www
-
+rm -rf doc/mxml-cover* doc/hires
 cd ..
 
 echo "Making .tar.gz distribution..."

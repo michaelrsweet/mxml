@@ -1,8 +1,11 @@
-CHANGES - 2007-09-22
+CHANGES - 2007-11-22
 --------------------
 
 CHANGES IN Mini-XML 2.4
 
+	- Fixed shared library build problems on HP-UX and Mac OS X.
+	- The mxmldoc program did not output argument descriptions
+	  for functions properly.
 	- All global settings (custom, error, and entity callbacks
 	  and the wrap margin) are now managed separately for each
 	  thread.

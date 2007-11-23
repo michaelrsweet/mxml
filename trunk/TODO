@@ -1,11 +1,9 @@
-TODO - 02/25/2005
+TODO - 2007-11-22
 -----------------
 
 	- Add access methods and make node structure opaque.
 	  -- To allow for C++ migration
 	  -- To make future binary compatibility easier
-	- Add VC++/VC++.NET project files.
-	  -- Include DLL .def file for making a DLL?
 	- Add C++ class/struct.
 	  -- Make this the core implementation which the C API accesses?
 	  -- Class would allow for subclassing, is that necessary?

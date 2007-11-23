@@ -240,6 +240,9 @@ multiple files with comments on-line:</p>
 
 </ul>
 
+<p>You can also get a printed version of the Mini-XML documentation on
+<a href="http://www.lulu.com/content/820838">Lulu.com</a>.</p>
+
 <?php
   }
 

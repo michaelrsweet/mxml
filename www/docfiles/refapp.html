@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
 <HTML>
 <HEAD>
-<TITLE>Mini-XML Programmers Manual, Version 2.3</TITLE>
+<TITLE>Mini-XML Programmers Manual, Version 2.4</TITLE>
 <META NAME="author" CONTENT="Michael R. Sweet">
 <META NAME="copyright" CONTENT="Copyright 2003-2007">
 <META HTTP-EQUIV="Content-Type" CONTENT="text/html; CHARSET=iso-iso-8859-1">
@@ -91,6 +91,9 @@ hspace="10" src="C.gif" width="100"></A>Library Reference</H1>
 <UL>
 <LI><A href="#mxmlAdd"><TT>mxmlAdd()</TT></A></LI>
 <LI><A href="#mxmlDelete"><TT>mxmlDelete()</TT></A></LI>
+<LI><A href="#mxmlElementDeleteAttr"><TT>mxmlElementDeleteAttr()</TT></A>
+<!--span class='info'-->
+ &nbsp;Mini-XML 2.4&nbsp;</LI>
 <LI><A href="#mxmlElementGetAttr"><TT>mxmlElementGetAttr()</TT></A></LI>
 <LI><A href="#mxmlElementSetAttr"><TT>mxmlElementSetAttr()</TT></A></LI>
 <LI><A href="#mxmlElementSetAttrf"><TT>mxmlElementSetAttrf()</TT></A>
@@ -222,6 +225,30 @@ width="80%"><THEAD></THEAD>
 <P>Nothing.</P>
 
 <!-- NEW PAGE -->
+<H3 class="title"><A NAME="8_3_3">
+<!--span class='info'-->
+&nbsp;Mini-XML 2.4&nbsp;<A name="mxmlElementDeleteAttr">mxmlElementDeleteAttr()</A>
+</A></H3>
+<H4>Description</H4>
+<P>Delete an attribute.</P>
+<H4>Syntax</H4>
+<P> <TT>void
+<BR> mxmlElementDeleteAttr( <A href="#mxml_node_t">mxml_node_t</A> *
+ node, const char * name);</TT></P>
+<H4>Arguments</H4>
+<DIV class="table">
+<TABLE align="center" border="1" cellpadding="5" cellspacing="0" summary="Arguments"
+width="80%"><THEAD></THEAD>
+<TR><TH>Name</TH><TH>Description</TH></TR>
+<TBODY></TBODY>
+<TR><TD><TT>node</TT></TD><TD>Element</TD></TR>
+<TR><TD><TT>name</TT></TD><TD>Attribute name</TD></TR>
+</TABLE>
+</DIV>
+<H4>Returns</H4>
+<P>Nothing.</P>
+
+<!-- NEW PAGE -->
 <H3 class="title"><A name="mxmlElementGetAttr">mxmlElementGetAttr()</A></H3>
 <H4>Description</H4>
 <P>Get an attribute.</P>
@@ -270,7 +297,7 @@ width="80%"><THEAD></THEAD>
 <P>Nothing.</P>
 
 <!-- NEW PAGE -->
-<H3 class="title"><A NAME="8_3_5">
+<H3 class="title"><A NAME="8_3_6">
 <!--span class='info'-->
 &nbsp;Mini-XML 2.3&nbsp;<A name="mxmlElementSetAttrf">mxmlElementSetAttrf()</A></A>
 </H3>
@@ -613,7 +640,7 @@ width="80%"><THEAD></THEAD>
 <P>First node or NULL if the string has errors.</P>
 
 <!-- NEW PAGE -->
-<H3 class="title"><A NAME="8_3_19">
+<H3 class="title"><A NAME="8_3_20">
 <!--span class='info'-->
 &nbsp;Mini-XML 2.3&nbsp;<A name="mxmlNewCDATA">mxmlNewCDATA()</A></A></H3>
 <H4>Description</H4>
@@ -640,7 +667,7 @@ width="80%"><THEAD></THEAD>
 <P>New node</P>
 
 <!-- NEW PAGE -->
-<H3 class="title"><A NAME="8_3_20">
+<H3 class="title"><A NAME="8_3_21">
 <!--span class='info'-->
 &nbsp;Mini-XML 2.1&nbsp;<A name="mxmlNewCustom">mxmlNewCustom()</A></A></H3>
 <H4>Description</H4>
@@ -823,7 +850,7 @@ width="80%"><THEAD></THEAD>
 <P>New node</P>
 
 <!-- NEW PAGE -->
-<H3 class="title"><A NAME="8_3_27">
+<H3 class="title"><A NAME="8_3_28">
 <!--span class='info'-->
 &nbsp;Mini-XML 2.3&nbsp;<A name="mxmlNewXML">mxmlNewXML()</A></A></H3>
 <H4>Description</H4>
@@ -846,7 +873,7 @@ width="80%"><THEAD></THEAD>
 <P>New ?xml node</P>
 
 <!-- NEW PAGE -->
-<H3 class="title"><A NAME="8_3_28">
+<H3 class="title"><A NAME="8_3_29">
 <!--span class='info'-->
 &nbsp;Mini-XML 2.3&nbsp;<A name="mxmlRelease">mxmlRelease()</A></A></H3>
 <H4>Description</H4>
@@ -890,7 +917,7 @@ width="80%"><THEAD></THEAD>
 <P>Nothing.</P>
 
 <!-- NEW PAGE -->
-<H3 class="title"><A NAME="8_3_30">
+<H3 class="title"><A NAME="8_3_31">
 <!--span class='info'-->
 &nbsp;Mini-XML 2.3&nbsp;<A name="mxmlRetain">mxmlRetain()</A></A></H3>
 <H4>Description</H4>
@@ -911,7 +938,7 @@ width="80%"><THEAD></THEAD>
 <P>New reference count</P>
 
 <!-- NEW PAGE -->
-<H3 class="title"><A NAME="8_3_31">
+<H3 class="title"><A NAME="8_3_32">
 <!--span class='info'-->
 &nbsp;Mini-XML 2.3&nbsp;<A name="mxmlSAXLoadFd">mxmlSAXLoadFd()</A></A></H3>
 <H4>Description</H4>
@@ -950,7 +977,7 @@ width="80%"><THEAD></THEAD>
 <P>First node or NULL if the file could not be read.</P>
 
 <!-- NEW PAGE -->
-<H3 class="title"><A NAME="8_3_32">
+<H3 class="title"><A NAME="8_3_33">
 <!--span class='info'-->
 &nbsp;Mini-XML 2.3&nbsp;<A name="mxmlSAXLoadFile">mxmlSAXLoadFile()</A></A></H3>
 <H4>Description</H4>
@@ -989,7 +1016,7 @@ width="80%"><THEAD></THEAD>
 <P>First node or NULL if the file could not be read.</P>
 
 <!-- NEW PAGE -->
-<H3 class="title"><A NAME="8_3_33">
+<H3 class="title"><A NAME="8_3_34">
 <!--span class='info'-->
 &nbsp;Mini-XML 2.3&nbsp;<A name="mxmlSAXLoadString">mxmlSAXLoadString()</A></A></H3>
 <H4>Description</H4>
@@ -1146,7 +1173,7 @@ width="80%"><THEAD></THEAD>
 <P>Size of string</P>
 
 <!-- NEW PAGE -->
-<H3 class="title"><A NAME="8_3_38">
+<H3 class="title"><A NAME="8_3_39">
 <!--span class='info'-->
 &nbsp;Mini-XML 2.3&nbsp;<A name="mxmlSetCDATA">mxmlSetCDATA()</A></A></H3>
 <H4>Description</H4>
@@ -1170,7 +1197,7 @@ width="80%"><THEAD></THEAD>
 <P>0 on success, -1 on failure</P>
 
 <!-- NEW PAGE -->
-<H3 class="title"><A NAME="8_3_39">
+<H3 class="title"><A NAME="8_3_40">
 <!--span class='info'-->
 &nbsp;Mini-XML 2.1&nbsp;<A name="mxmlSetCustom">mxmlSetCustom()</A></A></H3>
 <H4>Description</H4>
@@ -1381,7 +1408,7 @@ width="80%"><THEAD></THEAD>
 <P>0 on success, -1 on failure</P>
 
 <!-- NEW PAGE -->
-<H3 class="title"><A NAME="8_3_48">
+<H3 class="title"><A NAME="8_3_49">
 <!--span class='info'-->
 &nbsp;Mini-XML 2.3&nbsp;<A name="mxmlSetWrapMargin">mxmlSetWrapMargin()</A></A></H3>
 <H4>Description</H4>

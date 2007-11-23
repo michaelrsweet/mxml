@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
 <HTML>
 <HEAD>
-<TITLE>Mini-XML Programmers Manual, Version 2.3</TITLE>
+<TITLE>Mini-XML Programmers Manual, Version 2.4</TITLE>
 <META NAME="author" CONTENT="Michael R. Sweet">
 <META NAME="copyright" CONTENT="Copyright 2003-2007">
 <META HTTP-EQUIV="Content-Type" CONTENT="text/html; CHARSET=iso-iso-8859-1">
@@ -30,7 +30,27 @@ A { text-decoration: none }
 <HR NOSHADE>
 <H1 align="right"><A name="RELNOTES"><IMG align="right" alt="B" height="100"
 hspace="10" src="B.gif" width="100"></A>Release Notes</H1>
-<H2><A NAME="7_1">Changes in Mini-XML 2.3</A></H2>
+<H2><A NAME="7_1">Changes in Mini-XML 2.4</A></H2>
+<UL>
+<LI>Fixed shared library build problems on HP-UX and Mac OS X.</LI>
+<LI>The mxmldoc program did not output argument descriptions for
+ functions properly.</LI>
+<LI>All global settings (custom, error, and entity callbacks and the
+ wrap margin) are now managed separately for each thread.</LI>
+<LI>Added mxmlElementDeleteAttr() function (STR #59)</LI>
+<LI>mxmlElementSetAttrf() did not work (STR #57)</LI>
+<LI>mxmlLoad*() incorrectly treated declarations as parent elements (STR
+ #56)</LI>
+<LI>mxmlLoad*() incorrectly allowed attributes without values (STR #47)</LI>
+<LI>Fixed Visual C++ build problems (STR #49)</LI>
+<LI>mxmlLoad*() did not return NULL when an element contained an error
+ (STR #46)</LI>
+<LI>Added support for the apos character entity (STR #54)</LI>
+<LI>Fixed whitespace detection with Unicode characters (STR #48)</LI>
+<LI>mxmlWalkNext() and mxmlWalkPrev() did not work correctly when called
+ with a node with no children as the top node (STR #53)</LI>
+</UL>
+<H2><A NAME="7_2">Changes in Mini-XML 2.3</A></H2>
 <UL>
 <LI>Added two exceptions to the LGPL to support static linking of
  applications against Mini-XML</LI>
@@ -68,12 +88,12 @@ hspace="10" src="B.gif" width="100"></A>Release Notes</H1>
 <LI>mxmlLoad*() did not treat custom data as opaque, so whitespace
  characters would be lost</LI>
 </UL>
-<H2><A NAME="7_2">Changes in Mini-XML 2.2.2</A></H2>
+<H2><A NAME="7_3">Changes in Mini-XML 2.2.2</A></H2>
 <UL>
 <LI>mxmlLoad*() did not treat custom data as opaque, so whitespace
  characters would be lost.</LI>
 </UL>
-<H2><A NAME="7_3">Changes in Mini-XML 2.2.1</A></H2>
+<H2><A NAME="7_4">Changes in Mini-XML 2.2.1</A></H2>
 <UL>
 <LI>mxmlLoadFd(), mxmlLoadFile(), and mxmlLoadString() now correctly
  return NULL on error (STR #21)</LI>
@@ -84,7 +104,7 @@ hspace="10" src="B.gif" width="100"></A>Release Notes</H1>
  proper permissions on UNIX/Linux/OSX.</LI>
 <LI>Fixed a MingW/Cygwin compilation problem (STR #18)</LI>
 </UL>
-<H2><A NAME="7_4">Changes in Mini-XML 2.2</A></H2>
+<H2><A NAME="7_5">Changes in Mini-XML 2.2</A></H2>
 <UL>
 <LI>Added shared library support (STR #17)</LI>
 <LI>mxmlLoad*() now returns an error when an XML stream contains illegal
@@ -98,7 +118,7 @@ hspace="10" src="B.gif" width="100"></A>Release Notes</H1>
 <LI>Added checking for invalid comment termination (&quot;---&gt;&quot; is not
  allowed)</LI>
 </UL>
-<H2><A NAME="7_5">Changes in Mini-XML 2.1</A></H2>
+<H2><A NAME="7_6">Changes in Mini-XML 2.1</A></H2>
 <UL>
 <LI>Added support for custom data nodes (STR #6)</LI>
 <LI>Now treat UTF-8 sequences which are longer than necessary as an
@@ -109,7 +129,7 @@ hspace="10" src="B.gif" width="100"></A>Release Notes</H1>
 <LI>Added mxmlLoadFd() and mxmlSaveFd() functions.</LI>
 <LI>Fixed multi-word UTF-16 handling.</LI>
 </UL>
-<H2><A NAME="7_6">Changes in Mini-XML 2.0</A></H2>
+<H2><A NAME="7_7">Changes in Mini-XML 2.0</A></H2>
 <UL>
 <LI>New programmers manual.</LI>
 <LI>Added Visual C++ project files for Microsoft Windows users.</LI>
@@ -142,7 +162,7 @@ hspace="10" src="B.gif" width="100"></A>Release Notes</H1>
  destination path and install path. This caused problems when building
  and installing with MingW.</LI>
 </UL>
-<H2><A NAME="7_7">Changes in Mini-XML 1.3</A></H2>
+<H2><A NAME="7_8">Changes in Mini-XML 1.3</A></H2>
 <UL>
 <LI>Fixes for mxmldoc.</LI>
 <LI>Added support for reading standard HTML entity names.</LI>
@@ -158,7 +178,7 @@ hspace="10" src="B.gif" width="100"></A>Release Notes</H1>
 <LI>The load and save functions now properly handle quoted element and
  attribute name strings properly, e.g. for !DOCTYPE declarations.</LI>
 </UL>
-<H2><A NAME="7_8">Changes in Mini-XML 1.2</A></H2>
+<H2><A NAME="7_9">Changes in Mini-XML 1.2</A></H2>
 <UL>
 <LI>Added new &quot;set&quot; methods to set the value of a node.</LI>
 <LI>Added new formatted text methods mxmlNewTextf() and mxmlSetTextf()
@@ -171,13 +191,13 @@ hspace="10" src="B.gif" width="100"></A>Release Notes</H1>
 <LI>Added --with/without-snprintf configure option to control the
  snprintf() and vsnprintf() function checks.</LI>
 </UL>
-<H2><A NAME="7_9">Changes in Mini-XML 1.1.2</A></H2>
+<H2><A NAME="7_10">Changes in Mini-XML 1.1.2</A></H2>
 <UL>
 <LI>The mxml(3) man page wasn't updated for the string functions.</LI>
 <LI>mxmlSaveString() returned the wrong number of characters.</LI>
 <LI>mxml_add_char() updated the buffer pointer in the wrong place.</LI>
 </UL>
-<H2><A NAME="7_10">Changes in Mini-XML 1.1.1</A></H2>
+<H2><A NAME="7_11">Changes in Mini-XML 1.1.1</A></H2>
 <UL>
 <LI>The private mxml_add_ch() function did not update the
  start-of-buffer pointer which could cause a crash when using
@@ -188,7 +208,7 @@ hspace="10" src="B.gif" width="100"></A>Release Notes</H1>
 <LI>Added a mxmlSaveAllocString() convenience function for saving an XML
  node tree to an allocated string.</LI>
 </UL>
-<H2><A NAME="7_11">Changes in Mini-XML 1.1</A></H2>
+<H2><A NAME="7_12">Changes in Mini-XML 1.1</A></H2>
 <UL>
 <LI>The mxmlLoadFile() function now uses dynamically allocated string
  buffers for element names, attribute names, and attribute values.
@@ -200,7 +220,7 @@ hspace="10" src="B.gif" width="100"></A>Release Notes</H1>
 <LI>Add emulation of strdup() if the local platform does not provide the
  function.</LI>
 </UL>
-<H2><A NAME="7_12">Changes in Mini-XML 1.0</A></H2>
+<H2><A NAME="7_13">Changes in Mini-XML 1.0</A></H2>
 <UL>
 <LI>The mxmldoc program now handles function arguments, structures,
  unions, enumerations, classes, and typedefs properly.</LI>
@@ -208,7 +228,7 @@ hspace="10" src="B.gif" width="100"></A>Release Notes</H1>
  code.</LI>
 <LI>Added man pages and packaging files.</LI>
 </UL>
-<H2><A NAME="7_13">Changes in Mini-XML 0.93</A></H2>
+<H2><A NAME="7_14">Changes in Mini-XML 0.93</A></H2>
 <UL>
 <LI>New mxmldoc example program that is also used to create and update
  code documentation using XML and produce HTML reference pages.</LI>
@@ -233,15 +253,15 @@ hspace="10" src="B.gif" width="100"></A>Release Notes</H1>
 <LI>mxmlSaveFile() now supports a whitespace callback to provide more
  human-readable XML output under program control.</LI>
 </UL>
-<H2><A NAME="7_14">Changes in Mini-XML 0.92</A></H2>
+<H2><A NAME="7_15">Changes in Mini-XML 0.92</A></H2>
 <UL>
 <LI>mxmlSaveFile() didn't return a value on success.</LI>
 </UL>
-<H2><A NAME="7_15">Changes in Mini-XML 0.91</A></H2>
+<H2><A NAME="7_16">Changes in Mini-XML 0.91</A></H2>
 <UL>
 <LI>mxmlWalkNext() would go into an infinite loop.</LI>
 </UL>
-<H2><A NAME="7_16">Changes in Mini-XML 0.9</A></H2>
+<H2><A NAME="7_17">Changes in Mini-XML 0.9</A></H2>
 <UL>
 <LI>Initial public release.</LI>
 </UL>

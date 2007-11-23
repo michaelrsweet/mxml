@@ -103,7 +103,7 @@ all:		Makefile config.h $(TARGETS)
 #
 
 clean:
-	$(RM) $(OBJS) $(TARGETS) doc/mxml.man
+	$(RM) $(OBJS) $(TARGETS)
 	$(RM) mxmldoc-static libmxml.a
 
 

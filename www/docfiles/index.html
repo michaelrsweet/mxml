@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
 <HTML>
 <HEAD>
-<TITLE>Mini-XML Programmers Manual, Version 2.3</TITLE>
+<TITLE>Mini-XML Programmers Manual, Version 2.4</TITLE>
 <META NAME="author" CONTENT="Michael R. Sweet">
 <META NAME="copyright" CONTENT="Copyright 2003-2007">
 <META HTTP-EQUIV="Content-Type" CONTENT="text/html; CHARSET=iso-iso-8859-1">
@@ -91,9 +91,10 @@ A { text-decoration: none }
 <UL>
 <LI><A HREF="refapp.html#mxmlAdd">mxmlAdd()</A></LI>
 <LI><A HREF="refapp.html#mxmlDelete">mxmlDelete()</A></LI>
+<LI><A HREF="refapp.html#8_3_3">mxmlElementDeleteAttr()</A></LI>
 <LI><A HREF="refapp.html#mxmlElementGetAttr">mxmlElementGetAttr()</A></LI>
 <LI><A HREF="refapp.html#mxmlElementSetAttr">mxmlElementSetAttr()</A></LI>
-<LI><A HREF="refapp.html#8_3_5">mxmlElementSetAttrf()</A></LI>
+<LI><A HREF="refapp.html#8_3_6">mxmlElementSetAttrf()</A></LI>
 <LI><A HREF="refapp.html#mxmlEntityAddCallback">mxmlEntityAddCallback()</A>
 </LI>
 <LI><A HREF="refapp.html#mxmlEntityGetName">mxmlEntityGetName()</A></LI>
@@ -109,27 +110,27 @@ mxmlEntityRemoveCallback()</A></LI>
 <LI><A HREF="refapp.html#mxmlLoadFd">mxmlLoadFd()</A></LI>
 <LI><A HREF="refapp.html#mxmlLoadFile">mxmlLoadFile()</A></LI>
 <LI><A HREF="refapp.html#mxmlLoadString">mxmlLoadString()</A></LI>
-<LI><A HREF="refapp.html#8_3_19">mxmlNewCDATA()</A></LI>
-<LI><A HREF="refapp.html#8_3_20">mxmlNewCustom()</A></LI>
+<LI><A HREF="refapp.html#8_3_20">mxmlNewCDATA()</A></LI>
+<LI><A HREF="refapp.html#8_3_21">mxmlNewCustom()</A></LI>
 <LI><A HREF="refapp.html#mxmlNewElement">mxmlNewElement()</A></LI>
 <LI><A HREF="refapp.html#mxmlNewInteger">mxmlNewInteger()</A></LI>
 <LI><A HREF="refapp.html#mxmlNewOpaque">mxmlNewOpaque()</A></LI>
 <LI><A HREF="refapp.html#mxmlNewReal">mxmlNewReal()</A></LI>
 <LI><A HREF="refapp.html#mxmlNewText">mxmlNewText()</A></LI>
 <LI><A HREF="refapp.html#mxmlNewTextf">mxmlNewTextf()</A></LI>
-<LI><A HREF="refapp.html#8_3_27">mxmlNewXML()</A></LI>
-<LI><A HREF="refapp.html#8_3_28">mxmlRelease()</A></LI>
+<LI><A HREF="refapp.html#8_3_28">mxmlNewXML()</A></LI>
+<LI><A HREF="refapp.html#8_3_29">mxmlRelease()</A></LI>
 <LI><A HREF="refapp.html#mxmlRemove">mxmlRemove()</A></LI>
-<LI><A HREF="refapp.html#8_3_30">mxmlRetain()</A></LI>
-<LI><A HREF="refapp.html#8_3_31">mxmlSAXLoadFd()</A></LI>
-<LI><A HREF="refapp.html#8_3_32">mxmlSAXLoadFile()</A></LI>
-<LI><A HREF="refapp.html#8_3_33">mxmlSAXLoadString()</A></LI>
+<LI><A HREF="refapp.html#8_3_31">mxmlRetain()</A></LI>
+<LI><A HREF="refapp.html#8_3_32">mxmlSAXLoadFd()</A></LI>
+<LI><A HREF="refapp.html#8_3_33">mxmlSAXLoadFile()</A></LI>
+<LI><A HREF="refapp.html#8_3_34">mxmlSAXLoadString()</A></LI>
 <LI><A HREF="refapp.html#mxmlSaveAllocString">mxmlSaveAllocString()</A></LI>
 <LI><A HREF="refapp.html#mxmlSaveFd">mxmlSaveFd()</A></LI>
 <LI><A HREF="refapp.html#mxmlSaveFile">mxmlSaveFile()</A></LI>
 <LI><A HREF="refapp.html#mxmlSaveString">mxmlSaveString()</A></LI>
-<LI><A HREF="refapp.html#8_3_38">mxmlSetCDATA()</A></LI>
-<LI><A HREF="refapp.html#8_3_39">mxmlSetCustom()</A></LI>
+<LI><A HREF="refapp.html#8_3_39">mxmlSetCDATA()</A></LI>
+<LI><A HREF="refapp.html#8_3_40">mxmlSetCustom()</A></LI>
 <LI><A HREF="refapp.html#mxmlSetCustomHandlers">mxmlSetCustomHandlers()</A>
 </LI>
 <LI><A HREF="refapp.html#mxmlSetElement">mxmlSetElement()</A></LI>
@@ -140,7 +141,7 @@ mxmlEntityRemoveCallback()</A></LI>
 <LI><A HREF="refapp.html#mxmlSetReal">mxmlSetReal()</A></LI>
 <LI><A HREF="refapp.html#mxmlSetText">mxmlSetText()</A></LI>
 <LI><A HREF="refapp.html#mxmlSetTextf">mxmlSetTextf()</A></LI>
-<LI><A HREF="refapp.html#8_3_48">mxmlSetWrapMargin()</A></LI>
+<LI><A HREF="refapp.html#8_3_49">mxmlSetWrapMargin()</A></LI>
 <LI><A HREF="refapp.html#mxmlWalkNext">mxmlWalkNext()</A></LI>
 <LI><A HREF="refapp.html#mxmlWalkPrev">mxmlWalkPrev()</A></LI>
 </UL>

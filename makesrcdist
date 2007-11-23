@@ -38,7 +38,7 @@ cd ..
 
 echo "Making .tar.gz distribution..."
 
-gtar czf mxml-$version.tar.gz mxml-$version
+tar czf mxml-$version.tar.gz mxml-$version
 
 echo "Removing distribution directory..."
 

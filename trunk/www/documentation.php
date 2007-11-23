@@ -202,7 +202,7 @@ multiple files with comments on-line:</p>
 
 <ul>
 
-	<li><a href='mxml.html'>HTML in one file (169k)</a></li>
+	<li><a href='mxml.html'>HTML in one file (170k)</a></li>
 
 	<li><a href='documentation.php/index.html'>HTML in
 	separate files with Comments</a>

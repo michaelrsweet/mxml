@@ -26,6 +26,24 @@
 
 #define _CRT_SECURE_NO_DEPRECATE
 
+/*
+ * Microsoft also renames the POSIX functions to _name, and introduces
+ * a broken compatibility layer using the original names.  As a result,
+ * random crashes can occur when, for example, strdup() allocates memory
+ * from a different heap than used by malloc() and free().
+ *
+ * To avoid moronic problems like this, we #define the POSIX function
+ * names to the corresponding non-standard Microsoft names.
+ */
+
+#define close		_close
+#define open		_open
+#define read	        _read
+#define snprintf 	_snprintf
+#define strdup		_strdup
+#define vsnprintf 	_vsnprintf
+#define write		_write
+
 
 /*
  * Include necessary headers...
@@ -42,7 +60,7 @@
  * Version number...
  */
 
-#define MXML_VERSION "Mini-XML v2.4"
+#define MXML_VERSION "Mini-XML v2.4.1"
 
 
 /*
@@ -56,8 +74,8 @@
  * Do we have the snprintf() and vsnprintf() functions?
  */
 
-/*#undef HAVE_SNPRINTF */
-/*#undef HAVE_VSNPRINTF */
+#define HAVE_SNPRINTF 1
+#define HAVE_VSNPRINTF 1
 
 
 /*

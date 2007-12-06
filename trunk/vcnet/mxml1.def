@@ -1,8 +1,6 @@
 LIBRARY "MXML1"
 EXPORTS
- _mxml_snprintf
  _mxml_strdupf
- _mxml_vsnprintf
  _mxml_vstrdupf
  mxml_ignore_cb
  mxml_integer_cb

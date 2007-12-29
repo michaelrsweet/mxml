@@ -142,7 +142,7 @@ html_header($title = "",		// I - Additional document title
              ."title='Search'><input type='submit' value='Search'>";
   }
 
-  $classes = array("unsel", "unsel", "unsel", "unsel", "unsel");
+  $classes = array("unsel", "unsel", "unsel", "unsel", "unsel", "unsel");
   if (strpos($PHP_SELF, "/account.php") !== FALSE ||
       strpos($PHP_SELF, "/login.php") !== FALSE)
     $classes[0] = "sel";
@@ -152,6 +152,8 @@ html_header($title = "",		// I - Additional document title
     $classes[3] = "sel";
   else if (strpos($PHP_SELF, "/software.php") !== FALSE)
     $classes[4] = "sel";
+  else if (strpos($PHP_SELF, "/forums.php") !== FALSE)
+    $classes[5] = "sel";
   else
     $classes[1] = "sel";
 
@@ -172,11 +174,12 @@ html_header($title = "",		// I - Additional document title
        ."<td class='$classes[2]'><a href='$html_path/str.php'>Bugs&nbsp;&amp;&nbsp;Features</a></td>"
        ."<td class='$classes[3]'><a href='$html_path/documentation.php'>Documentation</a></td>"
        ."<td class='$classes[4]'><a href='$html_path/software.php'>Download</a></td>"
+       ."<td class='$classes[5]'><a href='$html_path/forums.php'>Forums</a></td>"
        ."<td class='unsel' align='right' width='100%'>"
        ."<form action='$html_path/documentation.php' method='GET'>"
        ."$search</form></td>"
        ."</tr>\n"
-       ."<tr><td class='page' colspan='7'>");
+       ."<tr><td class='page' colspan='8'>");
 }
 
 
@@ -188,8 +191,8 @@ function
 html_footer()
 {
   print("</td></tr>\n"
-       ."<td class='footer' colspan='7'>"
-       ."Copyright 2003-2007 by Michael Sweet. This library is free "
+       ."<td class='footer' colspan='8'>"
+       ."Copyright 2003-2008 by Michael Sweet. This library is free "
        ."software; you can redistribute it and/or modify it "
        ."under the terms of the GNU Library General Public "
        ."License as published by the Free Software Foundation; "

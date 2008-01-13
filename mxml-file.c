@@ -3,7 +3,7 @@
  *
  * File loading code for Mini-XML, a small XML-like file parsing library.
  *
- * Copyright 2003-2007 by Michael Sweet.
+ * Copyright 2003-2008 by Michael Sweet.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -1841,13 +1841,16 @@ mxml_load_data(
         if (node)
 	{
 	  if (!first)
-	    first = node;
+            first = node;
 
-	  parent = node;
+	  if (!parent)
+	  {
+	    parent = node;
 
-	  if (cb)
-	    type = (*cb)(parent);
-        }
+	    if (cb)
+	      type = (*cb)(parent);
+	  }
+	}
       }
       else if (buffer[0] == '!')
       {
@@ -1910,8 +1913,19 @@ mxml_load_data(
             node = NULL;
         }
 
-        if (node && !first)
-          first = node;
+        if (node)
+	{
+	  if (!first)
+            first = node;
+
+	  if (!parent)
+	  {
+	    parent = node;
+
+	    if (cb)
+	      type = (*cb)(parent);
+	  }
+	}
       }
       else if (buffer[0] == '/')
       {
@@ -2111,8 +2125,6 @@ mxml_parse_element(
 	valsize;			/* Size of value string */
 
 
-
-
  /*
   * Initialize the name and value buffers...
   */
@@ -2234,13 +2246,18 @@ mxml_parse_element(
     if (mxmlElementGetAttr(node, name))
       goto error;
 
+    while (ch != EOF && mxml_isspace(ch))
+      ch = (*getc_cb)(p, encoding);
+
     if (ch == '=')
     {
      /*
       * Read the attribute value...
       */
 
-      if ((ch = (*getc_cb)(p, encoding)) == EOF)
+      while ((ch = (*getc_cb)(p, encoding)) != EOF && mxml_isspace(ch));
+
+      if (ch == EOF)
       {
         mxml_error("Missing value for attribute '%s' in element %s!",
 	           name, node->value.element.name);

@@ -3882,7 +3882,7 @@ write_string(const char *s,		/* I - String to write */
     case OUTPUT_MAN :
         while (*s)
         {
-          if (*s == '\\')
+          if (*s == '\\' || *s == '-')
             putchar('\\');
 
           putchar(*s++);

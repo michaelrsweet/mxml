@@ -3,7 +3,7 @@
 .\"
 .\" mxmldoc man page for mini-XML, a small XML-like file parsing library.
 .\"
-.\" Copyright 2003-2007 by Michael Sweet.
+.\" Copyright 2003-2008 by Michael Sweet.
 .\"
 .\" This program is free software; you can redistribute it and/or
 .\" modify it under the terms of the GNU Library General Public
@@ -15,23 +15,23 @@
 .\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 .\" GNU General Public License for more details.
 .\"
-.TH mxmldoc 1 "Mini-XML" "22 April 2007" "Michael Sweet"
+.TH mxmldoc 1 "Mini-XML" "12 January 2008" "Michael Sweet"
 .SH NAME
 mxmldoc \- mini-xml documentation generator
 .SH SYNOPSIS
 .B mxmldoc
---no-output [
+\-\-no-output [
 .I filename.xml
 ]
 .I source file(s)
 ]
 .br
 .B mxmldoc
-[ --intro
+[ \-\-intro
 .I introfile
-] [ --section
+] [ \-\-section
 .I section
-] [ --title
+] [ \-\-title
 .I title
 ] [
 .I filename.xml
@@ -41,13 +41,13 @@ mxmldoc \- mini-xml documentation generator
 .I filename.html
 .br
 .B mxmldoc
---man
+\-\-man
 .I manpage
-[ --intro
+[ \-\-intro
 .I introfile
-] [ --section
+] [ \-\-section
 .I section
-] [ --title
+] [ \-\-title
 .I title
 ] [
 .I filename.xml
@@ -61,9 +61,9 @@ an XML representation of globally accessible classes, constants,
 enumerations, functions, structures, typedefs, unions, and variables
 - the XML file is updated as necessary. By default, a HTML
 representation of the XML file is written to the standard output.
-Use the \fI--no-output\fR option to disable the HTML output.
+Use the \fI\-\-no-output\fR option to disable the HTML output.
 .PP
-Man page source can be generated using the \fI--man\fR option.
+Man page source can be generated using the \fI\-\-man\fR option.
 .PP
 If no source files are specified then the current XML file is
 converted to the standard output.
@@ -74,29 +74,29 @@ documentation that is formatted according to the CUPS Developer
 Guide which is available at "http://www.cups.org/documentation.php".
 .SH OPTIONS
 .TP 5
-\--intro introfile
+\-\-intro introfile
 .br
 Inserts the specified file at the top of the output documentation.
 .TP 5
-\--man manpage
+\-\-man manpage
 .br
 Generated a man page instead of HTML documentation.
 .TP 5
-\--no-output
+\-\-no-output
 .br
 Disables generation of documentation on the standard output.
 .TP 5
-\--section section
+\-\-section section
 .br
 Sets the section/keywords in the output documentation.
 .TP 5
-\--title title
+\-\-title title
 .br
 Sets the title of the output documentation.
 .SH SEE ALSO
-mxml(3), Mini-XML Programmers Manual, http://www.easysw.com/~mike/mxml/
+mxml(3), Mini-XML Programmers Manual, http://www.minixml.org/
 .SH COPYRIGHT
-Copyright 2003-2007 by Michael Sweet.
+Copyright 2003-2008 by Michael Sweet.
 .\"
 .\" End of "$Id$".
 .\"

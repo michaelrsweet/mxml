@@ -34,9 +34,9 @@
 				Name="VCLinkerTool"
 				OutputFile="mxml1d.dll"
 				LinkIncremental="2"
-				ModuleDefinitionFile=".\mxml1.def"
+				ModuleDefinitionFile=".\mxml1d.def"
 				GenerateDebugInformation="TRUE"
-				ProgramDatabaseFile="$(OutDir)/mxml1.pdb"
+				ProgramDatabaseFile="$(OutDir)/mxml1d.pdb"
 				SubSystem="2"
 				ImportLibrary="mxml1d.lib"
 				TargetMachine="1"/>

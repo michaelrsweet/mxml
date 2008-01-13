@@ -3,6 +3,8 @@ CHANGES - 2008-01-12
 
 CHANGES IN Mini-XML 2.4.1
 
+	- The man pages and man page output from mxmldoc did
+	  not use "\-" for dashes (STR #68)
 	- The debug version of the Mini-XML DLL could not be
 	  built (STR #65)
 	- Processing instructions and directives did not work

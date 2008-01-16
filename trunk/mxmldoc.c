@@ -4,7 +4,7 @@
  * Documentation generator using Mini-XML, a small XML-like file parsing
  * library.
  *
- * Copyright 2003-2007 by Michael Sweet.
+ * Copyright 2003-2008 by Michael Sweet.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -1227,9 +1227,12 @@ scan_file(const char  *filename,	/* I - Filename */
 		      if (!strcmp(node->value.text.string, "("))
 			break;
 
-		    for (node = node->next; node; node = node->next)
-		      if (strcmp(node->value.text.string, "*"))
-			break;
+                    if (node)
+		    {
+		      for (node = node->next; node; node = node->next)
+			if (strcmp(node->value.text.string, "*"))
+			  break;
+                    }
 
                     if (node)
 		    {
@@ -1282,7 +1285,6 @@ scan_file(const char  *filename,	/* I - Filename */
 #ifdef DEBUG
                   fputs("Identifier: <<<< , >>>\n", stderr);
 #endif /* DEBUG */
-                  ch = type->last_child->value.text.string[0];
 		  mxmlNewText(type, 0, ",");
 		}
 		break;

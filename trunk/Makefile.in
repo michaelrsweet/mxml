@@ -325,7 +325,7 @@ testmxml.o:	mxml.h
 
 mxml.xml:	mxmldoc-static mxml.h $(PUBLIBOBJS:.o=.c)
 	$(RM) mxml.xml
-	./mxmldoc-static --intro doc/reference.intro mxml.xml mxml.h $(PUBLIBOBJS:.o=.c) >doc/reference.html
+	./mxmldoc-static --heading doc/reference.heading mxml.xml mxml.h $(PUBLIBOBJS:.o=.c) >doc/reference.html
 
 valgrind:	mxmldoc-static
 	$(RM) valgrind.xml

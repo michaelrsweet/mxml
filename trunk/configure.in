@@ -3,7 +3,7 @@ dnl "$Id$"
 dnl
 dnl Configuration script for Mini-XML, a small XML-like file parsing library.
 dnl
-dnl Copyright 2003-2007 by Michael Sweet.
+dnl Copyright 2003-2008 by Michael Sweet.
 dnl
 dnl This program is free software; you can redistribute it and/or
 dnl modify it under the terms of the GNU Library General Public
@@ -23,7 +23,7 @@ dnl Set the name of the config header file...
 AC_CONFIG_HEADER(config.h)
 
 dnl Version number...
-VERSION=2.4
+VERSION=2.5
 AC_SUBST(VERSION)
 AC_DEFINE_UNQUOTED(MXML_VERSION, "Mini-XML v$VERSION")
 

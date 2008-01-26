@@ -1,7 +1,7 @@
-CHANGES - 2008-01-12
+CHANGES - 2008-01-26
 --------------------
 
-CHANGES IN Mini-XML 2.4.1
+CHANGES IN Mini-XML 2.5
 
 	- The man pages and man page output from mxmldoc did
 	  not use "\-" for dashes (STR #68)

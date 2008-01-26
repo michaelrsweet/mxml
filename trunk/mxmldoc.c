@@ -176,14 +176,16 @@ static void		write_file(FILE *out, const char *file);
 static void		write_function(FILE *out, mxml_node_t *doc,
 			               mxml_node_t *function, int level);
 static void		write_html(const char *section, const char *title,
-			           const char *headingfile,
+			           const char *footerfile,
+			           const char *headerfile,
 				   const char *introfile, const char *cssfile,
 				   const char *framefile, mxml_node_t *doc);
 static void		write_html_head(FILE *out, const char *section,
 			                const char *title, const char *cssfile);
 static void		write_man(const char *man_name, const char *section,
-			          const char *title, const char *headingfile,
-				  const char *introfile, mxml_node_t *doc);
+			          const char *title, const char *headerfile,
+				  const char *footerfile, const char *introfile,
+				  mxml_node_t *doc);
 static void		write_scu(FILE *out, mxml_node_t *doc,
 			          mxml_node_t *scut);
 static void		write_string(FILE *out, const char *s, int mode);
@@ -208,8 +210,9 @@ main(int  argc,				/* I - Number of command-line args */
   const char	*section;		/* Section/keywords of documentation */
   const char	*title;			/* Title of documentation */
   const char	*cssfile;		/* CSS stylesheet file */
+  const char	*footerfile;		/* Footer file */
   const char	*framefile;		/* Framed HTML basename */
-  const char	*headingfile;		/* Heading file */
+  const char	*headerfile;		/* Header file */
   const char	*introfile;		/* Introduction file */
   const char	*xmlfile;		/* XML file */
   const char	*name;			/* Name of manpage */
@@ -224,8 +227,9 @@ main(int  argc,				/* I - Number of command-line args */
   section     = NULL;
   title       = NULL;
   cssfile     = NULL;
+  footerfile  = NULL;
   framefile   = NULL;
-  headingfile = NULL;
+  headerfile  = NULL;
   introfile   = NULL;
   xmlfile     = NULL;
   update      = 0;
@@ -254,6 +258,18 @@ main(int  argc,				/* I - Number of command-line args */
       else
         usage(NULL);
     }
+    else if (!strcmp(argv[i], "--footer") && !footerfile)
+    {
+     /*
+      * Set footer file...
+      */
+
+      i ++;
+      if (i < argc)
+        footerfile = argv[i];
+      else
+        usage(NULL);
+    }
     else if (!strcmp(argv[i], "--framed") && !framefile)
     {
      /*
@@ -266,15 +282,15 @@ main(int  argc,				/* I - Number of command-line args */
       else
         usage(NULL);
     }
-    else if (!strcmp(argv[i], "--heading") && !headingfile)
+    else if (!strcmp(argv[i], "--header") && !headerfile)
     {
      /*
-      * Set heading file...
+      * Set header file...
       */
 
       i ++;
       if (i < argc)
-        headingfile = argv[i];
+        headerfile = argv[i];
       else
         usage(NULL);
     }
@@ -468,8 +484,8 @@ main(int  argc,				/* I - Number of command-line args */
         * Write HTML documentation...
         */
 
-        write_html(section, title ? title : "Documentation", headingfile,
-	           introfile, cssfile, framefile, mxmldoc);
+        write_html(section, title ? title : "Documentation", footerfile,
+	           headerfile, introfile, cssfile, framefile, mxmldoc);
         break;
 
     case OUTPUT_MAN :
@@ -477,7 +493,8 @@ main(int  argc,				/* I - Number of command-line args */
         * Write manpage documentation...
         */
 
-        write_man(name, section, title, headingfile, introfile, mxmldoc);
+        write_man(name, section, title, footerfile, headerfile, introfile,
+	          mxmldoc);
         break;
   }
 
@@ -2648,7 +2665,8 @@ write_function(FILE        *out,	/* I - Output file */
 static void
 write_html(const char  *section,	/* I - Section */
 	   const char  *title,		/* I - Title */
-	   const char  *headingfile,	/* I - Heading file */
+	   const char  *footerfile,	/* I - Footer file */
+	   const char  *headerfile,	/* I - Header file */
 	   const char  *introfile,	/* I - Intro file */
 	   const char  *cssfile,	/* I - Stylesheet file */
 	   const char  *framefile,	/* I - Framed HTML basename */
@@ -2683,21 +2701,21 @@ write_html(const char  *section,	/* I - Section */
   write_html_head(out, section, title, cssfile);
 
  /*
-  * Heading...
+  * Header...
   */
 
-  if (headingfile)
+  if (headerfile)
   {
    /*
-    * Use custom heading...
+    * Use custom header...
     */
 
-    write_file(out, headingfile);
+    write_file(out, headerfile);
   }
   else
   {
    /*
-    * Use standard heading...
+    * Use standard header...
     */
 
     fputs("<h1>", out);
@@ -2970,8 +2988,17 @@ write_html(const char  *section,	/* I - Section */
   }
 
  /*
-  * Standard footer...
+  * Footer...
   */
+
+  if (footerfile)
+  {
+   /*
+    * Use custom footer...
+    */
+
+    write_file(out, footerfile);
+  }
 
   fputs("</body>\n"
         "</html>\n", out);
@@ -3132,13 +3159,13 @@ write_html_head(FILE       *out,	/* I - Output file */
  */
 
 static void
-write_man(
-    const char  *man_name,		/* I - Name of manpage */
-    const char  *section,		/* I - Section */
-    const char  *title,			/* I - Title */
-    const char  *headingfile,		/* I - Heading file */
-    const char  *introfile,		/* I - Intro file */
-    mxml_node_t *doc)			/* I - XML documentation */
+write_man(const char  *man_name,	/* I - Name of manpage */
+	  const char  *section,		/* I - Section */
+	  const char  *title,		/* I - Title */
+	  const char  *footerfile,	/* I - Footer file */
+	  const char  *headerfile,	/* I - Header file */
+	  const char  *introfile,	/* I - Intro file */
+	  mxml_node_t *doc)		/* I - XML documentation */
 {
   int		i;			/* Looping var */
   mxml_node_t	*function,		/* Current function */
@@ -3164,7 +3191,7 @@ write_man(
 
 
  /*
-  * Standard header...
+  * Standard man page...
   */
 
   curtime = time(NULL);
@@ -3174,18 +3201,22 @@ write_man(
   printf(".TH %s %s \"%s\" \"%s\" \"%s\"\n", man_name, section ? section : "3",
          title ? title : "", buffer, title ? title : "");
 
-  if (headingfile)
+ /*
+  * Header...
+  */
+
+  if (headerfile)
   {
    /*
-    * Use custom heading...
+    * Use custom header...
     */
 
-    write_file(stdout, headingfile);
+    write_file(stdout, headerfile);
   }
   else
   {
    /*
-    * Use standard heading...
+    * Use standard header...
     */
 
     puts(".SH NAME");
@@ -3620,6 +3651,15 @@ write_man(
       if (description)
 	write_description(stdout, description, NULL, 1);
     }
+  }
+
+  if (footerfile)
+  {
+   /*
+    * Use custom footer...
+    */
+
+    write_file(stdout, footerfile);
   }
 }
 

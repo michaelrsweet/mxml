@@ -15,7 +15,7 @@
 .\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 .\" GNU General Public License for more details.
 .\"
-.TH mxmldoc 1 "Mini-XML" "12 January 2008" "Michael Sweet"
+.TH mxmldoc 1 "Mini-XML" "26 January 2008" "Michael Sweet"
 .SH NAME
 mxmldoc \- mini-xml documentation generator
 .SH SYNOPSIS
@@ -27,7 +27,11 @@ mxmldoc \- mini-xml documentation generator
 ]
 .br
 .B mxmldoc
-[ \-\-intro
+[ \-\-footer
+.I footerfile
+] [ \-\-header
+.I headerfile
+] [ \-\-intro
 .I introfile
 ] [ \-\-section
 .I section
@@ -41,9 +45,32 @@ mxmldoc \- mini-xml documentation generator
 .I filename.html
 .br
 .B mxmldoc
+[ \-\-footer
+.I footerfile
+] [ \-\-framed
+.I basename
+] [ \-\-header
+.I headerfile
+] [ \-\-intro
+.I introfile
+] [ \-\-section
+.I section
+] [ \-\-title
+.I title
+] [
+.I filename.xml
+] [
+.I source file(s)
+]
+.br
+.B mxmldoc
 \-\-man
 .I manpage
-[ \-\-intro
+[ \-\-footer
+.I footerfile
+] [ \-\-header
+.I headerfile
+] [ \-\-intro
 .I introfile
 ] [ \-\-section
 .I section
@@ -74,9 +101,22 @@ documentation that is formatted according to the CUPS Developer
 Guide which is available at "http://www.cups.org/documentation.php".
 .SH OPTIONS
 .TP 5
-\-\-intro introfile
+\-\-footer footerfile
+.br
+Inserts the specified file at the bottom of the output documentation.
+.TP 5
+\-\-framed basename
+.br
+Created HTML documentation using frames - one for the table-of-contents and
+one for the body.
+.TP 5
+\-\-header headerfile
 .br
 Inserts the specified file at the top of the output documentation.
+.TP 5
+\-\-intro introfile
+.br
+Inserts the specified file before the table of contents.
 .TP 5
 \-\-man manpage
 .br

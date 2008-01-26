@@ -1,4 +1,4 @@
-TODO - 2007-11-22
+TODO - 2008-01-25
 -----------------
 
 	- Add access methods and make node structure opaque.
@@ -8,3 +8,14 @@ TODO - 2007-11-22
 	  -- Make this the core implementation which the C API accesses?
 	  -- Class would allow for subclassing, is that necessary?
 	- Binary XML support???
+	- mxmldoc
+DONE	  -- --css filename option
+	  -- First paragraph is description
+	  -- Remaining is "Discussion"
+	  -- Add element for write_description().
+	  -- Add write_function() with base heading level, add for methods.
+	  -- --framed filename option (filename-toc.html,
+	     filename-body.html, filename.html)
+	  -- Add link/constant markup a la Doxygen for description text.
+	    --- @code foo@ for <code>foo</code>
+	    --- @link name@ for <a href='#name'>name</a>

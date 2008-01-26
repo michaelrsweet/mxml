@@ -190,7 +190,7 @@ static void		write_scu(FILE *out, mxml_node_t *doc,
 			          mxml_node_t *scut);
 static void		write_string(FILE *out, const char *s, int mode);
 static void		write_toc(FILE *out, mxml_node_t *doc,
-			          const char *introfile);
+			          const char *introfile, const char *target);
 static const char	*ws_cb(mxml_node_t *node, int where);
 
 
@@ -2679,14 +2679,90 @@ write_html(const char  *section,	/* I - Section */
 		*description,		/* Description of function/var */
 		*type;			/* Type for argument */
   const char	*name,			/* Name of function/type */
-		*defval;		/* Default value */
+		*defval,		/* Default value */
+		*basename;		/* Base filename for framed output */
+  char		filename[1024];		/* Current output filename */
 
 
   if (framefile)
   {
-    if ((out = fopen(framefile, "w")) == NULL)
+   /*
+    * Get the basename of the frame file...
+    */
+
+    if ((basename = strrchr(framefile, '/')) != NULL)
+      basename ++;
+    else
+      basename = framefile;
+
+    if (strstr(basename, ".html"))
+      fputs("mxmldoc: Frame base name should not contain .html extension!\n",
+            stderr);
+
+   /*
+    * Create the container HTML file for the frames...
+    */
+
+    snprintf(filename, sizeof(filename), "%s.html", framefile);
+
+    if ((out = fopen(filename, "w")) == NULL)
     {
-      fprintf(stderr, "mxmldoc: Unable to create \"%s\": %s\n", framefile,
+      fprintf(stderr, "mxmldoc: Unable to create \"%s\": %s\n", filename,
+              strerror(errno));
+      return;
+    }
+
+    write_html_head(out, section, title, cssfile);
+
+    fputs("<frameset cols=\"200,*\" frameborder=\"NO\" border=\"0\" "
+          "framespacing=\"0\">\n", out);
+    fprintf(out, "<frame src=\"%s-toc.html\" frameborder=\"0\" border=\"0\">\n",
+            basename);
+    fprintf(out, "<frame name=\"body\" src=\"%s-body.html\" "
+                 "frameborder=\"0\" border=\"0\">\n", basename);
+    fputs("</frameset>\n"
+          "</body>\n"
+          "</html>\n", out);
+    fclose(out);
+
+   /*
+    * Write the table-of-contents file...
+    */
+
+    snprintf(filename, sizeof(filename), "%s-toc.html", framefile);
+
+    if ((out = fopen(filename, "w")) == NULL)
+    {
+      fprintf(stderr, "mxmldoc: Unable to create \"%s\": %s\n", filename,
+              strerror(errno));
+      return;
+    }
+
+    write_html_head(out, section, title, cssfile);
+
+    snprintf(filename, sizeof(filename), "%s-body.html", basename);
+
+    fputs("<div class=\"contents\">\n", out);
+    fprintf(out, "<h1><a href=\"%s\" target=\"body\">", filename);
+    write_string(out, title, OUTPUT_HTML);
+    fputs("</a></h1>\n", out);
+
+    write_toc(out, doc, introfile, filename);
+
+    fputs("</div>\n"
+          "</body>\n"
+          "</html>\n", out);
+    fclose(out);
+
+   /*
+    * Finally, open the body file...
+    */
+
+    snprintf(filename, sizeof(filename), "%s-body.html", framefile);
+
+    if ((out = fopen(filename, "w")) == NULL)
+    {
+      fprintf(stderr, "mxmldoc: Unable to create \"%s\": %s\n", filename,
               strerror(errno));
       return;
     }
@@ -2699,6 +2775,9 @@ write_html(const char  *section,	/* I - Section */
   */
 
   write_html_head(out, section, title, cssfile);
+
+  if (framefile)
+    fputs("<div class='body'>\n", out);
 
  /*
   * Header...
@@ -2727,7 +2806,8 @@ write_html(const char  *section,	/* I - Section */
   * Table of contents...
   */
 
-  write_toc(out, doc, introfile);
+  if (!framefile)
+    write_toc(out, doc, introfile, NULL);
 
  /*
   * Intro...
@@ -3000,6 +3080,9 @@ write_html(const char  *section,	/* I - Section */
     write_file(out, footerfile);
   }
 
+  if (framefile)
+    fputs("</div>\n", out);
+
   fputs("</body>\n"
         "</html>\n", out);
 }
@@ -3053,25 +3136,40 @@ write_html_head(FILE       *out,	/* I - Output file */
 	  "h1 {\n"
 	  "  font-size: 250%;\n"
 	  "  font-weight: bold;\n"
+	  "  margin: 0;\n"
 	  "}\n"
 	  "h2 {\n"
 	  "  font-size: 250%;\n"
-	  "  margin-top: 2.5em;\n"
+	  "  margin-top: 1.5em;\n"
 	  "}\n"
 	  "h3 {\n"
 	  "  font-size: 150%;\n"
 	  "  margin-bottom: 0.5em;\n"
-	  "  margin-top: 2em;\n"
+	  "  margin-top: 1.5em;\n"
 	  "}\n"
 	  "h4 {\n"
 	  "  font-size: 110%;\n"
 	  "  margin-bottom: 0.5em;\n"
-	  "  margin-top: 2em;\n"
+	  "  margin-top: 1.5em;\n"
 	  "}\n"
 	  "h5 {\n"
 	  "  font-size: 100%;\n"
 	  "  margin-bottom: 0.5em;\n"
-	  "  margin-top: 2em;\n"
+	  "  margin-top: 1.5em;\n"
+	  "}\n"
+	  "div.contents {\n"
+	  "  background: #e8e8e8;\n"
+	  "  border: solid thin black;\n"
+	  "  padding: 10px;\n"
+	  "}\n"
+	  "div.contents h1 {\n"
+	  "  font-size: 110%;\n"
+	  "}\n"
+	  "div.contents h2 {\n"
+	  "  font-size: 100%;\n"
+	  "}\n"
+	  "div.contents ul.contents {\n"
+	  "  font-size: 80%;\n"
 	  "}\n"
 	  ".class {\n"
 	  "}\n"
@@ -3915,7 +4013,8 @@ write_string(FILE       *out,		/* I - Output file */
 static void
 write_toc(FILE        *out,		/* I - Output file */
           mxml_node_t *doc,		/* I - Document */
-          const char  *introfile)	/* I - Introduction file */
+          const char  *introfile,	/* I - Introduction file */
+	  const char  *target)		/* I - Target name */
 {
 #if 0
   FILE		*fp;			/* Intro file */
@@ -3925,15 +4024,23 @@ write_toc(FILE        *out,		/* I - Output file */
 		*scut,			/* Struct/class/union/typedef */
 		*arg,			/* Current argument */
 		*description;		/* Description of function/var */
-  const char	*name;			/* Name of function/type */
+  const char	*name,			/* Name of function/type */
+		*targetattr;		/* Target attribute, if any */
 
+
+  if (target)
+    targetattr = " target=\"body\"";
+  else
+    targetattr = "";
 
   fputs("<h2 class=\"title\">Contents</h2>\n"
 	"<ul class=\"contents\">\n", out);
+
   if ((scut = find_public(doc, doc, "class")) != NULL)
   {
-    fputs("<li><a href=\"#CLASSES\">Classes</a>"
-	  "<ul class=\"code\">\n", out);
+    fprintf(out, "<li><a href=\"%s#CLASSES\"%s>Classes</a>"
+                 "<ul class=\"code\">\n",
+            target ? target : "", targetattr);
 
     while (scut)
     {
@@ -3941,10 +4048,10 @@ write_toc(FILE        *out,		/* I - Output file */
       description = mxmlFindElement(scut, scut, "description",
 				    NULL, NULL, MXML_DESCEND_FIRST);
 
-      fprintf(out, "<li><a href=\"#%s\" title=\"", name);
+      fprintf(out, "<li><a href=\"%s#%s\"%s title=\"",
+              target ? target : "", name, targetattr);
       write_description(out, description, "", 1);
-      fprintf(out, "\">%s</a> %s</li>\n", name,
-	      get_comment_info(description));
+      fprintf(out, "\">%s</a></li>\n", name);
 
       scut = find_public(scut, doc, "class");
     }
@@ -3954,8 +4061,8 @@ write_toc(FILE        *out,		/* I - Output file */
 
   if ((function = find_public(doc, doc, "function")) != NULL)
   {
-    fputs("<li><a href=\"#FUNCTIONS\">Functions</a>"
-	  "<ul class=\"code\">\n", out);
+    fprintf(out, "<li><a href=\"%s#FUNCTIONS\"%s>Functions</a>"
+                 "<ul class=\"code\">\n", target ? target : "", targetattr);
 
     while (function)
     {
@@ -3963,10 +4070,10 @@ write_toc(FILE        *out,		/* I - Output file */
       description = mxmlFindElement(function, function, "description",
 				    NULL, NULL, MXML_DESCEND_FIRST);
 
-      fprintf(out, "<li><a href=\"#%s\" title=\"", name);
+      fprintf(out, "<li><a href=\"%s#%s\"%s title=\"",
+              target ? target : "", name, targetattr);
       write_description(out, description, "", 1);
-      fprintf(out, "\">%s</a> %s</li>\n", name,
-	      get_comment_info(description));
+      fprintf(out, "\">%s</a></li>\n", name);
 
       function = find_public(function, doc, "function");
     }
@@ -3976,8 +4083,8 @@ write_toc(FILE        *out,		/* I - Output file */
 
   if ((scut = find_public(doc, doc, "typedef")) != NULL)
   {
-    fputs("<li><a href=\"#TYPES\">Data Types</a>"
-	  "<ul class=\"code\">\n", out);
+    fprintf(out, "<li><a href=\"%s#TYPES\"%s>Data Types</a>"
+	         "<ul class=\"code\">\n", target ? target : "", targetattr);
 
     while (scut)
     {
@@ -3985,10 +4092,10 @@ write_toc(FILE        *out,		/* I - Output file */
       description = mxmlFindElement(scut, scut, "description",
 				    NULL, NULL, MXML_DESCEND_FIRST);
 
-      fprintf(out, "\t<li><a href=\"#%s\" title=\"", name);
+      fprintf(out, "\t<li><a href=\"%s#%s\"%s title=\"",
+              target ? target : "", name, targetattr);
       write_description(out, description, "", 1);
-      fprintf(out, "\">%s</a> %s</li>\n", name,
-	      get_comment_info(description));
+      fprintf(out, "\">%s</a></li>\n", name);
 
       scut = find_public(scut, doc, "typedef");
     }
@@ -3998,8 +4105,8 @@ write_toc(FILE        *out,		/* I - Output file */
 
   if ((scut = find_public(doc, doc, "struct")) != NULL)
   {
-    fputs("<li><a href=\"#STRUCTURES\">Structures</a><ul class=\"code\">\n",
-	  out);
+    fprintf(out, "<li><a href=\"%s#STRUCTURES\"%s>Structures</a>"
+                 "<ul class=\"code\">\n", target ? target : "", targetattr);
 
     while (scut)
     {
@@ -4007,10 +4114,10 @@ write_toc(FILE        *out,		/* I - Output file */
       description = mxmlFindElement(scut, scut, "description",
 				    NULL, NULL, MXML_DESCEND_FIRST);
 
-      fprintf(out, "\t<li><a href=\"#%s\" title=\"", name);
+      fprintf(out, "\t<li><a href=\"%s#%s\"%s title=\"",
+              target ? target : "", name, targetattr);
       write_description(out, description, "", 1);
-      fprintf(out, "\">%s</a> %s</li>\n", name,
-	      get_comment_info(description));
+      fprintf(out, "\">%s</a></li>\n", name);
 
       scut = find_public(scut, doc, "struct");
     }
@@ -4020,7 +4127,8 @@ write_toc(FILE        *out,		/* I - Output file */
 
   if ((scut = find_public(doc, doc, "union")) != NULL)
   {
-    fputs("<li><a href=\"#UNIONS\">Unions</a><ul class=\"code\">\n", out);
+    fprintf(out, "<li><a href=\"%s#UNIONS\"%s>Unions</a><ul class=\"code\">\n",
+            target ? target : "", targetattr);
 
     while (scut)
     {
@@ -4028,10 +4136,10 @@ write_toc(FILE        *out,		/* I - Output file */
       description = mxmlFindElement(scut, scut, "description",
 				    NULL, NULL, MXML_DESCEND_FIRST);
 
-      fprintf(out, "\t<li><a href=\"#%s\" title=\"", name);
+      fprintf(out, "\t<li><a href=\"%s#%s\"%s title=\"",
+              target ? target : "", name, targetattr);
       write_description(out, description, "", 1);
-      fprintf(out, "\">%s</a> %s</li>\n", name,
-	      get_comment_info(description));
+      fprintf(out, "\">%s</a></li>\n", name);
 
       scut = find_public(scut, doc, "union");
     }
@@ -4041,8 +4149,8 @@ write_toc(FILE        *out,		/* I - Output file */
 
   if ((arg = find_public(doc, doc, "variable")) != NULL)
   {
-    fputs("<li><a href=\"#VARIABLES\">Variables</a><ul class=\"code\">\n",
-	  out);
+    fprintf(out, "<li><a href=\"%s#VARIABLES\"%s>Variables</a>"
+                 "<ul class=\"code\">\n", target ? target : "", targetattr);
 
     while (arg)
     {
@@ -4050,10 +4158,10 @@ write_toc(FILE        *out,		/* I - Output file */
       description = mxmlFindElement(arg, arg, "description",
 				    NULL, NULL, MXML_DESCEND_FIRST);
 
-      fprintf(out, "\t<li><a href=\"#%s\" title=\"", name);
+      fprintf(out, "\t<li><a href=\"%s#%s\"%s title=\"",
+              target ? target : "", name, targetattr);
       write_description(out, description, "", 1);
-      fprintf(out, "\">%s</a> %s</li>\n", name,
-	      get_comment_info(description));
+      fprintf(out, "\">%s</a></li>\n", name);
 
       arg = find_public(arg, doc, "variable");
     }
@@ -4063,8 +4171,8 @@ write_toc(FILE        *out,		/* I - Output file */
 
   if ((scut = find_public(doc, doc, "enumeration")) != NULL)
   {
-    fputs("<li><a href=\"#ENUMERATIONS\">Constants</a><ul class=\"code\">\n",
-	  out);
+    fprintf(out, "<li><a href=\"%s#ENUMERATIONS\"%s>Constants</a>"
+                 "<ul class=\"code\">\n", target ? target : "", targetattr);
 
     while (scut)
     {
@@ -4072,10 +4180,10 @@ write_toc(FILE        *out,		/* I - Output file */
       description = mxmlFindElement(scut, scut, "description",
 				    NULL, NULL, MXML_DESCEND_FIRST);
 
-      fprintf(out, "\t<li><a href=\"#%s\" title=\"", name);
+      fprintf(out, "\t<li><a href=\"%s#%s\"%s title=\"",
+              target ? target : "", name, targetattr);
       write_description(out, description, "", 1);
-      fprintf(out, "\">%s</a> %s</li>\n", name,
-	      get_comment_info(description));
+      fprintf(out, "\">%s</a></li>\n", name);
 
       scut = find_public(scut, doc, "enumeration");
     }

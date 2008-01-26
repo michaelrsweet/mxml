@@ -36,7 +36,8 @@ typedef struct foo_s			/* Foo structure */
 } foo_t;
 
 // 'foo_s::foo_s()' - Create a foo_s structure.
-foo_s::foo_s(float f, int b)
+foo_s::foo_s(float f, // I - Value of foo
+             int b) // I - Value of bar
 {
   foo = f;
   bar = b;

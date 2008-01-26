@@ -71,7 +71,8 @@ class foo_c : public bar_c		// Foo class derived from bar
 }
 
 // 'foo_c::foo_c()' - Create a foo_c class.
-foo_c::foo_c(float f, int b)
+foo_c::foo_c(float f, // I - Value of foo
+             int b) // I - Value of bar
 {
   foo = f;
   bar = b;

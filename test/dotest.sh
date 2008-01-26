@@ -9,6 +9,7 @@ while test $# -gt 0; do
 	shift
 
 	case "$arg" in
+		-f) framed="--framed framed" ;;
 		-g) mode="gdb" ;;
 		-v) mode="valgrind" ;;
 		*.h | *.c | *.cxx) files="$files $arg" ;;
@@ -27,18 +28,18 @@ rm -f test.xml
 
 case "$mode" in
 	gdb)
-		echo "run test.xml $files >test.html 2>test.log" >.gdbcmds
+		echo "run $framed test.xml $files >test.html 2>test.log" >.gdbcmds
 		gdb -x .gdbcmds ../mxmldoc-static
 		;;
 
 	valgrind)
 		valgrind --log-fd=3 --leak-check=yes \
-			../mxmldoc-static test.xml $files \
+			../mxmldoc-static $framed test.xml $files \
 			>test.html 2>test.log 3>test.valgrind
 		;;
 
 	*)
-		../mxmldoc-static test.xml $files >test.html 2>test.log
+		../mxmldoc-static $framed test.xml $files >test.html 2>test.log
 		;;
 esac
 

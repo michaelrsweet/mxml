@@ -657,13 +657,8 @@ find_public(mxml_node_t *node,		/* I - Current node */
     * A missing or empty description signals a private node...
     */
 
-#if 0
-    if (!description || !description->child)
-      continue;
-#else
     if (!description)
       continue;
-#endif /* 0 */
 
    /*
     * Look for @private@ in the comment text...
@@ -1463,45 +1458,92 @@ scan_file(const char  *filename,	/* I - Filename */
 
 		      if (variable)
 		      {
-        		description = mxmlNewElement(variable, "description");
+		        if (strstr(buffer, "@private@"))
+			{
+			 /*
+			  * Delete private variables...
+			  */
+
+			  mxmlDelete(variable);
+			}
+			else
+			{
+			  description = mxmlNewElement(variable, "description");
 #ifdef DEBUG
-			fputs("    adding comment to variable...\n", stderr);
+			  fputs("    adding comment to variable...\n", stderr);
 #endif /* DEBUG */
-			update_comment(variable,
-			               mxmlNewText(description, 0, buffer));
-                        variable = NULL;
+			  update_comment(variable,
+					 mxmlNewText(description, 0, buffer));
+                        }
+
+			variable = NULL;
 		      }
 		      else if (constant)
 		      {
-        		description = mxmlNewElement(constant, "description");
+		        if (strstr(buffer, "@private@"))
+			{
+			 /*
+			  * Delete private constants...
+			  */
+
+			  mxmlDelete(constant);
+			}
+			else
+			{
+			  description = mxmlNewElement(constant, "description");
 #ifdef DEBUG
-		        fputs("    adding comment to constant...\n", stderr);
+			  fputs("    adding comment to constant...\n", stderr);
 #endif /* DEBUG */
-			update_comment(constant,
-			               mxmlNewText(description, 0, buffer));
-                        constant = NULL;
+			  update_comment(constant,
+					 mxmlNewText(description, 0, buffer));
+			}
+
+			constant = NULL;
 		      }
 		      else if (typedefnode)
 		      {
-        		description = mxmlNewElement(typedefnode, "description");
-#ifdef DEBUG
-			fprintf(stderr, "    adding comment to typedef %s...\n",
-			        mxmlElementGetAttr(typedefnode, "name"));
-#endif /* DEBUG */
-			update_comment(typedefnode,
-			               mxmlNewText(description, 0, buffer));
+		        if (strstr(buffer, "@private@"))
+			{
+			 /*
+			  * Delete private typedefs...
+			  */
 
-                	if (structclass)
+			  mxmlDelete(typedefnode);
+
+			  if (structclass)
+			  {
+			    mxmlDelete(structclass);
+			    structclass = NULL;
+			  }
+
+			  if (enumeration)
+			  {
+			    mxmlDelete(enumeration);
+			    enumeration = NULL;
+			  }
+			}
+			else
 			{
-        		  description = mxmlNewElement(structclass, "description");
-			  update_comment(structclass,
-			        	 mxmlNewText(description, 0, buffer));
-                	}
-			else if (enumeration)
-			{
-        		  description = mxmlNewElement(enumeration, "description");
-			  update_comment(enumeration,
-			        	 mxmlNewText(description, 0, buffer));
+			  description = mxmlNewElement(typedefnode, "description");
+#ifdef DEBUG
+			  fprintf(stderr, "    adding comment to typedef %s...\n",
+				  mxmlElementGetAttr(typedefnode, "name"));
+#endif /* DEBUG */
+			  update_comment(typedefnode,
+					 mxmlNewText(description, 0, buffer));
+
+			  if (structclass)
+			  {
+			    description = mxmlNewElement(structclass, "description");
+			    update_comment(structclass,
+					   mxmlNewText(description, 0, buffer));
+			  }
+			  else if (enumeration)
+			  {
+			    description = mxmlNewElement(enumeration, "description");
+			    update_comment(enumeration,
+					   mxmlNewText(description, 0, buffer));
+			  }
 			}
 
 			typedefnode = NULL;
@@ -1583,45 +1625,92 @@ scan_file(const char  *filename,	/* I - Filename */
 
 		  if (variable)
 		  {
-        	    description = mxmlNewElement(variable, "description");
+		    if (strstr(buffer, "@private@"))
+		    {
+		     /*
+		      * Delete private variables...
+		      */
+
+		      mxmlDelete(variable);
+		    }
+		    else
+		    {
+		      description = mxmlNewElement(variable, "description");
 #ifdef DEBUG
-		    fputs("    adding comment to variable...\n", stderr);
+		      fputs("    adding comment to variable...\n", stderr);
 #endif /* DEBUG */
-		    update_comment(variable,
-			           mxmlNewText(description, 0, buffer));
-                    variable = NULL;
+		      update_comment(variable,
+				     mxmlNewText(description, 0, buffer));
+                    }
+
+		    variable = NULL;
 		  }
 		  else if (constant)
 		  {
-        	    description = mxmlNewElement(constant, "description");
+		    if (strstr(buffer, "@private@"))
+		    {
+		     /*
+		      * Delete private constants...
+		      */
+
+		      mxmlDelete(constant);
+		    }
+		    else
+		    {
+		      description = mxmlNewElement(constant, "description");
 #ifdef DEBUG
-		    fputs("    adding comment to constant...\n", stderr);
+		      fputs("    adding comment to constant...\n", stderr);
 #endif /* DEBUG */
-		    update_comment(constant,
-			           mxmlNewText(description, 0, buffer));
+		      update_comment(constant,
+				     mxmlNewText(description, 0, buffer));
+		    }
+
 		    constant = NULL;
 		  }
 		  else if (typedefnode)
 		  {
-        	    description = mxmlNewElement(typedefnode, "description");
-#ifdef DEBUG
-		    fprintf(stderr, "    adding comment to typedef %s...\n",
-			    mxmlElementGetAttr(typedefnode, "name"));
-#endif /* DEBUG */
-		    update_comment(typedefnode,
-			           mxmlNewText(description, 0, buffer));
+		    if (strstr(buffer, "@private@"))
+		    {
+		     /*
+		      * Delete private typedefs...
+		      */
 
-                    if (structclass)
+		      mxmlDelete(typedefnode);
+
+		      if (structclass)
+		      {
+			mxmlDelete(structclass);
+			structclass = NULL;
+		      }
+
+		      if (enumeration)
+		      {
+			mxmlDelete(enumeration);
+			enumeration = NULL;
+		      }
+		    }
+		    else
 		    {
-        	      description = mxmlNewElement(structclass, "description");
-		      update_comment(structclass,
-			             mxmlNewText(description, 0, buffer));
-                    }
-		    else if (enumeration)
-		    {
-        	      description = mxmlNewElement(enumeration, "description");
-		      update_comment(enumeration,
-			             mxmlNewText(description, 0, buffer));
+		      description = mxmlNewElement(typedefnode, "description");
+#ifdef DEBUG
+		      fprintf(stderr, "    adding comment to typedef %s...\n",
+			      mxmlElementGetAttr(typedefnode, "name"));
+#endif /* DEBUG */
+		      update_comment(typedefnode,
+				     mxmlNewText(description, 0, buffer));
+
+		      if (structclass)
+		      {
+			description = mxmlNewElement(structclass, "description");
+			update_comment(structclass,
+				       mxmlNewText(description, 0, buffer));
+		      }
+		      else if (enumeration)
+		      {
+			description = mxmlNewElement(enumeration, "description");
+			update_comment(enumeration,
+				       mxmlNewText(description, 0, buffer));
+		      }
 		    }
 
 		    typedefnode = NULL;
@@ -1679,46 +1768,94 @@ scan_file(const char  *filename,	/* I - Filename */
 
 	    if (variable)
 	    {
-              description = mxmlNewElement(variable, "description");
+	      if (strstr(buffer, "@private@"))
+	      {
+	       /*
+		* Delete private variables...
+		*/
+
+		mxmlDelete(variable);
+	      }
+	      else
+	      {
+		description = mxmlNewElement(variable, "description");
 #ifdef DEBUG
-	      fputs("    adding comment to variable...\n", stderr);
+		fputs("    adding comment to variable...\n", stderr);
 #endif /* DEBUG */
-	      update_comment(variable,
-			     mxmlNewText(description, 0, buffer));
-              variable = NULL;
+		update_comment(variable,
+			       mxmlNewText(description, 0, buffer));
+              }
+
+	      variable = NULL;
 	    }
 	    else if (constant)
 	    {
-              description = mxmlNewElement(constant, "description");
+	      if (strstr(buffer, "@private@"))
+	      {
+	       /*
+		* Delete private constants...
+		*/
+
+		mxmlDelete(constant);
+	      }
+	      else
+	      {
+		description = mxmlNewElement(constant, "description");
 #ifdef DEBUG
-	      fputs("    adding comment to constant...\n", stderr);
+		fputs("    adding comment to constant...\n", stderr);
 #endif /* DEBUG */
-	      update_comment(constant,
-			     mxmlNewText(description, 0, buffer));
-              constant = NULL;
+		update_comment(constant,
+			       mxmlNewText(description, 0, buffer));
+              }
+
+	      constant = NULL;
 	    }
 	    else if (typedefnode)
 	    {
-              description = mxmlNewElement(typedefnode, "description");
-#ifdef DEBUG
-	      fprintf(stderr, "    adding comment to typedef %s...\n",
-		      mxmlElementGetAttr(typedefnode, "name"));
-#endif /* DEBUG */
-	      update_comment(typedefnode,
-			     mxmlNewText(description, 0, buffer));
+	      if (strstr(buffer, "@private@"))
+	      {
+	       /*
+		* Delete private typedefs...
+		*/
 
-              if (structclass)
-	      {
-        	description = mxmlNewElement(structclass, "description");
-		update_comment(structclass,
-			       mxmlNewText(description, 0, buffer));
-              }
-	      else if (enumeration)
-	      {
-        	description = mxmlNewElement(enumeration, "description");
-		update_comment(enumeration,
-			       mxmlNewText(description, 0, buffer));
+		mxmlDelete(typedefnode);
+		typedefnode = NULL;
+
+		if (structclass)
+		{
+		  mxmlDelete(structclass);
+		  structclass = NULL;
+		}
+
+		if (enumeration)
+		{
+		  mxmlDelete(enumeration);
+		  enumeration = NULL;
+		}
 	      }
+	      else
+	      {
+		description = mxmlNewElement(typedefnode, "description");
+#ifdef DEBUG
+		fprintf(stderr, "    adding comment to typedef %s...\n",
+			mxmlElementGetAttr(typedefnode, "name"));
+#endif /* DEBUG */
+		update_comment(typedefnode,
+			       mxmlNewText(description, 0, buffer));
+
+		if (structclass)
+		{
+		  description = mxmlNewElement(structclass, "description");
+		  update_comment(structclass,
+				 mxmlNewText(description, 0, buffer));
+		}
+		else if (enumeration)
+		{
+		  description = mxmlNewElement(enumeration, "description");
+		  update_comment(enumeration,
+				 mxmlNewText(description, 0, buffer));
+		}
+              }
 	    }
 	    else if (strcmp(tree->value.element.name, "mxmldoc") &&
 		     !mxmlFindElement(tree, tree, "description",
@@ -2319,8 +2456,9 @@ usage(const char *option)		/* I - Unknown option */
   puts("Usage: mxmldoc [options] [filename.xml] [source files] >filename.html");
   puts("Options:");
   puts("    --css filename.css         Set CSS stylesheet file");
+  puts("    --footer footerfile        Set footer file");
   puts("    --framed basename          Generate framed HTML to basename*.html");
-  puts("    --heading headingfile      Set heading file");
+  puts("    --header headerfile        Set header file");
   puts("    --intro introfile          Set introduction file");
   puts("    --man name                 Generate man page");
   puts("    --no-output                Do no generate documentation file");
@@ -2343,6 +2481,7 @@ write_description(
     int         summary)		/* I - Show summary */
 {
   char	text[10240],			/* Text for description */
+        *start,				/* Start of code/link */
 	*ptr;				/* Pointer into text */
   int	col;				/* Current column */
 
@@ -2382,6 +2521,38 @@ write_description(
 
       if (!*ptr)
         return;
+    }
+    else if (!strncmp(ptr, "@code ", 6))
+    {
+      for (ptr += 6; isspace(*ptr & 255); ptr ++);
+
+      for (start = ptr, ptr ++; *ptr && *ptr != '@'; ptr ++);
+
+      if (*ptr)
+        *ptr = '\0';
+      else
+        ptr --;
+
+      if (element)
+        fprintf(out, "<code>%s</code>", start);
+      else
+        fprintf(out, "\\fB%s\\fR", start);
+    }
+    else if (!strncmp(ptr, "@link ", 6))
+    {
+      for (ptr += 6; isspace(*ptr & 255); ptr ++);
+
+      for (start = ptr, ptr ++; *ptr && *ptr != '@'; ptr ++);
+
+      if (*ptr)
+        *ptr = '\0';
+      else
+        ptr --;
+
+      if (element)
+        fprintf(out, "<a href=\"#%s\"><code>%s</code></a>", start, start);
+      else
+        fprintf(out, "\\fI%s\\fR", start);
     }
     else if (element)
     {

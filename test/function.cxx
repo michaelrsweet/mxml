@@ -1,6 +1,9 @@
 /*
  * 'foo_void_function()' - Do foo with bar.
  *
+ * Use the @link foo_float_function@ or @link foo_int_function@ functions
+ * instead.  Pass @code NULL@ for "three" then there is no string to print.
+ *
  * @deprecated@
  */
 

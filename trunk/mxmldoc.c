@@ -2507,7 +2507,7 @@ write_description(
 
   if (element && *element)
     fprintf(out, "<%s class=\"%s\">", element,
-            summary ? "summary" : "discussion");
+            summary ? "description" : "discussion");
 
   for (col = 0; *ptr; ptr ++)
   {
@@ -2777,7 +2777,7 @@ write_function(FILE        *out,	/* I - Output file */
   {
     fprintf(out,
             "<br>\n);</p>\n"
-	    "<h%d>Parameters</h%d>\n"
+	    "<h%d class=\"parameters\">Parameters</h%d>\n"
 	    "<dl>\n", level + 1, level + 1);
 
     for (arg = mxmlFindElement(function, function, "argument", NULL, NULL,
@@ -2803,7 +2803,8 @@ write_function(FILE        *out,	/* I - Output file */
 
   if (arg)
   {
-    fprintf(out, "<h%d>Return Value</h%d>\n", level + 1, level + 1);
+    fprintf(out, "<h%d class=\"returnvalue\">Return Value</h%d>\n", level + 1,
+            level + 1);
 
     adesc = mxmlFindElement(arg, arg, "description", NULL, NULL,
 			    MXML_DESCEND_FIRST);
@@ -2823,7 +2824,8 @@ write_function(FILE        *out,	/* I - Output file */
 
   if (node)
   {
-    fprintf(out, "<h%d>Discussion</h%d>\n", level + 1, level + 1);
+    fprintf(out, "<h%d class=\"discussion\">Discussion</h%d>\n", level + 1,
+            level + 1);
     write_description(out, description, "p", 0);
   }
 }
@@ -2914,7 +2916,8 @@ write_html(const char  *section,	/* I - Section */
     snprintf(filename, sizeof(filename), "%s-body.html", basename);
 
     fputs("<div class=\"contents\">\n", out);
-    fprintf(out, "<h1><a href=\"%s\" target=\"body\">", filename);
+    fprintf(out, "<h1 class=\"title\"><a href=\"%s\" target=\"body\">",
+            filename);
     write_string(out, title, OUTPUT_HTML);
     fputs("</a></h1>\n", out);
 
@@ -2947,8 +2950,7 @@ write_html(const char  *section,	/* I - Section */
 
   write_html_head(out, section, title, cssfile);
 
-  if (framefile)
-    fputs("<div class='body'>\n", out);
+  fputs("<div class='body'>\n", out);
 
  /*
   * Header...
@@ -2968,7 +2970,7 @@ write_html(const char  *section,	/* I - Section */
     * Use standard header...
     */
 
-    fputs("<h1>", out);
+    fputs("<h1 class=\"title\">", out);
     write_string(out, title, OUTPUT_HTML);
     fputs("</h1>\n", out);
   }
@@ -3032,9 +3034,7 @@ write_html(const char  *section,	/* I - Section */
       name        = mxmlElementGetAttr(scut, "name");
       description = mxmlFindElement(scut, scut, "description", NULL,
                                     NULL, MXML_DESCEND_FIRST);
-      fprintf(out,
-              "<!-- NEW PAGE -->\n"
-              "<h3>%s<a name=\"%s\">%s</a></h3>\n",
+      fprintf(out, "<h3 class=\"typedef\">%s<a name=\"%s\">%s</a></h3>\n",
 	      get_comment_info(description), name, name);
 
       if (description)
@@ -3136,7 +3136,8 @@ write_html(const char  *section,	/* I - Section */
 
   if ((scut = find_public(doc, doc, "struct")) != NULL)
   {
-    fputs("<h2 class=\"title\"><a name=\"STRUCTURES\">Structures</a></h2>\n", out);
+    fputs("<h2 class=\"title\"><a name=\"STRUCTURES\">Structures</a></h2>\n",
+          out);
 
     while (scut)
     {
@@ -3168,14 +3169,15 @@ write_html(const char  *section,	/* I - Section */
 
   if ((arg = find_public(doc, doc, "variable")) != NULL)
   {
-    fputs("<h2 class=\"title\"><a name=\"VARIABLES\">Variables</a></h2>\n", out);
+    fputs("<h2 class=\"title\"><a name=\"VARIABLES\">Variables</a></h2>\n",
+          out);
 
     while (arg)
     {
       name        = mxmlElementGetAttr(arg, "name");
       description = mxmlFindElement(arg, arg, "description", NULL,
                                     NULL, MXML_DESCEND_FIRST);
-      fprintf(out, "<h3>%s<a name=\"%s\">%s</a></h3>\n",
+      fprintf(out, "<h3 class=\"variable\">%s<a name=\"%s\">%s</a></h3>\n",
 	      get_comment_info(description), name, name);
 
       if (description)
@@ -3201,20 +3203,21 @@ write_html(const char  *section,	/* I - Section */
 
   if ((scut = find_public(doc, doc, "enumeration")) != NULL)
   {
-    fputs("<h2 class=\"title\"><a name=\"ENUMERATIONS\">Constants</a></h2>\n", out);
+    fputs("<h2 class=\"title\"><a name=\"ENUMERATIONS\">Constants</a></h2>\n",
+          out);
 
     while (scut)
     {
       name        = mxmlElementGetAttr(scut, "name");
       description = mxmlFindElement(scut, scut, "description", NULL,
                                     NULL, MXML_DESCEND_FIRST);
-      fprintf(out, "<h3>%s<a name=\"%s\">%s</a></h3>\n",
+      fprintf(out, "<h3 class=\"enumeration\">%s<a name=\"%s\">%s</a></h3>\n",
               get_comment_info(description), name, name);
 
       if (description)
 	write_description(out, description, "p", 1);
 
-      fputs("<h4>Constants</h4>\n"
+      fputs("<h4 class=\"constants\">Constants</h4>\n"
             "<dl>\n", out);
 
       for (arg = mxmlFindElement(scut, scut, "constant", NULL, NULL,
@@ -3251,10 +3254,8 @@ write_html(const char  *section,	/* I - Section */
     write_file(out, footerfile);
   }
 
-  if (framefile)
-    fputs("</div>\n", out);
-
-  fputs("</body>\n"
+  fputs("</div>\n"
+        "</body>\n"
         "</html>\n", out);
 }
 
@@ -3304,26 +3305,26 @@ write_html_head(FILE       *out,	/* I - Output file */
     fputs("body, p, h1, h2, h3, h4 {\n"
 	  "  font-family: lucida grande, geneva, helvetica, arial, sans-serif;\n"
 	  "}\n"
-	  "h1 {\n"
+	  "div.body h1 {\n"
 	  "  font-size: 250%;\n"
 	  "  font-weight: bold;\n"
 	  "  margin: 0;\n"
 	  "}\n"
-	  "h2 {\n"
+	  "div.body h2 {\n"
 	  "  font-size: 250%;\n"
 	  "  margin-top: 1.5em;\n"
 	  "}\n"
-	  "h3 {\n"
+	  "div.body h3 {\n"
 	  "  font-size: 150%;\n"
 	  "  margin-bottom: 0.5em;\n"
 	  "  margin-top: 1.5em;\n"
 	  "}\n"
-	  "h4 {\n"
+	  "div.body h4 {\n"
 	  "  font-size: 110%;\n"
 	  "  margin-bottom: 0.5em;\n"
 	  "  margin-top: 1.5em;\n"
 	  "}\n"
-	  "h5 {\n"
+	  "div.body h5 {\n"
 	  "  font-size: 100%;\n"
 	  "  margin-bottom: 0.5em;\n"
 	  "  margin-top: 1.5em;\n"
@@ -3342,11 +3343,18 @@ write_html_head(FILE       *out,	/* I - Output file */
 	  "div.contents ul.contents {\n"
 	  "  font-size: 80%;\n"
 	  "}\n"
+	  ".availability {\n"
+	  "}\n"
 	  ".class {\n"
+	  "}\n"
+	  ".constants {\n"
+	  "}\n"
+	  ".description {\n"
+	  "  margin-top: 0.5em;\n"
 	  "}\n"
 	  ".discussion {\n"
 	  "}\n"
-	  ".enum {\n"
+	  ".enumeration {\n"
 	  "}\n"
 	  ".function {\n"
 	  "  margin-bottom: 0;\n"
@@ -3364,9 +3372,6 @@ write_html_head(FILE       *out,	/* I - Output file */
 	  ".union {\n"
 	  "}\n"
 	  ".variable {\n"
-	  "}\n"
-	  "p.summary {\n"
-	  "  margin-top: 0.5em;\n"
 	  "}\n"
 	  "code, p.code, pre, ul.code li {\n"
 	  "  font-family: monaco, courier, monospace;\n"
@@ -3388,7 +3393,7 @@ write_html_head(FILE       *out,	/* I - Output file */
 	  "  float: right;\n"
 	  "  font-size: 100%;\n"
 	  "}\n"
-	  "ul.code, ul.contents {\n"
+	  "ul.code, ul.contents, ul.subcontents {\n"
 	  "  list-style-type: none;\n"
 	  "  margin: 0;\n"
 	  "  padding-left: 0;\n"
@@ -3399,17 +3404,17 @@ write_html_head(FILE       *out,	/* I - Output file */
 	  "ul.contents > li {\n"
 	  "  margin-top: 1em;\n"
 	  "}\n"
-	  "ul.contents li ul.code {\n"
+	  "ul.contents li ul.code, ul.contents li ul.subcontents {\n"
 	  "  padding-left: 2em;\n"
 	  "}\n"
-	  "dl {\n"
+	  "div.body dl {\n"
 	  "  margin-top: 0;\n"
 	  "}\n"
-	  "dt {\n"
+	  "div.body dt {\n"
 	  "  font-style: italic;\n"
 	  "  margin-top: 0;\n"
 	  "}\n"
-	  "dd {\n"
+	  "div.body dd {\n"
 	  "  margin-bottom: 0.5em;\n"
 	  "}\n"
 	  "h1.title, h2.title, h3.title {\n"
@@ -3967,8 +3972,9 @@ write_scu(FILE        *out,	/* I - Output file */
   description = mxmlFindElement(scut, scut, "description", NULL,
 				NULL, MXML_DESCEND_FIRST);
 
-  fprintf(out, "<h3>%s<a name=\"%s\">%s</a></h3>\n",
-	  get_comment_info(description), cname, cname);
+  fprintf(out, "<h3 class=\"%s\">%s<a name=\"%s\">%s</a></h3>\n",
+	  scut->value.element.name, get_comment_info(description), cname,
+	  cname);
 
   if (description)
     write_description(out, description, "p", 1);
@@ -4070,7 +4076,7 @@ write_scu(FILE        *out,	/* I - Output file */
   }
 
   fputs("};</p>\n"
-	"<h4>Members</h4>\n"
+	"<h4 class=\"members\">Members</h4>\n"
 	"<dl>\n", out);
 
   for (arg = mxmlFindElement(scut, scut, "variable", NULL, NULL,
@@ -4187,10 +4193,7 @@ write_toc(FILE        *out,		/* I - Output file */
           const char  *introfile,	/* I - Introduction file */
 	  const char  *target)		/* I - Target name */
 {
-#if 0
   FILE		*fp;			/* Intro file */
-  char		line[8192];		/* Line from file */
-#endif /* 0 */
   mxml_node_t	*function,		/* Current function */
 		*scut,			/* Struct/class/union/typedef */
 		*arg,			/* Current argument */
@@ -4199,13 +4202,180 @@ write_toc(FILE        *out,		/* I - Output file */
 		*targetattr;		/* Target attribute, if any */
 
 
+ /*
+  * If target is set, it is the frame file that contains the body.
+  * Otherwise, we are creating a single-file...
+  */
+
   if (target)
     targetattr = " target=\"body\"";
   else
     targetattr = "";
 
+ /*
+  * The table-of-contents is a nested unordered list.  Start by
+  * reading any intro file to see if there are any headings there.
+  */
+
   fputs("<h2 class=\"title\">Contents</h2>\n"
 	"<ul class=\"contents\">\n", out);
+
+  if (introfile && (fp = fopen(introfile, "r")) != NULL)
+  {
+    char	line[8192],		/* Line from file */
+		*ptr,			/* Pointer in line */
+		*end,			/* End of line */
+		*anchor,		/* Anchor name */
+		quote,			/* Quote character for value */
+		level = '2',		/* Current heading level */
+		newlevel;		/* New heading level */
+    int		inelement;		/* In an element? */
+
+
+    while (fgets(line, sizeof(line), fp))
+    {
+     /*
+      * See if this line has a heading...
+      */
+
+      if ((ptr = strstr(line, "<h")) == NULL &&
+          (ptr = strstr(line, "<H")) == NULL)
+	continue;
+
+      if (ptr[2] != '2' && ptr[2] != '3')
+        continue;
+
+      newlevel = ptr[2];
+
+     /*
+      * Make sure we have the whole heading...
+      */
+
+      while (!strstr(line, "</h") && !strstr(line, "</H"))
+      {
+        end = line + strlen(line);
+
+	if (end == (line + sizeof(line) - 1) ||
+	    !fgets(end, sizeof(line) - (end - line), fp))
+	  break;
+      }
+
+     /*
+      * Convert newlines and tabs to spaces...
+      */
+
+      for (ptr = line; *ptr; ptr ++)
+        if (isspace(*ptr & 255))
+	  *ptr = ' ';
+
+     /*
+      * Find the anchor and text...
+      */
+
+      for (ptr = strchr(line, '<'); ptr; ptr = strchr(ptr + 1, '<'))
+        if (!strncasecmp(ptr, "<A NAME=", 8))
+	  break;
+
+      if (!ptr)
+        continue;
+
+      ptr += 8;
+      inelement = 1;
+
+      if (*ptr == '\'' || *ptr == '\"')
+      {
+       /*
+        * Quoted anchor...
+	*/
+
+        quote  = *ptr++;
+	anchor = ptr;
+
+	while (*ptr && *ptr != quote)
+	  ptr ++;
+
+        if (!*ptr)
+	  continue;
+
+        *ptr++ = '\0';
+      }
+      else
+      {
+       /*
+        * Non-quoted anchor...
+	*/
+
+        anchor = ptr;
+
+	while (*ptr && *ptr != '>' && !isspace(*ptr & 255))
+	  ptr ++;
+
+        if (!*ptr)
+	  continue;
+
+        if (*ptr == '>')
+	  inelement = 0;
+
+	*ptr++ = '\0';
+      }
+
+     /*
+      * Write text until we see "</A>"...
+      */
+
+      if (newlevel < level)
+        fputs("</li>\n"
+	      "</ul class=\"subcontents\"></li>\n", out);
+      else if (newlevel > level)
+        fputs("<ul class=\"subcontents\">\n", out);
+      else
+        fputs("</li>\n", out);
+
+      level = newlevel;
+
+      fprintf(out, "<li><a href=\"%s#%s\"%s>", target ? target : "", anchor,
+              targetattr);
+
+      quote = 0;
+
+      while (*ptr)
+      {
+        if (inelement)
+	{
+	  if (*ptr == quote)
+	    quote = 0;
+	  else if (*ptr == '>')
+	    inelement = 0;
+	  else if (*ptr == '\'' || *ptr == '\"')
+	    quote = *ptr;
+	}
+	else if (*ptr == '<')
+	{
+	  if (!strncasecmp(ptr, "</A>", 4))
+	    break;
+
+          inelement = 1;
+        }
+	else
+	  putc(*ptr, out);
+
+        ptr ++;
+      }
+
+      fputs("</a>", out);
+    }
+
+    fputs("</li>\n", out);
+
+    if (level == '3')
+      fputs("</ul></li>\n", out);
+
+    fclose(fp);
+  }
+
+ /*
+  * Next the classes...
+  */
 
   if ((scut = find_public(doc, doc, "class")) != NULL)
   {
@@ -4230,6 +4400,10 @@ write_toc(FILE        *out,		/* I - Output file */
     fputs("</ul></li>\n", out);
   }
 
+ /*
+  * Functions...
+  */
+
   if ((function = find_public(doc, doc, "function")) != NULL)
   {
     fprintf(out, "<li><a href=\"%s#FUNCTIONS\"%s>Functions</a>"
@@ -4251,6 +4425,10 @@ write_toc(FILE        *out,		/* I - Output file */
 
     fputs("</ul>\n", out);
   }
+
+ /*
+  * Data types...
+  */
 
   if ((scut = find_public(doc, doc, "typedef")) != NULL)
   {
@@ -4274,6 +4452,10 @@ write_toc(FILE        *out,		/* I - Output file */
     fputs("</ul></li>\n", out);
   }
 
+ /*
+  * Structures...
+  */
+
   if ((scut = find_public(doc, doc, "struct")) != NULL)
   {
     fprintf(out, "<li><a href=\"%s#STRUCTURES\"%s>Structures</a>"
@@ -4295,6 +4477,10 @@ write_toc(FILE        *out,		/* I - Output file */
 
     fputs("</ul></li>\n", out);
   }
+
+ /*
+  * Unions...
+  */
 
   if ((scut = find_public(doc, doc, "union")) != NULL)
   {
@@ -4318,6 +4504,10 @@ write_toc(FILE        *out,		/* I - Output file */
     fputs("</ul></li>\n", out);
   }
 
+ /*
+  * Globals variables...
+  */
+
   if ((arg = find_public(doc, doc, "variable")) != NULL)
   {
     fprintf(out, "<li><a href=\"%s#VARIABLES\"%s>Variables</a>"
@@ -4340,6 +4530,10 @@ write_toc(FILE        *out,		/* I - Output file */
     fputs("</ul></li>\n", out);
   }
 
+ /*
+  * Enumerations/constants...
+  */
+
   if ((scut = find_public(doc, doc, "enumeration")) != NULL)
   {
     fprintf(out, "<li><a href=\"%s#ENUMERATIONS\"%s>Constants</a>"
@@ -4361,6 +4555,10 @@ write_toc(FILE        *out,		/* I - Output file */
 
     fputs("</ul></li>\n", out);
   }
+
+ /*
+  * That's it!
+  */
 
   fputs("</ul>\n", out);
 }

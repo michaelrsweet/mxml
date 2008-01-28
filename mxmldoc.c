@@ -2734,8 +2734,9 @@ write_function(FILE        *out,	/* I - Output file */
   description = mxmlFindElement(function, function, "description", NULL,
 				NULL, MXML_DESCEND_FIRST);
 
-  fprintf(out, "<h%d class=\"function\">%s<a name=\"%s\">%s</a></h%d>\n",
-	  level, get_comment_info(description), name, name, level);
+  fprintf(out, "<h%d class=\"%s\">%s<a name=\"%s\">%s</a></h%d>\n",
+	  level, level == 3 ? "function" : "method",
+	  get_comment_info(description), name, name, level);
 
   if (description)
     write_description(out, description, "p", 1);
@@ -3343,9 +3344,8 @@ write_html_head(FILE       *out,	/* I - Output file */
 	  "div.contents ul.contents {\n"
 	  "  font-size: 80%;\n"
 	  "}\n"
-	  ".availability {\n"
-	  "}\n"
 	  ".class {\n"
+	  "  border-bottom: solid 2px gray;\n"
 	  "}\n"
 	  ".constants {\n"
 	  "}\n"
@@ -3355,21 +3355,28 @@ write_html_head(FILE       *out,	/* I - Output file */
 	  ".discussion {\n"
 	  "}\n"
 	  ".enumeration {\n"
+	  "  border-bottom: solid 2px gray;\n"
 	  "}\n"
 	  ".function {\n"
+	  "  border-bottom: solid 2px gray;\n"
 	  "  margin-bottom: 0;\n"
 	  "}\n"
 	  ".members {\n"
+	  "}\n"
+	  ".method {\n"
 	  "}\n"
 	  ".parameters {\n"
 	  "}\n"
 	  ".returnvalue {\n"
 	  "}\n"
 	  ".struct {\n"
+	  "  border-bottom: solid 2px gray;\n"
 	  "}\n"
 	  ".typedef {\n"
+	  "  border-bottom: solid 2px gray;\n"
 	  "}\n"
 	  ".union {\n"
+	  "  border-bottom: solid 2px gray;\n"
 	  "}\n"
 	  ".variable {\n"
 	  "}\n"
@@ -3417,8 +3424,13 @@ write_html_head(FILE       *out,	/* I - Output file */
 	  "div.body dd {\n"
 	  "  margin-bottom: 0.5em;\n"
 	  "}\n"
-	  "h1.title, h2.title, h3.title {\n"
-	  "  border-bottom: solid 1px black;\n"
+	  "h1.title {\n"
+	  "}\n"
+	  "h2.title {\n"
+	  "  border-bottom: solid 2px black;\n"
+	  "}\n"
+	  "h3.title {\n"
+	  "  border-bottom: solid 2px black;\n"
 	  "}\n", out);
   }
 

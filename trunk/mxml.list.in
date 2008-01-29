@@ -3,7 +3,7 @@
 #
 # EPM software list file for Mini-XML, a small XML library.
 #
-# Copyright 2003-2005 by Michael Sweet.
+# Copyright 2003-2008 by Michael Sweet.
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Library General Public
@@ -62,12 +62,6 @@ information, nor does it support character entities other than
 those required by the XML specification.
 EOF
 
-# Manpage extensions...
-$CAT1EXT=@CAT1EXT@
-$CAT3EXT=@CAT3EXT@
-$MAN1EXT=@MAN1EXT@
-$MAN3EXT=@MAN3EXT@
-
 # Executables
 f 0555 root sys ${bindir}/mxmldoc mxmldoc
 
@@ -80,14 +74,14 @@ f 0444 root sys ${includedir}/mxml.h mxml.h
 f 0555 root sys ${libdir}/libmxml.sl.1 libmxml.sl.1
 l 0555 root sys ${libdir}/libmxml.sl libmxml.sl.1
 
-%system dylib
+%system darwin
 f 0555 root sys ${libdir}/libmxml.1.dylib libmxml.1.dylib
 l 0555 root sys ${libdir}/libmxml.dylib libmxml.1.dylib
 
 %system freebsd irix linux netbsd openbsd solaris tru64
-f 0555 root sys ${libdir}/libmxml.so.1.0 libmxml.so.1.0
-l 0555 root sys ${libdir}/libmxml.sl.1 libmxml.sl.1.0
-l 0555 root sys ${libdir}/libmxml.sl libmxml.sl.1.0
+f 0555 root sys ${libdir}/libmxml.so.1.4 libmxml.so.1.4
+l 0555 root sys ${libdir}/libmxml.so.1 libmxml.so.1.4
+l 0555 root sys ${libdir}/libmxml.so libmxml.so.1.4
 
 %system all
 %endif
@@ -105,10 +99,8 @@ f 0444 root sys ${docdir}/mxml.html $srcdir/doc/mxml.html
 f 0444 root sys ${docdir}/mxml.pdf $srcdir/doc/mxml.pdf
 
 # Man pages
-f 0444 root sys ${mandir}/cat1/mxmldoc.$CAT1EXT $srcdir/mxmldoc.$CAT1EXT
-f 0444 root sys ${mandir}/man1/mxmldoc.$MAN1EXT $srcdir/mxmldoc.man
-f 0444 root sys ${mandir}/cat3/mxml.$CAT3EXT $srcdir/mxml.$CAT3EXT
-f 0444 root sys ${mandir}/man3/mxml.$MAN3EXT $srcdir/mxml.man
+f 0444 root sys ${mandir}/man1/mxmldoc.1 $srcdir/mxmldoc.man
+f 0444 root sys ${mandir}/man3/mxml.3 $srcdir/mxml.man
 
 #
 # End of "$Id$".

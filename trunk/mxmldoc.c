@@ -2667,11 +2667,11 @@ write_element(FILE        *out,		/* I - Output file */
 	   mxmlFindElement(doc, doc, "union", "name", node->value.text.string,
                            MXML_DESCEND)))
       {
-        printf("<a href=\"#");
+        fputs("<a href=\"#", out);
         write_string(out, node->value.text.string, mode);
-	printf("\">");
+	fputs("\">", out);
         write_string(out, node->value.text.string, mode);
-	printf("</a>");
+	fputs("</a>", out);
       }
       else
         write_string(out, node->value.text.string, mode);

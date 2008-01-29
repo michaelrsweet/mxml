@@ -2508,6 +2508,8 @@ write_description(
   if (element && *element)
     fprintf(out, "<%s class=\"%s\">", element,
             summary ? "description" : "discussion");
+  else if (!summary)
+    fputs(".PP\n", out);
 
   for (col = 0; *ptr; ptr ++)
   {
@@ -3533,7 +3535,10 @@ write_man(const char  *man_name,	/* I - Name of manpage */
                                     NULL, MXML_DESCEND_FIRST);
       printf(".SS %s\n", cname);
 
-      printf(".nf\n"
+      write_description(stdout, description, NULL, 1);
+
+      printf(".PP\n"
+             ".nf\n"
              "class %s", cname);
       if ((parent = mxmlElementGetAttr(scut, "parent")) != NULL)
         printf(" %s", parent);
@@ -3618,11 +3623,9 @@ write_man(const char  *man_name,	/* I - Name of manpage */
       }
 
       puts("};\n"
-           ".fi\n"
-           ".PP");
+           ".fi");
 
-      if (description)
-	write_description(stdout, description, NULL, 1);
+      write_description(stdout, description, NULL, 0);
     }
   }
 
@@ -3643,8 +3646,8 @@ write_man(const char  *man_name,	/* I - Name of manpage */
                                     NULL, MXML_DESCEND_FIRST);
       printf(".SS %s\n", name);
 
-      if (description)
-	write_description(stdout, description, NULL, 1);
+      write_description(stdout, description, NULL, 1);
+      write_description(stdout, description, NULL, 0);
 
       for (arg = mxmlFindElement(scut, scut, "constant", NULL, NULL,
                         	 MXML_DESCEND_FIRST);
@@ -3675,9 +3678,12 @@ write_man(const char  *man_name,	/* I - Name of manpage */
       name        = mxmlElementGetAttr(function, "name");
       description = mxmlFindElement(function, function, "description", NULL,
                                     NULL, MXML_DESCEND_FIRST);
-      printf(".SS %s()\n", name);
+      printf(".SS %s\n", name);
 
-      puts(".nf");
+      write_description(stdout, description, NULL, 1);
+
+      puts(".PP\n"
+           ".nf");
 
       arg = mxmlFindElement(function, function, "returnvalue", NULL,
                             NULL, MXML_DESCEND_FIRST);
@@ -3689,7 +3695,7 @@ write_man(const char  *man_name,	/* I - Name of manpage */
       else
 	fputs("void", stdout);
 
-      printf("\n%s", name);
+      printf(" %s ", name);
       for (arg = mxmlFindElement(function, function, "argument", NULL, NULL,
                         	 MXML_DESCEND_FIRST), prefix = '(';
 	   arg;
@@ -3710,12 +3716,11 @@ write_man(const char  *man_name,	/* I - Name of manpage */
       if (prefix == '(')
 	puts("(void);");
       else
-	puts(");");
+	puts("\n);");
 
-      puts(".fi\n.PP");
+      puts(".fi");
 
-      if (description)
-	write_description(stdout, description, NULL, 1);
+      write_description(stdout, description, NULL, 0);
     }
   }
 
@@ -3736,7 +3741,10 @@ write_man(const char  *man_name,	/* I - Name of manpage */
                                     NULL, MXML_DESCEND_FIRST);
       printf(".SS %s\n", cname);
 
-      printf(".nf\n"
+      write_description(stdout, description, NULL, 1);
+
+      printf(".PP\n"
+             ".nf\n"
 	     "struct %s\n{\n", cname);
       for (arg = mxmlFindElement(scut, scut, "variable", NULL, NULL,
                         	 MXML_DESCEND_FIRST);
@@ -3799,10 +3807,10 @@ write_man(const char  *man_name,	/* I - Name of manpage */
 	  puts(");");
       }
 
-      puts("};\n.fi\n.PP");
+      puts("};\n"
+           ".fi");
 
-      if (description)
-	write_description(stdout, description, NULL, 1);
+      write_description(stdout, description, NULL, 0);
     }
   }
 
@@ -3823,7 +3831,10 @@ write_man(const char  *man_name,	/* I - Name of manpage */
                                     NULL, MXML_DESCEND_FIRST);
       printf(".SS %s\n", name);
 
-      fputs(".nf\n"
+      write_description(stdout, description, NULL, 1);
+
+      fputs(".PP\n"
+            ".nf\n"
 	    "typedef ", stdout);
 
       type = mxmlFindElement(scut, scut, "type", NULL, NULL,
@@ -3861,10 +3872,9 @@ write_man(const char  *man_name,	/* I - Name of manpage */
       else
 	printf(" %s;\n", name);
 
-      puts(".fi\n.PP");
+      puts(".fi");
 
-      if (description)
-	write_description(stdout, description, NULL, 1);
+      write_description(stdout, description, NULL, 0);
     }
   }
 
@@ -3885,7 +3895,10 @@ write_man(const char  *man_name,	/* I - Name of manpage */
                                     NULL, MXML_DESCEND_FIRST);
       printf(".SS %s\n", name);
 
-      printf(".nf\n"
+      write_description(stdout, description, NULL, 1);
+
+      printf(".PP\n"
+             ".nf\n"
 	     "union %s\n{\n", name);
       for (arg = mxmlFindElement(scut, scut, "variable", NULL, NULL,
                         	 MXML_DESCEND_FIRST);
@@ -3900,10 +3913,10 @@ write_man(const char  *man_name,	/* I - Name of manpage */
 	printf("%s;\n", mxmlElementGetAttr(arg, "name"));
       }
 
-      puts("};\n.fi\n.PP");
+      puts("};\n"
+           ".fi");
 
-      if (description)
-	write_description(stdout, description, NULL, 1);
+      write_description(stdout, description, NULL, 0);
     }
   }
 
@@ -3924,7 +3937,10 @@ write_man(const char  *man_name,	/* I - Name of manpage */
                                     NULL, MXML_DESCEND_FIRST);
       printf(".SS %s\n", name);
 
-      puts(",nf");
+      write_description(stdout, description, NULL, 1);
+
+      puts(".PP\n"
+           ".nf");
 
       write_element(stdout, doc, mxmlFindElement(arg, arg, "type", NULL,
                                                  NULL, MXML_DESCEND_FIRST),
@@ -3932,10 +3948,10 @@ write_man(const char  *man_name,	/* I - Name of manpage */
       fputs(mxmlElementGetAttr(arg, "name"), stdout);
       if ((defval = mxmlElementGetAttr(arg, "default")) != NULL)
 	printf(" %s", defval);
-      puts(";\n.fi\n.PP");
+      puts(";\n"
+           ".fi");
 
-      if (description)
-	write_description(stdout, description, NULL, 1);
+      write_description(stdout, description, NULL, 0);
     }
   }
 

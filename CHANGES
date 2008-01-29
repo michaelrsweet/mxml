@@ -1,8 +1,18 @@
-CHANGES - 2008-01-26
+CHANGES - 2008-01-28
 --------------------
 
 CHANGES IN Mini-XML 2.5
 
+	- The mxmldoc program now makes greater use of CSS and
+	  supports a --css option to embed an alternate stylesheet.
+	- The mxmldoc program now supports --header and --footer
+	  options to insert documentation content before and
+	  after the generated content.
+	- The mxmldoc program now supports a --framed option to
+	  generate framed HTML output.
+	- The mxmldoc program now creates a table of contents
+	  including any headings in the --intro file when
+	  generating HTML output.
 	- The man pages and man page output from mxmldoc did
 	  not use "\-" for dashes (STR #68)
 	- The debug version of the Mini-XML DLL could not be

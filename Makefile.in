@@ -341,7 +341,8 @@ valgrind:	mxmldoc-static
 doc/mxml.man: mxmldoc-static mxml.xml
 	$(RM) doc/mxml.man
 	./mxmldoc-static --man mxml --title "Mini-XML API" \
-		--intro doc/intro.man mxml.xml >doc/mxml.man
+		--intro doc/intro.man --footer doc/footer.man \
+		mxml.xml >doc/mxml.man
 
 
 #

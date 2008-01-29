@@ -6,6 +6,8 @@
 //
 // Contents:
 //
+//   sanitize_email()     - Convert an email address to something a SPAMbot
+//                          can't read...
 //   format_date()        - Format a RFC 2822 date string.
 //   nntp_close()         - Close a news server thing...
 //   nntp_command()       - Send a command and get the response...
@@ -49,6 +51,53 @@ else
 
 if ($from == "" || $from == "Anonymous")
   $from = "Anonymous <anonymous@minixml.org>";
+
+
+//
+// 'sanitize_email()' - Convert an email address to something a SPAMbot
+//                      can't read...
+//
+
+function				// O - Sanitized email
+sanitize_email($email,			// I - Email address
+               $html = 1)		// I - HTML format?
+{
+  $nemail = "";
+  $len    = strlen($email);
+
+  for ($i = 0; $i < $len; $i ++)
+  {
+    switch ($email[$i])
+    {
+      case '@' :
+          if ($i > 0)
+	    $i = $len;
+          else if ($html)
+            $nemail .= " <I>at</I> ";
+	  else
+            $nemail .= " at ";
+	  break;
+
+      case '<' :
+          if ($i > 0)
+	    $i = $len;
+          break;
+
+      case '>' :
+          break;
+
+      case '&' ;
+          $nemail .= "&amp;";
+	  break;
+
+      default :
+          $nemail .= $email[$i];
+	  break;
+    }
+  }
+
+  return (trim($nemail));
+}
 
 
 //

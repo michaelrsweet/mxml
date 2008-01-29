@@ -1,9 +1,9 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
 <HTML>
 <HEAD>
-<TITLE>Mini-XML Programmers Manual, Version 2.4</TITLE>
+<TITLE>Mini-XML Programmers Manual, Version 2.5</TITLE>
 <META NAME="author" CONTENT="Michael R. Sweet">
-<META NAME="copyright" CONTENT="Copyright 2003-2007">
+<META NAME="copyright" CONTENT="Copyright 2003-2008">
 <META HTTP-EQUIV="Content-Type" CONTENT="text/html; CHARSET=iso-iso-8859-1">
 <LINK REL="Start" HREF="index.html">
 <LINK REL="Contents" HREF="index.html">
@@ -78,109 +78,109 @@ A { text-decoration: none }
 <BR>
 <BR><B><A HREF="relnotes.html#RELNOTES">Release Notes</A></B>
 <UL></UL>
-<B><A HREF="refapp.html#REFERENCE">Library Reference</A></B>
+<B><A HREF="reference.html#REFERENCE">Library Reference</A></B>
 <UL>
-<LI><A HREF="refapp.html#8_1">Contents</A></LI>
-<LI><A HREF="refapp.html#ENUMERATIONS">Enumerations</A>
+<LI><A HREF="reference.html#8_1">Contents</A></LI>
+<LI><A HREF="reference.html#FUNCTIONS">Functions</A>
 <UL>
-<LI><A HREF="refapp.html#mxml_sax_event_e">mxml_sax_event_e</A></LI>
-<LI><A HREF="refapp.html#mxml_type_e">mxml_type_e</A></LI>
+<LI><A HREF="reference.html#mxmlAdd">mxmlAdd</A></LI>
+<LI><A HREF="reference.html#mxmlDelete">mxmlDelete</A></LI>
+<LI><A HREF="reference.html#8_2_3">mxmlElementDeleteAttr</A></LI>
+<LI><A HREF="reference.html#mxmlElementGetAttr">mxmlElementGetAttr</A></LI>
+<LI><A HREF="reference.html#mxmlElementSetAttr">mxmlElementSetAttr</A></LI>
+<LI><A HREF="reference.html#8_2_6">mxmlElementSetAttrf</A></LI>
+<LI><A HREF="reference.html#mxmlEntityAddCallback">mxmlEntityAddCallback</A>
+</LI>
+<LI><A HREF="reference.html#mxmlEntityGetName">mxmlEntityGetName</A></LI>
+<LI><A HREF="reference.html#mxmlEntityGetValue">mxmlEntityGetValue</A></LI>
+<LI><A HREF="reference.html#mxmlEntityRemoveCallback">
+mxmlEntityRemoveCallback</A></LI>
+<LI><A HREF="reference.html#mxmlFindElement">mxmlFindElement</A></LI>
+<LI><A HREF="reference.html#mxmlIndexDelete">mxmlIndexDelete</A></LI>
+<LI><A HREF="reference.html#mxmlIndexEnum">mxmlIndexEnum</A></LI>
+<LI><A HREF="reference.html#mxmlIndexFind">mxmlIndexFind</A></LI>
+<LI><A HREF="reference.html#mxmlIndexNew">mxmlIndexNew</A></LI>
+<LI><A HREF="reference.html#mxmlIndexReset">mxmlIndexReset</A></LI>
+<LI><A HREF="reference.html#mxmlLoadFd">mxmlLoadFd</A></LI>
+<LI><A HREF="reference.html#mxmlLoadFile">mxmlLoadFile</A></LI>
+<LI><A HREF="reference.html#mxmlLoadString">mxmlLoadString</A></LI>
+<LI><A HREF="reference.html#8_2_20">mxmlNewCDATA</A></LI>
+<LI><A HREF="reference.html#8_2_21">mxmlNewCustom</A></LI>
+<LI><A HREF="reference.html#mxmlNewElement">mxmlNewElement</A></LI>
+<LI><A HREF="reference.html#mxmlNewInteger">mxmlNewInteger</A></LI>
+<LI><A HREF="reference.html#mxmlNewOpaque">mxmlNewOpaque</A></LI>
+<LI><A HREF="reference.html#mxmlNewReal">mxmlNewReal</A></LI>
+<LI><A HREF="reference.html#mxmlNewText">mxmlNewText</A></LI>
+<LI><A HREF="reference.html#mxmlNewTextf">mxmlNewTextf</A></LI>
+<LI><A HREF="reference.html#8_2_28">mxmlNewXML</A></LI>
+<LI><A HREF="reference.html#8_2_29">mxmlRelease</A></LI>
+<LI><A HREF="reference.html#mxmlRemove">mxmlRemove</A></LI>
+<LI><A HREF="reference.html#8_2_31">mxmlRetain</A></LI>
+<LI><A HREF="reference.html#8_2_32">mxmlSAXLoadFd</A></LI>
+<LI><A HREF="reference.html#8_2_33">mxmlSAXLoadFile</A></LI>
+<LI><A HREF="reference.html#8_2_34">mxmlSAXLoadString</A></LI>
+<LI><A HREF="reference.html#mxmlSaveAllocString">mxmlSaveAllocString</A></LI>
+<LI><A HREF="reference.html#mxmlSaveFd">mxmlSaveFd</A></LI>
+<LI><A HREF="reference.html#mxmlSaveFile">mxmlSaveFile</A></LI>
+<LI><A HREF="reference.html#mxmlSaveString">mxmlSaveString</A></LI>
+<LI><A HREF="reference.html#8_2_39">mxmlSetCDATA</A></LI>
+<LI><A HREF="reference.html#8_2_40">mxmlSetCustom</A></LI>
+<LI><A HREF="reference.html#mxmlSetCustomHandlers">mxmlSetCustomHandlers</A>
+</LI>
+<LI><A HREF="reference.html#mxmlSetElement">mxmlSetElement</A></LI>
+<LI><A HREF="reference.html#mxmlSetErrorCallback">mxmlSetErrorCallback</A>
+</LI>
+<LI><A HREF="reference.html#mxmlSetInteger">mxmlSetInteger</A></LI>
+<LI><A HREF="reference.html#mxmlSetOpaque">mxmlSetOpaque</A></LI>
+<LI><A HREF="reference.html#mxmlSetReal">mxmlSetReal</A></LI>
+<LI><A HREF="reference.html#mxmlSetText">mxmlSetText</A></LI>
+<LI><A HREF="reference.html#mxmlSetTextf">mxmlSetTextf</A></LI>
+<LI><A HREF="reference.html#8_2_49">mxmlSetWrapMargin</A></LI>
+<LI><A HREF="reference.html#mxmlWalkNext">mxmlWalkNext</A></LI>
+<LI><A HREF="reference.html#mxmlWalkPrev">mxmlWalkPrev</A></LI>
 </UL>
 </LI>
-<LI><A HREF="refapp.html#FUNCTIONS">Functions</A>
+<LI><A HREF="reference.html#TYPES">Data Types</A>
 <UL>
-<LI><A HREF="refapp.html#mxmlAdd">mxmlAdd()</A></LI>
-<LI><A HREF="refapp.html#mxmlDelete">mxmlDelete()</A></LI>
-<LI><A HREF="refapp.html#8_3_3">mxmlElementDeleteAttr()</A></LI>
-<LI><A HREF="refapp.html#mxmlElementGetAttr">mxmlElementGetAttr()</A></LI>
-<LI><A HREF="refapp.html#mxmlElementSetAttr">mxmlElementSetAttr()</A></LI>
-<LI><A HREF="refapp.html#8_3_6">mxmlElementSetAttrf()</A></LI>
-<LI><A HREF="refapp.html#mxmlEntityAddCallback">mxmlEntityAddCallback()</A>
-</LI>
-<LI><A HREF="refapp.html#mxmlEntityGetName">mxmlEntityGetName()</A></LI>
-<LI><A HREF="refapp.html#mxmlEntityGetValue">mxmlEntityGetValue()</A></LI>
-<LI><A HREF="refapp.html#mxmlEntityRemoveCallback">
-mxmlEntityRemoveCallback()</A></LI>
-<LI><A HREF="refapp.html#mxmlFindElement">mxmlFindElement()</A></LI>
-<LI><A HREF="refapp.html#mxmlIndexDelete">mxmlIndexDelete()</A></LI>
-<LI><A HREF="refapp.html#mxmlIndexEnum">mxmlIndexEnum()</A></LI>
-<LI><A HREF="refapp.html#mxmlIndexFind">mxmlIndexFind()</A></LI>
-<LI><A HREF="refapp.html#mxmlIndexNew">mxmlIndexNew()</A></LI>
-<LI><A HREF="refapp.html#mxmlIndexReset">mxmlIndexReset()</A></LI>
-<LI><A HREF="refapp.html#mxmlLoadFd">mxmlLoadFd()</A></LI>
-<LI><A HREF="refapp.html#mxmlLoadFile">mxmlLoadFile()</A></LI>
-<LI><A HREF="refapp.html#mxmlLoadString">mxmlLoadString()</A></LI>
-<LI><A HREF="refapp.html#8_3_20">mxmlNewCDATA()</A></LI>
-<LI><A HREF="refapp.html#8_3_21">mxmlNewCustom()</A></LI>
-<LI><A HREF="refapp.html#mxmlNewElement">mxmlNewElement()</A></LI>
-<LI><A HREF="refapp.html#mxmlNewInteger">mxmlNewInteger()</A></LI>
-<LI><A HREF="refapp.html#mxmlNewOpaque">mxmlNewOpaque()</A></LI>
-<LI><A HREF="refapp.html#mxmlNewReal">mxmlNewReal()</A></LI>
-<LI><A HREF="refapp.html#mxmlNewText">mxmlNewText()</A></LI>
-<LI><A HREF="refapp.html#mxmlNewTextf">mxmlNewTextf()</A></LI>
-<LI><A HREF="refapp.html#8_3_28">mxmlNewXML()</A></LI>
-<LI><A HREF="refapp.html#8_3_29">mxmlRelease()</A></LI>
-<LI><A HREF="refapp.html#mxmlRemove">mxmlRemove()</A></LI>
-<LI><A HREF="refapp.html#8_3_31">mxmlRetain()</A></LI>
-<LI><A HREF="refapp.html#8_3_32">mxmlSAXLoadFd()</A></LI>
-<LI><A HREF="refapp.html#8_3_33">mxmlSAXLoadFile()</A></LI>
-<LI><A HREF="refapp.html#8_3_34">mxmlSAXLoadString()</A></LI>
-<LI><A HREF="refapp.html#mxmlSaveAllocString">mxmlSaveAllocString()</A></LI>
-<LI><A HREF="refapp.html#mxmlSaveFd">mxmlSaveFd()</A></LI>
-<LI><A HREF="refapp.html#mxmlSaveFile">mxmlSaveFile()</A></LI>
-<LI><A HREF="refapp.html#mxmlSaveString">mxmlSaveString()</A></LI>
-<LI><A HREF="refapp.html#8_3_39">mxmlSetCDATA()</A></LI>
-<LI><A HREF="refapp.html#8_3_40">mxmlSetCustom()</A></LI>
-<LI><A HREF="refapp.html#mxmlSetCustomHandlers">mxmlSetCustomHandlers()</A>
-</LI>
-<LI><A HREF="refapp.html#mxmlSetElement">mxmlSetElement()</A></LI>
-<LI><A HREF="refapp.html#mxmlSetErrorCallback">mxmlSetErrorCallback()</A>
-</LI>
-<LI><A HREF="refapp.html#mxmlSetInteger">mxmlSetInteger()</A></LI>
-<LI><A HREF="refapp.html#mxmlSetOpaque">mxmlSetOpaque()</A></LI>
-<LI><A HREF="refapp.html#mxmlSetReal">mxmlSetReal()</A></LI>
-<LI><A HREF="refapp.html#mxmlSetText">mxmlSetText()</A></LI>
-<LI><A HREF="refapp.html#mxmlSetTextf">mxmlSetTextf()</A></LI>
-<LI><A HREF="refapp.html#8_3_49">mxmlSetWrapMargin()</A></LI>
-<LI><A HREF="refapp.html#mxmlWalkNext">mxmlWalkNext()</A></LI>
-<LI><A HREF="refapp.html#mxmlWalkPrev">mxmlWalkPrev()</A></LI>
-</UL>
-</LI>
-<LI><A HREF="refapp.html#STRUCTURES">Structures</A>
-<UL>
-<LI><A HREF="refapp.html#mxml_attr_s">mxml_attr_s</A></LI>
-<LI><A HREF="refapp.html#8_4_2">mxml_custom_s</A></LI>
-<LI><A HREF="refapp.html#mxml_element_s">mxml_element_s</A></LI>
-<LI><A HREF="refapp.html#mxml_index_s">mxml_index_s</A></LI>
-<LI><A HREF="refapp.html#mxml_node_s">mxml_node_s</A></LI>
-<LI><A HREF="refapp.html#mxml_text_s">mxml_text_s</A></LI>
-</UL>
-</LI>
-<LI><A HREF="refapp.html#TYPES">Types</A>
-<UL>
-<LI><A HREF="refapp.html#mxml_attr_t">mxml_attr_t</A></LI>
-<LI><A HREF="refapp.html#mxml_custom_destroy_cb_t">
+<LI><A HREF="reference.html#mxml_attr_t">mxml_attr_t</A></LI>
+<LI><A HREF="reference.html#mxml_custom_destroy_cb_t">
 mxml_custom_destroy_cb_t</A></LI>
-<LI><A HREF="refapp.html#mxml_custom_load_cb_t">mxml_custom_load_cb_t</A>
+<LI><A HREF="reference.html#mxml_custom_load_cb_t">mxml_custom_load_cb_t</A>
 </LI>
-<LI><A HREF="refapp.html#mxml_custom_save_cb_t">mxml_custom_save_cb_t</A>
+<LI><A HREF="reference.html#mxml_custom_save_cb_t">mxml_custom_save_cb_t</A>
 </LI>
-<LI><A HREF="refapp.html#8_5_5">mxml_custom_t</A></LI>
-<LI><A HREF="refapp.html#mxml_element_t">mxml_element_t</A></LI>
-<LI><A HREF="refapp.html#mxml_error_cb_t">mxml_error_cb_t</A></LI>
-<LI><A HREF="refapp.html#mxml_index_t">mxml_index_t</A></LI>
-<LI><A HREF="refapp.html#mxml_load_cb_t">mxml_load_cb_t</A></LI>
-<LI><A HREF="refapp.html#mxml_node_t">mxml_node_t</A></LI>
-<LI><A HREF="refapp.html#mxml_save_cb_t">mxml_save_cb_t</A></LI>
-<LI><A HREF="refapp.html#mxml_sax_cb_t">mxml_sax_cb_t</A></LI>
-<LI><A HREF="refapp.html#mxml_sax_event_t">mxml_sax_event_t</A></LI>
-<LI><A HREF="refapp.html#mxml_text_t">mxml_text_t</A></LI>
-<LI><A HREF="refapp.html#mxml_value_t">mxml_value_t</A></LI>
+<LI><A HREF="reference.html#8_3_5">mxml_custom_t</A></LI>
+<LI><A HREF="reference.html#mxml_element_t">mxml_element_t</A></LI>
+<LI><A HREF="reference.html#mxml_error_cb_t">mxml_error_cb_t</A></LI>
+<LI><A HREF="reference.html#mxml_index_t">mxml_index_t</A></LI>
+<LI><A HREF="reference.html#mxml_load_cb_t">mxml_load_cb_t</A></LI>
+<LI><A HREF="reference.html#mxml_node_t">mxml_node_t</A></LI>
+<LI><A HREF="reference.html#mxml_save_cb_t">mxml_save_cb_t</A></LI>
+<LI><A HREF="reference.html#mxml_sax_cb_t">mxml_sax_cb_t</A></LI>
+<LI><A HREF="reference.html#mxml_sax_event_t">mxml_sax_event_t</A></LI>
+<LI><A HREF="reference.html#mxml_text_t">mxml_text_t</A></LI>
+<LI><A HREF="reference.html#mxml_value_t">mxml_value_t</A></LI>
 </UL>
 </LI>
-<LI><A HREF="refapp.html#UNIONS">Unions</A>
+<LI><A HREF="reference.html#STRUCTURES">Structures</A>
 <UL>
-<LI><A HREF="refapp.html#mxml_value_u">mxml_value_u</A></LI>
+<LI><A HREF="reference.html#mxml_attr_s">mxml_attr_s</A></LI>
+<LI><A HREF="reference.html#8_4_2">mxml_custom_s</A></LI>
+<LI><A HREF="reference.html#mxml_element_s">mxml_element_s</A></LI>
+<LI><A HREF="reference.html#mxml_index_s">mxml_index_s</A></LI>
+<LI><A HREF="reference.html#mxml_node_s">mxml_node_s</A></LI>
+<LI><A HREF="reference.html#mxml_text_s">mxml_text_s</A></LI>
+</UL>
+</LI>
+<LI><A HREF="reference.html#UNIONS">Unions</A>
+<UL>
+<LI><A HREF="reference.html#mxml_value_u">mxml_value_u</A></LI>
+</UL>
+</LI>
+<LI><A HREF="reference.html#ENUMERATIONS">Constants</A>
+<UL>
+<LI><A HREF="reference.html#mxml_sax_event_e">mxml_sax_event_e</A></LI>
+<LI><A HREF="reference.html#mxml_type_e">mxml_type_e</A></LI>
 </UL>
 </LI>
 </UL>

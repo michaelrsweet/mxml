@@ -1,9 +1,9 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
 <HTML>
 <HEAD>
-<TITLE>Mini-XML Programmers Manual, Version 2.4</TITLE>
+<TITLE>Mini-XML Programmers Manual, Version 2.5</TITLE>
 <META NAME="author" CONTENT="Michael R. Sweet">
-<META NAME="copyright" CONTENT="Copyright 2003-2007">
+<META NAME="copyright" CONTENT="Copyright 2003-2008">
 <META HTTP-EQUIV="Content-Type" CONTENT="text/html; CHARSET=iso-iso-8859-1">
 <LINK REL="Start" HREF="index.html">
 <LINK REL="Contents" HREF="index.html">
@@ -34,8 +34,8 @@ hspace="10" src="3.gif" width="100"></A>More Mini-XML Programming
 <P>This chapter shows additional ways to use the Mini-XML library in
  your programs.</P>
 <H2><A name="LOAD_CALLBACKS">Load Callbacks</A></H2>
-<P><A href="#LOAD_XML">Chapter 2</A> introduced the <A href="refapp.html#mxmlLoadFile">
-<TT>mxmlLoadFile()</TT></A> and <A href="refapp.html#mxmlLoadString"><TT>
+<P><A href="#LOAD_XML">Chapter 2</A> introduced the <A href="reference.html#mxmlLoadFile">
+<TT>mxmlLoadFile()</TT></A> and <A href="reference.html#mxmlLoadString"><TT>
 mxmlLoadString()</TT></A> functions. The last argument to these
  functions is a callback function which is used to determine the value
  type of each data node in an XML document.</P>
@@ -99,9 +99,9 @@ MXML_REAL</TT>, or <TT>MXML_TEXT</TT>. The function is called<I> after</I>
     fclose(fp);
 </PRE>
 <H2><A name="SAVE_CALLBACKS">Save Callbacks</A></H2>
-<P><A href="#LOAD_XML">Chapter 2</A> also introduced the <A href="refapp.html#mxmlSaveFile">
-<TT>mxmlSaveFile()</TT></A>, <A href="refapp.html#mxmlSaveString"><TT>
-mxmlSaveString()</TT></A>, and <A href="refapp.html#mxmlSaveAllocString">
+<P><A href="#LOAD_XML">Chapter 2</A> also introduced the <A href="reference.html#mxmlSaveFile">
+<TT>mxmlSaveFile()</TT></A>, <A href="reference.html#mxmlSaveString"><TT>
+mxmlSaveString()</TT></A>, and <A href="reference.html#mxmlSaveAllocString">
 <TT>mxmlSaveAllocString()</TT></A> functions. The last argument to these
  functions is a callback function which is used to automatically insert
  whitespace in an XML document.</P>
@@ -327,7 +327,7 @@ MXML_WS_BEFORE_CLOSE</TT>, or <TT>MXML_WS_AFTER_CLOSE</TT>. The callback
       return (strdup(data));
     }
 </PRE>
-<P>You register the callback functions using the <A href="refapp.html#mxmlSetCustomHandlers">
+<P>You register the callback functions using the <A href="reference.html#mxmlSetCustomHandlers">
 <TT>mxmlSetCustomHandlers()</TT></A> function:</P>
 <PRE>
     mxmlSetCustomHandlers(<B>load_custom</B>,
@@ -340,12 +340,12 @@ MXML_WS_BEFORE_CLOSE</TT>, or <TT>MXML_WS_AFTER_CLOSE</TT>. The callback
  new XML data nodes. Many applications, however, need to manipulate or
  change the nodes during their operation, so Mini-XML provides functions
  to change node values safely and without leaking memory.</P>
-<P>Existing nodes can be changed using the <A href="refapp.html#mxmlSetElement">
-<TT>mxmlSetElement()</TT></A>, <A href="refapp.html#mxmlSetInteger"><TT>
-mxmlSetInteger()</TT></A>, <A href="refapp.html#mxmlSetOpaque"><TT>
-mxmlSetOpaque()</TT></A>, <A href="refapp.html#mxmlSetReal"><TT>
-mxmlSetReal()</TT></A>, <A href="refapp.html#mxmlSetText"><TT>
-mxmlSetText()</TT></A>, and <A href="refapp.html#mxmlSetTextf"><TT>
+<P>Existing nodes can be changed using the <A href="reference.html#mxmlSetElement">
+<TT>mxmlSetElement()</TT></A>, <A href="reference.html#mxmlSetInteger"><TT>
+mxmlSetInteger()</TT></A>, <A href="reference.html#mxmlSetOpaque"><TT>
+mxmlSetOpaque()</TT></A>, <A href="reference.html#mxmlSetReal"><TT>
+mxmlSetReal()</TT></A>, <A href="reference.html#mxmlSetText"><TT>
+mxmlSetText()</TT></A>, and <A href="reference.html#mxmlSetTextf"><TT>
 mxmlSetTextf()</TT></A> functions. For example, use the following
  function call to change a text node to contain the text &quot;new&quot; with
  leading whitespace:</P>
@@ -355,8 +355,8 @@ mxmlSetTextf()</TT></A> functions. For example, use the following
     mxmlSetText(node, 1, &quot;new&quot;);
 </PRE>
 <H2><A NAME="4_5">Formatted Text</A></H2>
-<P>The <A href="refapp.html#mxmlNewTextf"><TT>mxmlNewTextf()</TT></A>
- and <A href="refapp.html#mxmlSetTextf"><TT>mxmlSetTextf()</TT></A>
+<P>The <A href="reference.html#mxmlNewTextf"><TT>mxmlNewTextf()</TT></A>
+ and <A href="reference.html#mxmlSetTextf"><TT>mxmlSetTextf()</TT></A>
  functions create and change text nodes, respectively, using <TT>printf</TT>
 -style format strings and arguments. For example, use the following
  function call to create a new text node containing a constructed
@@ -369,7 +369,7 @@ mxmlSetTextf()</TT></A> functions. For example, use the following
 </PRE>
 <H2><A NAME="4_6">Indexing</A></H2>
 <P>Mini-XML provides functions for managing indices of nodes. The
- current implementation provides the same functionality as <A href="refapp.html#mxmlFindElement">
+ current implementation provides the same functionality as <A href="reference.html#mxmlFindElement">
 <TT>mxmlFindElement()</TT></A>. The advantage of using an index is that
  searching and enumeration of elements is significantly faster. The only
  disadvantage is that each index is a static snapshot of the XML
@@ -377,8 +377,8 @@ mxmlSetTextf()</TT></A> functions. For example, use the following
  more often than it is searched. The overhead of creating an index is
  approximately equal to walking the XML document tree. Nodes in the
  index are sorted by element name and attribute value.</P>
-<P>Indices are stored in <A href="refapp.html#mxml_index_t"><TT>
-mxml_index_t</TT></A> structures. The <A href="refapp.html#mxmlIndexNew">
+<P>Indices are stored in <A href="reference.html#mxml_index_t"><TT>
+mxml_index_t</TT></A> structures. The <A href="reference.html#mxmlIndexNew">
 <TT>mxmlIndexNew()</TT></A> function creates a new index:</P>
 <PRE>
     mxml_node_t *tree;
@@ -393,17 +393,17 @@ mxml_index_t</TT></A> structures. The <A href="refapp.html#mxmlIndexNew">
  indexes all element nodes alphabetically.</P>
 <P>The third argument contains the attribute to index; passing <TT>NULL</TT>
  causes only the element name to be indexed.</P>
-<P>Once the index is created, the <A href="refapp.html#mxmlIndexEnum"><TT>
-mxmlIndexEnum()</TT></A>, <A href="refapp.html#mxmlIndexFind"><TT>
-mxmlIndexFind()</TT></A>, and <A href="refapp.html#mxmlIndexReset"><TT>
+<P>Once the index is created, the <A href="reference.html#mxmlIndexEnum">
+<TT>mxmlIndexEnum()</TT></A>, <A href="reference.html#mxmlIndexFind"><TT>
+mxmlIndexFind()</TT></A>, and <A href="reference.html#mxmlIndexReset"><TT>
 mxmlIndexReset()</TT></A> functions are used to access the nodes in the
- index. The <A href="refapp.html#mxmlIndexReset"><TT>mxmlIndexReset()</TT>
+ index. The <A href="reference.html#mxmlIndexReset"><TT>mxmlIndexReset()</TT>
 </A> function resets the &quot;current&quot; node pointer in the index, allowing
  you to do new searches and enumerations on the same index. Typically
- you will call this function prior to your calls to <A href="refapp.html#mxmlIndexEnum">
-<TT>mxmlIndexEnum()</TT></A> and <A href="refapp.html#mxmlIndexFind"><TT>
+ you will call this function prior to your calls to <A href="reference.html#mxmlIndexEnum">
+<TT>mxmlIndexEnum()</TT></A> and <A href="reference.html#mxmlIndexFind"><TT>
 mxmlIndexFind()</TT></A>.</P>
-<P>The <A href="refapp.html#mxmlIndexEnum"><TT>mxmlIndexEnum()</TT></A>
+<P>The <A href="reference.html#mxmlIndexEnum"><TT>mxmlIndexEnum()</TT></A>
  function enumerates each of the nodes in the index and can be used in a
  loop as follows:</P>
 <PRE>
@@ -416,7 +416,7 @@ mxmlIndexFind()</TT></A>.</P>
       // do something with node
     }
 </PRE>
-<P>The <A href="refapp.html#mxmlIndexFind"><TT>mxmlIndexFind()</TT></A>
+<P>The <A href="reference.html#mxmlIndexFind"><TT>mxmlIndexFind()</TT></A>
  function locates the next occurrence of the named element and attribute
  value in the index. It can be used to find all matching elements in an
  index, as follows:</P>
@@ -448,8 +448,8 @@ mxmlIndexEnum</TT>.</P>
  nodes. Aside from allowing you to process XML documents of any size,
  the Mini-XML implementation also allows you to retain portions of the
  document in memory for later processing.</P>
-<P>The <A href="#mxmlSAXLoad"><TT>mxmlSAXLoadFd</TT></A>, <A href="refapp.html#mxmlSAXLoadFile">
-<TT>mxmlSAXLoadFile</TT></A>, and <A href="refapp.html#mxmlSAXLoadString">
+<P>The <A href="#mxmlSAXLoad"><TT>mxmlSAXLoadFd</TT></A>, <A href="reference.html#mxmlSAXLoadFile">
+<TT>mxmlSAXLoadFile</TT></A>, and <A href="reference.html#mxmlSAXLoadString">
 <TT>mxmlSAXLoadString</TT></A> functions provide the SAX loading APIs.
  Each function works like the corresponding <TT>mxmlLoad</TT> function
  but uses a callback to process each node as it is read.</P>
@@ -478,7 +478,7 @@ mxmlIndexEnum</TT>.</P>
 </UL>
 <P>Elements are<EM> released</EM> after the close element is processed.
  All other nodes are released after they are processed. The SAX callback
- can<EM> retain</EM> the node using the <A href="refapp.html#mxmlRetain">
+ can<EM> retain</EM> the node using the <A href="reference.html#mxmlRetain">
 <TT>mxmlRetain</TT></A> function. For example, the following SAX
  callback will retain all nodes, effectively simulating a normal
  in-memory load:</P>

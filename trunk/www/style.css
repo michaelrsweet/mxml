@@ -2,6 +2,7 @@ BODY {
   background: #ffffff;
   color: #000000;
   font-family: sans-serif;
+  margin: 15px;
 }
 
 P, TD, TH {

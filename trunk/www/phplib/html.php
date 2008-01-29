@@ -148,7 +148,8 @@ html_header($title = "",		// I - Additional document title
     $classes[0] = "sel";
   else if (strpos($PHP_SELF, "/str.php") !== FALSE)
     $classes[2] = "sel";
-  else if (strpos($PHP_SELF, "/documentation.php") !== FALSE)
+  else if (strpos($PHP_SELF, "/documentation.php") !== FALSE ||
+           strpos($PHP_SELF, "/account.php") !== FALSE)
     $classes[3] = "sel";
   else if (strpos($PHP_SELF, "/software.php") !== FALSE)
     $classes[4] = "sel";

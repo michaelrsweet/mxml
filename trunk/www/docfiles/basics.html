@@ -1,9 +1,9 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
 <HTML>
 <HEAD>
-<TITLE>Mini-XML Programmers Manual, Version 2.4</TITLE>
+<TITLE>Mini-XML Programmers Manual, Version 2.5</TITLE>
 <META NAME="author" CONTENT="Michael R. Sweet">
-<META NAME="copyright" CONTENT="Copyright 2003-2007">
+<META NAME="copyright" CONTENT="Copyright 2003-2008">
 <META HTTP-EQUIV="Content-Type" CONTENT="text/html; CHARSET=iso-iso-8859-1">
 <LINK REL="Start" HREF="index.html">
 <LINK REL="Contents" HREF="index.html">
@@ -67,10 +67,10 @@ hspace="10" src="2.gif" width="100"></A>Getting Started with Mini-XML</H1>
 </PRE>
 <H2><A NAME="3_2">Nodes</A></H2>
 <P>Every piece of information in an XML file (elements, text, numbers)
- is stored in memory in &quot;nodes&quot;. Nodes are defined by the <A href="refapp.html#mxml_node_t">
+ is stored in memory in &quot;nodes&quot;. Nodes are defined by the <A href="reference.html#mxml_node_t">
 <TT>mxml_node_t</TT></A> structure. The <A href="#mxml_type_t"><TT>type</TT>
 </A> member defines the node type (element, integer, opaque, real, or
- text) which determines which value you want to look at in the <A href="refapp.html#mxml_value_t">
+ text) which determines which value you want to look at in the <A href="reference.html#mxml_value_t">
 <TT>value</TT></A> union.</P>
 
 <!-- NEED 10 -->
@@ -95,15 +95,16 @@ node-&gt;value.opaque</TT></TD></TR>
 </CENTER>
 <P>Each node also has a <TT>user_data</TT> member which allows you to
  associate application-specific data with each node as needed.</P>
-<P>New nodes are created using the <A href="refapp.html#mxmlNewElement"><TT>
-mxmlNewElement</TT></A>, <A href="refapp.html#mxmlNewInteger"><TT>
-mxmlNewInteger</TT></A>, <A href="refapp.html#mxmlNewOpaque"><TT>
-mxmlNewOpaque</TT></A>, <A href="refapp.html#mxmlNewReal"><TT>
-mxmlNewReal</TT></A>, <A href="refapp.html#mxmlNewText"><TT>mxmlNewText</TT>
-</A> <A href="refapp.html#mxmlNewTextf"><TT>mxmlNewTextf</TT></A> <A href="refapp.html#mxmlNewXML">
-<TT>mxmlNewXML</TT></A> functions. Only elements can have child nodes,
- and the top node must be an element, usually the <TT>&lt;?xml
- version=&quot;1.0&quot;?&gt;</TT> node created by <TT>mxmlNewXML()</TT>.</P>
+<P>New nodes are created using the <A href="reference.html#mxmlNewElement">
+<TT>mxmlNewElement</TT></A>, <A href="reference.html#mxmlNewInteger"><TT>
+mxmlNewInteger</TT></A>, <A href="reference.html#mxmlNewOpaque"><TT>
+mxmlNewOpaque</TT></A>, <A href="reference.html#mxmlNewReal"><TT>
+mxmlNewReal</TT></A>, <A href="reference.html#mxmlNewText"><TT>
+mxmlNewText</TT></A> <A href="reference.html#mxmlNewTextf"><TT>
+mxmlNewTextf</TT></A> <A href="reference.html#mxmlNewXML"><TT>mxmlNewXML</TT>
+</A> functions. Only elements can have child nodes, and the top node
+ must be an element, usually the <TT>&lt;?xml version=&quot;1.0&quot;?&gt;</TT> node
+ created by <TT>mxmlNewXML()</TT>.</P>
 <P>Nodes have pointers to the node above (<TT>parent</TT>), below (<TT>
 child</TT>), left (<TT>prev</TT>), and right (<TT>next</TT>) of the
  current node. If you have an XML file like the following:</P>
@@ -138,7 +139,7 @@ child</TT>), left (<TT>prev</TT>), and right (<TT>next</TT>) of the
 </PRE>
 <P>where &quot;-&quot; is a pointer to the next node and &quot;|&quot; is a pointer to the
  first child node.</P>
-<P>Once you are done with the XML data, use the <A href="refapp.html#mxmlDelete">
+<P>Once you are done with the XML data, use the <A href="reference.html#mxmlDelete">
 <TT>mxmlDelete</TT></A> function to recursively free the memory that is
  used for a particular node or the entire tree:</P>
 <PRE>
@@ -182,20 +183,20 @@ mxmlNew</TT> functions. The following code will create the XML document
         mxmlNewText(node, 0, &quot;val8&quot;);
 </PRE>
 <P>We start by creating the <TT>&lt;?xml version=&quot;1.0&quot;?&gt;</TT> node common
- to all XML files using the <A href="refapp.html#mxmlNewXML"><TT>
+ to all XML files using the <A href="reference.html#mxmlNewXML"><TT>
 mxmlNewXML</TT></A> function:</P>
 <PRE>
     xml = mxmlNewXML(&quot;1.0&quot;);
 </PRE>
 <P>We then create the <TT>&lt;data&gt;</TT> node used for this document using
- the <A href="refapp.html#mxmlNewElement"><TT>mxmlNewElement</TT></A>
+ the <A href="reference.html#mxmlNewElement"><TT>mxmlNewElement</TT></A>
  function. The first argument specifies the parent node (<TT>xml</TT>)
  while the second specifies the element name (<TT>data</TT>):</P>
 <PRE>
     data = mxmlNewElement(xml, &quot;data&quot;);
 </PRE>
 <P>Each <TT>&lt;node&gt;...&lt;/node&gt;</TT> in the file is created using the <TT>
-mxmlNewElement</TT> and <A href="refapp.html#mxmlNewText"><TT>
+mxmlNewElement</TT> and <A href="reference.html#mxmlNewText"><TT>
 mxmlNewText</TT></A> functions. The first argument of <TT>mxmlNewText</TT>
  specifies the parent node (<TT>node</TT>). The second argument
  specifies whether whitespace appears before the text - 0 or false in
@@ -209,7 +210,7 @@ mxmlNewText</TT></A> functions. The first argument of <TT>mxmlNewText</TT>
 
 <!-- NEW PAGE -->
 <H2><A NAME="3_4">Loading XML</A></H2>
-<P>You load an XML file using the <A href="refapp.html#mxmlLoadFile"><TT>
+<P>You load an XML file using the <A href="reference.html#mxmlLoadFile"><TT>
 mxmlLoadFile</TT></A> function:</P>
 <PRE>
     FILE *fp;
@@ -238,7 +239,7 @@ Chapter 3</A>. The example code uses the <TT>MXML_TEXT_CALLBACK</TT>
  whitespace-separated text values. Other standard callbacks include <TT>
 MXML_IGNORE_CALLBACK</TT>, <TT>MXML_INTEGER_CALLBACK</TT>, <TT>
 MXML_OPAQUE_CALLBACK</TT>, and <TT>MXML_REAL_CALLBACK</TT>.</P>
-<P>The <A href="refapp.html#mxmlLoadString"><TT>mxmlLoadString</TT></A>
+<P>The <A href="reference.html#mxmlLoadString"><TT>mxmlLoadString</TT></A>
  function loads XML node trees from a string:</P>
 
 <!-- NEED 10 -->
@@ -257,7 +258,7 @@ mxmlLoadFile()</TT>. The second argument specifies the string or
 
 <!-- NEW PAGE -->
 <H2><A NAME="3_5">Saving XML</A></H2>
-<P>You save an XML file using the <A href="refapp.html#mxmlSaveFile"><TT>
+<P>You save an XML file using the <A href="reference.html#mxmlSaveFile"><TT>
 mxmlSaveFile</TT></A> function:</P>
 <PRE>
     FILE *fp;
@@ -276,9 +277,9 @@ fopen()</TT> or <TT>popen()</TT>. You can also use <TT>stdout</TT> if
  file. Whitespace callbacks are covered in detail in <A href="SAVE_CALLBACKS">
 Chapter 3</A>. The previous example code uses the <TT>MXML_NO_CALLBACK</TT>
  constant to specify that no special whitespace handling is required.</P>
-<P>The <A href="refapp.html#mxmlSaveAllocString"><TT>mxmlSaveAllocString</TT>
-</A>, and <A href="refapp.html#mxmlSaveString"><TT>mxmlSaveString</TT></A>
- functions save XML node trees to strings:</P>
+<P>The <A href="reference.html#mxmlSaveAllocString"><TT>
+mxmlSaveAllocString</TT></A>, and <A href="reference.html#mxmlSaveString">
+<TT>mxmlSaveString</TT></A> functions save XML node trees to strings:</P>
 <PRE>
     char buffer[8192];
     char *ptr;
@@ -298,7 +299,7 @@ mxmlSaveFile()</TT>. The <TT>mxmlSaveString</TT> function takes pointer
  allocated using <TT>malloc()</TT>.</P>
 <H3><A NAME="3_5_1">Controlling Line Wrapping</A></H3>
 <P>When saving XML documents, Mini-XML normally wraps output lines at
- column 75 so that the text is readable in terminal windows. The <A href="refapp.html#mxmlSetWrapMargin">
+ column 75 so that the text is readable in terminal windows. The <A href="reference.html#mxmlSetWrapMargin">
 <TT>mxmlSetWrapMargin</TT></A> function overrides the default wrap
  margin:</P>
 <PRE>
@@ -311,9 +312,9 @@ mxmlSaveFile()</TT>. The <TT>mxmlSaveString</TT> function takes pointer
 
 <!-- NEW PAGE-->
 <H2><A NAME="3_6">Finding and Iterating Nodes</A></H2>
-<P>The <A href="refapp.html#mxmlWalkPrev"><TT>mxmlWalkPrev</TT></A> and <A
-href="refapp.html#mxmlWalkNext"><TT>mxmlWalkNext</TT></A>functions can
- be used to iterate through the XML node tree:</P>
+<P>The <A href="reference.html#mxmlWalkPrev"><TT>mxmlWalkPrev</TT></A>
+ and <A href="reference.html#mxmlWalkNext"><TT>mxmlWalkNext</TT></A>
+functions can be used to iterate through the XML node tree:</P>
 <PRE>
     mxml_node_t *node;
     
@@ -323,7 +324,7 @@ href="refapp.html#mxmlWalkNext"><TT>mxmlWalkNext</TT></A>functions can
     node = mxmlWalkNext(current, tree,
                         MXML_DESCEND);
 </PRE>
-<P>In addition, you can find a named element/node using the <A href="refapp.html#mxmlFindElement">
+<P>In addition, you can find a named element/node using the <A href="reference.html#mxmlFindElement">
 <TT>mxmlFindElement</TT></A> function:</P>
 <PRE>
     mxml_node_t *node;

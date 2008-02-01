@@ -2890,7 +2890,7 @@ write_html(const char  *section,	/* I - Section */
 
     write_html_head(out, section, title, cssfile);
 
-    fputs("<frameset cols=\"200,*\">\n", out);
+    fputs("<frameset cols=\"250,*\">\n", out);
     fprintf(out, "<frame src=\"%s-toc.html\">\n", basename);
     fprintf(out, "<frame name=\"body\" src=\"%s-body.html\">\n", basename);
     fputs("</frameset>\n"

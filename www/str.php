@@ -575,8 +575,11 @@ switch ($op)
 	html_link("Submit Bug or Feature Request", "$PHP_SELF?N$options'");
 	html_end_links();
 
+	$htmlsearch = htmlspecialchars($search, ENT_QUOTES);
+
         print("<form method='POST' action='$PHP_SELF'><p align='center'>"
-	     ."Search&nbsp;Words: &nbsp;<input type='text' size='60' name='SEARCH' value='$search'>"
+	     ."Search&nbsp;Words: &nbsp;<input type='text' size='60' "
+	     ."name='SEARCH' value='$htmlsearch'>"
 	     ."<input type='submit' value='Search STRs'></p>\n");
 
 	print("<p align='center'>Priority:&nbsp;<select name='FPRIORITY'>");
@@ -764,7 +767,7 @@ switch ($op)
 
 	  if (($priority || $status || $scope) && $search != "")
 	    print("<p><a href='$PHP_SELF?L+S0+Q" . urlencode($search)
-	         ."'>Search for \"<i>$search</i>\" in all STRs</a></p>\n");
+	         ."'>Search for \"<i>$htmlsearch</i>\" in all STRs</a></p>\n");
 
 	  html_footer();
 	  exit();

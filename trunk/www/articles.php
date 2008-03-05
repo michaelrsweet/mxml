@@ -327,9 +327,11 @@ switch ($op)
 	html_link("Submit Article", "$PHP_SELF?N$options");
 	html_end_links();
 
+	$htmlsearch = htmlspecialchars($search, ENT_QUOTES);
+
         print("<form method='POST' action='$PHP_SELF'><p align='center'>"
 	     ."Search&nbsp;Words: &nbsp;<input type='text' size='60' "
-	     ."name='SEARCH' value='$search'>"
+	     ."name='SEARCH' value='$htmlsearch'>"
 	     ."<input type='submit' value='Search Articles'></p></form>\n");
 
         $query = "";

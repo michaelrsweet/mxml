@@ -1,3 +1,4 @@
+/*#define DEBUG 1*/
 /*
  * "$Id$"
  *
@@ -1206,7 +1207,9 @@ scan_file(const char  *filename,	/* I - Filename */
                 if (structclass)
 		  scope = NULL;
 
-                enumeration = NULL;
+                if (!typedefnode)
+		  enumeration = NULL;
+
 		constant    = NULL;
 		structclass = NULL;
 
@@ -1261,10 +1264,11 @@ scan_file(const char  *filename,	/* I - Filename */
 	    case ';' :
 #ifdef DEBUG
                 fputs("Identifier: <<<< ; >>>\n", stderr);
-		fprintf(stderr, "    function=%p, type=%p\n", function, type);
+		fprintf(stderr, "    enumeration=%p, function=%p, type=%p, type->child=%p, typedefnode=%p\n",
+		        enumeration, function, type, type ? type->child : NULL, typedefnode);
 #endif /* DEBUG */
 
-	        if (function)
+		if (function)
 		{
 		  if (!strcmp(tree->value.element.name, "class"))
 		  {
@@ -1283,7 +1287,7 @@ scan_file(const char  *filename,	/* I - Filename */
 		if (type)
 		{
 		 /*
-		  * See if we have a function typedef...
+		  * See if we have a typedef...
 		  */
 
 		  if (type->child &&
@@ -1306,23 +1310,56 @@ scan_file(const char  *filename,	/* I - Filename */
 			  break;
                     }
 
-                    if (node)
-		    {
-		      mxmlElementSetAttr(typedefnode, "name",
-		                         node->value.text.string);
-                      sort_node(tree, typedefnode);
+                    if (!node)
+		      node = type->last_child;
 
+#ifdef DEBUG
+		    fprintf(stderr, "    ADDING TYPEDEF FOR %p(%s)...\n",
+		            node, node->value.text.string);
+#endif /* DEBUG */
+
+		    mxmlElementSetAttr(typedefnode, "name",
+				       node->value.text.string);
+		    sort_node(tree, typedefnode);
+
+                    if (type->child != node)
 		      mxmlDelete(type->child);
-		      mxmlDelete(node);
 
-                      if (type->child)
-			type->child->value.text.whitespace = 0;
+		    mxmlDelete(node);
 
-		      mxmlAdd(typedefnode, MXML_ADD_AFTER, MXML_ADD_TO_PARENT,
-		              type);
-		      type = NULL;
-		      break;
-		    }
+		    if (type->child)
+		      type->child->value.text.whitespace = 0;
+
+		    mxmlAdd(typedefnode, MXML_ADD_AFTER, MXML_ADD_TO_PARENT,
+			    type);
+		    type = NULL;
+		    break;
+		  }
+		  else if (typedefnode && enumeration)
+		  {
+		   /*
+		    * Add enum typedef...
+		    */
+
+                    node = type->child;
+
+#ifdef DEBUG
+		    fprintf(stderr, "    ADDING TYPEDEF FOR %p(%s)...\n",
+		            node, node->value.text.string);
+#endif /* DEBUG */
+
+		    mxmlElementSetAttr(typedefnode, "name",
+				       node->value.text.string);
+		    sort_node(tree, typedefnode);
+		    mxmlDelete(type);
+
+		    type = mxmlNewElement(typedefnode, "type");
+                    mxmlNewText(type, 0, "enum");
+		    mxmlNewText(type, 1,
+		                mxmlElementGetAttr(enumeration, "name"));
+		    enumeration = NULL;
+		    type = NULL;
+		    break;
 		  }
 		  
 		  mxmlDelete(type);
@@ -1438,8 +1475,11 @@ scan_file(const char  *filename,	/* I - Filename */
         	      if (comment->child != comment->last_child)
 		      {
 #ifdef DEBUG
-			fprintf(stderr, "    removing comment %p, last comment %p...\n",
-				comment->child, comment->last_child);
+			fprintf(stderr, "    removing comment %p(%20.20s), last comment %p(%20.20s)...\n",
+				comment->child,
+				comment->child ? comment->child->value.text.string : "",
+				comment->last_child,
+				comment->last_child ? comment->last_child->value.text.string : "");
 #endif /* DEBUG */
 			mxmlDelete(comment->child);
 #ifdef DEBUG
@@ -1605,8 +1645,11 @@ scan_file(const char  *filename,	/* I - Filename */
         	  if (comment->child != comment->last_child)
 		  {
 #ifdef DEBUG
-		    fprintf(stderr, "    removing comment %p, last comment %p...\n",
-			    comment->child, comment->last_child);
+		    fprintf(stderr, "    removing comment %p(%20.20s), last comment %p(%20.20s)...\n",
+			    comment->child,
+			    comment->child ? comment->child->value.text.string : "",
+			    comment->last_child,
+			    comment->last_child ? comment->last_child->value.text.string : "");
 #endif /* DEBUG */
 		    mxmlDelete(comment->child);
 #ifdef DEBUG
@@ -1756,8 +1799,11 @@ scan_file(const char  *filename,	/* I - Filename */
             if (comment->child != comment->last_child)
 	    {
 #ifdef DEBUG
-	      fprintf(stderr, "    removing comment %p, last comment %p...\n",
-		      comment->child, comment->last_child);
+	      fprintf(stderr, "    removing comment %p(%20.20s), last comment %p(%20.20s)...\n",
+		      comment->child,
+		      comment->child ? comment->child->value.text.string : "",
+		      comment->last_child,
+		      comment->last_child ? comment->last_child->value.text.string : "");
 #endif /* DEBUG */
 	      mxmlDelete(comment->child);
 #ifdef DEBUG

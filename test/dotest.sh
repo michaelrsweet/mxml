@@ -14,7 +14,7 @@ while test $# -gt 0; do
 		-v) mode="valgrind" ;;
 		*.h | *.c | *.cxx) files="$files $arg" ;;
 		*)
-			echo "Usage: ./dotest.sh [-g] [-v] [files]"
+			echo "Usage: ./dotest.sh [-f] [-g] [-v] [files]"
 			exit 1
 			;;
 	esac
@@ -28,7 +28,9 @@ rm -f test.xml
 
 case "$mode" in
 	gdb)
-		echo "run $framed test.xml $files >test.html 2>test.log" >.gdbcmds
+		echo "break malloc_error_break" >.gdbcmds
+		echo "set env DYLD_INSERT_LIBRARIES /usr/lib/libgmalloc.dylib" >>.gdbcmds
+		echo "run $framed test.xml $files >test.html 2>test.log" >>.gdbcmds
 		gdb -x .gdbcmds ../mxmldoc-static
 		;;
 

@@ -710,7 +710,10 @@ whitespace_cb(mxml_node_t *node,	/* I - Element node */
   }
   else if (!strncmp(name, "?xml", 4))
   {
-    return (NULL);
+    if (where == MXML_WS_AFTER_OPEN)
+      return ("\n");
+    else
+      return (NULL);
   }
   else if (where == MXML_WS_BEFORE_OPEN ||
            ((!strcmp(name, "choice") || !strcmp(name, "option")) &&

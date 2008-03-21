@@ -3,6 +3,9 @@ CHANGES - 2008-03-20
 
 CHANGES IN Mini-XML 2.5.1
 
+	- Wrapping was not disabled when mxmlSetWrapMargin(0) was
+	  called, and "<?xml ... ?>" was always followed by a newline
+	  (STR #76)
 	- The mxml.pc.in file was broken (STR #79)
 	- The mxmldoc program now handles "typedef enum name {} name"
 	  correctly (STR #72)

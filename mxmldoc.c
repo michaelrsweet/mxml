@@ -456,6 +456,8 @@ main(int  argc,				/* I - Number of command-line args */
       * Write over the existing XML file...
       */
 
+      mxmlSetWrapMargin(0);
+
       if (mxmlSaveFile(doc, fp, ws_cb))
       {
 	fprintf(stderr,
@@ -4701,7 +4703,8 @@ ws_cb(mxml_node_t *node,		/* I - Element node */
 	    strcmp(name, "struct") &&
 	    strcmp(name, "typedef") &&
 	    strcmp(name, "union") &&
-	    strcmp(name, "variable"))
+	    strcmp(name, "variable") &&
+	    strncmp(name, "?xml", 4))
 	  return (NULL);
 	else
           return ("\n");

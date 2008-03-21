@@ -1290,6 +1290,10 @@ the walk to the node's children.</description>
       <description>Text fragment</description>
     </constant>
   </enumeration>
+  <typedef name="mxml_type_t">
+    <description>The XML node type.</description>
+    <type>enum mxml_type_e</type>
+  </typedef>
   <typedef name="mxml_value_t">
     <type>union mxml_value_u</type>
     <description>An XML node value.</description>

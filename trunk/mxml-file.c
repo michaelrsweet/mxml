@@ -606,22 +606,19 @@ mxmlSetErrorCallback(mxml_error_cb_t cb)/* I - Error callback function */
 /*
  * 'mxmlSetWrapMargin()' - Set the the wrap margin when saving XML data.
  *
- * Wrapping is disabled when "column" is <= 0.
+ * Wrapping is disabled when "column" is 0.
  *
  * @since Mini-XML 2.3@
  */
 
 void
-mxmlSetWrapMargin(int column)		/* I - Column for wrapping */
+mxmlSetWrapMargin(int column)		/* I - Column for wrapping, 0 to disable wrapping */
 {
   _mxml_global_t *global = _mxml_global();
 					/* Global data */
 
 
-  if (column <= 0)
-    global->wrap = 2147483647;
-  else
-    global->wrap = column;
+  global->wrap = column;
 }
 
 
@@ -2804,13 +2801,6 @@ mxml_write_node(mxml_node_t     *node,	/* I - Node to write */
 	    for (ptr = node->value.element.name; *ptr; ptr ++)
 	      if ((*putc_cb)(*ptr, p) < 0)
 	        return (-1);
-
-           /*
-	    * Prefer a newline for whitespace after ?xml...
-	    */
-
-            if (!strncmp(node->value.element.name, "?xml", 4))
-              col = global->wrap;
 	  }
 	  else if (mxml_write_name(node->value.element.name, p, putc_cb) < 0)
 	    return (-1);
@@ -2826,7 +2816,7 @@ mxml_write_node(mxml_node_t     *node,	/* I - Node to write */
 	    if (attr->value)
 	      width += strlen(attr->value) + 3;
 
-	    if ((col + width) > global->wrap)
+	    if (global->wrap > 0 && (col + width) > global->wrap)
 	    {
 	      if ((*putc_cb)('\n', p) < 0)
 	        return (-1);
@@ -2931,7 +2921,7 @@ mxml_write_node(mxml_node_t     *node,	/* I - Node to write */
       case MXML_INTEGER :
 	  if (node->prev)
 	  {
-	    if (col > global->wrap)
+	    if (global->wrap > 0 && col > global->wrap)
 	    {
 	      if ((*putc_cb)('\n', p) < 0)
 	        return (-1);
@@ -2961,7 +2951,7 @@ mxml_write_node(mxml_node_t     *node,	/* I - Node to write */
       case MXML_REAL :
 	  if (node->prev)
 	  {
-	    if (col > global->wrap)
+	    if (global->wrap > 0 && col > global->wrap)
 	    {
 	      if ((*putc_cb)('\n', p) < 0)
 	        return (-1);
@@ -2984,7 +2974,7 @@ mxml_write_node(mxml_node_t     *node,	/* I - Node to write */
       case MXML_TEXT :
 	  if (node->value.text.whitespace && col > 0)
 	  {
-	    if (col > global->wrap)
+	    if (global->wrap > 0 && col > global->wrap)
 	    {
 	      if ((*putc_cb)('\n', p) < 0)
 	        return (-1);

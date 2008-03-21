@@ -1,10 +1,11 @@
-CHANGES - 2008-03-18
+CHANGES - 2008-03-20
 --------------------
 
 CHANGES IN Mini-XML 2.5.1
 
+	- The mxml.pc.in file was broken (STR #79)
 	- The mxmldoc program now handles "typedef enum name {} name"
-	  correctly.
+	  correctly (STR #72)
 
 
 CHANGES IN Mini-XML 2.5

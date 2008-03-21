@@ -215,6 +215,7 @@ using a SAX callback.">mxmlSAXLoadString</a></li>
 	<li><a href="#mxml_sax_cb_t" title="SAX callback function">mxml_sax_cb_t</a></li>
 	<li><a href="#mxml_sax_event_t" title="SAX event type.">mxml_sax_event_t</a></li>
 	<li><a href="#mxml_text_t" title="An XML text value.">mxml_text_t</a></li>
+	<li><a href="#mxml_type_t" title="The XML node type.">mxml_type_t</a></li>
 	<li><a href="#mxml_value_t" title="An XML node value.">mxml_value_t</a></li>
 </ul></li>
 <li><a href="#STRUCTURES">Structures</a><ul class="code">
@@ -1398,7 +1399,7 @@ typedef struct <a href="#mxml_index_s">mxml_index_s</a> mxml_index_t;
 <h3 class="typedef"><a name="mxml_load_cb_t">mxml_load_cb_t</a></h3>
 <p class="description">Load callback function</p>
 <p class="code">
-typedef mxml_type_t (*mxml_load_cb_t)(<a href="#mxml_node_t">mxml_node_t</a> *);
+typedef <a href="#mxml_type_t">mxml_type_t</a> (*mxml_load_cb_t)(<a href="#mxml_node_t">mxml_node_t</a> *);
 </p>
 <h3 class="typedef"><a name="mxml_node_t">mxml_node_t</a></h3>
 <p class="description">An XML node.</p>
@@ -1424,6 +1425,11 @@ typedef enum <a href="#mxml_sax_event_e">mxml_sax_event_e</a> mxml_sax_event_t;
 <p class="description">An XML text value.</p>
 <p class="code">
 typedef struct <a href="#mxml_text_s">mxml_text_s</a> mxml_text_t;
+</p>
+<h3 class="typedef"><a name="mxml_type_t">mxml_type_t</a></h3>
+<p class="description">The XML node type.</p>
+<p class="code">
+typedef enum <a href="#mxml_type_e">mxml_type_e</a> mxml_type_t;
 </p>
 <h3 class="typedef"><a name="mxml_value_t">mxml_value_t</a></h3>
 <p class="description">An XML node value.</p>
@@ -1504,7 +1510,7 @@ typedef union <a href="#mxml_value_u">mxml_value_u</a> mxml_value_t;
 &nbsp;&nbsp;&nbsp;&nbsp;struct <a href="#mxml_node_s">mxml_node_s</a> *parent;<br>
 &nbsp;&nbsp;&nbsp;&nbsp;struct <a href="#mxml_node_s">mxml_node_s</a> *prev;<br>
 &nbsp;&nbsp;&nbsp;&nbsp;int ref_count;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;mxml_type_t type;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#mxml_type_t">mxml_type_t</a> type;<br>
 &nbsp;&nbsp;&nbsp;&nbsp;void *user_data;<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#mxml_value_t">mxml_value_t</a> value;<br>
 };</p>

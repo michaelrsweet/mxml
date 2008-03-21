@@ -6,5 +6,5 @@ includedir=@includedir@
 Name: Mini-XML
 Description: Lightweight XML support library
 Version: @VERSION@
-Libs: @PC_LIBS@ @PHTREAD_LIBS@
+Libs: @PC_LIBS@ @PTHREAD_LIBS@
 Cflags: @PC_CFLAGS@ @PTHREAD_FLAGS@

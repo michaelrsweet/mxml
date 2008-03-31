@@ -28,10 +28,15 @@ global $_COOKIE, $_FILES, $_POST, $_SERVER;
 
 $argc           = $_SERVER["argc"];
 $argv           = $_SERVER["argv"];
-$PHP_SELF       = $_SERVER["PHP_SELF"];
 $REQUEST_METHOD = $_SERVER["REQUEST_METHOD"];
 $SERVER_NAME    = $_SERVER["SERVER_NAME"];
 $REMOTE_ADDR    = $_SERVER["REMOTE_ADDR"];
+
+// Handle PHP_SELF differently - we need to quote it properly...
+if (array_key_exists("PHP_SELF", $_SERVER))
+  $PHP_SELF = htmlspecialchars(urlencode($_SERVER["PHP_SELF"]), ENT_QUOTES);
+else
+  $PHP_SELF = "";
 
 if (array_key_exists("ISHTTPS", $_SERVER))
   $PHP_URL = "https://$_SERVER[SERVER_NAME]$_SERVER[PHP_SELF]";

@@ -26,6 +26,7 @@
 
 
 include_once "phplib/html.php";
+include_once "phplib/common.php";
 
 // News server...
 //$NNTPSERVER = "localhost";

@@ -965,6 +965,12 @@ switch ($op)
       break;
 
   case 'M' : // Modify STR
+      if ($LOGIN_USER == "")
+      {
+	header("Location: login.php?PAGE=$PHP_SELF?M$id$options");
+	return;
+      }
+
       if ($REQUEST_METHOD == "POST")
       {
         if (array_key_exists("STATUS", $_POST))
@@ -1298,6 +1304,12 @@ switch ($op)
       break;
 
   case 'T' : // Post text for STR #
+      if ($LOGIN_USER == "")
+      {
+	header("Location: login.php?PAGE=$PHP_SELF?T$id$options");
+	return;
+      }
+
       if ($REQUEST_METHOD == "POST")
       {
 	$contents = $_POST["CONTENTS"];
@@ -1409,6 +1421,12 @@ switch ($op)
       break;
 
   case 'F' : // Post file for STR #
+      if ($LOGIN_USER == "")
+      {
+	header("Location: login.php?PAGE=$PHP_SELF?F$id$options");
+	return;
+      }
+
       if ($REQUEST_METHOD == "POST")
       {
         if ($LOGIN_USER != "" && $LOGIN_LEVEL < AUTH_DEVEL)
@@ -1558,6 +1576,12 @@ switch ($op)
       break;
 
   case 'N' : // Post new STR
+      if ($LOGIN_USER == "")
+      {
+	header("Location: login.php?PAGE=$PHP_SELF?N$options");
+	return;
+      }
+
       $havedata = 0;
 
       if ($REQUEST_METHOD == "POST")

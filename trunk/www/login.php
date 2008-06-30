@@ -15,6 +15,13 @@ include_once "phplib/common.php";
 
 $usererror = "";
 
+if (array_key_exists("PAGE", $_GET))
+  $page = $_GET["PAGE"];
+else if (array_key_exists("PAGE", $_POST))
+  $page = $_POST["PAGE"];
+else
+  $page = "account.php";
+
 if ($REQUEST_METHOD == "POST")
 {
   if (array_key_exists("USERNAME", $_POST))
@@ -141,7 +148,7 @@ else
 }
 
 if ($LOGIN_USER != "")
-  header("Location: account.php");
+  header("Location: $page");
 else if ($argc == 0 || $argv[0] != "E")
 {
   // Header + start of table...

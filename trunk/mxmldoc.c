@@ -2952,6 +2952,16 @@ write_html(const char  *section,	/* I - Section */
     fprintf(out, "<frame src=\"%s-toc.html\">\n", basename);
     fprintf(out, "<frame name=\"body\" src=\"%s-body.html\">\n", basename);
     fputs("</frameset>\n"
+          "<noframes>\n"
+	  "<h1>", out);
+    write_string(out, title, OUTPUT_HTML);
+    fprintf(out,
+            "</h1>\n"
+            "<ul>\n"
+	    "\t<li><a href=\"%s-toc.html\">Table of Contents</a></li>\n"
+	    "\t<li><a href=\"%s-body.html\">Body</a></li>\n"
+	    "</ul>\n", basename, basename);
+    fputs("</noframes>\n"
           "</html>\n", out);
     fclose(out);
 

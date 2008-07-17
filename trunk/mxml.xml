@@ -1023,12 +1023,12 @@ The node is not changed if it is not a text node.</description>
   <function name="mxmlSetWrapMargin">
     <description>Set the the wrap margin when saving XML data.
 
-Wrapping is disabled when &quot;column&quot; is &lt;= 0.
+Wrapping is disabled when &quot;column&quot; is 0.
 
 @since Mini-XML 2.3@</description>
     <argument name="column" direction="I">
       <type>int</type>
-      <description>Column for wrapping</description>
+      <description>Column for wrapping, 0 to disable wrapping</description>
     </argument>
   </function>
   <function name="mxmlWalkNext">

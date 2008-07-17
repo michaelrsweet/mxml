@@ -2936,13 +2936,22 @@ write_html(const char  *section,	/* I - Section */
       return;
     }
 
-    write_html_head(out, section, title, cssfile);
+    fputs("<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Frameset//EN\" "
+          "\"http://www.w3.org/TR/html4/frameset.dtd\">\n"
+	  "<html>\n"
+	  "<head>\n"
+	  "<title>", out);
+    write_string(out, title, OUTPUT_HTML);
+    fputs("</title>\n", out);
 
-    fputs("<frameset cols=\"250,*\">\n", out);
+    if (section)
+      fprintf(out, "<meta name=\"keywords\" content=\"%s\">\n", section);
+
+    fputs("<meta name=\"creator\" content=\"" MXML_VERSION "\">\n"
+          "<frameset cols=\"250,*\">\n", out);
     fprintf(out, "<frame src=\"%s-toc.html\">\n", basename);
     fprintf(out, "<frame name=\"body\" src=\"%s-body.html\">\n", basename);
     fputs("</frameset>\n"
-          "</body>\n"
           "</html>\n", out);
     fclose(out);
 

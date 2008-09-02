@@ -10,16 +10,7 @@
 //
 
 include_once "phplib/html.php";
-
-
-// List of download servers...
-$sitelist = array(
-  "ftp://ftp.easysw.com/pub" => "California, USA via FTP",
-  "http://ftp.easysw.com/pub" => "California, USA via HTTP",
-  "http://ftp.funet.fi/pub/mirrors/ftp.easysw.com/pub" => "Espoo, Finland via HTTP",
-  "ftp://ftp.funet.fi/pub/mirrors/ftp.easysw.com/pub" => "Espoo, Finland via FTP",
-);
-
+include_once "phplib/mirrors.php";
 
 // Get the list of software files...
 $fp    = fopen("data/software.md5", "r");
@@ -42,10 +33,10 @@ if (array_key_exists("SITE", $_GET))
   setcookie("SITE", $site, time() + 90 * 86400, "/");
 }
 else if (array_key_exists("SITE", $_COOKIE) &&
-         array_key_exists($_COOKIE["SITE"], $sitelist))
+         array_key_exists($_COOKIE["SITE"], $MIRRORS))
   $site = $_COOKIE["SITE"];
 else
-  $site = "";
+  $site = mirror_closest();
 
 if (array_key_exists("VERSION", $_GET))
   $version = $_GET["VERSION"];
@@ -86,38 +77,27 @@ if ($file != "")
 {
   print("<h1>Download</h1>\n");
 
-  if ($site != "")
-    print("<p>Your download should begin shortly. If not, please "
-         ."<a href='$site/$file'>click here</a> to download the file "
-	 ."from the current mirror.</p>\n");
-  else
-    print("<p>Please select a mirror site below to begin the download.</p>\n");
-
-  print("<form action='$PHP_SELF' method='GET' name='download'>\n"
+  print("<p>Your download should begin shortly. If not, please "
+       ."<a href='$site/$file'>click here</a> to download the file "
+       ."from the current mirror.</p>\n"
+       ."<form action='$PHP_SELF' method='GET' name='download'>\n"
        ."<input type='hidden' name='FILE' value='"
        . htmlspecialchars($file, ENT_QUOTES) . "'>\n"
        ."<input type='hidden' name='VERSION' value='"
        . htmlspecialchars($version, ENT_QUOTES) . "'>\n");
 
-  if ($site == "")
-    print("<input type='radio' name='SITE' value='' checked>None<br>\n");
-
-  reset($sitelist);
-  while (list($key, $val) = each($sitelist))
+  reset($MIRRORS);
+  while (list($key, $val) = each($MIRRORS))
   {
     print("<input type='radio' name='SITE' value='$key' "
          ."onClick='document.download.submit();'");
     if ($site == $key)
       print("  checked");
-    print(">$val<br>\n");
+    print(">$val[0]<br>\n");
   }
 
-  if ($site != "")
-    print("<p><input type='submit' value='Change Mirror Site'>\n");
-  else
-    print("<p><input type='submit' value='Select Mirror Site'>\n");
-
-  print("</form>\n");
+  print("<p><input type='submit' value='Change Mirror Site'>\n"
+       ."</form>\n");
 }
 else
 {

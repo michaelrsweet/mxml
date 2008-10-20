@@ -23,11 +23,18 @@ fclose($fp);
 
 // Get form data, if any...
 if (array_key_exists("FILE", $_GET))
+{
   $file = $_GET["FILE"];
+
+  if (strpos($file, "../") !== FALSE ||
+      !file_exists("/home/ftp.easysw.com/pub/$file"))
+    $file = "";
+}
 else
   $file = "";
 
-if (array_key_exists("SITE", $_GET))
+if (array_key_exists("SITE", $_GET) &&
+    array_key_exists($_GET["SITE"], $PROJECT_SITELIST))
 {
   $site = $_GET["SITE"];
   setcookie("SITE", $site, time() + 90 * 86400, "/");

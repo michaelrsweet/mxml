@@ -3,7 +3,7 @@
  *
  * Configuration file for Mini-XML, a small XML-like file parsing library.
  *
- * Copyright 2003-2007 by Michael Sweet.
+ * Copyright 2003-2008 by Michael Sweet.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -22,9 +22,26 @@
  * when many of the affected functions are otherwise completely secure.
  * The _CRT_SECURE_NO_DEPRECATE definition ensures that we won't get
  * warnings from their use...
+ *
+ * Then Microsoft decided that they should ignore this in VC2008 and use
+ * yet another define (_CRT_SECURE_NO_WARNINGS) instead.  Bastards.
  */
 
 #define _CRT_SECURE_NO_DEPRECATE
+#define _CRT_SECURE_NO_WARNINGS
+
+
+/*
+ * Include necessary headers...
+ */
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stdarg.h>
+#include <ctype.h>
+#include <io.h>
+
 
 /*
  * Microsoft also renames the POSIX functions to _name, and introduces
@@ -43,17 +60,6 @@
 #define strdup		_strdup
 #define vsnprintf 	_vsnprintf
 #define write		_write
-
-
-/*
- * Include necessary headers...
- */
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <stdarg.h>
-#include <ctype.h>
 
 
 /*

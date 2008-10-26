@@ -1,8 +1,11 @@
-CHANGES - 2008-03-20
+CHANGES - 2008-10-26
 --------------------
 
 CHANGES IN Mini-XML 2.5.1
 
+	- mxmlNewXML() now adds encoding="utf-8" in the ?xml directive
+	  to avoid problems with non-conformant XML parsers that assume
+	  something other than UTF-8 as the default encoding.
 	- Wrapping was not disabled when mxmlSetWrapMargin(0) was
 	  called, and "<?xml ... ?>" was always followed by a newline
 	  (STR #76)

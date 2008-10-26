@@ -671,7 +671,7 @@ mxmlNewXML(const char *version)		/* I - Version number to use */
   char	element[1024];			/* Element text */
 
 
-  snprintf(element, sizeof(element), "?xml version=\"%s\"?",
+  snprintf(element, sizeof(element), "?xml version=\"%s\" encoding=\"utf-8\"?",
            version ? version : "1.0");
 
   return (mxmlNewElement(NULL, element));

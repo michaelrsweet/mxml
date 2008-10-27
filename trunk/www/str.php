@@ -49,6 +49,7 @@ $subsystems = array(
 
 $versions = array(
   "Trunk",
+  "+3.0",
   "+2.6",
   "+2.5.1",
   "2.5",
@@ -1142,8 +1143,21 @@ switch ($op)
 	     ."value='$summary'></td></tr>\n");
 
 	print("<tr><th align='right'>Version:</th>"
-	     ."<td><input type='text' name='STR_VERSION' size='16' maxsize='16' "
-	     ."value='$row[str_version]'></td></tr>\n");
+	     ."<td><select name='STR_VERSION'>"
+	     ."<option value=''>Unassigned</option>");
+
+	reset($versions);
+	while (list($key, $val) = each($versions))
+	{
+	  if ($val[0] == '+')
+	    $val = substr($val, 1);
+
+	  print("<option value='$val'");
+	  if ($row['str_version'] == $val)
+	    print(" selected");
+	  print(">$val</option>");
+	}
+        print("</select></td></tr>\n");
 
 	print("<tr><th align='right'>Created By:</th>"
 	     ."<td><input type='text' name='CREATE_EMAIL' maxsize='128' "

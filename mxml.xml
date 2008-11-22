@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="utf-8"?>
 <mxmldoc xmlns="http://www.easysw.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.minixml.org/mxmldoc.xsd">
   <function name="mxmlAdd">
     <description>Add a node to a tree.

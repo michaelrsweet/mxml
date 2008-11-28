@@ -116,6 +116,17 @@ distclean:	clean
 	$(RM) Makefile config.h
 	$(RM) -r autom4te*.cache
 	$(RM) *.bck *.bak
+	$(RM) -r clang
+
+
+#
+# Run the clang.llvm.org static code analysis tool on the C sources.
+#
+
+.PHONY: clang
+clang:
+	$(RM) -r clang
+	scan-build -k -V -o `pwd`/clang $(MAKE) $(MFLAGS) CC=ccc-analyzer clean all
 
 
 #
@@ -326,6 +337,13 @@ testmxml.o:	mxml.h
 mxml.xml:	mxmldoc-static mxml.h $(PUBLIBOBJS:.o=.c)
 	$(RM) mxml.xml
 	./mxmldoc-static --header doc/reference.heading mxml.xml mxml.h $(PUBLIBOBJS:.o=.c) >doc/reference.html
+	if test "x`uname`" = xDarwin; then \
+		./mxmldoc-static --docset ~/Library/Developer/Shared/Documentation/DocSets/org.minixml.docset \
+			--docversion @VERSION@ --feedname minixml.org \
+			--feedurl http://www.minixml.org/documentation.atom \
+			--header doc/docset.header --intro doc/docset.intro \
+			--css doc/docset.css mxml.xml; \
+	fi
 
 valgrind:	mxmldoc-static
 	$(RM) valgrind.xml

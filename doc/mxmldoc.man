@@ -15,7 +15,7 @@
 .\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 .\" GNU General Public License for more details.
 .\"
-.TH mxmldoc 1 "Mini-XML" "26 January 2008" "Michael Sweet"
+.TH mxmldoc 1 "Mini-XML" "28 November 2008" "Michael Sweet"
 .SH NAME
 mxmldoc \- mini-xml documentation generator
 .SH SYNOPSIS
@@ -45,6 +45,31 @@ mxmldoc \- mini-xml documentation generator
 .I filename.html
 .br
 .B mxmldoc
+[ \-\-docset
+.I directory.docset
+] [ \-\-docversion
+.I version
+] [ \-\-feedname
+.I name
+] [ \-\-feedurl
+.I url
+] [ \-\-footer
+.I footerfile
+] [ \-\-header
+.I headerfile
+] [ \-\-intro
+.I introfile
+] [ \-\-section
+.I section
+] [ \-\-title
+.I title
+] [
+.I filename.xml
+] [
+.I source file(s)
+]
+.br
+.B mxmldoc
 [ \-\-footer
 .I footerfile
 ] [ \-\-framed
@@ -64,15 +89,15 @@ mxmldoc \- mini-xml documentation generator
 ]
 .br
 .B mxmldoc
-\-\-man
-.I manpage
 [ \-\-footer
 .I footerfile
 ] [ \-\-header
 .I headerfile
 ] [ \-\-intro
 .I introfile
-] [ \-\-section
+] \-\-man
+.I manpage
+[ \-\-section
 .I section
 ] [ \-\-title
 .I title
@@ -101,13 +126,31 @@ documentation that is formatted according to the CUPS Developer
 Guide which is available at "http://www.cups.org/documentation.php".
 .SH OPTIONS
 .TP 5
+\-\-docset directory.docset
+.br
+Creates an Xcode documentation set in the specified directory.
+.TP 5
+\-\-docversion version
+.br
+Specifies the version number for the Xcode documentation set.
+.TP 5
+\-\-feedname name
+.br
+Specifies the Xcode documentation set feed name, typically the project or
+company name.
+.TP 5
+\-\-feedurl url
+.br
+Specifies the Xcode documentation set feed URL which must point to an ATOM file
+linking to updates.
+.TP 5
 \-\-footer footerfile
 .br
 Inserts the specified file at the bottom of the output documentation.
 .TP 5
 \-\-framed basename
 .br
-Created HTML documentation using frames - one for the table-of-contents and
+Creates HTML documentation using frames - one for the table-of-contents and
 one for the body.
 .TP 5
 \-\-header headerfile

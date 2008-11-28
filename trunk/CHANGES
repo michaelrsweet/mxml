@@ -1,8 +1,10 @@
-CHANGES - 2008-10-26
+CHANGES - 2008-11-28
 --------------------
 
-CHANGES IN Mini-XML 2.5.1
+CHANGES IN Mini-XML 2.6
 
+	- The mxmldoc program now supports generating Xcode documentation
+	  sets.
 	- mxmlNewXML() now adds encoding="utf-8" in the ?xml directive
 	  to avoid problems with non-conformant XML parsers that assume
 	  something other than UTF-8 as the default encoding.

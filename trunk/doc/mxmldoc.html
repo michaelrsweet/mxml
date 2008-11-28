@@ -67,6 +67,22 @@ create a man page instead of HTML documentation, for example:</p>
         &gt;filename.man ENTER</kbd>
 </pre>
 
+<p>The <tt>--docset directory.docset</tt> option tells <tt>mxmldoc</tt> to
+create an Xcode documentation set containing the HTML documentation, for
+example:</p>
+
+<pre>
+    <kbd>mxmldoc --docset ~/Library/Developer/Shared/Documentation/DocSets/foo.docset \
+    	*.h *.c foo.xml ENTER</kbd>
+</pre>
+
+<blockquote><b>Note:</b>
+
+<p>Xcode documentation sets can only be built on Mac OS X with Xcode 3.0 or
+higher installed.</p>
+
+</blockquote>
+
 
 <h2>Commenting Your Code</h2>
 

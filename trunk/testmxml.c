@@ -452,8 +452,7 @@ main(int  argc,				/* I - Number of command-line args */
       return (1);
     }
 
-    if ((node = mxmlFindElement(node, tree, "choice", NULL, NULL,
-                                MXML_NO_DESCEND)) == NULL)
+    if (!mxmlFindElement(node, tree, "choice", NULL, NULL, MXML_NO_DESCEND))
     {
       fputs("Unable to find second <choice> element in XML tree!\n", stderr);
       mxmlDelete(tree);
@@ -539,7 +538,7 @@ main(int  argc,				/* I - Number of command-line args */
   memset(event_counts, 0, sizeof(event_counts));
 
   if (argv[1][0] == '<')
-    tree = mxmlSAXLoadString(NULL, argv[1], type_cb, sax_cb, NULL);
+    mxmlSAXLoadString(NULL, argv[1], type_cb, sax_cb, NULL);
   else if ((fp = fopen(argv[1], "rb")) == NULL)
   {
     perror(argv[1]);
@@ -551,7 +550,7 @@ main(int  argc,				/* I - Number of command-line args */
     * Read the file...
     */
 
-    tree = mxmlSAXLoadFile(NULL, fp, type_cb, sax_cb, NULL);
+    mxmlSAXLoadFile(NULL, fp, type_cb, sax_cb, NULL);
 
     fclose(fp);
   }

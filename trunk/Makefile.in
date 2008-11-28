@@ -340,9 +340,10 @@ mxml.xml:	mxmldoc-static mxml.h $(PUBLIBOBJS:.o=.c)
 	if test "x`uname`" = xDarwin; then \
 		./mxmldoc-static --docset ~/Library/Developer/Shared/Documentation/DocSets/org.minixml.docset \
 			--docversion @VERSION@ --feedname minixml.org \
-			--feedurl http://www.minixml.org/documentation.atom \
+			--feedurl http://www.minixml.org/org.minixml.atom \
 			--header doc/docset.header --intro doc/docset.intro \
-			--css doc/docset.css mxml.xml; \
+			--css doc/docset.css --title "Mini-XML API Reference" \
+			mxml.xml; \
 		/Developer/usr/bin/docsetutil package --output org.minixml.xar \
 			--atom org.minixml.atom \
 			--download-url http://www.minixml.org/org.minixml.xar \

@@ -343,6 +343,10 @@ mxml.xml:	mxmldoc-static mxml.h $(PUBLIBOBJS:.o=.c)
 			--feedurl http://www.minixml.org/documentation.atom \
 			--header doc/docset.header --intro doc/docset.intro \
 			--css doc/docset.css mxml.xml; \
+		/Developer/usr/bin/docsetutil package --output org.minixml.xar \
+			--atom org.minixml.atom \
+			--download-url http://www.minixml.org/org.minixml.xar \
+			~/Library/Developer/Shared/Documentation/DocSets/org.minixml.docset; \
 	fi
 
 valgrind:	mxmldoc-static

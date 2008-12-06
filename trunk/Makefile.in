@@ -338,16 +338,16 @@ mxml.xml:	mxmldoc-static mxml.h $(PUBLIBOBJS:.o=.c)
 	$(RM) mxml.xml
 	./mxmldoc-static --header doc/reference.heading mxml.xml mxml.h $(PUBLIBOBJS:.o=.c) >doc/reference.html
 	if test "x`uname`" = xDarwin; then \
-		./mxmldoc-static --docset ~/Library/Developer/Shared/Documentation/DocSets/org.minixml.docset \
+		./mxmldoc-static --docset org.minixml.docset \
 			--docversion @VERSION@ --feedname minixml.org \
 			--feedurl http://www.minixml.org/org.minixml.atom \
 			--header doc/docset.header --intro doc/docset.intro \
 			--css doc/docset.css --title "Mini-XML API Reference" \
-			mxml.xml; \
+			mxml.xml || exit 1; \
 		/Developer/usr/bin/docsetutil package --output org.minixml.xar \
 			--atom org.minixml.atom \
 			--download-url http://www.minixml.org/org.minixml.xar \
-			~/Library/Developer/Shared/Documentation/DocSets/org.minixml.docset; \
+			org.minixml.docset || exit 1; \
 	fi
 
 valgrind:	mxmldoc-static

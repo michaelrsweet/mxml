@@ -4925,6 +4925,8 @@ write_toc(FILE        *out,		/* I - Output file */
 
     fclose(fp);
   }
+  else if (!xml)
+    fputs("<ul class=\"contents\">\n", out);
 
  /*
   * Next the classes...
@@ -4955,7 +4957,7 @@ write_toc(FILE        *out,		/* I - Output file */
 	             "<Path>Documentation/index.html</Path>\n"
 	             "<Anchor>%s</Anchor>\n"
 		     "<Name>%s</Name>\n"
-		     "</Node>", xmlid ++, name, name);
+		     "</Node>\n", xmlid ++, name, name);
       }
       else
       {
@@ -5002,7 +5004,7 @@ write_toc(FILE        *out,		/* I - Output file */
 	             "<Path>Documentation/index.html</Path>\n"
 	             "<Anchor>%s</Anchor>\n"
 		     "<Name>%s</Name>\n"
-		     "</Node>", xmlid ++, name, name);
+		     "</Node>\n", xmlid ++, name, name);
       }
       else
       {
@@ -5015,9 +5017,7 @@ write_toc(FILE        *out,		/* I - Output file */
       function = find_public(function, doc, "function");
     }
 
-    if (xml)
-      fputs("</Subnodes></Node>\n", out);
-    else
+    if (!xml)
       fputs("</ul></li>\n", out);
   }
 
@@ -5049,7 +5049,7 @@ write_toc(FILE        *out,		/* I - Output file */
 	             "<Path>Documentation/index.html</Path>\n"
 	             "<Anchor>%s</Anchor>\n"
 		     "<Name>%s</Name>\n"
-		     "</Node>", xmlid ++, name, name);
+		     "</Node>\n", xmlid ++, name, name);
       }
       else
       {
@@ -5062,9 +5062,7 @@ write_toc(FILE        *out,		/* I - Output file */
       scut = find_public(scut, doc, "typedef");
     }
 
-    if (xml)
-      fputs("</Subnodes></Node>\n", out);
-    else
+    if (!xml)
       fputs("</ul></li>\n", out);
   }
 
@@ -5096,7 +5094,7 @@ write_toc(FILE        *out,		/* I - Output file */
 	             "<Path>Documentation/index.html</Path>\n"
 	             "<Anchor>%s</Anchor>\n"
 		     "<Name>%s</Name>\n"
-		     "</Node>", xmlid ++, name, name);
+		     "</Node>\n", xmlid ++, name, name);
       }
       else
       {
@@ -5109,9 +5107,7 @@ write_toc(FILE        *out,		/* I - Output file */
       scut = find_public(scut, doc, "struct");
     }
 
-    if (xml)
-      fputs("</Subnodes></Node>\n", out);
-    else
+    if (!xml)
       fputs("</ul></li>\n", out);
   }
 
@@ -5144,7 +5140,7 @@ write_toc(FILE        *out,		/* I - Output file */
 	             "<Path>Documentation/index.html</Path>\n"
 	             "<Anchor>%s</Anchor>\n"
 		     "<Name>%s</Name>\n"
-		     "</Node>", xmlid ++, name, name);
+		     "</Node>\n", xmlid ++, name, name);
       }
       else
       {
@@ -5157,9 +5153,7 @@ write_toc(FILE        *out,		/* I - Output file */
       scut = find_public(scut, doc, "union");
     }
 
-    if (xml)
-      fputs("</Subnodes></Node>\n", out);
-    else
+    if (!xml)
       fputs("</ul></li>\n", out);
   }
 
@@ -5191,7 +5185,7 @@ write_toc(FILE        *out,		/* I - Output file */
 	             "<Path>Documentation/index.html</Path>\n"
 	             "<Anchor>%s</Anchor>\n"
 		     "<Name>%s</Name>\n"
-		     "</Node>", xmlid ++, name, name);
+		     "</Node>\n", xmlid ++, name, name);
       }
       else
       {
@@ -5204,9 +5198,7 @@ write_toc(FILE        *out,		/* I - Output file */
       arg = find_public(arg, doc, "variable");
     }
 
-    if (xml)
-      fputs("</Subnodes></Node>\n", out);
-    else
+    if (!xml)
       fputs("</ul></li>\n", out);
   }
 
@@ -5238,7 +5230,7 @@ write_toc(FILE        *out,		/* I - Output file */
 	             "<Path>Documentation/index.html</Path>\n"
 	             "<Anchor>%s</Anchor>\n"
 		     "<Name>%s</Name>\n"
-		     "</Node>", xmlid ++, name, name);
+		     "</Node>\n", xmlid ++, name, name);
       }
       else
       {
@@ -5261,9 +5253,7 @@ write_toc(FILE        *out,		/* I - Output file */
   * That's it!
   */
 
-  if (xml)
-    fputs("</Subnodes>\n", out);
-  else
+  if (!xml)
     fputs("</ul>\n", out);
 }
 

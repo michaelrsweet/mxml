@@ -3296,11 +3296,13 @@ write_html(const char  *section,	/* I - Section */
 	  "<Name>", out);
     write_string(out, title, OUTPUT_HTML);
     fputs("</Name>\n"
-          "<Path>Documentation/index.html</Path>\n", out);
+          "<Path>Documentation/index.html</Path>\n"
+	  "<Subnodes>\n", out);
 
     write_toc(out, doc, introfile, NULL, 1);
 
-    fputs("</Node>\n"
+    fputs("</Subnodes>\n"
+          "</Node>\n"
           "</TOC>\n"
           "</DocSetNodes>\n", out);
 
@@ -4714,7 +4716,7 @@ write_toc(FILE        *out,		/* I - Output file */
 		*end,			/* End of line */
 		*anchor,		/* Anchor name */
 		quote,			/* Quote character for value */
-		level = '1',		/* Current heading level */
+		level = '2',		/* Current heading level */
 		newlevel;		/* New heading level */
     int		inelement;		/* In an element? */
 
@@ -5017,7 +5019,9 @@ write_toc(FILE        *out,		/* I - Output file */
       function = find_public(function, doc, "function");
     }
 
-    if (!xml)
+    if (xml)
+      fputs("</Subnodes></Node>\n", out);
+    else
       fputs("</ul></li>\n", out);
   }
 
@@ -5062,7 +5066,9 @@ write_toc(FILE        *out,		/* I - Output file */
       scut = find_public(scut, doc, "typedef");
     }
 
-    if (!xml)
+    if (xml)
+      fputs("</Subnodes></Node>\n", out);
+    else
       fputs("</ul></li>\n", out);
   }
 
@@ -5107,7 +5113,9 @@ write_toc(FILE        *out,		/* I - Output file */
       scut = find_public(scut, doc, "struct");
     }
 
-    if (!xml)
+    if (xml)
+      fputs("</Subnodes></Node>\n", out);
+    else
       fputs("</ul></li>\n", out);
   }
 
@@ -5153,7 +5161,9 @@ write_toc(FILE        *out,		/* I - Output file */
       scut = find_public(scut, doc, "union");
     }
 
-    if (!xml)
+    if (xml)
+      fputs("</Subnodes></Node>\n", out);
+    else
       fputs("</ul></li>\n", out);
   }
 
@@ -5198,7 +5208,9 @@ write_toc(FILE        *out,		/* I - Output file */
       arg = find_public(arg, doc, "variable");
     }
 
-    if (!xml)
+    if (xml)
+      fputs("</Subnodes></Node>\n", out);
+    else
       fputs("</ul></li>\n", out);
   }
 
@@ -5248,13 +5260,6 @@ write_toc(FILE        *out,		/* I - Output file */
     else
       fputs("</ul></li>\n", out);
   }
-
- /*
-  * That's it!
-  */
-
-  if (!xml)
-    fputs("</ul>\n", out);
 }
 
 

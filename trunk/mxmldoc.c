@@ -4707,7 +4707,8 @@ write_toc(FILE        *out,		/* I - Output file */
   */
 
   if (!xml)
-    fputs("<h2 class=\"title\">Contents</h2>\n", out);
+    fputs("<h2 class=\"title\">Contents</h2>\n"
+          "<ul class=\"contents\">\n", out);
 
   if (introfile && (fp = fopen(introfile, "r")) != NULL)
   {
@@ -4716,7 +4717,7 @@ write_toc(FILE        *out,		/* I - Output file */
 		*end,			/* End of line */
 		*anchor,		/* Anchor name */
 		quote,			/* Quote character for value */
-		level = '2',		/* Current heading level */
+		level = '1',		/* Current heading level */
 		newlevel;		/* New heading level */
     int		inelement;		/* In an element? */
 
@@ -4817,7 +4818,7 @@ write_toc(FILE        *out,		/* I - Output file */
 	if (newlevel < level)
 	  fputs("</Node>\n"
 		"</Subnodes></Node>\n", out);
-	else if (newlevel > level)
+	else if (newlevel > level && newlevel == '3')
 	  fputs("<Subnodes>\n", out);
 	else if (xmlid > 1)
 	  fputs("</Node>\n", out);
@@ -4863,16 +4864,12 @@ write_toc(FILE        *out,		/* I - Output file */
 	  fputs("</li>\n"
 		"</ul></li>\n", out);
 	else if (newlevel > level)
-	{
-	  if (newlevel == '2')
-	    fputs("<ul class=\"contents\">\n", out);
-	  else
-	    fputs("<ul class=\"subcontents\">\n", out);
-        }
-	else
+	  fputs("<ul class=\"subcontents\">\n", out);
+	else if (xmlid > 1)
 	  fputs("</li>\n", out);
 
 	level = newlevel;
+	xmlid ++;
 
 	fprintf(out, "<li><a href=\"%s#%s\"%s>", target ? target : "", anchor,
 		targetattr);
@@ -4924,11 +4921,9 @@ write_toc(FILE        *out,		/* I - Output file */
 	  fputs("</ul></li>\n", out);
       }
     }
-
+  
     fclose(fp);
   }
-  else if (!xml)
-    fputs("<ul class=\"contents\">\n", out);
 
  /*
   * Next the classes...

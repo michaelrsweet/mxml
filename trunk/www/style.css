@@ -143,3 +143,10 @@ TR.data1 TD, TR.data1 TH {
   font-size: 80%;
   font-style: italic;
 }
+
+.invalid {
+  background: red;
+  color: white;
+  font-weight: bold;
+  padding: 2px;
+}

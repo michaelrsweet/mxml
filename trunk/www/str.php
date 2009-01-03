@@ -48,6 +48,8 @@ $subsystems = array(
 );
 
 $versions = array(
+  "+Will Not Fix",
+  "+None",
   "Trunk",
   "+3.0",
   "+2.6",
@@ -980,7 +982,6 @@ switch ($op)
 	  $master_id     = (int)$_POST["MASTER_ID"];
 	  $summary       = db_escape($_POST["SUMMARY"]);
 	  $subsystem     = db_escape($_POST["SUBSYSTEM"]);
-          $create_user   = db_escape($_POST["CREATE_EMAIL"]);
           $manager_email = db_escape($_POST["MANAGER_EMAIL"]);
           $modify_user   = db_escape($_COOKIE["FROM"]);
           $contents      = db_escape(trim($_POST["CONTENTS"]));
@@ -996,7 +997,6 @@ switch ($op)
 	          ."subsystem = '$subsystem', "
 	          ."str_version = '$_POST[STR_VERSION]', "
 	          ."fix_version = '$_POST[FIX_VERSION]', "
-	          ."create_user = '$create_user', "
 	          ."manager_email = '$manager_email', "
 	          ."modify_date = $time, "
 	          ."modify_user = '$modify_user' "
@@ -1160,8 +1160,7 @@ switch ($op)
         print("</select></td></tr>\n");
 
 	print("<tr><th align='right'>Created By:</th>"
-	     ."<td><input type='text' name='CREATE_EMAIL' maxsize='128' "
-	     ."value='$create_user' size='40'></td></tr>\n");
+	     ."<td>$create_user</td></tr>\n");
 
 	print("<tr><th align='right'>Assigned To:</th>"
 	     ."<td><select name='MANAGER_EMAIL'>"
@@ -1605,19 +1604,7 @@ switch ($op)
 	$summary   = $_POST["SUMMARY"];
 	$version   = $_POST["VERSION"];
 	$contents  = $_POST["CONTENTS"];
-
-	if ($LOGIN_USER != "" && $LOGIN_LEVEL < AUTH_DEVEL)
-	  $email = $LOGIN_USER;
-	else if (array_key_exists("EMAIL", $_POST) &&
-	         validate_email($_POST["EMAIL"]))
-	{
-	  $email = $_POST["EMAIL"];
-	  setcookie("FROM", "$email", time() + 90 * 86400, "/");
-	}
-	else if (array_key_exists("FROM", $_COOKIE))
-          $email = $_COOKIE["FROM"];
-	else
-	  $email = "";
+	$email     = $LOGIN_USER;
 
         if (array_key_exists("STRFILE", $_FILES))
 	{
@@ -1634,13 +1621,7 @@ switch ($op)
       }
       else
       {
-	if ($LOGIN_USER != "")
-	  $email = $LOGIN_USER;
-	else if (array_key_exists("FROM", $_COOKIE))
-          $email = $_COOKIE["FROM"];
-	else
-	  $email = "";
-
+	$email     = $LOGIN_USER;
         $npriority = 0;
 	$nscope    = 0;
 	$summary   = "";
@@ -1648,9 +1629,6 @@ switch ($op)
 	$contents  = "";
 	$filename  = "";
       }
-
-      if (ereg("Anonymous.*", $email))
-	$email = "";
 
       if ($REQUEST_METHOD == "POST" && $havedata)
       {
@@ -1719,12 +1697,12 @@ switch ($op)
 
         if ($REQUEST_METHOD == "POST")
 	{
-	  print("<p><b>Error:</b> Please fill in the fields marked in "
-	       ."<b><font color='red'>bold red</font></b> below and resubmit "
+	  print("<p><b>Error:</b> Please fill in the fields marked "
+	       ."<span class='invalid'>like this</span> below and resubmit "
 	       ."your trouble report.</p>\n");
 
-	  $hstart = "<font color='red'>";
-	  $hend   = "</font>";
+	  $hstart = "<span class='invalid'>";
+	  $hend   = "</span>";
 	}
 	else
 	{
@@ -1737,9 +1715,43 @@ switch ($op)
 
 	  $hstart = "";
 	  $hend   = "";
-	}
 
-        print("<form method='POST' action='$PHP_SELF?N$options' "
+          $recent = time() - 90 * 86400;
+          $result = db_query("SELECT master_id, "
+                            ."count(master_id) AS count FROM str "
+	                    ."WHERE master_id > 0 AND modify_date > $recent "
+			    ."GROUP BY master_id "
+			    ."ORDER BY count DESC, modify_date DESC");
+          if (db_count($result) > 0)
+	  {
+	    print("<hr noshade>\n"
+	         ."<p>Commonly reported bugs:</p>\n"
+	         ."<ul>\n");
+            $count = 0;
+	    while ($row = db_next($result))
+	    {
+              $count ++;
+              if ($count > 10)
+                break;
+
+              $common   = db_query("SELECT summary, status, fix_version "
+	                          ."FROM str WHERE id=$row[master_id]");
+              $crow     = db_next($common);
+	      $csummary = htmlspecialchars($crow["summary"], ENT_QUOTES);
+	      $cstatus  = $STR_STATUS_SHORT[$crow["status"]];
+
+              if ($crow["fix_version"] != "")
+	        $cstatus .= ", $crow[fix_version]";
+
+	      print("<li><a href='$PHP_SELF?L$row[master_id]$options'>"
+	           ."STR #$row[master_id]: $csummary ($cstatus)</a></li>\n");
+	    }
+	    print("</ul>\n");
+	  }
+        }
+
+        print("<hr noshade>\n"
+	     ."<form method='POST' action='$PHP_SELF?N$options' "
 	     ."enctype='multipart/form-data'>"
 	     ."<input type='hidden' name='MAX_FILE_SIZE' value='10000000'>");
 

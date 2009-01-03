@@ -164,9 +164,12 @@ else if ($argc == 0 || $argv[0] != "E")
   if ($argc == 0 && $usererror != "")
     print("<p><b>$usererror</b></p>\n");
 
+  $page = htmlspecialchars($page, ENT_QUOTES);
+
   print("<p>If you are a registered $PROJECT_NAME developer, please enter "
        ."your username and password to login:</p>\n"
        ."<form method='POST' action='$PHP_SELF'>"
+       ."<input type='hidden' name='PAGE' value='$page'>"
        ."<table width='100%'>\n"
        ."<tr><th align='right'>Username:</th>"
        ."<td><input type='text' name='USERNAME' size='16' maxsize='255'");
@@ -201,6 +204,7 @@ else if ($argc == 0 || $argv[0] != "E")
        ."in the form below to register. An email will be sent to the "
        ."address you supply to confirm the registration:</p>\n"
        ."<form method='POST' action='$PHP_SELF?A'>"
+       ."<input type='hidden' name='PAGE' value='$page'>"
        ."<table width='100%'>\n"
        ."<tr><th align='right'>Username:</th>"
        ."<td><input type='text' name='USERNAME' size='16' maxsize='255' "

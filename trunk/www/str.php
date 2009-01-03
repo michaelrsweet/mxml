@@ -1738,7 +1738,7 @@ switch ($op)
 	                          ."FROM str WHERE id=$row[master_id]");
               $crow     = db_next($common);
 	      $csummary = htmlspecialchars($crow["summary"], ENT_QUOTES);
-	      $cstatus  = $STR_STATUS_SHORT[$crow["status"]];
+	      $cstatus  = $status_text[$crow["status"]];
 
               if ($crow["fix_version"] != "")
 	        $cstatus .= ", $crow[fix_version]";
@@ -1828,15 +1828,8 @@ switch ($op)
 
         print("</select></td></tr>\n");
 
-	print("<tr><th align='right'>");
-	if ($email != "")
-	  print("EMail:</th><td>");
-	else
-	  print("${hstart}EMail:$hend</th><td>");
-
         $temp = htmlspecialchars($email);
-        print("<input type='text' name='EMAIL' value='$temp' size='40' "
-	     ."maxsize='128'></td></tr>\n");
+	print("<tr><th align='right'>Created By:</th><td>$temp</td></tr>\n");
 
 	print("<tr><th align='right'>Assigned To:</th><td><i>Unassigned</i></td></tr>\n");
 

@@ -22,55 +22,29 @@ XML-like data files in your application without requiring large non-standard
 libraries. Mini-XML only requires an ANSI C compatible compiler (GCC works, as
 do most vendors' ANSI C compilers) and a 'make' program.</p>
 
-<p>Mini-XML provides the following functionality:</p>
-
-<ul>
-
-	<li>Reading of UTF-8 and UTF-16 and writing of UTF-8 encoded
-	XML files and strings.</li>
-
-	<li>Data is stored in a linked-list tree structure,
-	preserving the XML data hierarchy.</li>
-
-	<li>Supports arbitrary element names, attributes, and
-	attribute values with no preset limits, just available
-	memory.</li>
-
-	<li>Supports integer, real, opaque ("cdata"), and text data
-	types in "leaf" nodes.</li>
-
-	<li>Functions for creating, indexing, and managing trees of
-	data.</li>
-
-	<li>"Find" and "walk" functions for easily locating and
-	navigating trees of data.</li>
-
-</ul>
+<p>Mini-XML supports reading of UTF-8 and UTF-16 and writing of UTF-8 encoded
+XML files and strings. Data is stored in a linked-list tree structure,
+preserving the XML data hierarchy, and arbitrary element names, attributes,
+and attribute values are supported with no preset limits, just available
+memory.</p>
 
 <table width='100%' cellpadding='0' cellspacing='0' border='0' summary=''>
-<tr><td valign='top'>
+<tr><td valign='top' width='45%'>
 
 <h2>Documentation</h2>
 
 <p><a href='documentation.php/intro.html'>Introduction</a></p>
-
-<p><a href='documentation.php/install.html'>Building, Installing, and Packaging
-Mini-XML</a></p>
 
 <p><a href='documentation.php/basics.html'>Getting Started with Mini-XML</a></p>
 
 <p><a href='documentation.php/advanced.html'>More Mini-XML Programming
 Techniques</a></p>
 
-<p><a href='documentation.php/mxmldoc.html'>Using the mxmldoc Utility</a></p>
-
 <p><a href='documentation.php/license.html'>Mini-XML License</a></p>
-
-<p><a href='documentation.php/relnotes.html'>Release Notes</a></p>
 
 <p><a href='documentation.php/reference.html'>Library Reference</a></p>
 
-</td><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td valign='top'>
+</td><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td valign='top' width='55%'>
 
 <h2>Recent News</h2>
 

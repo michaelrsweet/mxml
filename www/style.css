@@ -150,3 +150,11 @@ TR.data1 TD, TR.data1 TH {
   font-weight: bold;
   padding: 2px;
 }
+
+.info {
+  background: black;
+  color: white;
+  float: right;
+  font-size: 90%;
+}
+

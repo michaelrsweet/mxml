@@ -66,11 +66,11 @@ if (array_key_exists("PATH_INFO", $_SERVER) &&
 
       while ($line = fgets($fp, 1024))
       {
-        if (strstr($line, "<BODY"))
+        if (strstr($line, "<BODY") || strstr($line, "<body"))
 	{
 	  $saw_body = 1;
 	}
-	else if (strstr($line, "</BODY>"))
+	else if (strstr($line, "</BODY>") || strstr($line, "</body>"))
 	{
 	  break;
 	}

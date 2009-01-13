@@ -5,7 +5,7 @@
  * Documentation generator using Mini-XML, a small XML-like file parsing
  * library.
  *
- * Copyright 2003-2008 by Michael Sweet.
+ * Copyright 2003-2009 by Michael Sweet.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -2739,8 +2739,10 @@ write_description(
       else
         ptr --;
 
-      if (element)
+      if (element[0])
         fprintf(out, "<code>%s</code>", start);
+      else if (element)
+        fputs(start, out);
       else
         fprintf(out, "\\fB%s\\fR", start);
     }
@@ -2755,8 +2757,10 @@ write_description(
       else
         ptr --;
 
-      if (element)
+      if (element[0])
         fprintf(out, "<a href=\"#%s\"><code>%s</code></a>", start, start);
+      else if (element)
+        fputs(start, out);
       else
         fprintf(out, "\\fI%s\\fR", start);
     }

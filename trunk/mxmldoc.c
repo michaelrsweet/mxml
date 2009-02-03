@@ -3736,7 +3736,7 @@ write_html_head(FILE       *out,	/* I - Output file */
 		const char *cssfile)	/* I - Stylesheet */
 {
   fputs("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" "
-        "\"http://www.w3.org/TR/REC-html4/loose.dtd\">\n"
+        "\"http://www.w3.org/TR/html4/loose.dtd\">\n"
         "<html>\n", out);
 
   if (section)

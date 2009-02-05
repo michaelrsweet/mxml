@@ -3183,6 +3183,7 @@ write_html(const char  *section,	/* I - Section */
     * output directory...
     */
 
+#ifdef __APPLE__
     const char	*id;			/* Identifier */
 
 
@@ -3347,6 +3348,12 @@ write_html(const char  *section,	/* I - Section */
               strerror(errno));
       return;
     }
+
+#else
+    fputs("mxmldoc: Xcode documentation sets can only be created on "
+          "Mac OS X.\n", stderr);
+    return;
+#endif /* __APPLE__ */
   }
   else
     out = stdout;
@@ -3672,6 +3679,7 @@ write_html(const char  *section,	/* I - Section */
   if (out != stdout)
     fclose(out);
 
+#ifdef __APPLE__
  /*
   * When generating document sets, run the docsetutil program to index it...
   */
@@ -3722,6 +3730,7 @@ write_html(const char  *section,	/* I - Section */
       }
     }
   }
+#endif /* __APPLE__ */
 }
 
 
@@ -4750,7 +4759,7 @@ write_toc(FILE        *out,		/* I - Output file */
         end = line + strlen(line);
 
 	if (end == (line + sizeof(line) - 1) ||
-	    !fgets(end, sizeof(line) - (end - line), fp))
+	    !fgets(end, (int)(sizeof(line) - (end - line)), fp))
 	  break;
       }
 
@@ -4767,7 +4776,7 @@ write_toc(FILE        *out,		/* I - Output file */
       */
 
       for (ptr = strchr(line, '<'); ptr; ptr = strchr(ptr + 1, '<'))
-        if (!strncasecmp(ptr, "<A NAME=", 8))
+        if (!strncmp(ptr, "<A NAME=", 8) || !strncmp(ptr, "<a name=", 8))
 	  break;
 
       if (!ptr)
@@ -4849,7 +4858,7 @@ write_toc(FILE        *out,		/* I - Output file */
 	  }
 	  else if (*ptr == '<')
 	  {
-	    if (!strncasecmp(ptr, "</A>", 4))
+	    if (!strncmp(ptr, "</A>", 4) || !strncmp(ptr, "</a>", 4))
 	      break;
 
 	    inelement = 1;
@@ -4893,7 +4902,7 @@ write_toc(FILE        *out,		/* I - Output file */
 	  }
 	  else if (*ptr == '<')
 	  {
-	    if (!strncasecmp(ptr, "</A>", 4))
+	    if (!strncmp(ptr, "</A>", 4) || !strncmp(ptr, "</a>", 4))
 	      break;
 
 	    inelement = 1;

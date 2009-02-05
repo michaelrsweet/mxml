@@ -30,11 +30,9 @@
 
 #include "config.h"
 #include "mxml.h"
-#ifdef WIN32
-#  include <io.h>
-#else
+#ifndef WIN32
 #  include <unistd.h>
-#endif /* WIN32 */
+#endif /* !WIN32 */
 #include <fcntl.h>
 #ifndef O_BINARY
 #  define O_BINARY 0

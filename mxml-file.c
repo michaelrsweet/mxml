@@ -55,12 +55,10 @@
  * Include necessary headers...
  */
 
-#include "mxml-private.h"
-#ifdef WIN32
-#  include <io.h>
-#else
+#ifndef WIN32
 #  include <unistd.h>
-#endif /* WIN32 */
+#endif /* !WIN32 */
+#include "mxml-private.h"
 
 
 /*

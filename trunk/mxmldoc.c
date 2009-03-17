@@ -2739,7 +2739,7 @@ write_description(
       else
         ptr --;
 
-      if (element[0])
+      if (element && *element)
         fprintf(out, "<code>%s</code>", start);
       else if (element)
         fputs(start, out);
@@ -2757,7 +2757,7 @@ write_description(
       else
         ptr --;
 
-      if (element[0])
+      if (element && *element)
         fprintf(out, "<a href=\"#%s\"><code>%s</code></a>", start, start);
       else if (element)
         fputs(start, out);

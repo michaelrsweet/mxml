@@ -3,7 +3,7 @@
  *
  * File loading code for Mini-XML, a small XML-like file parsing library.
  *
- * Copyright 2003-2008 by Michael Sweet.
+ * Copyright 2003-2009 by Michael Sweet.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -803,7 +803,10 @@ mxml_fd_getc(void *p,			/* I  - File descriptor buffer */
 	  ch = ((ch & 0x1f) << 6) | (temp & 0x3f);
 
 	  if (ch < 0x80)
+	  {
+	    mxml_error("Invalid UTF-8 sequence for character 0x%04x!", ch);
 	    return (EOF);
+	  }
 	}
 	else if ((ch & 0xf0) == 0xe0)
 	{
@@ -834,7 +837,16 @@ mxml_fd_getc(void *p,			/* I  - File descriptor buffer */
 	  ch = (ch << 6) | (temp & 0x3f);
 
 	  if (ch < 0x800)
+	  {
+	    mxml_error("Invalid UTF-8 sequence for character 0x%04x!", ch);
 	    return (EOF);
+	  }
+
+	  if (ch < 0xfeff)
+	  {
+	    mxml_error("Invalid BOM in UTF-8 XML!");
+	    return (EOF);
+	  }
 	}
 	else if ((ch & 0xf8) == 0xf0)
 	{
@@ -876,7 +888,10 @@ mxml_fd_getc(void *p,			/* I  - File descriptor buffer */
 	  ch = (ch << 6) | (temp & 0x3f);
 
 	  if (ch < 0x10000)
+	  {
+	    mxml_error("Invalid UTF-8 sequence for character 0x%04x!", ch);
 	    return (EOF);
+	  }
 	}
 	else
 	  return (EOF);
@@ -1227,7 +1242,10 @@ mxml_file_getc(void *p,			/* I  - Pointer to file */
 	  ch = ((ch & 0x1f) << 6) | (temp & 0x3f);
 
 	  if (ch < 0x80)
+	  {
+	    mxml_error("Invalid UTF-8 sequence for character 0x%04x!", ch);
 	    return (EOF);
+	  }
 	}
 	else if ((ch & 0xf0) == 0xe0)
 	{
@@ -1246,7 +1264,16 @@ mxml_file_getc(void *p,			/* I  - Pointer to file */
 	  ch = (ch << 6) | (temp & 0x3f);
 
 	  if (ch < 0x800)
+	  {
+	    mxml_error("Invalid UTF-8 sequence for character 0x%04x!", ch);
 	    return (EOF);
+	  }
+
+	  if (ch < 0xfeff)
+	  {
+	    mxml_error("Invalid BOM in UTF-8 XML!");
+	    return (EOF);
+	  }
 	}
 	else if ((ch & 0xf8) == 0xf0)
 	{
@@ -1270,7 +1297,10 @@ mxml_file_getc(void *p,			/* I  - Pointer to file */
 	  ch = (ch << 6) | (temp & 0x3f);
 
 	  if (ch < 0x10000)
+	  {
+	    mxml_error("Invalid UTF-8 sequence for character 0x%04x!", ch);
 	    return (EOF);
+	  }
 	}
 	else
 	  return (EOF);
@@ -2450,7 +2480,10 @@ mxml_string_getc(void *p,		/* I  - Pointer to file */
 	    (*s)++;
 
 	    if (ch < 0x80)
+	    {
+	      mxml_error("Invalid UTF-8 sequence for character 0x%04x!", ch);
 	      return (EOF);
+	    }
 
 #if DEBUG > 1
             printf("mxml_string_getc: %c (0x%04x)\n", ch < ' ' ? '.' : ch, ch);
@@ -2473,7 +2506,16 @@ mxml_string_getc(void *p,		/* I  - Pointer to file */
 	    (*s) += 2;
 
 	    if (ch < 0x800)
+	    {
+	      mxml_error("Invalid UTF-8 sequence for character 0x%04x!", ch);
 	      return (EOF);
+	    }
+
+	    if (ch < 0xfeff)
+	    {
+	      mxml_error("Invalid BOM in UTF-8 XML!");
+	      return (EOF);
+	    }
 
 #if DEBUG > 1
             printf("mxml_string_getc: %c (0x%04x)\n", ch < ' ' ? '.' : ch, ch);
@@ -2498,7 +2540,10 @@ mxml_string_getc(void *p,		/* I  - Pointer to file */
 	    (*s) += 3;
 
 	    if (ch < 0x10000)
+	    {
+	      mxml_error("Invalid UTF-8 sequence for character 0x%04x!", ch);
 	      return (EOF);
+	    }
 
 #if DEBUG > 1
             printf("mxml_string_getc: %c (0x%04x)\n", ch < ' ' ? '.' : ch, ch);

@@ -207,6 +207,7 @@ using a SAX callback.">mxmlSAXLoadString</a></li>
 	<li><a href="#mxml_custom_save_cb_t" title="Custom data save callback function">mxml_custom_save_cb_t</a></li>
 	<li><a href="#mxml_custom_t" title="An XML custom value. ">mxml_custom_t</a></li>
 	<li><a href="#mxml_element_t" title="An XML element value.">mxml_element_t</a></li>
+	<li><a href="#mxml_entity_cb_t" title="Entity callback function">mxml_entity_cb_t</a></li>
 	<li><a href="#mxml_error_cb_t" title="Error callback function">mxml_error_cb_t</a></li>
 	<li><a href="#mxml_index_t" title="An XML node index.">mxml_index_t</a></li>
 	<li><a href="#mxml_load_cb_t" title="Load callback function">mxml_load_cb_t</a></li>
@@ -360,7 +361,14 @@ is not an element.
 <h3 class="function"><a name="mxmlEntityAddCallback">mxmlEntityAddCallback</a></h3>
 <p class="description">Add a callback to convert entities to Unicode.</p>
 <p class="code">
-int mxmlEntityAddCallback (void);</p>
+int mxmlEntityAddCallback (<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#mxml_entity_cb_t">mxml_entity_cb_t</a> cb<br>
+);</p>
+<h4 class="parameters">Parameters</h4>
+<dl>
+<dt>cb</dt>
+<dd class="description">Callback function to add</dd>
+</dl>
 <h4 class="returnvalue">Return Value</h4>
 <p class="description">0 on success, -1 on failure</p>
 <h3 class="function"><a name="mxmlEntityGetName">mxmlEntityGetName</a></h3>
@@ -397,7 +405,14 @@ name is not known.</p>
 <h3 class="function"><a name="mxmlEntityRemoveCallback">mxmlEntityRemoveCallback</a></h3>
 <p class="description">Remove a callback.</p>
 <p class="code">
-void mxmlEntityRemoveCallback (void);</p>
+void mxmlEntityRemoveCallback (<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#mxml_entity_cb_t">mxml_entity_cb_t</a> cb<br>
+);</p>
+<h4 class="parameters">Parameters</h4>
+<dl>
+<dt>cb</dt>
+<dd class="description">Callback function to remove</dd>
+</dl>
 <h3 class="function"><a name="mxmlFindElement">mxmlFindElement</a></h3>
 <p class="description">Find the named element.</p>
 <p class="code">
@@ -1384,6 +1399,11 @@ typedef struct <a href="#mxml_custom_s">mxml_custom_s</a> mxml_custom_t;
 <p class="description">An XML element value.</p>
 <p class="code">
 typedef struct <a href="#mxml_element_s">mxml_element_s</a> mxml_element_t;
+</p>
+<h3 class="typedef"><a name="mxml_entity_cb_t">mxml_entity_cb_t</a></h3>
+<p class="description">Entity callback function</p>
+<p class="code">
+typedef int (*mxml_entity_cb_t)(const char *);
 </p>
 <h3 class="typedef"><a name="mxml_error_cb_t">mxml_error_cb_t</a></h3>
 <p class="description">Error callback function</p>

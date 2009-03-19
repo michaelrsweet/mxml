@@ -118,6 +118,10 @@ is not an element.
       <description>0 on success, -1 on failure</description>
     </returnvalue>
     <description>Add a callback to convert entities to Unicode.</description>
+    <argument name="cb" direction="I">
+      <type>mxml_entity_cb_t</type>
+      <description>Callback function to add</description>
+    </argument>
   </function>
   <function name="mxmlEntityGetName">
     <returnvalue>
@@ -148,6 +152,10 @@ name is not known.</description>
   </function>
   <function name="mxmlEntityRemoveCallback">
     <description>Remove a callback.</description>
+    <argument name="cb" direction="I">
+      <type>mxml_entity_cb_t</type>
+      <description>Callback function to remove</description>
+    </argument>
   </function>
   <function name="mxmlFindElement">
     <returnvalue>
@@ -1137,6 +1145,10 @@ the walk to the node's children.</description>
   <typedef name="mxml_element_t">
     <type>struct mxml_element_s</type>
     <description>An XML element value.</description>
+  </typedef>
+  <typedef name="mxml_entity_cb_t">
+    <type>int(*)(const char *)</type>
+    <description>Entity callback function</description>
   </typedef>
   <typedef name="mxml_error_cb_t">
     <type>void(*)(const char *)</type>

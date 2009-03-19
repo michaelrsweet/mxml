@@ -1,8 +1,10 @@
-CHANGES - 2008-11-28
+CHANGES - 2009-03-18
 --------------------
 
 CHANGES IN Mini-XML 2.6
 
+	- The XML parser now rejects UTF-8 XML files that start with a BOM
+	  (STR #89)
 	- The mxmldoc program now supports generating Xcode documentation
 	  sets.
 	- mxmlNewXML() now adds encoding="utf-8" in the ?xml directive

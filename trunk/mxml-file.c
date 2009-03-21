@@ -321,7 +321,7 @@ mxmlSaveFd(mxml_node_t    *node,	/* I - Node to write */
 
   buf.fd      = fd;
   buf.current = buf.buffer;
-  buf.end     = buf.buffer + sizeof(buf.buffer) - 4;
+  buf.end     = buf.buffer + sizeof(buf.buffer);
 
  /*
   * Write the node...
@@ -1014,8 +1014,7 @@ mxml_fd_putc(int  ch,			/* I - Character */
 
 
  /*
-  * Flush the write buffer as needed - note above that "end" still leaves
-  * 4 characters at the end so that we can avoid a lot of extra tests...
+  * Flush the write buffer as needed...
   */
 
   buf = (_mxml_fdbuf_t *)p;
@@ -1024,44 +1023,7 @@ mxml_fd_putc(int  ch,			/* I - Character */
     if (mxml_fd_write(buf) < 0)
       return (-1);
 
-  if (ch < 0x80)
-  {
-   /*
-    * Write ASCII character directly...
-    */
-
-    *(buf->current)++ = ch;
-  }
-  else if (ch < 0x800)
-  {
-   /*
-    * Two-byte UTF-8 character...
-    */
-
-    *(buf->current)++ = 0xc0 | (ch >> 6);
-    *(buf->current)++ = 0x80 | (ch & 0x3f);
-  }
-  else if (ch < 0x10000)
-  {
-   /*
-    * Three-byte UTF-8 character...
-    */
-
-    *(buf->current)++ = 0xe0 | (ch >> 12);
-    *(buf->current)++ = 0x80 | ((ch >> 6) & 0x3f);
-    *(buf->current)++ = 0x80 | (ch & 0x3f);
-  }
-  else
-  {
-   /*
-    * Four-byte UTF-8 character...
-    */
-
-    *(buf->current)++ = 0xf0 | (ch >> 18);
-    *(buf->current)++ = 0x80 | ((ch >> 12) & 0x3f);
-    *(buf->current)++ = 0x80 | ((ch >> 6) & 0x3f);
-    *(buf->current)++ = 0x80 | (ch & 0x3f);
-  }
+  *(buf->current)++ = ch;
 
  /*
   * Return successfully...
@@ -1379,50 +1341,7 @@ static int				/* O - 0 on success, -1 on failure */
 mxml_file_putc(int  ch,			/* I - Character to write */
                void *p)			/* I - Pointer to file */
 {
-  char	buffer[4],			/* Buffer for character */
-	*bufptr;			/* Pointer into buffer */
-  int	buflen;				/* Number of bytes to write */
-
-
-  if (ch < 0x80)
-    return (putc(ch, (FILE *)p) == EOF ? -1 : 0);
-
-  bufptr = buffer;
-
-  if (ch < 0x800)
-  {
-   /*
-    * Two-byte UTF-8 character...
-    */
-
-    *bufptr++ = 0xc0 | (ch >> 6);
-    *bufptr++ = 0x80 | (ch & 0x3f);
-  }
-  else if (ch < 0x10000)
-  {
-   /*
-    * Three-byte UTF-8 character...
-    */
-
-    *bufptr++ = 0xe0 | (ch >> 12);
-    *bufptr++ = 0x80 | ((ch >> 6) & 0x3f);
-    *bufptr++ = 0x80 | (ch & 0x3f);
-  }
-  else
-  {
-   /*
-    * Four-byte UTF-8 character...
-    */
-
-    *bufptr++ = 0xf0 | (ch >> 18);
-    *bufptr++ = 0x80 | ((ch >> 12) & 0x3f);
-    *bufptr++ = 0x80 | ((ch >> 6) & 0x3f);
-    *bufptr++ = 0x80 | (ch & 0x3f);
-  }
-
-  buflen = bufptr - buffer;
-
-  return (fwrite(buffer, 1, buflen, (FILE *)p) < buflen ? -1 : 0);
+  return (putc(ch, (FILE *)p) == EOF ? -1 : 0);
 }
 
 
@@ -2662,62 +2581,10 @@ mxml_string_putc(int  ch,		/* I - Character to write */
 
   pp = (char **)p;
 
-  if (ch < 0x80)
-  {
-   /*
-    * Plain ASCII doesn't need special encoding...
-    */
+  if (pp[0] < pp[1])
+    pp[0][0] = ch;
 
-    if (pp[0] < pp[1])
-      pp[0][0] = ch;
-
-    pp[0] ++;
-  }
-  else if (ch < 0x800)
-  {
-   /*
-    * Two-byte UTF-8 character...
-    */
-
-    if ((pp[0] + 1) < pp[1])
-    {
-      pp[0][0] = 0xc0 | (ch >> 6);
-      pp[0][1] = 0x80 | (ch & 0x3f);
-    }
-
-    pp[0] += 2;
-  }
-  else if (ch < 0x10000)
-  {
-   /*
-    * Three-byte UTF-8 character...
-    */
-
-    if ((pp[0] + 2) < pp[1])
-    {
-      pp[0][0] = 0xe0 | (ch >> 12);
-      pp[0][1] = 0x80 | ((ch >> 6) & 0x3f);
-      pp[0][2] = 0x80 | (ch & 0x3f);
-    }
-
-    pp[0] += 3;
-  }
-  else
-  {
-   /*
-    * Four-byte UTF-8 character...
-    */
-
-    if ((pp[0] + 2) < pp[1])
-    {
-      pp[0][0] = 0xf0 | (ch >> 18);
-      pp[0][1] = 0x80 | ((ch >> 12) & 0x3f);
-      pp[0][2] = 0x80 | ((ch >> 6) & 0x3f);
-      pp[0][3] = 0x80 | (ch & 0x3f);
-    }
-
-    pp[0] += 4;
-  }
+  pp[0] ++;
 
   return (0);
 }

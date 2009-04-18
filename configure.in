@@ -3,7 +3,7 @@ dnl "$Id$"
 dnl
 dnl Configuration script for Mini-XML, a small XML-like file parsing library.
 dnl
-dnl Copyright 2003-2008 by Michael Sweet.
+dnl Copyright 2003-2009 by Michael Sweet.
 dnl
 dnl This program is free software; you can redistribute it and/or
 dnl modify it under the terms of the GNU Library General Public
@@ -104,6 +104,20 @@ fi
 
 if test "x$use_vsnprintf" != xyes; then
 	AC_CHECK_FUNCS(snprintf vsnprintf)
+fi
+
+dnl Check for "long long" support...
+AC_CACHE_CHECK(for long long int, ac_cv_c_long_long,
+	[if test "$GCC" = yes; then
+		ac_cv_c_long_long=yes
+	else
+		AC_TRY_COMPILE(,[long long int i;],
+			ac_cv_c_long_long=yes,
+			ac_cv_c_long_long=no)
+	fi])
+
+if test $ac_cv_c_long_long = yes; then
+	AC_DEFINE(HAVE_LONG_LONG)
 fi
 
 dnl Threading support

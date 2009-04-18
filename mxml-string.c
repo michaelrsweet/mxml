@@ -3,7 +3,7 @@
  *
  * String functions for Mini-XML, a small XML-like file parsing library.
  *
- * Copyright 2003-2007 by Michael Sweet.
+ * Copyright 2003-2009 by Michael Sweet.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -287,6 +287,11 @@ _mxml_vsnprintf(char       *buffer,	/* O - Output buffer */
 	    if ((width + 2) > sizeof(temp))
 	      break;
 
+#ifdef HAVE_LONG_LONG
+	    if (size == 'L')
+	      sprintf(temp, tformat, va_arg(ap, long long));
+	    else
+#endif /* HAVE_LONG_LONG */
 	    sprintf(temp, tformat, va_arg(ap, int));
 
             bytes += strlen(temp);

@@ -3,7 +3,7 @@
  *
  * Configuration file for Mini-XML, a small XML-like file parsing library.
  *
- * Copyright 2003-2008 by Michael Sweet.
+ * Copyright 2003-2009 by Michael Sweet.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -66,7 +66,7 @@
  * Version number...
  */
 
-#define MXML_VERSION "Mini-XML v2.4.1"
+#define MXML_VERSION "Mini-XML v2.6"
 
 
 /*
@@ -74,6 +74,13 @@
  */
 
 #define inline _inline
+
+
+/*
+ * Long long support...
+ */
+
+#define HAVE_LONG_LONG 1
 
 
 /*

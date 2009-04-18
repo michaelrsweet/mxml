@@ -1,9 +1,10 @@
-CHANGES - 2009-03-20
+CHANGES - 2009-04-18
 --------------------
 
 CHANGES IN Mini-XML 2.6
 
 	- Documentation fixes (STR #91, STR #92)
+	- Added support for "long long" printf formats.
 	- The XML parser now rejects UTF-8 XML files that start with a BOM
 	  (STR #89)
 	- The mxmldoc program now supports generating Xcode documentation

@@ -158,6 +158,8 @@ extern char **environ;
 #define OUTPUT_HTML		1	/* Output HTML */
 #define OUTPUT_XML		2	/* Output XML */
 #define OUTPUT_MAN		3	/* Output nroff/man */
+#define OUTPUT_TOKENS		4	/* Output docset Tokens.xml file */
+
 
 /*
  * Local functions...
@@ -420,6 +422,14 @@ main(int  argc,				/* I - Number of command-line args */
       else
         usage(NULL);
     }
+    else if (!strcmp(argv[i], "--tokens"))
+    {
+     /*
+      * Output Tokens.xml file...
+      */
+
+      mode = OUTPUT_TOKENS;
+    }
     else if (argv[i][0] == '-')
     {
      /*
@@ -571,6 +581,15 @@ main(int  argc,				/* I - Number of command-line args */
 
         write_man(name, section, title, footerfile, headerfile, introfile,
 	          mxmldoc);
+        break;
+
+    case OUTPUT_TOKENS :
+	fputs("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+	      "<Tokens version=\"1.0\">\n", stdout);
+
+	write_tokens(stdout, mxmldoc);
+
+	fputs("</Tokens>\n", stdout);
         break;
   }
 

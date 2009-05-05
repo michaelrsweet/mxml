@@ -1236,7 +1236,9 @@ scan_file(const char  *filename,	/* I - Filename */
 		                comment->last_child->value.text.string);
 		    description = mxmlNewElement(typedefnode, "description");
 #ifdef DEBUG
-		    fputs("    duplicating comment for typedef...\n", stderr);
+		    fprintf(stderr,
+		            "    duplicating comment %p/%p for typedef...\n",
+			    comment->last_child, comment->child);
 #endif /* DEBUG */
 		    update_comment(typedefnode, comment->last_child);
 		    mxmlAdd(description, MXML_ADD_AFTER, MXML_ADD_TO_PARENT,
@@ -1245,8 +1247,9 @@ scan_file(const char  *filename,	/* I - Filename */
 
 		  description = mxmlNewElement(structclass, "description");
 #ifdef DEBUG
-		  fprintf(stderr, "    adding comment to %s...\n",
-		          structclass->value.element.name);
+		  fprintf(stderr, "    adding comment %p/%p to %s...\n",
+		          comment->last_child, comment->child,
+			  structclass->value.element.name);
 #endif /* DEBUG */
 		  update_comment(structclass, comment->last_child);
 		  mxmlAdd(description, MXML_ADD_AFTER, MXML_ADD_TO_PARENT,
@@ -1318,7 +1321,9 @@ scan_file(const char  *filename,	/* I - Filename */
 		                comment->last_child->value.text.string);
 		    description = mxmlNewElement(typedefnode, "description");
 #ifdef DEBUG
-		    fputs("    duplicating comment for typedef...\n", stderr);
+		    fprintf(stderr,
+		            "    duplicating comment %p/%p for typedef...\n",
+			    comment->last_child, comment->child);
 #endif /* DEBUG */
 		    update_comment(typedefnode, comment->last_child);
 		    mxmlAdd(description, MXML_ADD_AFTER, MXML_ADD_TO_PARENT,
@@ -1327,7 +1332,8 @@ scan_file(const char  *filename,	/* I - Filename */
 
 		  description = mxmlNewElement(enumeration, "description");
 #ifdef DEBUG
-		  fputs("    adding comment to enumeration...\n", stderr);
+		  fprintf(stderr, "    adding comment %p/%p to enumeration...\n",
+		          comment->last_child, comment->child);
 #endif /* DEBUG */
 		  update_comment(enumeration, comment->last_child);
 		  mxmlAdd(description, MXML_ADD_AFTER, MXML_ADD_TO_PARENT,
@@ -1664,8 +1670,11 @@ scan_file(const char  *filename,	/* I - Filename */
 			{
 			  description = mxmlNewElement(variable, "description");
 #ifdef DEBUG
-			  fputs("    adding comment to variable...\n", stderr);
+			  fprintf(stderr,
+			          "    adding comment %p/%p to variable...\n",
+			          comment->last_child, comment->child);
 #endif /* DEBUG */
+			  mxmlNewText(comment, 0, buffer);
 			  update_comment(variable,
 					 mxmlNewText(description, 0, buffer));
                         }
@@ -1686,8 +1695,11 @@ scan_file(const char  *filename,	/* I - Filename */
 			{
 			  description = mxmlNewElement(constant, "description");
 #ifdef DEBUG
-			  fputs("    adding comment to constant...\n", stderr);
+			  fprintf(stderr,
+			          "    adding comment %p/%p to constant...\n",
+				  comment->last_child, comment->child);
 #endif /* DEBUG */
+			  mxmlNewText(comment, 0, buffer);
 			  update_comment(constant,
 					 mxmlNewText(description, 0, buffer));
 			}
@@ -1720,9 +1732,12 @@ scan_file(const char  *filename,	/* I - Filename */
 			{
 			  description = mxmlNewElement(typedefnode, "description");
 #ifdef DEBUG
-			  fprintf(stderr, "    adding comment to typedef %s...\n",
+			  fprintf(stderr,
+			          "    adding comment %p/%p to typedef %s...\n",
+				  comment->last_child, comment->child,
 				  mxmlElementGetAttr(typedefnode, "name"));
 #endif /* DEBUG */
+			  mxmlNewText(comment, 0, buffer);
 			  update_comment(typedefnode,
 					 mxmlNewText(description, 0, buffer));
 
@@ -1748,8 +1763,10 @@ scan_file(const char  *filename,	/* I - Filename */
                       {
         		description = mxmlNewElement(tree, "description");
 #ifdef DEBUG
-			fputs("    adding comment to parent...\n", stderr);
+			fprintf(stderr, "    adding comment %p/%p to parent...\n",
+			        comment->last_child, comment->child);
 #endif /* DEBUG */
+        		mxmlNewText(comment, 0, buffer);
 			update_comment(tree,
 			               mxmlNewText(description, 0, buffer));
 		      }
@@ -1834,8 +1851,10 @@ scan_file(const char  *filename,	/* I - Filename */
 		    {
 		      description = mxmlNewElement(variable, "description");
 #ifdef DEBUG
-		      fputs("    adding comment to variable...\n", stderr);
+		      fprintf(stderr, "    adding comment %p/%p to variable...\n",
+		              comment->last_child, comment->child);
 #endif /* DEBUG */
+		      mxmlNewText(comment, 0, buffer);
 		      update_comment(variable,
 				     mxmlNewText(description, 0, buffer));
                     }
@@ -1856,8 +1875,10 @@ scan_file(const char  *filename,	/* I - Filename */
 		    {
 		      description = mxmlNewElement(constant, "description");
 #ifdef DEBUG
-		      fputs("    adding comment to constant...\n", stderr);
+		      fprintf(stderr, "    adding comment %p/%p to constant...\n",
+		              comment->last_child, comment->child);
 #endif /* DEBUG */
+		      mxmlNewText(comment, 0, buffer);
 		      update_comment(constant,
 				     mxmlNewText(description, 0, buffer));
 		    }
@@ -1890,9 +1911,12 @@ scan_file(const char  *filename,	/* I - Filename */
 		    {
 		      description = mxmlNewElement(typedefnode, "description");
 #ifdef DEBUG
-		      fprintf(stderr, "    adding comment to typedef %s...\n",
+		      fprintf(stderr,
+		              "    adding comment %p/%p to typedef %s...\n",
+			      comment->last_child, comment->child,
 			      mxmlElementGetAttr(typedefnode, "name"));
 #endif /* DEBUG */
+		      mxmlNewText(comment, 0, buffer);
 		      update_comment(typedefnode,
 				     mxmlNewText(description, 0, buffer));
 
@@ -1918,8 +1942,10 @@ scan_file(const char  *filename,	/* I - Filename */
                   {
         	    description = mxmlNewElement(tree, "description");
 #ifdef DEBUG
-		    fputs("    adding comment to parent...\n", stderr);
+		    fprintf(stderr, "    adding comment %p/%p to parent...\n",
+		            comment->last_child, comment->child);
 #endif /* DEBUG */
+		    mxmlNewText(comment, 0, buffer);
 		    update_comment(tree,
 			           mxmlNewText(description, 0, buffer));
 		  }
@@ -1980,8 +2006,10 @@ scan_file(const char  *filename,	/* I - Filename */
 	      {
 		description = mxmlNewElement(variable, "description");
 #ifdef DEBUG
-		fputs("    adding comment to variable...\n", stderr);
+		fprintf(stderr, "    adding comment %p/%p to variable...\n",
+		        comment->last_child, comment->child);
 #endif /* DEBUG */
+		mxmlNewText(comment, 0, buffer);
 		update_comment(variable,
 			       mxmlNewText(description, 0, buffer));
               }
@@ -2002,8 +2030,10 @@ scan_file(const char  *filename,	/* I - Filename */
 	      {
 		description = mxmlNewElement(constant, "description");
 #ifdef DEBUG
-		fputs("    adding comment to constant...\n", stderr);
+		fprintf(stderr, "    adding comment %p/%p to constant...\n",
+		        comment->last_child, comment->child);
 #endif /* DEBUG */
+		mxmlNewText(comment, 0, buffer);
 		update_comment(constant,
 			       mxmlNewText(description, 0, buffer));
               }
@@ -2037,9 +2067,11 @@ scan_file(const char  *filename,	/* I - Filename */
 	      {
 		description = mxmlNewElement(typedefnode, "description");
 #ifdef DEBUG
-		fprintf(stderr, "    adding comment to typedef %s...\n",
+		fprintf(stderr, "    adding comment %p/%p to typedef %s...\n",
+			comment->last_child, comment->child,
 			mxmlElementGetAttr(typedefnode, "name"));
 #endif /* DEBUG */
+		mxmlNewText(comment, 0, buffer);
 		update_comment(typedefnode,
 			       mxmlNewText(description, 0, buffer));
 
@@ -2063,8 +2095,10 @@ scan_file(const char  *filename,	/* I - Filename */
             {
               description = mxmlNewElement(tree, "description");
 #ifdef DEBUG
-	      fputs("    adding comment to parent...\n", stderr);
+	      fprintf(stderr, "    adding comment %p/%p to parent...\n",
+	              comment->last_child, comment->child);
 #endif /* DEBUG */
+	      mxmlNewText(comment, 0, buffer);
 	      update_comment(tree,
 			     mxmlNewText(description, 0, buffer));
 	    }
@@ -2249,7 +2283,8 @@ scan_file(const char  *filename,	/* I - Filename */
 
 		  description = mxmlNewElement(returnvalue, "description");
 #ifdef DEBUG
-		  fputs("    adding comment to returnvalue...\n", stderr);
+		  fprintf(stderr, "    adding comment %p/%p to returnvalue...\n",
+		          comment->last_child, comment->child);
 #endif /* DEBUG */
 		  update_comment(returnvalue, comment->last_child);
 		  mxmlAdd(description, MXML_ADD_AFTER, MXML_ADD_TO_PARENT,
@@ -2260,7 +2295,8 @@ scan_file(const char  *filename,	/* I - Filename */
 
 		description = mxmlNewElement(function, "description");
 #ifdef DEBUG
-		  fputs("    adding comment to function...\n", stderr);
+		  fprintf(stderr, "    adding comment %p/%p to function...\n",
+		          comment->last_child, comment->child);
 #endif /* DEBUG */
 		update_comment(function, comment->last_child);
 		mxmlAdd(description, MXML_ADD_AFTER, MXML_ADD_TO_PARENT,

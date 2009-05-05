@@ -70,7 +70,9 @@ mxmldoc \- mini-xml documentation generator
 ]
 .br
 .B mxmldoc
-\-\-tokens [
+\-\-tokens
+.I path
+[
 .I filename.xml
 ] [
 .I source file(s)

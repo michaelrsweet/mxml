@@ -208,7 +208,8 @@ static void		write_string(FILE *out, const char *s, int mode);
 static void		write_toc(FILE *out, mxml_node_t *doc,
 			          const char *introfile, const char *target,
 				  int xml);
-static void		write_tokens(FILE *out, mxml_node_t *doc);
+static void		write_tokens(FILE *out, mxml_node_t *doc,
+			             const char *path);
 static const char	*ws_cb(mxml_node_t *node, int where);
 
 
@@ -235,6 +236,7 @@ main(int  argc,				/* I - Number of command-line args */
 		*headerfile,		/* Header file */
 		*introfile,		/* Introduction file */
 		*name,			/* Name of manpage */
+		*path,			/* Path to help file for tokens */
 		*section,		/* Section/keywords of documentation */
 		*title,			/* Title of documentation */
 		*xmlfile;		/* XML file */
@@ -259,6 +261,7 @@ main(int  argc,				/* I - Number of command-line args */
   mode        = OUTPUT_HTML;
   mxmldoc     = NULL;
   name        = NULL;
+  path        = NULL;
   section     = NULL;
   title       = NULL;
   update      = 0;
@@ -429,6 +432,12 @@ main(int  argc,				/* I - Number of command-line args */
       */
 
       mode = OUTPUT_TOKENS;
+
+      i ++;
+      if (i < argc)
+        path = argv[i];
+      else
+        usage(NULL);
     }
     else if (argv[i][0] == '-')
     {
@@ -587,7 +596,7 @@ main(int  argc,				/* I - Number of command-line args */
 	fputs("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
 	      "<Tokens version=\"1.0\">\n", stdout);
 
-	write_tokens(stdout, mxmldoc);
+	write_tokens(stdout, mxmldoc, path);
 
 	fputs("</Tokens>\n", stdout);
         break;
@@ -2723,6 +2732,7 @@ usage(const char *option)		/* I - Unknown option */
   puts("    --no-output                Do no generate documentation file");
   puts("    --section section          Set section name");
   puts("    --title title              Set documentation title");
+  puts("    --tokens path              Generate Xcode docset Tokens.xml file");
 
   exit(1);
 }
@@ -3384,7 +3394,7 @@ write_html(const char  *section,	/* I - Section */
     fputs("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
           "<Tokens version=\"1.0\">\n", out);
 
-    write_tokens(out, doc);
+    write_tokens(out, doc, "index.html");
 
     fputs("</Tokens>\n", out);
 
@@ -5332,7 +5342,8 @@ write_toc(FILE        *out,		/* I - Output file */
 
 static void
 write_tokens(FILE        *out,		/* I - Output file */
-             mxml_node_t *doc)		/* I - Document */
+             mxml_node_t *doc,		/* I - Document */
+	     const char  *path)		/* I - Path to help file */
 {
   mxml_node_t	*function,		/* Current function */
 		*scut,			/* Struct/class/union/typedef */
@@ -5359,13 +5370,13 @@ write_tokens(FILE        *out,		/* I - Output file */
 				    NULL, NULL, MXML_DESCEND_FIRST);
 
       fprintf(out, "<Token>\n"
-		   "<Path>Documentation/index.html</Path>\n"
+		   "<Path>Documentation/%s</Path>\n"
 		   "<Anchor>%s</Anchor>\n"
 		   "<TokenIdentifier>//apple_ref/cpp/cl/%s</TokenIdentifier>\n"
-		   "<Abstract>", cename, cename);
+		   "<Abstract>", path, cename, cename);
       write_description(out, description, "", 1);
       fputs("</Abstract>\n"
-            "</Token>", out);
+            "</Token>\n", out);
 
       if ((function = find_public(scut, scut, "function")) != NULL)
       {
@@ -5376,10 +5387,10 @@ write_tokens(FILE        *out,		/* I - Output file */
 					NULL, NULL, MXML_DESCEND_FIRST);
 
 	  fprintf(out, "<Token>\n"
-		       "<Path>Documentation/index.html</Path>\n"
+		       "<Path>Documentation/%s</Path>\n"
 		       "<Anchor>%s.%s</Anchor>\n"
-		       "<TokenIdentifier>//apple_ref/cpp/clm/%s/%s", cename,
-		  name, cename, name);
+		       "<TokenIdentifier>//apple_ref/cpp/clm/%s/%s", path,
+		  cename, name, cename, name);
 
 	  arg = mxmlFindElement(function, function, "returnvalue", NULL,
 				NULL, MXML_DESCEND_FIRST);
@@ -5460,7 +5471,7 @@ write_tokens(FILE        *out,		/* I - Output file */
 	    fputs(");", out);
 
 	  fputs("</Declaration>\n"
-		"</Token>", out);
+		"</Token>\n", out);
 
 	  function = find_public(function, doc, "function");
 	}
@@ -5482,10 +5493,10 @@ write_tokens(FILE        *out,		/* I - Output file */
 				    NULL, NULL, MXML_DESCEND_FIRST);
 
       fprintf(out, "<Token>\n"
-		   "<Path>Documentation/index.html</Path>\n"
+		   "<Path>Documentation/%s</Path>\n"
 		   "<Anchor>%s</Anchor>\n"
 		   "<TokenIdentifier>//apple_ref/c/func/%s</TokenIdentifier>\n"
-		   "<Abstract>", name, name);
+		   "<Abstract>", path, name, name);
       write_description(out, description, "", 1);
       fputs("</Abstract>\n"
             "<Declaration>", out);
@@ -5529,7 +5540,7 @@ write_tokens(FILE        *out,		/* I - Output file */
 	fputs(");", out);
 
       fputs("</Declaration>\n"
-            "</Token>", out);
+            "</Token>\n", out);
 
       function = find_public(function, doc, "function");
     }
@@ -5548,13 +5559,13 @@ write_tokens(FILE        *out,		/* I - Output file */
 				    NULL, NULL, MXML_DESCEND_FIRST);
 
       fprintf(out, "<Token>\n"
-		   "<Path>Documentation/index.html</Path>\n"
+		   "<Path>Documentation/%s</Path>\n"
 		   "<Anchor>%s</Anchor>\n"
 		   "<TokenIdentifier>//apple_ref/c/tdef/%s</TokenIdentifier>\n"
-		   "<Abstract>", name, name);
+		   "<Abstract>", path, name, name);
       write_description(out, description, "", 1);
       fputs("</Abstract>\n"
-            "</Token>", out);
+            "</Token>\n", out);
 
       scut = find_public(scut, doc, "typedef");
     }
@@ -5573,13 +5584,13 @@ write_tokens(FILE        *out,		/* I - Output file */
 				    NULL, NULL, MXML_DESCEND_FIRST);
 
       fprintf(out, "<Token>\n"
-		   "<Path>Documentation/index.html</Path>\n"
+		   "<Path>Documentation/%s</Path>\n"
 		   "<Anchor>%s</Anchor>\n"
 		   "<TokenIdentifier>//apple_ref/c/tag/%s</TokenIdentifier>\n"
-		   "<Abstract>", name, name);
+		   "<Abstract>", path, name, name);
       write_description(out, description, "", 1);
       fputs("</Abstract>\n"
-            "</Token>", out);
+            "</Token>\n", out);
 
       scut = find_public(scut, doc, "struct");
     }
@@ -5598,13 +5609,13 @@ write_tokens(FILE        *out,		/* I - Output file */
 				    NULL, NULL, MXML_DESCEND_FIRST);
 
       fprintf(out, "<Token>\n"
-		   "<Path>Documentation/index.html</Path>\n"
+		   "<Path>Documentation/%s</Path>\n"
 		   "<Anchor>%s</Anchor>\n"
 		   "<TokenIdentifier>//apple_ref/c/tag/%s</TokenIdentifier>\n"
-		   "<Abstract>", name, name);
+		   "<Abstract>", path, name, name);
       write_description(out, description, "", 1);
       fputs("</Abstract>\n"
-            "</Token>", out);
+            "</Token>\n", out);
 
       scut = find_public(scut, doc, "union");
     }
@@ -5623,13 +5634,13 @@ write_tokens(FILE        *out,		/* I - Output file */
 				    NULL, NULL, MXML_DESCEND_FIRST);
 
       fprintf(out, "<Token>\n"
-		   "<Path>Documentation/index.html</Path>\n"
+		   "<Path>Documentation/%s</Path>\n"
 		   "<Anchor>%s</Anchor>\n"
 		   "<TokenIdentifier>//apple_ref/c/data/%s</TokenIdentifier>\n"
-		   "<Abstract>", name, name);
+		   "<Abstract>", path, name, name);
       write_description(out, description, "", 1);
       fputs("</Abstract>\n"
-            "</Token>", out);
+            "</Token>\n", out);
 
       arg = find_public(arg, doc, "variable");
     }
@@ -5648,13 +5659,13 @@ write_tokens(FILE        *out,		/* I - Output file */
 				    NULL, NULL, MXML_DESCEND_FIRST);
 
       fprintf(out, "<Token>\n"
-		   "<Path>Documentation/index.html</Path>\n"
+		   "<Path>Documentation/%s</Path>\n"
 		   "<Anchor>%s</Anchor>\n"
 		   "<TokenIdentifier>//apple_ref/c/tag/%s</TokenIdentifier>\n"
-		   "<Abstract>", cename, cename);
+		   "<Abstract>", path, cename, cename);
       write_description(out, description, "", 1);
       fputs("</Abstract>\n"
-            "</Token>", out);
+            "</Token>\n", out);
 
       for (arg = mxmlFindElement(scut, scut, "constant", NULL, NULL,
                         	 MXML_DESCEND_FIRST);
@@ -5666,13 +5677,13 @@ write_tokens(FILE        *out,		/* I - Output file */
 	description = mxmlFindElement(arg, arg, "description", NULL,
                                       NULL, MXML_DESCEND_FIRST);
 	fprintf(out, "<Token>\n"
-		     "<Path>Documentation/index.html</Path>\n"
+		     "<Path>Documentation/%s</Path>\n"
 		     "<Anchor>%s</Anchor>\n"
 		     "<TokenIdentifier>//apple_ref/c/econst/%s</TokenIdentifier>\n"
-		     "<Abstract>", cename, name);
+		     "<Abstract>", path, cename, name);
 	write_description(out, description, "", 1);
 	fputs("</Abstract>\n"
-	      "</Token>", out);
+	      "</Token>\n", out);
       }
 
       scut = find_public(scut, doc, "enumeration");

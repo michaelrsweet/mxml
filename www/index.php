@@ -11,11 +11,23 @@ include_once "phplib/poll.php";
 
 html_header();
 
+$fp   = fopen("data/software.md5", "r");
+$line = fgets($fp, 255);
+$data = explode(" ", $line);
+fclose($fp);
+
+$version = $data[1];
+$file    = $data[2];
+
 ?>
 
-<h1><img src='images/logo-large.gif' style='margin-left: 20px; float: right;'
-width='150' height='150' alt='Mini-XML logo'>Mini-XML: Lightweight XML
-Library</h1>
+<div style='margin-left: 20px; float: right; line-height: 200%;
+text-align: center;'><a
+href='software.php?FILE=<?print($file);?>&amp;VERSION=<?print($version);?>'><img
+src='images/logo-large.gif' width='150' height='150' alt='Mini-XML logo'><br>
+Download v<?print($version);?></a></div>
+
+<h1>Mini-XML: Lightweight XML Library</h1>
 
 <p>Mini-XML is a small XML library that you can use to read and write XML and
 XML-like data files in your application without requiring large non-standard

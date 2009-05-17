@@ -32,8 +32,15 @@ mirror_closest()
 
 
   // Get the current longitude for the client...
-  $current = geoip_record_by_name($_SERVER["REMOTE_ADDR"]);
-  $lon     = $current["longitude"];
+  if (!extension_loaded("geoip.so") ||
+      $_SERVER["REMOTE_ADDR"] == "::1" ||
+      $_SERVER["REMOTE_ADDR"] == "127.0.0.1")
+    $lon = -120;
+  else
+  {
+    $current = geoip_record_by_name($_SERVER["REMOTE_ADDR"]);
+    $lon     = $current["longitude"];
+  }
 
   // Loop through the mirrors to find the closest one, currently just using
   // the longitude...

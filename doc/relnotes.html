@@ -5,6 +5,41 @@
 hspace="10" width="100" height="100" alt="B"></a>Release Notes</h1>
 
 
+<h2 _hd_omit_toc>Changes in Mini-XML 2.6</h2>
+
+<ul>
+
+	<li>Documentation fixes (STR #91, STR #92)</li>
+
+	<li>The mxmldoc program did not handle typedef comments properly (STR
+	#72)</li>
+
+	<li>Added support for &quot;long long&quot; printf formats.</li>
+
+	<li>The XML parser now rejects UTF-8 XML files that start with a BOM
+	(STR #89)</li>
+
+	<li>The mxmldoc program now supports generating Xcode documentation
+	sets.</li>
+
+	<li>mxmlSave*() did not output UTF-8 correctly on some platforms.</li>
+
+	<li>mxmlNewXML() now adds encoding=&quot;utf-8&quot; in the ?xml
+	directive to avoid problems with non-conformant XML parsers that assume
+	something other than UTF-8 as the default encoding.</li>
+
+	<li>Wrapping was not disabled when mxmlSetWrapMargin(0) was called, and
+	&quot;&lt;?xml ... ?&gt;&quot; was always followed by a newline
+	(STR #76)</li>
+
+	<li>The mxml.pc.in file was broken (STR #79)</li>
+
+	<li>The mxmldoc program now handles &quot;typedef enum name {}
+	name&quot; correctly (STR #72)</li>
+
+</ul>
+
+
 <h2 _hd_omit_toc>Changes in Mini-XML 2.5</h2>
 
 <ul>

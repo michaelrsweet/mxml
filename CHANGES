@@ -1,10 +1,10 @@
-CHANGES - 2009-05-04
+CHANGES - 2009-05-16
 --------------------
 
 CHANGES IN Mini-XML 2.6
 
 	- Documentation fixes (STR #91, STR #92)
-	- The mxmldoc program did handle typedef comments properly (STR #72)
+	- The mxmldoc program did not handle typedef comments properly (STR #72)
 	- Added support for "long long" printf formats.
 	- The XML parser now rejects UTF-8 XML files that start with a BOM
 	  (STR #89)

@@ -3,7 +3,7 @@
 #
 # RPM "spec" file for Mini-XML, a small XML library.
 #
-# Copyright 2003-2008 by Michael Sweet.
+# Copyright 2003-2009 by Michael Sweet.
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Library General Public
@@ -18,7 +18,7 @@
 
 Summary: Miniature XML development library
 Name: mxml
-Version: 2.5
+Version: 2.6
 Release: 1
 License: LGPL
 Group: Development/Libraries

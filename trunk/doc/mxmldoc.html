@@ -53,6 +53,8 @@ to generate the HTML documentation:</p>
     <kbd>mxmldoc filename.xml &gt;filename.html ENTER</kbd>
 </pre>
 
+<h3>Creating Man Pages</h3>
+
 <p>The <tt>--man filename</tt> option tells <tt>mxmldoc</tt> to
 create a man page instead of HTML documentation, for example:</p>
 
@@ -62,26 +64,20 @@ create a man page instead of HTML documentation, for example:</p>
 
     <kbd>mxmldoc --man filename *.h *.c \
         &gt;filename.man ENTER</kbd>
-
-    <kbd>mxmldoc --man filename filename.xml *.h *.c \
-        &gt;filename.man ENTER</kbd>
 </pre>
+
+<h3>Creating Xcode Documentation Sets</h3>
 
 <p>The <tt>--docset directory.docset</tt> option tells <tt>mxmldoc</tt> to
 create an Xcode documentation set containing the HTML documentation, for
 example:</p>
 
 <pre>
-    <kbd>mxmldoc --docset ~/Library/Developer/Shared/Documentation/DocSets/foo.docset \
-    	*.h *.c foo.xml ENTER</kbd>
+    <kbd>mxmldoc --docset foo.docset *.h *.c foo.xml ENTER</kbd>
 </pre>
-
-<blockquote><b>Note:</b>
 
 <p>Xcode documentation sets can only be built on Mac OS X with Xcode 3.0 or
 higher installed.</p>
-
-</blockquote>
 
 
 <h2>Commenting Your Code</h2>

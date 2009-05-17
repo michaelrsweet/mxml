@@ -33,17 +33,7 @@ if (array_key_exists("FILE", $_GET))
 else
   $file = "";
 
-if (array_key_exists("SITE", $_GET) &&
-    array_key_exists($_GET["SITE"], $PROJECT_SITELIST))
-{
-  $site = $_GET["SITE"];
-  setcookie("SITE", $site, time() + 90 * 86400, "/");
-}
-else if (array_key_exists("SITE", $_COOKIE) &&
-         array_key_exists($_COOKIE["SITE"], $MIRRORS))
-  $site = $_COOKIE["SITE"];
-else
-  $site = mirror_closest();
+$site = mirror_closest();
 
 if (array_key_exists("VERSION", $_GET))
   $version = $_GET["VERSION"];

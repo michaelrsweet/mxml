@@ -1,9 +1,9 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
 <HTML>
 <HEAD>
-<TITLE>Mini-XML Programmers Manual, Version 2.5</TITLE>
+<TITLE>Mini-XML Programmers Manual, Version 2.6</TITLE>
 <META NAME="author" CONTENT="Michael R. Sweet">
-<META NAME="copyright" CONTENT="Copyright 2003-2008">
+<META NAME="copyright" CONTENT="Copyright 2003-2009">
 <META HTTP-EQUIV="Content-Type" CONTENT="text/html; CHARSET=iso-iso-8859-1">
 <LINK REL="Start" HREF="index.html">
 <LINK REL="Contents" HREF="index.html">
@@ -64,6 +64,7 @@ hspace="10" src="4.gif" width="100"></A>Using the mxmldoc Utility</H1>
 <PRE>
     <KBD>mxmldoc filename.xml &gt;filename.html ENTER</KBD>
 </PRE>
+<H3><A NAME="5_1_1">Creating Man Pages</A></H3>
 <P>The <TT>--man filename</TT> option tells <TT>mxmldoc</TT> to create a
  man page instead of HTML documentation, for example:</P>
 <PRE>
@@ -72,10 +73,16 @@ hspace="10" src="4.gif" width="100"></A>Using the mxmldoc Utility</H1>
 
     <KBD>mxmldoc --man filename *.h *.c \
         &gt;filename.man ENTER</KBD>
-
-    <KBD>mxmldoc --man filename filename.xml *.h *.c \
-        &gt;filename.man ENTER</KBD>
 </PRE>
+<H3><A NAME="5_1_2">Creating Xcode Documentation Sets</A></H3>
+<P>The <TT>--docset directory.docset</TT> option tells <TT>mxmldoc</TT>
+ to create an Xcode documentation set containing the HTML documentation,
+ for example:</P>
+<PRE>
+    <KBD>mxmldoc --docset foo.docset *.h *.c foo.xml ENTER</KBD>
+</PRE>
+<P>Xcode documentation sets can only be built on Mac OS X with Xcode 3.0
+ or higher installed.</P>
 <H2><A NAME="5_2">Commenting Your Code</A></H2>
 <P>As noted previously, <TT>mxmldoc</TT> looks for in-line comments to
  describe the functions, types, and constants in your code. <TT>Mxmldoc</TT>

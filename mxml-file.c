@@ -842,11 +842,12 @@ mxml_fd_getc(void *p,			/* I  - File descriptor buffer */
 	    return (EOF);
 	  }
 
-	  if (ch < 0xfeff)
-	  {
-	    mxml_error("Invalid BOM in UTF-8 XML!");
-	    return (EOF);
-	  }
+         /*
+	  * Ignore (strip) Byte Order Mark (BOM)...
+	  */
+
+	  if (ch == 0xfeff)
+	    return (mxml_fd_getc(p, encoding));
 	}
 	else if ((ch & 0xf8) == 0xf0)
 	{
@@ -1231,11 +1232,12 @@ mxml_file_getc(void *p,			/* I  - Pointer to file */
 	    return (EOF);
 	  }
 
-	  if (ch < 0xfeff)
-	  {
-	    mxml_error("Invalid BOM in UTF-8 XML!");
-	    return (EOF);
-	  }
+         /*
+	  * Ignore (strip) Byte Order Mark (BOM)...
+	  */
+
+	  if (ch == 0xfeff)
+	    return (mxml_file_getc(p, encoding));
 	}
 	else if ((ch & 0xf8) == 0xf0)
 	{
@@ -2430,11 +2432,12 @@ mxml_string_getc(void *p,		/* I  - Pointer to file */
 	      return (EOF);
 	    }
 
-	    if (ch < 0xfeff)
-	    {
-	      mxml_error("Invalid BOM in UTF-8 XML!");
-	      return (EOF);
-	    }
+	   /*
+	    * Ignore (strip) Byte Order Mark (BOM)...
+	    */
+
+	    if (ch == 0xfeff)
+	      return (mxml_string_getc(p, encoding));
 
 #if DEBUG > 1
             printf("mxml_string_getc: %c (0x%04x)\n", ch < ' ' ? '.' : ch, ch);

@@ -3323,6 +3323,10 @@ write_html(const char  *section,	/* I - Section */
           "\t<key>CFBundleVersion</key>\n"
 	  "\t<string>", out);
     write_string(out, docversion ? docversion : "0.0", OUTPUT_HTML);
+    fputs("</string>\n"
+          "\t<key>CFBundleShortVersionString</key>\n"
+	  "\t<string>", out);
+    write_string(out, docversion ? docversion : "0.0", OUTPUT_HTML);
     fputs("</string>\n", out);
 
     if (feedname)

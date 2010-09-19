@@ -1029,7 +1029,7 @@ The node is not changed if it is not a text node.</description>
     </argument>
   </function>
   <function name="mxmlSetWrapMargin">
-    <description>Set the the wrap margin when saving XML data.
+    <description>Set the wrap margin when saving XML data.
 
 Wrapping is disabled when &quot;column&quot; is 0.
 

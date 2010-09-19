@@ -121,10 +121,12 @@ distclean:	clean
 # Run the clang.llvm.org static code analysis tool on the C sources.
 #
 
-.PHONY: clang
+.PHONY: clang clang-changes
 clang:
 	$(RM) -r clang
-	scan-build -k -V -o `pwd`/clang $(MAKE) $(MFLAGS) CC=ccc-analyzer clean all
+	scan-build -V -k -o `pwd`/clang $(MAKE) $(MFLAGS) clean all
+clang-changes:
+	scan-build -V -k -o `pwd`/clang $(MAKE) $(MFLAGS) all
 
 
 #

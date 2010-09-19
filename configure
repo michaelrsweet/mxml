@@ -1717,7 +1717,7 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 ac_config_headers="$ac_config_headers config.h"
 
 
-VERSION=2.6
+VERSION=2.7
 
 cat >>confdefs.h <<_ACEOF
 #define MXML_VERSION "Mini-XML v$VERSION"
@@ -4289,7 +4289,7 @@ if (eval "$ac_cpp conftest.$ac_ext") 2>&5 |
 else
   ac_cv_header_stdc=no
 fi
-rm -f conftest*
+rm -f -r conftest*
 
 fi
 
@@ -4310,7 +4310,7 @@ if (eval "$ac_cpp conftest.$ac_ext") 2>&5 |
 else
   ac_cv_header_stdc=no
 fi
-rm -f conftest*
+rm -f -r conftest*
 
 fi
 
@@ -4678,7 +4678,7 @@ if test "${enable_shared+set}" = set; then
 fi
 
 
-if test x$enable_shared = xyes; then
+if test x$enable_shared != xno; then
 	{ echo "$as_me:$LINENO: checking for shared library support" >&5
 echo $ECHO_N "checking for shared library support... $ECHO_C" >&6; }
 	PICFLAG=1

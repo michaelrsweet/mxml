@@ -1650,6 +1650,17 @@ mxml_load_data(
 
 	*bufptr = '\0';
 
+        if (!parent && first)
+	{
+	 /*
+	  * There can only be one root element!
+	  */
+
+	  mxml_error("<%s> cannot be a second root node after <%s>", 
+	             buffer, first->value.element.name);
+          goto error; 		     
+	}
+
 	if ((node = mxmlNewElement(parent, buffer)) == NULL)
 	{
 	 /*
@@ -1707,6 +1718,17 @@ mxml_load_data(
 
 	*bufptr = '\0';
 
+        if (!parent && first)
+	{
+	 /*
+	  * There can only be one root element!
+	  */
+
+	  mxml_error("<%s> cannot be a second root node after <%s>", 
+	             buffer, first->value.element.name);
+          goto error; 		     
+	}
+
 	if ((node = mxmlNewElement(parent, buffer)) == NULL)
 	{
 	 /*
@@ -1762,6 +1784,17 @@ mxml_load_data(
 	*/
 
 	*bufptr = '\0';
+
+        if (!parent && first)
+	{
+	 /*
+	  * There can only be one root element!
+	  */
+
+	  mxml_error("<%s> cannot be a second root node after <%s>", 
+	             buffer, first->value.element.name);
+          goto error; 		     
+	}
 
 	if ((node = mxmlNewElement(parent, buffer)) == NULL)
 	{
@@ -1837,6 +1870,17 @@ mxml_load_data(
 	*/
 
 	*bufptr = '\0';
+
+        if (!parent && first)
+	{
+	 /*
+	  * There can only be one root element!
+	  */
+
+	  mxml_error("<%s> cannot be a second root node after <%s>", 
+	             buffer, first->value.element.name);
+          goto error; 		     
+	}
 
 	if ((node = mxmlNewElement(parent, buffer)) == NULL)
 	{
@@ -1917,6 +1961,17 @@ mxml_load_data(
        /*
         * Handle open tag...
 	*/
+
+        if (!parent && first)
+	{
+	 /*
+	  * There can only be one root element!
+	  */
+
+	  mxml_error("<%s> cannot be a second root node after <%s>", 
+	             buffer, first->value.element.name);
+          goto error; 		     
+	}
 
         if ((node = mxmlNewElement(parent, buffer)) == NULL)
 	{

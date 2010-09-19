@@ -7,6 +7,7 @@ CHANGES IN Mini-XML 2.7
 	  exceptions to the LGPL2 (STR #108)
 	- The shared library did not include a destructor for the thread-
 	  specific data key on UNIX-based operating systems (STR #103)
+	- mxmlLoad* did not error out on XML with multiple root nodes (STR #101)
 
 
 CHANGES IN Mini-XML 2.6

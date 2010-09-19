@@ -3,7 +3,7 @@
  *
  * Private functions for Mini-XML, a small XML-like file parsing library.
  *
- * Copyright 2003-2007 by Michael Sweet.
+ * Copyright 2003-2010 by Michael Sweet.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -29,6 +29,33 @@
  */
 
 #include "mxml-private.h"
+
+
+/*
+ * Some crazy people think that unloading a shared object is a good or safe
+ * thing to do.  Unfortunately, most objects are simply *not* safe to unload
+ * and bad things *will* happen.
+ *
+ * The following mess of conditional code allows us to provide a destructor
+ * function in Mini-XML for our thread-global storage so that it can possibly
+ * be unloaded safely, although since there is no standard way to do so I
+ * can't even provide any guarantees that you can do it safely on all platforms.
+ *
+ * This code currently supports AIX, HP-UX, Linux, Mac OS X, Solaris, and
+ * Windows.  It might work on the BSDs and IRIX, but I haven't tested that.
+ */
+
+#if defined(__sun) || defined(_AIX)
+#  pragma fini(_mxml_fini)
+#  define _MXML_FINI _mxml_fini
+#elif defined(__hpux)
+#  pragma FINI _mxml_fini
+#  define _MXML_FINI _mxml_fini
+#elif defined(__GCC__) /* Linux and Mac OS X */
+#  define _MXML_FINI __attribute((destructor)) _mxml_fini
+#else
+#  define _MXML_FINI _fini
+#endif /* __sun */
 
 
 /*
@@ -136,6 +163,38 @@ static void		_mxml_destructor(void *g);
 
 
 /*
+ * '_mxml_destructor()' - Free memory used for globals...
+ */
+
+static void
+_mxml_destructor(void *g)		/* I - Global data */
+{
+  free(g);
+}
+
+
+/*
+ * '_mxml_fini()' - Clean up when unloaded.
+ */
+
+static void
+_MXML_FINI(void)
+{
+  _mxml_global_t	*global;	/* Global data */
+
+
+  if (_mxml_key != -1)
+  {
+    if ((global = (_mxml_global_t *)pthread_getspecific(_mxml_key)) != NULL)
+      _mxml_destructor(global);
+
+    pthread_key_delete(_mxml_key);
+    _mxml_key = -1;
+  }
+}
+
+
+/*
  * '_mxml_global()' - Get global data.
  */
 
@@ -169,17 +228,6 @@ static void
 _mxml_init(void)
 {
   pthread_key_create(&_mxml_key, _mxml_destructor);
-}
-
-
-/*
- * '_mxml_destructor()' - Free memory used for globals...
- */
-
-static void
-_mxml_destructor(void *g)		/* I - Global data */
-{
-  free(g);
 }
 
 

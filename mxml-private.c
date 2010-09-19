@@ -49,7 +49,7 @@
 #elif defined(__hpux)
 #  pragma FINI _mxml_fini
 #  define _MXML_FINI _mxml_fini
-#elif defined(__GCC__) /* Linux and Mac OS X */
+#elif defined(__GNUC__) /* Linux and Mac OS X */
 #  define _MXML_FINI __attribute((destructor)) _mxml_fini
 #else
 #  define _MXML_FINI _fini

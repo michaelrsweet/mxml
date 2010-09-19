@@ -193,7 +193,7 @@ html_footer()
 {
   print("</td></tr>\n"
        ."<td class='footer' colspan='8'>"
-       ."Copyright 2003-2009 by Michael Sweet. This library is free "
+       ."Copyright 2003-2010 by Michael Sweet. This library is free "
        ."software; you can redistribute it and/or modify it "
        ."under the terms of the GNU Library General Public "
        ."License as published by the Free Software Foundation; "

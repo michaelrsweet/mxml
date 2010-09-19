@@ -744,7 +744,7 @@ node is closed or after each data, comment, CDATA, or directive node.
       <type>char *</type>
       <description>Allocated string or NULL</description>
     </returnvalue>
-    <description>Save an XML node tree to an allocated string.
+    <description>Save an XML tree to an allocated string.
 
 This function returns a pointer to a string containing the textual
 representation of the XML node tree.  The string should be freed

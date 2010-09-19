@@ -418,9 +418,10 @@ char *					/* O - New string pointer */
 _mxml_vstrdupf(const char *format,	/* I - Printf-style format string */
                va_list    ap)		/* I - Pointer to additional arguments */
 {
-  int	bytes;				/* Number of bytes required */
-  char	*buffer,			/* String buffer */
-	temp[256];			/* Small buffer for first vsnprintf */
+  int		bytes;			/* Number of bytes required */
+  char		*buffer,		/* String buffer */
+		temp[256];		/* Small buffer for first vsnprintf */
+  va_list	apcopy;			/* Copy of argument list */
 
 
  /*
@@ -428,7 +429,8 @@ _mxml_vstrdupf(const char *format,	/* I - Printf-style format string */
   * needed...
   */
 
-  bytes = vsnprintf(temp, sizeof(temp), format, ap);
+  va_copy(apcopy, ap);
+  bytes = vsnprintf(temp, sizeof(temp), format, apcopy);
 
   if (bytes < sizeof(temp))
   {

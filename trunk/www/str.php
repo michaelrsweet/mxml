@@ -50,6 +50,7 @@ $subsystems = array(
 $versions = array(
   "+Will Not Fix",
   "+None",
+  "+Future",
   "Trunk",
   "+3.0",
   "+2.7",

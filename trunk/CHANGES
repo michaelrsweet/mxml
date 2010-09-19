@@ -9,6 +9,8 @@ CHANGES IN Mini-XML 2.7
 	  specific data key on UNIX-based operating systems (STR #103)
 	- mxmlLoad* did not error out on XML with multiple root nodes (STR #101)
 	- Fixed an issue with the _mxml_vstrdupf function (STR #107)
+	- mxmlSave* no longer write all siblings of the passed node, just that
+	  node and its children (STR #109)
 
 
 CHANGES IN Mini-XML 2.6

@@ -5,6 +5,27 @@
 hspace="10" width="100" height="100" alt="B"></a>Release Notes</h1>
 
 
+<h2 _hd_omit_toc>Changes in Mini-XML 2.7</h2>
+
+<ul>
+
+	<li>Updated the source headers to reference the Mini-XML license and its
+	exceptions to the LGPL2 (STR #108)</li>
+
+	<li>The shared library did not include a destructor for the thread-
+	specific data key on UNIX-based operating systems (STR #103)</li>
+
+	<li>mxmlLoad* did not error out on XML with multiple root nodes (STR
+	#101)</li>
+
+	<li>Fixed an issue with the _mxml_vstrdupf function (STR #107)</li>
+
+	<li>mxmlSave* no longer write all siblings of the passed node, just that
+	node and its children (STR #109)</li>
+
+</ul>
+
+
 <h2 _hd_omit_toc>Changes in Mini-XML 2.6</h2>
 
 <ul>

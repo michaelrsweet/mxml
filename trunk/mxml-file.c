@@ -18,7 +18,7 @@
  *   mxmlLoadFd()            - Load a file descriptor into an XML node tree.
  *   mxmlLoadFile()          - Load a file into an XML node tree.
  *   mxmlLoadString()        - Load a string into an XML node tree.
- *   mxmlSaveAllocString()   - Save an XML node tree to an allocated string.
+ *   mxmlSaveAllocString()   - Save an XML tree to an allocated string.
  *   mxmlSaveFd()            - Save an XML tree to a file descriptor.
  *   mxmlSaveFile()          - Save an XML tree to a file.
  *   mxmlSaveString()        - Save an XML node tree to a string.
@@ -230,7 +230,7 @@ mxmlLoadString(mxml_node_t    *top,	/* I - Top node */
 
 
 /*
- * 'mxmlSaveAllocString()' - Save an XML node tree to an allocated string.
+ * 'mxmlSaveAllocString()' - Save an XML tree to an allocated string.
  *
  * This function returns a pointer to a string containing the textual
  * representation of the XML node tree.  The string should be freed

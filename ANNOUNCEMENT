@@ -1,7 +1,14 @@
-Mini-XML 2.4 is now available for download from:
+Mini-XML 2.7 is now available for download from:
 
-    http://www.easysw.com/~mike/mxml/software.php
+    http://www.minixml.org/software.php
 
-Mini-XML 2.4 fixes some build and XML parsing bugs, adds support
-for the apos character entity, and adds per-thread global settings.
+Mini-XML 2.7 fixes some minor platform and XML issues. Changes include:
 
+- Updated the source headers to reference the Mini-XML license and its
+  exceptions to the LGPL2 (STR #108)
+- The shared library did not include a destructor for the thread-
+  specific data key on UNIX-based operating systems (STR #103)
+- mxmlLoad* did not error out on XML with multiple root nodes (STR #101)
+- Fixed an issue with the _mxml_vstrdupf function (STR #107)
+- mxmlSave* no longer write all siblings of the passed node, just that
+  node and its children (STR #109)

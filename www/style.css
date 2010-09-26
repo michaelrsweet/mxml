@@ -51,7 +51,7 @@ A:link {
 A:visited {
   font-family: sans-serif;
   text-decoration: none;
-  color: #0000ff;
+  color: #0000bf;
 }
 
 A:hover {
@@ -63,7 +63,7 @@ A:hover {
 A:active {
   font-family: sans-serif;
   text-decoration: underline;
-  color: #ff0000;
+  color: #bf0000;
 }
 
 TD.unsel, TD.sel {

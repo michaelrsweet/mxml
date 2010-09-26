@@ -121,11 +121,11 @@ href='#mxmlNewElement'><tt>mxmlNewElement</tt></a>, <a
 href='#mxmlNewInteger'><tt>mxmlNewInteger</tt></a>, <a
 href='#mxmlNewOpaque'><tt>mxmlNewOpaque</tt></a>, <a
 href='#mxmlNewReal'><tt>mxmlNewReal</tt></a>, <a
-href='#mxmlNewText'><tt>mxmlNewText</tt></a> <a
-href='#mxmlNewTextf'><tt>mxmlNewTextf</tt></a> <a
+href='#mxmlNewText'><tt>mxmlNewText</tt></a>, <a
+href='#mxmlNewTextf'><tt>mxmlNewTextf</tt></a>, and <a
 href='#mxmlNewXML'><tt>mxmlNewXML</tt></a> functions. Only
-elements can have child nodes, and the top node must be an element,
-usually the <tt>&lt;?xml version="1.0"?&gt;</tt> node created by
+elements can have child nodes, and the top node must be an element, usually the
+<tt>&lt;?xml version="1.0" encoding="utf-8"?&gt;</tt> node created by
 <tt>mxmlNewXML()</tt>.</p>
 
 <p>Nodes have pointers to the node above (<tt>parent</tt>), below
@@ -133,7 +133,7 @@ usually the <tt>&lt;?xml version="1.0"?&gt;</tt> node created by
 of the current node. If you have an XML file like the following:</p>
 
 <pre>
-    &lt;?xml version="1.0"?&gt;
+    &lt;?xml version="1.0" encoding="utf-8"?&gt;
     &lt;data&gt;
         &lt;node&gt;val1&lt;/node&gt;
         &lt;node&gt;val2&lt;/node&gt;
@@ -152,7 +152,7 @@ of the current node. If you have an XML file like the following:</p>
 memory:</p>
 
 <pre>
-    ?xml
+    ?xml version="1.0" encoding="utf-8"?
       |
     data
       |
@@ -216,7 +216,7 @@ create the XML document described in the previous section:</p>
         mxmlNewText(node, 0, "val8");
 </pre>
 
-<p>We start by creating the <tt>&lt;?xml version="1.0"?&gt;</tt>
+<p>We start by creating the <tt>&lt;?xml version="1.0" encoding="utf-8"?&gt;</tt>
 node common to all XML files using the <a
 href="#mxmlNewXML"><tt>mxmlNewXML</tt></a> function:</p>
 

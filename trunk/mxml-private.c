@@ -229,7 +229,7 @@ _mxml_init(void)
 }
 
 
-#elif defined(WIN32)			/**** WIN32 threading ****/
+#elif defined(WIN32) && defined(MXML1_EXPORTS) /**** WIN32 threading ****/
 #  include <windows.h>
 
 static DWORD _mxml_tls_index;		/* Index for global storage */

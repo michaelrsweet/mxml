@@ -1,10 +1,12 @@
-CHANGES - 2010-09-19
+CHANGES - 2010-11-07
 --------------------
 
 CHANGES IN Mini-XML 2.7
 
 	- Updated the source headers to reference the Mini-XML license and its
 	  exceptions to the LGPL2 (STR #108)
+	- Building a static version of the library did not work on Windows
+	  (STR #112)
 	- The shared library did not include a destructor for the thread-
 	  specific data key on UNIX-based operating systems (STR #103)
 	- mxmlLoad* did not error out on XML with multiple root nodes (STR #101)

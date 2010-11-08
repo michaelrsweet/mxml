@@ -205,6 +205,7 @@ extern void		mxmlEntityRemoveCallback(mxml_entity_cb_t cb);
 extern mxml_node_t	*mxmlFindElement(mxml_node_t *node, mxml_node_t *top,
 			                 const char *name, const char *attr,
 					 const char *value, int descend);
+extern mxml_node_t	*mxmlFindValue(mxml_node_t *node, const char *path);
 extern void		mxmlIndexDelete(mxml_index_t *ind);
 extern mxml_node_t	*mxmlIndexEnum(mxml_index_t *ind);
 extern mxml_node_t	*mxmlIndexFind(mxml_index_t *ind,

@@ -155,6 +155,7 @@ Reference</h1>
 <li><a href="#mxmlEntityGetValue" title="Get the character corresponding to a named entity.">mxmlEntityGetValue</a></li>
 <li><a href="#mxmlEntityRemoveCallback" title="Remove a callback.">mxmlEntityRemoveCallback</a></li>
 <li><a href="#mxmlFindElement" title="Find the named element.">mxmlFindElement</a></li>
+<li><a href="#mxmlFindValue" title="Find a value with the given path.">mxmlFindValue</a></li>
 <li><a href="#mxmlIndexDelete" title="Delete an index.">mxmlIndexDelete</a></li>
 <li><a href="#mxmlIndexEnum" title="Return the next node in the index.">mxmlIndexEnum</a></li>
 <li><a href="#mxmlIndexFind" title="Find the next matching node.">mxmlIndexFind</a></li>
@@ -450,6 +451,28 @@ whether the search descends into child nodes; normally you will use
 MXML_DESCEND_FIRST for the initial search and MXML_NO_DESCEND to find
 additional direct descendents of the node. The top node argument
 constrains the search to a particular node's children.</p>
+<h3 class="function"><span class="info">&nbsp;Mini-XML 2.7&nbsp;</span><a name="mxmlFindValue">mxmlFindValue</a></h3>
+<p class="description">Find a value with the given path.</p>
+<p class="code">
+<a href="#mxml_node_t">mxml_node_t</a> *mxmlFindValue (<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#mxml_node_t">mxml_node_t</a> *top,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;const char *path<br>
+);</p>
+<h4 class="parameters">Parameters</h4>
+<dl>
+<dt>top</dt>
+<dd class="description">Top node</dd>
+<dt>path</dt>
+<dd class="description">Path to element</dd>
+</dl>
+<h4 class="returnvalue">Return Value</h4>
+<p class="description">First value node or NULL</p>
+<h4 class="discussion">Discussion</h4>
+<p class="discussion">The &quot;path&quot; is a slash-separated list of element names. The name &quot;*&quot; is
+considered a wildcard for one or more levels of elements.  For example,
+&quot;foo/one/two&quot;, &quot;bar/two/one&quot;, &quot;*/one&quot;, and so forth.
+
+</p>
 <h3 class="function"><a name="mxmlIndexDelete">mxmlIndexDelete</a></h3>
 <p class="description">Delete an index.</p>
 <p class="code">

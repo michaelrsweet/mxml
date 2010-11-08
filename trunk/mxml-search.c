@@ -17,6 +17,7 @@
  * Contents:
  *
  *   mxmlFindElement() - Find the named element.
+ *   mxmlFindValue()   - Find a value with the given path.
  *   mxmlWalkNext()    - Walk to the next logical node in the tree.
  *   mxmlWalkPrev()    - Walk to the previous logical node in the tree.
  */
@@ -113,6 +114,87 @@ mxmlFindElement(mxml_node_t *node,	/* I - Current node */
   }
 
   return (NULL);
+}
+
+
+/*
+ * 'mxmlFindValue()' - Find a value with the given path.
+ *
+ * The "path" is a slash-separated list of element names. The name "*" is
+ * considered a wildcard for one or more levels of elements.  For example,
+ * "foo/one/two", "bar/two/one", "*\/one", and so forth.
+ *
+ * @since Mini-XML 2.7@
+ */
+
+mxml_node_t *				/* O - First value node or NULL */
+mxmlFindValue(mxml_node_t *top,		/* I - Top node */
+              const char  *path)	/* I - Path to element */
+{
+  mxml_node_t	*node;			/* Current node */
+  char		element[256],		/* Current element name */
+		*pathsep;		/* Separator in path */
+  int		descend;		/* mxmlFindElement option */
+
+
+ /*
+  * Range check input...
+  */
+
+  if (!top || !path || !*path)
+    return (NULL);
+
+ /*
+  * Search each element in the path...
+  */
+
+  node = top;
+  while (*path)
+  {
+   /*
+    * Handle wildcards...
+    */
+
+    if (!strncmp(path, "*/", 2))
+    {
+      path += 2;
+      descend = MXML_DESCEND;
+    }
+    else
+      descend = MXML_DESCEND_FIRST;
+
+   /*
+    * Get the next element in the path...
+    */
+
+    if ((pathsep = strchr(path, '/')) == NULL)
+      pathsep = path + strlen(path);
+
+    if (pathsep == path || (pathsep - path) >= sizeof(element))
+      return (NULL);
+
+    memcpy(element, path, pathsep - path);
+    element[pathsep - path] = '\0';
+
+    if (*pathsep)
+      path = pathsep + 1;
+    else
+      path = pathsep;
+
+   /*
+    * Search for the element...
+    */
+
+    if ((node = mxmlFindElement(node, node, element, NULL, NULL,
+                                descend)) == NULL)
+      return (NULL);
+  }
+
+ /*
+  * If we get this far, return the first child of the current node...
+  */
+
+  return (node->child);
 }
 
 

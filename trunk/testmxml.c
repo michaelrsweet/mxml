@@ -130,6 +130,8 @@ main(int  argc,				/* I - Number of command-line args */
                  MXML_REAL_CALLBACK);
   mxmlLoadString(tree, "<group>opaque opaque opaque</group>",
                  MXML_OPAQUE_CALLBACK);
+  mxmlLoadString(tree, "<foo><bar><one><two>value<two>value2</two></two></one>"
+                       "</bar></foo>", MXML_OPAQUE_CALLBACK);
 
   node = tree->child;
 
@@ -259,6 +261,52 @@ main(int  argc,				/* I - Number of command-line args */
   }
 
  /*
+  * Test mxmlFindValue...
+  */
+
+  node = mxmlFindValue(tree, "*/two");
+  if (!node)
+  {
+    fputs("ERROR: Unable to find value for \"*/two\".\n", stderr);
+    mxmlDelete(tree);
+    return (1);
+  }
+  else if (node->type != MXML_OPAQUE || strcmp(node->value.opaque, "value"))
+  {
+    fputs("ERROR: Bad value for \"*/two\".\n", stderr);
+    mxmlDelete(tree);
+    return (1);
+  }
+
+  node = mxmlFindValue(tree, "foo/*/two");
+  if (!node)
+  {
+    fputs("ERROR: Unable to find value for \"foo/*/two\".\n", stderr);
+    mxmlDelete(tree);
+    return (1);
+  }
+  else if (node->type != MXML_OPAQUE || strcmp(node->value.opaque, "value"))
+  {
+    fputs("ERROR: Bad value for \"foo/*/two\".\n", stderr);
+    mxmlDelete(tree);
+    return (1);
+  }
+
+  node = mxmlFindValue(tree, "foo/bar/one/two");
+  if (!node)
+  {
+    fputs("ERROR: Unable to find value for \"foo/bar/one/two\".\n", stderr);
+    mxmlDelete(tree);
+    return (1);
+  }
+  else if (node->type != MXML_OPAQUE || strcmp(node->value.opaque, "value"))
+  {
+    fputs("ERROR: Bad value for \"foo/bar/one/two\".\n", stderr);
+    mxmlDelete(tree);
+    return (1);
+  }
+
+ /*
   * Test indices...
   */
 
@@ -270,10 +318,10 @@ main(int  argc,				/* I - Number of command-line args */
     return (1);
   }
 
-  if (ind->num_nodes != 5)
+  if (ind->num_nodes != 10)
   {
     fprintf(stderr, "ERROR: Index of all nodes contains %d "
-                    "nodes; expected 5!\n", ind->num_nodes);
+                    "nodes; expected 10!\n", ind->num_nodes);
     mxmlIndexDelete(ind);
     mxmlDelete(tree);
     return (1);
@@ -378,7 +426,7 @@ main(int  argc,				/* I - Number of command-line args */
   * Check the mxmlDelete() works properly...
   */
 
-  for (i = 0; i < 8; i ++)
+  for (i = 0; i < 9; i ++)
   {
     if (tree->child)
       mxmlDelete(tree->child);

@@ -1,4 +1,4 @@
-README - 2010-09-19
+README - 2010-11-08
 -------------------
 
 
@@ -156,6 +156,11 @@ DOCUMENTATION
 	  ... do something ...
 	}
 
+    The "mxmlFindValue()" function finds the (first) value node under a specific
+    element using a "path":
+
+        mxml_node_t *value = mxmlFindValue(tree, "path/to/*/foo/bar");
+    
     Finally, once you are done with the XML data, use the "mxmlDelete()"
     function to recursively free the memory that is used for a particular node
     or the entire tree:

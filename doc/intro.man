@@ -141,6 +141,13 @@ You can also iterate with the same function:
     }
 .fi
 .PP
+To find the value of a specific node in the tree, use the "mxmlFindValue()"
+function:
+.nf
+
+    mxml_node_t *value = mxmlFindValue(tree, "path/to/*/foo/bar");
+.fi
+.PP
 Finally, once you are done with the XML data, use the
 "mxmlDelete()" function to recursively free the memory that
 is used for a particular node or the entire tree:

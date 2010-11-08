@@ -2627,7 +2627,16 @@ update_comment(mxml_node_t *parent,	/* I - Parent node */
 
   if (!parent || !comment)
     return;
- 
+
+ /*
+  * Convert "\/" to "/"...
+  */
+
+  for (ptr = strstr(comment->value.text.string, "\\/");
+       ptr;
+       ptr = strstr(ptr, "\\/"))
+    safe_strcpy(ptr, ptr + 1);
+
  /*
   * Update the comment...
   */
@@ -2662,7 +2671,7 @@ update_comment(mxml_node_t *parent,	/* I - Parent node */
   {
    /*
     * 'Convert "I - description", "IO - description", or "O - description"
-    * to description + directory attribute.
+    * to description + direction attribute.
     */
 
     ptr = strchr(ptr, ' ');

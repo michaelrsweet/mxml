@@ -522,5 +522,18 @@ three constants:</p>
 
 </ul>
 
+<h2>Finding Value Nodes</h2>
+
+<p>You can find the value of a specific node in the tree using the <a
+href='#mxmlFindValue'><tt>mxmlFindValue</tt></a>, for example:
+
+<pre>
+    mxml_node_t *value = mxmlFindValue(tree, "path/to/*/foo/bar");
+</pre>
+
+<p>The second argument is a "path" to the parent node. Each component of the
+path is separated by a slash (/) and represents a named element in the document
+tree or a wildcard (*) path representing 0 or more intervening nodes.</p>
+
 </body>
 </html>

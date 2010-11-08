@@ -197,6 +197,27 @@ constrains the search to a particular node's children.</description>
       <description>Descend into tree - MXML_DESCEND, MXML_NO_DESCEND, or MXML_DESCEND_FIRST</description>
     </argument>
   </function>
+  <function name="mxmlFindValue">
+    <returnvalue>
+      <type>mxml_node_t *</type>
+      <description>First value node or NULL</description>
+    </returnvalue>
+    <description>Find a value with the given path.
+
+The &quot;path&quot; is a slash-separated list of element names. The name &quot;*&quot; is
+considered a wildcard for one or more levels of elements.  For example,
+&quot;foo/one/two&quot;, &quot;bar/two/one&quot;, &quot;*/one&quot;, and so forth.
+
+@since Mini-XML 2.7@</description>
+    <argument name="top" direction="I">
+      <type>mxml_node_t *</type>
+      <description>Top node</description>
+    </argument>
+    <argument name="path" direction="I">
+      <type>const char *</type>
+      <description>Path to element</description>
+    </argument>
+  </function>
   <function name="mxmlIndexDelete">
     <description>Delete an index.</description>
     <argument name="ind" direction="I">

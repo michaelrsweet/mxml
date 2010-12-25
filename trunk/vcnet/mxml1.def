@@ -17,6 +17,7 @@ EXPORTS
  mxmlEntityGetValue
  mxmlEntityRemoveCallback
  mxmlFindElement
+ mxmlFindValue
  mxmlIndexDelete
  mxmlIndexEnum
  mxmlIndexFind

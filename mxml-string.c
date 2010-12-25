@@ -29,6 +29,20 @@
 #include "config.h"
 
 
+/*
+ * The va_copy macro is part of C99, but many compilers don't implement it.
+ * Provide a "direct assignment" implmentation when va_copy isn't defined...
+ */
+
+#ifndef va_copy
+#  ifdef __va_copy
+#    define va_copy(dst,src) __va_copy(dst,src)
+#  else
+#    define va_copy(dst,src) memcpy(&dst, &src, sizeof(va_list))
+#  endif /* __va_copy */
+#endif /* va_copy */
+
+
 #ifndef HAVE_SNPRINTF
 /*
  * '_mxml_snprintf()' - Format a string.
@@ -58,7 +72,7 @@ _mxml_snprintf(char       *buffer,	/* I - Output buffer */
  */
 
 #ifndef HAVE_STRDUP
-char 	*				/* O - New string pointer */
+char *					/* O - New string pointer */
 _mxml_strdup(const char *s)		/* I - String to duplicate */
 {
   char	*t;				/* New string pointer */

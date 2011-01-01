@@ -3,7 +3,7 @@
  *
  * Node set functions for Mini-XML, a small XML-like file parsing library.
  *
- * Copyright 2003-2010 by Michael R Sweet.
+ * Copyright 2003-2011 by Michael R Sweet.
  *
  * These coded instructions, statements, and computer programs are the
  * property of Michael R Sweet and are protected by Federal copyright
@@ -15,14 +15,15 @@
  *
  * Contents:
  *
- *   mxmlSetCustom()  - Set the data and destructor of a custom data node.
- *   mxmlSetCDATA()   - Set the element name of a CDATA node.
- *   mxmlSetElement() - Set the name of an element node.
- *   mxmlSetInteger() - Set the value of an integer node.
- *   mxmlSetOpaque()  - Set the value of an opaque node.
- *   mxmlSetReal()    - Set the value of a real number node.
- *   mxmlSetText()    - Set the value of a text node.
- *   mxmlSetTextf()   - Set the value of a text node to a formatted string.
+ *   mxmlSetCDATA()    - Set the element name of a CDATA node.
+ *   mxmlSetCustom()   - Set the data and destructor of a custom data node.
+ *   mxmlSetElement()  - Set the name of an element node.
+ *   mxmlSetInteger()  - Set the value of an integer node.
+ *   mxmlSetOpaque()   - Set the value of an opaque node.
+ *   mxmlSetReal()     - Set the value of a real number node.
+ *   mxmlSetText()     - Set the value of a text node.
+ *   mxmlSetTextf()    - Set the value of a text node to a formatted string.
+ *   mxmlSetUserData() - Set the user data pointer for a node.
  */
 
 /*
@@ -31,6 +32,39 @@
 
 #include "config.h"
 #include "mxml.h"
+
+
+/*
+ * 'mxmlSetCDATA()' - Set the element name of a CDATA node.
+ *
+ * The node is not changed if it is not a CDATA element node.
+ *
+ * @since Mini-XML 2.3@
+ */
+
+int					/* O - 0 on success, -1 on failure */
+mxmlSetCDATA(mxml_node_t *node,		/* I - Node to set */
+             const char  *data)		/* I - New data string */
+{
+ /*
+  * Range check input...
+  */
+
+  if (!node || node->type != MXML_ELEMENT || !data ||
+      strncmp(node->value.element.name, "![CDATA[", 8))
+    return (-1);
+
+ /*
+  * Free any old element value and set the new value...
+  */
+
+  if (node->value.element.name)
+    free(node->value.element.name);
+
+  node->value.element.name = _mxml_strdupf("![CDATA[%s]]", data);
+
+  return (0);
+}
 
 
 /*
@@ -63,39 +97,6 @@ mxmlSetCustom(
 
   node->value.custom.data    = data;
   node->value.custom.destroy = destroy;
-
-  return (0);
-}
-
-
-/*
- * 'mxmlSetCDATA()' - Set the element name of a CDATA node.
- *
- * The node is not changed if it is not a CDATA element node.
- *
- * @since Mini-XML 2.3@
- */
-
-int					/* O - 0 on success, -1 on failure */
-mxmlSetCDATA(mxml_node_t *node,		/* I - Node to set */
-             const char  *data)		/* I - New data string */
-{
- /*
-  * Range check input...
-  */
-
-  if (!node || node->type != MXML_ELEMENT || !data ||
-      strncmp(node->value.element.name, "![CDATA[", 8))
-    return (-1);
-
- /*
-  * Free any old element value and set the new value...
-  */
-
-  if (node->value.element.name)
-    free(node->value.element.name);
-
-  node->value.element.name = _mxml_strdupf("![CDATA[%s]]", data);
 
   return (0);
 }
@@ -283,6 +284,32 @@ mxmlSetTextf(mxml_node_t *node,		/* I - Node to set */
 
   va_end(ap);
 
+  return (0);
+}
+
+
+/*
+ * 'mxmlSetUserData()' - Set the user data pointer for a node.
+ *
+ * @since Mini-XML 2.7@
+ */
+
+int					/* O - 0 on success, -1 on failure */
+mxmlSetUserData(mxml_node_t *node,	/* I - Node to set */
+                void        *data)	/* I - User data pointer */
+{
+ /*
+  * Range check input...
+  */
+
+  if (!node)
+    return (-1);
+
+ /*
+  * Set the user data pointer and return...
+  */
+
+  node->user_data = data;
   return (0);
 }
 

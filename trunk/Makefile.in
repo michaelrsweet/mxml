@@ -82,8 +82,8 @@ DOCFILES	=	doc/0.gif doc/1.gif doc/2.gif doc/3.gif doc/4.gif \
 			doc/A.gif doc/B.gif doc/C.gif doc/D.gif \
 			doc/mxml.html doc/mxmldoc.xsd \
 			README COPYING CHANGES
-PUBLIBOBJS	=	mxml-attr.o mxml-entity.o mxml-file.o mxml-index.o \
-			mxml-node.o mxml-search.o mxml-set.o
+PUBLIBOBJS	=	mxml-attr.o mxml-entity.o mxml-file.o mxml-get.o \
+			mxml-index.o mxml-node.o mxml-search.o mxml-set.o
 LIBOBJS		=	$(PUBLIBOBJS) mxml-private.o mxml-string.o
 OBJS		=	mxmldoc.o testmxml.o $(LIBOBJS)
 TARGETS		=	$(LIBMXML) mxmldoc testmxml mxml.xml doc/mxml.man

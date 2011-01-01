@@ -1,8 +1,11 @@
-CHANGES - 2010-11-08
+CHANGES - 2011-01-01
 --------------------
 
 CHANGES IN Mini-XML 2.7
 
+	- Added data accessor ("get") functions and made the mxml_node_t and
+	  mxml_index_t structures private but still available in the Mini-XML
+	  header to preserve source compatibility (STR #118)
 	- Updated the source headers to reference the Mini-XML license and its
 	  exceptions to the LGPL2 (STR #108)
       	- Added a new mxmlFindValue() function to find the value node of a

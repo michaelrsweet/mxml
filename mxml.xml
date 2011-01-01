@@ -218,6 +218,224 @@ considered a wildcard for one or more levels of elements.  For example,
       <description>Path to element</description>
     </argument>
   </function>
+  <function name="mxmlGetCDATA">
+    <returnvalue>
+      <type>char *</type>
+      <description>CDATA value or NULL</description>
+    </returnvalue>
+    <description>Get the value for a CDATA node.
+
+@code NULL@ is returned if the node is not a CDATA element.
+
+@since Mini-XML 2.7@</description>
+    <argument name="node" direction="I">
+      <type>mxml_node_t *</type>
+      <description>Node to get</description>
+    </argument>
+  </function>
+  <function name="mxmlGetCustom">
+    <returnvalue>
+      <type>void *</type>
+      <description>Custom value or NULL</description>
+    </returnvalue>
+    <description>Get the value for a custom node.
+
+@code NULL@ is returned if the node (or its first child) is not a custom
+value node.
+
+@since Mini-XML 2.7@</description>
+    <argument name="node" direction="I">
+      <type>mxml_node_t *</type>
+      <description>Node to get</description>
+    </argument>
+  </function>
+  <function name="mxmlGetElement">
+    <returnvalue>
+      <type>char *</type>
+      <description>Element name or NULL</description>
+    </returnvalue>
+    <description>Get the name for an element node.
+
+@code NULL@ is returned if the node is not an element node.
+
+@since Mini-XML 2.7@</description>
+    <argument name="node" direction="I">
+      <type>mxml_node_t *</type>
+      <description>Node to get</description>
+    </argument>
+  </function>
+  <function name="mxmlGetFirstChild">
+    <returnvalue>
+      <type>mxml_node_t *</type>
+      <description>First child or NULL</description>
+    </returnvalue>
+    <description>Get the first child of an element node.
+
+@code NULL@ is returned if the node is not an element node or if the node
+has no children.
+
+@since Mini-XML 2.7@</description>
+    <argument name="node" direction="I">
+      <type>mxml_node_t *</type>
+      <description>Node to get</description>
+    </argument>
+  </function>
+  <function name="mxmlGetInteger">
+    <returnvalue>
+      <type>int</type>
+      <description>Integer value or 0</description>
+    </returnvalue>
+    <description>Get the integer value from the specified node or its
+first child.
+
+0 is returned if the node (or its first child) is not an integer value node.
+
+@since Mini-XML 2.7@</description>
+    <argument name="node" direction="I">
+      <type>mxml_node_t *</type>
+      <description>Node to get</description>
+    </argument>
+  </function>
+  <function name="mxmlGetLastChild">
+    <returnvalue>
+      <type>mxml_node_t *</type>
+      <description>Last child or NULL</description>
+    </returnvalue>
+    <description>Get the last child of an element node.
+
+@code NULL@ is returned if the node is not an element node or if the node
+has no children.
+
+@since Mini-XML 2.7@</description>
+    <argument name="node" direction="I">
+      <type>mxml_node_t *</type>
+      <description>Node to get</description>
+    </argument>
+  </function>
+  <function name="mxmlGetNext">
+    <returnvalue>
+      <type>mxml_node_t *</type>
+      <description>Get the next node for the current parent.
+
+@code NULL@ is returned if this is the last child for the current parent.
+
+@since Mini-XML 2.7@</description>
+    </returnvalue>
+    <description>Return the node type...</description>
+    <argument name="node" direction="I">
+      <type>mxml_node_t *</type>
+      <description>Node to get</description>
+    </argument>
+  </function>
+  <function name="mxmlGetOpaque">
+    <returnvalue>
+      <type>char *</type>
+      <description>Opaque string or NULL</description>
+    </returnvalue>
+    <description>Get an opaque string value for a node or its first child.
+
+@code NULL@ is returned if the node (or its first child) is not an opaque
+value node.
+
+@since Mini-XML 2.7@</description>
+    <argument name="node" direction="I">
+      <type>mxml_node_t *</type>
+      <description>Node to get</description>
+    </argument>
+  </function>
+  <function name="mxmlGetParent">
+    <returnvalue>
+      <type>mxml_node_t *</type>
+      <description>Parent node or NULL</description>
+    </returnvalue>
+    <description>Get the parent node.
+
+@code NULL@ is returned for a root node.
+
+@since Mini-XML 2.7@</description>
+    <argument name="node" direction="I">
+      <type>mxml_node_t *</type>
+      <description>Node to get</description>
+    </argument>
+  </function>
+  <function name="mxmlGetPrevious">
+    <returnvalue>
+      <type>mxml_node_t *</type>
+      <description>Previous node or NULL</description>
+    </returnvalue>
+    <description>Get the previous node for the current parent.
+
+@code NULL@ is returned if this is the first child for the current parent.
+
+@since Mini-XML 2.7@</description>
+    <argument name="node" direction="I">
+      <type>mxml_node_t *</type>
+      <description>Node to get</description>
+    </argument>
+  </function>
+  <function name="mxmlGetReal">
+    <returnvalue>
+      <type>double</type>
+      <description>Real value or 0.0</description>
+    </returnvalue>
+    <description>Get the real value for a node or its first child.
+
+0.0 is returned if the node (or its first child) is not a real value node.
+
+@since Mini-XML 2.7@</description>
+    <argument name="node" direction="I">
+      <type>mxml_node_t *</type>
+      <description>Node to get</description>
+    </argument>
+  </function>
+  <function name="mxmlGetText">
+    <returnvalue>
+      <type>char *</type>
+      <description>Text string or NULL</description>
+    </returnvalue>
+    <description>Get the text value for a node or its first child.
+
+@code NULL@ is returned if the node (or its first child) is not a text node.
+The &quot;whitespace&quot; argument can be NULL.
+
+@since Mini-XML 2.7@</description>
+    <argument name="node" direction="I">
+      <type>mxml_node_t *</type>
+      <description>Node to get</description>
+    </argument>
+    <argument name="whitespace" direction="O">
+      <type>int *</type>
+      <description>1 if string is preceded by whitespace, 0 otherwise</description>
+    </argument>
+  </function>
+  <function name="mxmlGetType">
+    <returnvalue>
+      <type>mxml_type_t</type>
+      <description>Type of node</description>
+    </returnvalue>
+    <description>Get the node type.
+
+@code MXML_IGNORE@ is returned if &quot;node&quot; is @code NULL@.
+
+@since Mini-XML 2.7@</description>
+    <argument name="node" direction="I">
+      <type>mxml_node_t *</type>
+      <description>Node to get</description>
+    </argument>
+  </function>
+  <function name="mxmlGetUserData">
+    <returnvalue>
+      <type>void *</type>
+      <description>User data pointer</description>
+    </returnvalue>
+    <description>Get the user data pointer for a node.
+
+@since Mini-XML 2.7@</description>
+    <argument name="node" direction="I">
+      <type>mxml_node_t *</type>
+      <description>Node to get</description>
+    </argument>
+  </function>
   <function name="mxmlIndexDelete">
     <description>Delete an index.</description>
     <argument name="ind" direction="I">
@@ -260,6 +478,19 @@ to calling mxmlIndexEnum().</description>
     <argument name="value" direction="I">
       <type>const char *</type>
       <description>Attribute value, if any</description>
+    </argument>
+  </function>
+  <function name="mxmlIndexGetCount">
+    <returnvalue>
+      <type>int</type>
+      <description>Number of nodes in index</description>
+    </returnvalue>
+    <description>Get the number of nodes in an index.
+
+@since Mini-XML 2.7@</description>
+    <argument name="ind" direction="I">
+      <type>mxml_index_t *</type>
+      <description>Index of nodes</description>
     </argument>
   </function>
   <function name="mxmlIndexNew">
@@ -1049,6 +1280,23 @@ The node is not changed if it is not a text node.</description>
       <type />      <description>Additional arguments as needed</description>
     </argument>
   </function>
+  <function name="mxmlSetUserData">
+    <returnvalue>
+      <type>int</type>
+      <description>0 on success, -1 on failure</description>
+    </returnvalue>
+    <description>Set the user data pointer for a node.
+
+@since Mini-XML 2.7@</description>
+    <argument name="node" direction="I">
+      <type>mxml_node_t *</type>
+      <description>Node to set</description>
+    </argument>
+    <argument name="data" direction="I">
+      <type>void *</type>
+      <description>User data pointer</description>
+    </argument>
+  </function>
   <function name="mxmlSetWrapMargin">
     <description>Set the wrap margin when saving XML data.
 
@@ -1107,7 +1355,7 @@ the walk to the node's children.</description>
     </argument>
   </function>
   <struct name="mxml_attr_s">
-    <description>An XML element attribute value.</description>
+    <description>An XML element attribute value. @private@</description>
     <variable name="name">
       <type>char *</type>
       <description>Attribute name</description>
@@ -1119,7 +1367,7 @@ the walk to the node's children.</description>
   </struct>
   <typedef name="mxml_attr_t">
     <type>struct mxml_attr_s</type>
-    <description>An XML element attribute value.</description>
+    <description>An XML element attribute value. @private@</description>
   </typedef>
   <typedef name="mxml_custom_destroy_cb_t">
     <type>void(*)(void *)</type>
@@ -1130,7 +1378,7 @@ the walk to the node's children.</description>
     <description>Custom data load callback function</description>
   </typedef>
   <struct name="mxml_custom_s">
-    <description>An XML custom value. @since Mini-XML 2.1@</description>
+    <description>An XML custom value. @private@</description>
     <variable name="data">
       <type>void *</type>
       <description>Pointer to (allocated) custom data</description>
@@ -1146,10 +1394,10 @@ the walk to the node's children.</description>
   </typedef>
   <typedef name="mxml_custom_t">
     <type>struct mxml_custom_s</type>
-    <description>An XML custom value. @since Mini-XML 2.1@</description>
+    <description>An XML custom value. @private@</description>
   </typedef>
   <struct name="mxml_element_s">
-    <description>An XML element value.</description>
+    <description>An XML element value. @private@</description>
     <variable name="attrs">
       <type>mxml_attr_t *</type>
       <description>Attributes</description>
@@ -1165,7 +1413,7 @@ the walk to the node's children.</description>
   </struct>
   <typedef name="mxml_element_t">
     <type>struct mxml_element_s</type>
-    <description>An XML element value.</description>
+    <description>An XML element value. @private@</description>
   </typedef>
   <typedef name="mxml_entity_cb_t">
     <type>int(*)(const char *)</type>
@@ -1176,7 +1424,7 @@ the walk to the node's children.</description>
     <description>Error callback function</description>
   </typedef>
   <struct name="mxml_index_s">
-    <description>An XML node index.</description>
+    <description>An XML node index. @private@</description>
     <variable name="alloc_nodes">
       <type>int</type>
       <description>Allocated nodes in index</description>
@@ -1207,7 +1455,7 @@ the walk to the node's children.</description>
     <description>Load callback function</description>
   </typedef>
   <struct name="mxml_node_s">
-    <description>An XML node.</description>
+    <description>An XML node. @private@</description>
     <variable name="child">
       <type>struct mxml_node_s *</type>
       <description>First child node</description>
@@ -1283,7 +1531,7 @@ the walk to the node's children.</description>
     <description>SAX event type.</description>
   </typedef>
   <struct name="mxml_text_s">
-    <description>An XML text value.</description>
+    <description>An XML text value. @private@</description>
     <variable name="string">
       <type>char *</type>
       <description>Fragment string</description>
@@ -1295,7 +1543,7 @@ the walk to the node's children.</description>
   </struct>
   <typedef name="mxml_text_t">
     <type>struct mxml_text_s</type>
-    <description>An XML text value.</description>
+    <description>An XML text value. @private@</description>
   </typedef>
   <enumeration name="mxml_type_e">
     <description>The XML node type.</description>
@@ -1327,10 +1575,10 @@ the walk to the node's children.</description>
   </typedef>
   <typedef name="mxml_value_t">
     <type>union mxml_value_u</type>
-    <description>An XML node value.</description>
+    <description>An XML node value. @private@</description>
   </typedef>
   <union name="mxml_value_u">
-    <description>An XML node value.</description>
+    <description>An XML node value. @private@</description>
     <variable name="custom">
       <type>mxml_custom_t</type>
       <description>Custom data @since Mini-XML 2.1@</description>

@@ -1,9 +1,9 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
 <HTML>
 <HEAD>
-<TITLE>Mini-XML Programmers Manual, Version 2.6</TITLE>
+<TITLE>Mini-XML Programmers Manual, Version 2.7</TITLE>
 <META NAME="author" CONTENT="Michael R. Sweet">
-<META NAME="copyright" CONTENT="Copyright 2003-2009">
+<META NAME="copyright" CONTENT="Copyright 2003-2011">
 <META HTTP-EQUIV="Content-Type" CONTENT="text/html; CHARSET=iso-iso-8859-1">
 <LINK REL="Start" HREF="index.html">
 <LINK REL="Contents" HREF="index.html">
@@ -56,12 +56,45 @@ mxmlEntityGetValue</A></LI>
 mxmlEntityRemoveCallback</A></LI>
 <LI><A href="#mxmlFindElement" title="Find the named element.">
 mxmlFindElement</A></LI>
+<LI><A href="#mxmlFindPath" title="Find a node with the given path.">
+mxmlFindPath</A></LI>
+<LI><A href="#mxmlGetCDATA" title="Get the value for a CDATA node.">
+mxmlGetCDATA</A></LI>
+<LI><A href="#mxmlGetCustom" title="Get the value for a custom node.">
+mxmlGetCustom</A></LI>
+<LI><A href="#mxmlGetElement" title="Get the name for an element node.">
+mxmlGetElement</A></LI>
+<LI><A href="#mxmlGetFirstChild" title="Get the first child of an element node.">
+mxmlGetFirstChild</A></LI>
+<LI><A href="#mxmlGetInteger" title="Get the integer value from the specified node or its first child.">
+mxmlGetInteger</A></LI>
+<LI><A href="#mxmlGetLastChild" title="Get the last child of an element node.">
+mxmlGetLastChild</A></LI>
+<LI><A href="#mxmlGetNextSibling" title="Return the node type...">
+mxmlGetNextSibling</A></LI>
+<LI><A href="#mxmlGetOpaque" title="Get an opaque string value for a node or its first child.">
+mxmlGetOpaque</A></LI>
+<LI><A href="#mxmlGetParent" title="Get the parent node.">mxmlGetParent</A>
+</LI>
+<LI><A href="#mxmlGetPrevSibling" title="Get the previous node for the current parent.">
+mxmlGetPrevSibling</A></LI>
+<LI><A href="#mxmlGetReal" title="Get the real value for a node or its first child.">
+mxmlGetReal</A></LI>
+<LI><A href="#mxmlGetRefCount" title="Get the current reference (use) count for a node.">
+mxmlGetRefCount</A></LI>
+<LI><A href="#mxmlGetText" title="Get the text value for a node or its first child.">
+mxmlGetText</A></LI>
+<LI><A href="#mxmlGetType" title="Get the node type.">mxmlGetType</A></LI>
+<LI><A href="#mxmlGetUserData" title="Get the user data pointer for a node.">
+mxmlGetUserData</A></LI>
 <LI><A href="#mxmlIndexDelete" title="Delete an index.">mxmlIndexDelete</A>
 </LI>
 <LI><A href="#mxmlIndexEnum" title="Return the next node in the index.">
 mxmlIndexEnum</A></LI>
 <LI><A href="#mxmlIndexFind" title="Find the next matching node.">
 mxmlIndexFind</A></LI>
+<LI><A href="#mxmlIndexGetCount" title="Get the number of nodes in an index.">
+mxmlIndexGetCount</A></LI>
 <LI><A href="#mxmlIndexNew" title="Create a new index.">mxmlIndexNew</A></LI>
 <LI><A href="#mxmlIndexReset" title="Reset the enumeration/find pointer in the index and return the first node in the index.">
 mxmlIndexReset</A></LI>
@@ -99,7 +132,7 @@ mxmlSAXLoadFd</A></LI>
 mxmlSAXLoadFile</A></LI>
 <LI><A href="#mxmlSAXLoadString" title="Load a string into an XML node tree using a SAX callback.">
 mxmlSAXLoadString</A></LI>
-<LI><A href="#mxmlSaveAllocString" title="Save an XML node tree to an allocated string.">
+<LI><A href="#mxmlSaveAllocString" title="Save an XML tree to an allocated string.">
 mxmlSaveAllocString</A></LI>
 <LI><A href="#mxmlSaveFd" title="Save an XML tree to a file descriptor.">
 mxmlSaveFd</A></LI>
@@ -127,7 +160,9 @@ mxmlSetReal</A></LI>
 mxmlSetText</A></LI>
 <LI><A href="#mxmlSetTextf" title="Set the value of a text node to a formatted string.">
 mxmlSetTextf</A></LI>
-<LI><A href="#mxmlSetWrapMargin" title="Set the the wrap margin when saving XML data.">
+<LI><A href="#mxmlSetUserData" title="Set the user data pointer for a node.">
+mxmlSetUserData</A></LI>
+<LI><A href="#mxmlSetWrapMargin" title="Set the wrap margin when saving XML data.">
 mxmlSetWrapMargin</A></LI>
 <LI><A href="#mxmlWalkNext" title="Walk to the next logical node in the tree.">
 mxmlWalkNext</A></LI>
@@ -137,18 +172,12 @@ mxmlWalkPrev</A></LI>
 </LI>
 <LI><A href="#TYPES">Data Types</A>
 <UL class="code">
-<LI><A href="#mxml_attr_t" title="An XML element attribute value.">
-mxml_attr_t</A></LI>
 <LI><A href="#mxml_custom_destroy_cb_t" title="Custom data destructor">
 mxml_custom_destroy_cb_t</A></LI>
 <LI><A href="#mxml_custom_load_cb_t" title="Custom data load callback function">
 mxml_custom_load_cb_t</A></LI>
 <LI><A href="#mxml_custom_save_cb_t" title="Custom data save callback function">
 mxml_custom_save_cb_t</A></LI>
-<LI><A href="#mxml_custom_t" title="An XML custom value. ">mxml_custom_t</A>
-</LI>
-<LI><A href="#mxml_element_t" title="An XML element value.">
-mxml_element_t</A></LI>
 <LI><A href="#mxml_entity_cb_t" title="Entity callback function">
 mxml_entity_cb_t</A></LI>
 <LI><A href="#mxml_error_cb_t" title="Error callback function">
@@ -163,27 +192,7 @@ mxml_save_cb_t</A></LI>
 </LI>
 <LI><A href="#mxml_sax_event_t" title="SAX event type.">mxml_sax_event_t</A>
 </LI>
-<LI><A href="#mxml_text_t" title="An XML text value.">mxml_text_t</A></LI>
 <LI><A href="#mxml_type_t" title="The XML node type.">mxml_type_t</A></LI>
-<LI><A href="#mxml_value_t" title="An XML node value.">mxml_value_t</A></LI>
-</UL>
-</LI>
-<LI><A href="#STRUCTURES">Structures</A>
-<UL class="code">
-<LI><A href="#mxml_attr_s" title="An XML element attribute value.">
-mxml_attr_s</A></LI>
-<LI><A href="#mxml_custom_s" title="An XML custom value. ">mxml_custom_s</A>
-</LI>
-<LI><A href="#mxml_element_s" title="An XML element value.">
-mxml_element_s</A></LI>
-<LI><A href="#mxml_index_s" title="An XML node index.">mxml_index_s</A></LI>
-<LI><A href="#mxml_node_s" title="An XML node.">mxml_node_s</A></LI>
-<LI><A href="#mxml_text_s" title="An XML text value.">mxml_text_s</A></LI>
-</UL>
-</LI>
-<LI><A href="#UNIONS">Unions</A>
-<UL class="code">
-<LI><A href="#mxml_value_u" title="An XML node value.">mxml_value_u</A></LI>
 </UL>
 </LI>
 <LI><A href="#ENUMERATIONS">Constants</A>
@@ -410,6 +419,291 @@ mxmlEntityRemoveCallback</A></H3>
  and MXML_NO_DESCEND to find additional direct descendents of the node.
  The top node argument constrains the search to a particular node's
  children.</P>
+<H3 class="function"><A NAME="8_2_12">
+<!--span class=&quot;info&quot;-->
+&nbsp;Mini-XML 2.7&nbsp;<A name="mxmlFindPath">mxmlFindPath</A></A></H3>
+<P class="description">Find a node with the given path.</P>
+<P class="code"> <A href="#mxml_node_t">mxml_node_t</A> *mxmlFindPath (
+<BR> &nbsp;&nbsp;&nbsp;&nbsp;<A href="#mxml_node_t">mxml_node_t</A> *top,
+<BR> &nbsp;&nbsp;&nbsp;&nbsp;const char *path
+<BR> );</P>
+<H4 class="parameters">Parameters</H4>
+<DL>
+<DT>top</DT>
+<DD class="description">Top node</DD>
+<DT>path</DT>
+<DD class="description">Path to element</DD>
+</DL>
+<H4 class="returnvalue">Return Value</H4>
+<P class="description">Found node or NULL</P>
+<H4 class="discussion">Discussion</H4>
+<P class="discussion">The &quot;path&quot; is a slash-separated list of element
+ names. The name &quot;*&quot; is considered a wildcard for one or more levels of
+ elements. For example, &quot;foo/one/two&quot;, &quot;bar/two/one&quot;, &quot;*/one&quot;, and so
+ forth.
+<BR>
+<BR> The first child node of the found node is returned if the given
+ node has children and the first child is a value node.</P>
+<H3 class="function"><A NAME="8_2_13">
+<!--span class=&quot;info&quot;-->
+&nbsp;Mini-XML 2.7&nbsp;<A name="mxmlGetCDATA">mxmlGetCDATA</A></A></H3>
+<P class="description">Get the value for a CDATA node.</P>
+<P class="code"> const char *mxmlGetCDATA (
+<BR> &nbsp;&nbsp;&nbsp;&nbsp;<A href="#mxml_node_t">mxml_node_t</A> *node
+<BR> );</P>
+<H4 class="parameters">Parameters</H4>
+<DL>
+<DT>node</DT>
+<DD class="description">Node to get</DD>
+</DL>
+<H4 class="returnvalue">Return Value</H4>
+<P class="description">CDATA value or NULL</P>
+<H4 class="discussion">Discussion</H4>
+<P class="discussion"><CODE>NULL</CODE> is returned if the node is not a
+ CDATA element.</P>
+<H3 class="function"><A NAME="8_2_14">
+<!--span class=&quot;info&quot;-->
+&nbsp;Mini-XML 2.7&nbsp;<A name="mxmlGetCustom">mxmlGetCustom</A></A></H3>
+<P class="description">Get the value for a custom node.</P>
+<P class="code"> const void *mxmlGetCustom (
+<BR> &nbsp;&nbsp;&nbsp;&nbsp;<A href="#mxml_node_t">mxml_node_t</A> *node
+<BR> );</P>
+<H4 class="parameters">Parameters</H4>
+<DL>
+<DT>node</DT>
+<DD class="description">Node to get</DD>
+</DL>
+<H4 class="returnvalue">Return Value</H4>
+<P class="description">Custom value or NULL</P>
+<H4 class="discussion">Discussion</H4>
+<P class="discussion"><CODE>NULL</CODE> is returned if the node (or its
+ first child) is not a custom value node.</P>
+<H3 class="function"><A NAME="8_2_15">
+<!--span class=&quot;info&quot;-->
+&nbsp;Mini-XML 2.7&nbsp;<A name="mxmlGetElement">mxmlGetElement</A></A></H3>
+<P class="description">Get the name for an element node.</P>
+<P class="code"> const char *mxmlGetElement (
+<BR> &nbsp;&nbsp;&nbsp;&nbsp;<A href="#mxml_node_t">mxml_node_t</A> *node
+<BR> );</P>
+<H4 class="parameters">Parameters</H4>
+<DL>
+<DT>node</DT>
+<DD class="description">Node to get</DD>
+</DL>
+<H4 class="returnvalue">Return Value</H4>
+<P class="description">Element name or NULL</P>
+<H4 class="discussion">Discussion</H4>
+<P class="discussion"><CODE>NULL</CODE> is returned if the node is not
+ an element node.</P>
+<H3 class="function"><A NAME="8_2_16">
+<!--span class=&quot;info&quot;-->
+&nbsp;Mini-XML 2.7&nbsp;<A name="mxmlGetFirstChild">mxmlGetFirstChild</A></A></H3>
+<P class="description">Get the first child of an element node.</P>
+<P class="code"> <A href="#mxml_node_t">mxml_node_t</A>
+ *mxmlGetFirstChild (
+<BR> &nbsp;&nbsp;&nbsp;&nbsp;<A href="#mxml_node_t">mxml_node_t</A> *node
+<BR> );</P>
+<H4 class="parameters">Parameters</H4>
+<DL>
+<DT>node</DT>
+<DD class="description">Node to get</DD>
+</DL>
+<H4 class="returnvalue">Return Value</H4>
+<P class="description">First child or NULL</P>
+<H4 class="discussion">Discussion</H4>
+<P class="discussion"><CODE>NULL</CODE> is returned if the node is not
+ an element node or if the node has no children.</P>
+<H3 class="function"><A NAME="8_2_17">
+<!--span class=&quot;info&quot;-->
+&nbsp;Mini-XML 2.7&nbsp;<A name="mxmlGetInteger">mxmlGetInteger</A></A></H3>
+<P class="description">Get the integer value from the specified node or
+ its first child.</P>
+<P class="code"> int mxmlGetInteger (
+<BR> &nbsp;&nbsp;&nbsp;&nbsp;<A href="#mxml_node_t">mxml_node_t</A> *node
+<BR> );</P>
+<H4 class="parameters">Parameters</H4>
+<DL>
+<DT>node</DT>
+<DD class="description">Node to get</DD>
+</DL>
+<H4 class="returnvalue">Return Value</H4>
+<P class="description">Integer value or 0</P>
+<H4 class="discussion">Discussion</H4>
+<P class="discussion">0 is returned if the node (or its first child) is
+ not an integer value node.</P>
+<H3 class="function"><A NAME="8_2_18">
+<!--span class=&quot;info&quot;-->
+&nbsp;Mini-XML 2.7&nbsp;<A name="mxmlGetLastChild">mxmlGetLastChild</A></A></H3>
+<P class="description">Get the last child of an element node.</P>
+<P class="code"> <A href="#mxml_node_t">mxml_node_t</A>
+ *mxmlGetLastChild (
+<BR> &nbsp;&nbsp;&nbsp;&nbsp;<A href="#mxml_node_t">mxml_node_t</A> *node
+<BR> );</P>
+<H4 class="parameters">Parameters</H4>
+<DL>
+<DT>node</DT>
+<DD class="description">Node to get</DD>
+</DL>
+<H4 class="returnvalue">Return Value</H4>
+<P class="description">Last child or NULL</P>
+<H4 class="discussion">Discussion</H4>
+<P class="discussion"><CODE>NULL</CODE> is returned if the node is not
+ an element node or if the node has no children.</P>
+<H3 class="function"><A name="mxmlGetNextSibling">mxmlGetNextSibling</A></H3>
+<P class="description">Return the node type...</P>
+<P class="code"> <A href="#mxml_node_t">mxml_node_t</A>
+ *mxmlGetNextSibling (
+<BR> &nbsp;&nbsp;&nbsp;&nbsp;<A href="#mxml_node_t">mxml_node_t</A> *node
+<BR> );</P>
+<H4 class="parameters">Parameters</H4>
+<DL>
+<DT>node</DT>
+<DD class="description">Node to get</DD>
+</DL>
+<H4 class="returnvalue">Return Value</H4>
+<P class="description">Get the next node for the current parent.</P>
+<P class="discussion"><CODE>NULL</CODE> is returned if this is the last
+ child for the current parent.</P>
+<H3 class="function"><A NAME="8_2_20">
+<!--span class=&quot;info&quot;-->
+&nbsp;Mini-XML 2.7&nbsp;<A name="mxmlGetOpaque">mxmlGetOpaque</A></A></H3>
+<P class="description">Get an opaque string value for a node or its
+ first child.</P>
+<P class="code"> const char *mxmlGetOpaque (
+<BR> &nbsp;&nbsp;&nbsp;&nbsp;<A href="#mxml_node_t">mxml_node_t</A> *node
+<BR> );</P>
+<H4 class="parameters">Parameters</H4>
+<DL>
+<DT>node</DT>
+<DD class="description">Node to get</DD>
+</DL>
+<H4 class="returnvalue">Return Value</H4>
+<P class="description">Opaque string or NULL</P>
+<H4 class="discussion">Discussion</H4>
+<P class="discussion"><CODE>NULL</CODE> is returned if the node (or its
+ first child) is not an opaque value node.</P>
+<H3 class="function"><A NAME="8_2_21">
+<!--span class=&quot;info&quot;-->
+&nbsp;Mini-XML 2.7&nbsp;<A name="mxmlGetParent">mxmlGetParent</A></A></H3>
+<P class="description">Get the parent node.</P>
+<P class="code"> <A href="#mxml_node_t">mxml_node_t</A> *mxmlGetParent (
+<BR> &nbsp;&nbsp;&nbsp;&nbsp;<A href="#mxml_node_t">mxml_node_t</A> *node
+<BR> );</P>
+<H4 class="parameters">Parameters</H4>
+<DL>
+<DT>node</DT>
+<DD class="description">Node to get</DD>
+</DL>
+<H4 class="returnvalue">Return Value</H4>
+<P class="description">Parent node or NULL</P>
+<H4 class="discussion">Discussion</H4>
+<P class="discussion"><CODE>NULL</CODE> is returned for a root node.</P>
+<H3 class="function"><A NAME="8_2_22">
+<!--span class=&quot;info&quot;-->
+&nbsp;Mini-XML 2.7&nbsp;<A name="mxmlGetPrevSibling">mxmlGetPrevSibling</A></A></H3>
+<P class="description">Get the previous node for the current parent.</P>
+<P class="code"> <A href="#mxml_node_t">mxml_node_t</A>
+ *mxmlGetPrevSibling (
+<BR> &nbsp;&nbsp;&nbsp;&nbsp;<A href="#mxml_node_t">mxml_node_t</A> *node
+<BR> );</P>
+<H4 class="parameters">Parameters</H4>
+<DL>
+<DT>node</DT>
+<DD class="description">Node to get</DD>
+</DL>
+<H4 class="returnvalue">Return Value</H4>
+<P class="description">Previous node or NULL</P>
+<H4 class="discussion">Discussion</H4>
+<P class="discussion"><CODE>NULL</CODE> is returned if this is the first
+ child for the current parent.</P>
+<H3 class="function"><A NAME="8_2_23">
+<!--span class=&quot;info&quot;-->
+&nbsp;Mini-XML 2.7&nbsp;<A name="mxmlGetReal">mxmlGetReal</A></A></H3>
+<P class="description">Get the real value for a node or its first child.</P>
+<P class="code"> double mxmlGetReal (
+<BR> &nbsp;&nbsp;&nbsp;&nbsp;<A href="#mxml_node_t">mxml_node_t</A> *node
+<BR> );</P>
+<H4 class="parameters">Parameters</H4>
+<DL>
+<DT>node</DT>
+<DD class="description">Node to get</DD>
+</DL>
+<H4 class="returnvalue">Return Value</H4>
+<P class="description">Real value or 0.0</P>
+<H4 class="discussion">Discussion</H4>
+<P class="discussion">0.0 is returned if the node (or its first child)
+ is not a real value node.</P>
+<H3 class="function"><A NAME="8_2_24">
+<!--span class=&quot;info&quot;-->
+&nbsp;Mini-XML 2.7&nbsp;<A name="mxmlGetRefCount">mxmlGetRefCount</A></A></H3>
+<P class="description">Get the current reference (use) count for a node.</P>
+<P class="code"> int mxmlGetRefCount (
+<BR> &nbsp;&nbsp;&nbsp;&nbsp;<A href="#mxml_node_t">mxml_node_t</A> *node
+<BR> );</P>
+<H4 class="parameters">Parameters</H4>
+<DL>
+<DT>node</DT>
+<DD class="description">Node</DD>
+</DL>
+<H4 class="returnvalue">Return Value</H4>
+<P class="description">Reference count</P>
+<H4 class="discussion">Discussion</H4>
+<P class="discussion">The initial reference count of new nodes is 1. Use
+ the <A href="#mxmlRetain"><CODE>mxmlRetain</CODE></A> and <A href="#mxmlRelease">
+<CODE>mxmlRelease</CODE></A> functions to increment and decrement a
+ node's reference count. .</P>
+<H3 class="function"><A NAME="8_2_25">
+<!--span class=&quot;info&quot;-->
+&nbsp;Mini-XML 2.7&nbsp;<A name="mxmlGetText">mxmlGetText</A></A></H3>
+<P class="description">Get the text value for a node or its first child.</P>
+<P class="code"> const char *mxmlGetText (
+<BR> &nbsp;&nbsp;&nbsp;&nbsp;<A href="#mxml_node_t">mxml_node_t</A> *node,
+<BR> &nbsp;&nbsp;&nbsp;&nbsp;int *whitespace
+<BR> );</P>
+<H4 class="parameters">Parameters</H4>
+<DL>
+<DT>node</DT>
+<DD class="description">Node to get</DD>
+<DT>whitespace</DT>
+<DD class="description">1 if string is preceded by whitespace, 0
+ otherwise</DD>
+</DL>
+<H4 class="returnvalue">Return Value</H4>
+<P class="description">Text string or NULL</P>
+<H4 class="discussion">Discussion</H4>
+<P class="discussion"><CODE>NULL</CODE> is returned if the node (or its
+ first child) is not a text node. The &quot;whitespace&quot; argument can be NULL.</P>
+<H3 class="function"><A NAME="8_2_26">
+<!--span class=&quot;info&quot;-->
+&nbsp;Mini-XML 2.7&nbsp;<A name="mxmlGetType">mxmlGetType</A></A></H3>
+<P class="description">Get the node type.</P>
+<P class="code"> <A href="#mxml_type_t">mxml_type_t</A> mxmlGetType (
+<BR> &nbsp;&nbsp;&nbsp;&nbsp;<A href="#mxml_node_t">mxml_node_t</A> *node
+<BR> );</P>
+<H4 class="parameters">Parameters</H4>
+<DL>
+<DT>node</DT>
+<DD class="description">Node to get</DD>
+</DL>
+<H4 class="returnvalue">Return Value</H4>
+<P class="description">Type of node</P>
+<H4 class="discussion">Discussion</H4>
+<P class="discussion"><CODE>MXML_IGNORE</CODE> is returned if &quot;node&quot; is <CODE>
+NULL</CODE>.</P>
+<H3 class="function"><A NAME="8_2_27">
+<!--span class=&quot;info&quot;-->
+&nbsp;Mini-XML 2.7&nbsp;<A name="mxmlGetUserData">mxmlGetUserData</A></A></H3>
+<P class="description">Get the user data pointer for a node.</P>
+<P class="code"> void *mxmlGetUserData (
+<BR> &nbsp;&nbsp;&nbsp;&nbsp;<A href="#mxml_node_t">mxml_node_t</A> *node
+<BR> );</P>
+<H4 class="parameters">Parameters</H4>
+<DL>
+<DT>node</DT>
+<DD class="description">Node to get</DD>
+</DL>
+<H4 class="returnvalue">Return Value</H4>
+<P class="description">User data pointer</P>
 <H3 class="function"><A name="mxmlIndexDelete">mxmlIndexDelete</A></H3>
 <P class="description">Delete an index.</P>
 <P class="code"> void mxmlIndexDelete (
@@ -458,6 +752,20 @@ mxmlEntityRemoveCallback</A></H3>
  this function for the first time with a particular set of &quot;element&quot; and
  &quot;value&quot; strings. Passing NULL for both &quot;element&quot; and &quot;value&quot; is
  equivalent to calling mxmlIndexEnum().</P>
+<H3 class="function"><A NAME="8_2_31">
+<!--span class=&quot;info&quot;-->
+&nbsp;Mini-XML 2.7&nbsp;<A name="mxmlIndexGetCount">mxmlIndexGetCount</A></A></H3>
+<P class="description">Get the number of nodes in an index.</P>
+<P class="code"> int mxmlIndexGetCount (
+<BR> &nbsp;&nbsp;&nbsp;&nbsp;<A href="#mxml_index_t">mxml_index_t</A> *ind
+<BR> );</P>
+<H4 class="parameters">Parameters</H4>
+<DL>
+<DT>ind</DT>
+<DD class="description">Index of nodes</DD>
+</DL>
+<H4 class="returnvalue">Return Value</H4>
+<P class="description">Number of nodes in index</P>
 <H3 class="function"><A name="mxmlIndexNew">mxmlIndexNew</A></H3>
 <P class="description">Create a new index.</P>
 <P class="code"> <A href="#mxml_index_t">mxml_index_t</A> *mxmlIndexNew
@@ -588,7 +896,7 @@ mxmlEntityRemoveCallback</A></H3>
 <BR> The constants MXML_INTEGER_CALLBACK, MXML_OPAQUE_CALLBACK,
  MXML_REAL_CALLBACK, and MXML_TEXT_CALLBACK are defined for loading
  child nodes of the specified type.</P>
-<H3 class="function"><A NAME="8_2_20">
+<H3 class="function"><A NAME="8_2_37">
 <!--span class=&quot;info&quot;-->
 &nbsp;Mini-XML 2.3&nbsp;<A name="mxmlNewCDATA">mxmlNewCDATA</A></A></H3>
 <P class="description">Create a new CDATA node.</P>
@@ -611,7 +919,7 @@ mxmlEntityRemoveCallback</A></H3>
  to specify that the new CDATA node has no parent. The data string must
  be nul-terminated and is copied into the new node. CDATA nodes use the
  MXML_ELEMENT type.</P>
-<H3 class="function"><A NAME="8_2_21">
+<H3 class="function"><A NAME="8_2_38">
 <!--span class=&quot;info&quot;-->
 &nbsp;Mini-XML 2.1&nbsp;<A name="mxmlNewCustom">mxmlNewCustom</A></A></H3>
 <P class="description">Create a new custom data node.</P>
@@ -770,7 +1078,7 @@ mxmlEntityRemoveCallback</A></H3>
  parameter is used to specify whether leading whitespace is present
  before the node. The format string must be nul-terminated and is
  formatted into the new node.</P>
-<H3 class="function"><A NAME="8_2_28">
+<H3 class="function"><A NAME="8_2_45">
 <!--span class=&quot;info&quot;-->
 &nbsp;Mini-XML 2.3&nbsp;<A name="mxmlNewXML">mxmlNewXML</A></A></H3>
 <P class="description">Create a new XML document tree.</P>
@@ -788,7 +1096,7 @@ mxmlEntityRemoveCallback</A></H3>
 <P class="discussion">The &quot;version&quot; argument specifies the version
  number to put in the ?xml element node. If NULL, version 1.0 is
  assumed.</P>
-<H3 class="function"><A NAME="8_2_29">
+<H3 class="function"><A NAME="8_2_46">
 <!--span class=&quot;info&quot;-->
 &nbsp;Mini-XML 2.3&nbsp;<A name="mxmlRelease">mxmlRelease</A></A></H3>
 <P class="description">Release a node.</P>
@@ -819,7 +1127,7 @@ mxmlEntityRemoveCallback</A></H3>
 <P class="discussion">Does not free memory used by the node - use
  mxmlDelete() for that. This function does nothing if the node has no
  parent.</P>
-<H3 class="function"><A NAME="8_2_31">
+<H3 class="function"><A NAME="8_2_48">
 <!--span class=&quot;info&quot;-->
 &nbsp;Mini-XML 2.3&nbsp;<A name="mxmlRetain">mxmlRetain</A></A></H3>
 <P class="description">Retain a node.</P>
@@ -833,7 +1141,7 @@ mxmlEntityRemoveCallback</A></H3>
 </DL>
 <H4 class="returnvalue">Return Value</H4>
 <P class="description">New reference count</P>
-<H3 class="function"><A NAME="8_2_32">
+<H3 class="function"><A NAME="8_2_49">
 <!--span class=&quot;info&quot;-->
 &nbsp;Mini-XML 2.3&nbsp;<A name="mxmlSAXLoadFd">mxmlSAXLoadFd</A></A></H3>
 <P class="description">Load a file descriptor into an XML node tree
@@ -875,7 +1183,7 @@ mxmlEntityRemoveCallback</A></H3>
 <BR> The SAX callback must call mxmlRetain() for any nodes that need to
  be kept for later use. Otherwise, nodes are deleted when the parent
  node is closed or after each data, comment, CDATA, or directive node.</P>
-<H3 class="function"><A NAME="8_2_33">
+<H3 class="function"><A NAME="8_2_50">
 <!--span class=&quot;info&quot;-->
 &nbsp;Mini-XML 2.3&nbsp;<A name="mxmlSAXLoadFile">mxmlSAXLoadFile</A></A></H3>
 <P class="description">Load a file into an XML node tree using a SAX
@@ -918,7 +1226,7 @@ mxmlEntityRemoveCallback</A></H3>
 <BR> The SAX callback must call mxmlRetain() for any nodes that need to
  be kept for later use. Otherwise, nodes are deleted when the parent
  node is closed or after each data, comment, CDATA, or directive node.</P>
-<H3 class="function"><A NAME="8_2_34">
+<H3 class="function"><A NAME="8_2_51">
 <!--span class=&quot;info&quot;-->
 &nbsp;Mini-XML 2.3&nbsp;<A name="mxmlSAXLoadString">mxmlSAXLoadString</A></A></H3>
 <P class="description">Load a string into an XML node tree using a SAX
@@ -963,7 +1271,7 @@ mxmlEntityRemoveCallback</A></H3>
  node is closed or after each data, comment, CDATA, or directive node.</P>
 <H3 class="function"><A name="mxmlSaveAllocString">mxmlSaveAllocString</A>
 </H3>
-<P class="description">Save an XML node tree to an allocated string.</P>
+<P class="description">Save an XML tree to an allocated string.</P>
 <P class="code"> char *mxmlSaveAllocString (
 <BR> &nbsp;&nbsp;&nbsp;&nbsp;<A href="#mxml_node_t">mxml_node_t</A> *node,
 <BR> &nbsp;&nbsp;&nbsp;&nbsp;<A href="#mxml_save_cb_t">mxml_save_cb_t</A> cb
@@ -1068,7 +1376,7 @@ mxmlEntityRemoveCallback</A></H3>
  MXML_NO_CALLBACK is specified, whitespace will only be added before
  MXML_TEXT nodes with leading whitespace and before attribute names
  inside opening element tags.</P>
-<H3 class="function"><A NAME="8_2_39">
+<H3 class="function"><A NAME="8_2_56">
 <!--span class=&quot;info&quot;-->
 &nbsp;Mini-XML 2.3&nbsp;<A name="mxmlSetCDATA">mxmlSetCDATA</A></A></H3>
 <P class="description">Set the element name of a CDATA node.</P>
@@ -1088,7 +1396,7 @@ mxmlEntityRemoveCallback</A></H3>
 <H4 class="discussion">Discussion</H4>
 <P class="discussion">The node is not changed if it is not a CDATA
  element node.</P>
-<H3 class="function"><A NAME="8_2_40">
+<H3 class="function"><A NAME="8_2_57">
 <!--span class=&quot;info&quot;-->
 &nbsp;Mini-XML 2.1&nbsp;<A name="mxmlSetCustom">mxmlSetCustom</A></A></H3>
 <P class="description">Set the data and destructor of a custom data
@@ -1261,10 +1569,27 @@ mxmlSetCustomHandlers</A></H3>
 <P class="description">0 on success, -1 on failure</P>
 <H4 class="discussion">Discussion</H4>
 <P class="discussion">The node is not changed if it is not a text node.</P>
-<H3 class="function"><A NAME="8_2_49">
+<H3 class="function"><A NAME="8_2_66">
+<!--span class=&quot;info&quot;-->
+&nbsp;Mini-XML 2.7&nbsp;<A name="mxmlSetUserData">mxmlSetUserData</A></A></H3>
+<P class="description">Set the user data pointer for a node.</P>
+<P class="code"> int mxmlSetUserData (
+<BR> &nbsp;&nbsp;&nbsp;&nbsp;<A href="#mxml_node_t">mxml_node_t</A> *node,
+<BR> &nbsp;&nbsp;&nbsp;&nbsp;void *data
+<BR> );</P>
+<H4 class="parameters">Parameters</H4>
+<DL>
+<DT>node</DT>
+<DD class="description">Node to set</DD>
+<DT>data</DT>
+<DD class="description">User data pointer</DD>
+</DL>
+<H4 class="returnvalue">Return Value</H4>
+<P class="description">0 on success, -1 on failure</P>
+<H3 class="function"><A NAME="8_2_67">
 <!--span class=&quot;info&quot;-->
 &nbsp;Mini-XML 2.3&nbsp;<A name="mxmlSetWrapMargin">mxmlSetWrapMargin</A></A></H3>
-<P class="description">Set the the wrap margin when saving XML data.</P>
+<P class="description">Set the wrap margin when saving XML data.</P>
 <P class="code"> void mxmlSetWrapMargin (
 <BR> &nbsp;&nbsp;&nbsp;&nbsp;int column
 <BR> );</P>
@@ -1322,10 +1647,6 @@ mxmlSetCustomHandlers</A></H3>
  node's last child is considered to be the previous node. The top node
  argument constrains the walk to the node's children.</P>
 <H2 class="title"><A name="TYPES">Data Types</A></H2>
-<H3 class="typedef"><A name="mxml_attr_t">mxml_attr_t</A></H3>
-<P class="description">An XML element attribute value.</P>
-<P class="code"> typedef struct <A href="#mxml_attr_s">mxml_attr_s</A>
- mxml_attr_t;</P>
 <H3 class="typedef"><A name="mxml_custom_destroy_cb_t">
 mxml_custom_destroy_cb_t</A></H3>
 <P class="description">Custom data destructor</P>
@@ -1340,16 +1661,6 @@ mxml_custom_save_cb_t</A></H3>
 <P class="description">Custom data save callback function</P>
 <P class="code"> typedef char *(*mxml_custom_save_cb_t)(<A href="#mxml_node_t">
 mxml_node_t</A> *);</P>
-<H3 class="typedef"><A NAME="8_3_5">
-<!--span class=&quot;info&quot;-->
-&nbsp;Mini-XML 2.1&nbsp;<A name="mxml_custom_t">mxml_custom_t</A></A></H3>
-<P class="description">An XML custom value.</P>
-<P class="code"> typedef struct <A href="#mxml_custom_s">mxml_custom_s</A>
- mxml_custom_t;</P>
-<H3 class="typedef"><A name="mxml_element_t">mxml_element_t</A></H3>
-<P class="description">An XML element value.</P>
-<P class="code"> typedef struct <A href="#mxml_element_s">mxml_element_s</A>
- mxml_element_t;</P>
 <H3 class="typedef"><A name="mxml_entity_cb_t">mxml_entity_cb_t</A></H3>
 <P class="description">Entity callback function</P>
 <P class="code"> typedef int (*mxml_entity_cb_t)(const char *);</P>
@@ -1380,161 +1691,10 @@ mxml_node_t</A> *, mxml_sax_event_t, void *);</P>
 <P class="description">SAX event type.</P>
 <P class="code"> typedef enum <A href="#mxml_sax_event_e">
 mxml_sax_event_e</A> mxml_sax_event_t;</P>
-<H3 class="typedef"><A name="mxml_text_t">mxml_text_t</A></H3>
-<P class="description">An XML text value.</P>
-<P class="code"> typedef struct <A href="#mxml_text_s">mxml_text_s</A>
- mxml_text_t;</P>
 <H3 class="typedef"><A name="mxml_type_t">mxml_type_t</A></H3>
 <P class="description">The XML node type.</P>
 <P class="code"> typedef enum <A href="#mxml_type_e">mxml_type_e</A>
  mxml_type_t;</P>
-<H3 class="typedef"><A name="mxml_value_t">mxml_value_t</A></H3>
-<P class="description">An XML node value.</P>
-<P class="code"> typedef union <A href="#mxml_value_u">mxml_value_u</A>
- mxml_value_t;</P>
-<H2 class="title"><A name="STRUCTURES">Structures</A></H2>
-<H3 class="struct"><A name="mxml_attr_s">mxml_attr_s</A></H3>
-<P class="description">An XML element attribute value.</P>
-<P class="code">struct mxml_attr_s {
-<BR> &nbsp;&nbsp;&nbsp;&nbsp;char *name;
-<BR> &nbsp;&nbsp;&nbsp;&nbsp;char *value;
-<BR> };</P>
-<H4 class="members">Members</H4>
-<DL>
-<DT>name</DT>
-<DD class="description">Attribute name</DD>
-<DT>value</DT>
-<DD class="description">Attribute value</DD>
-</DL>
-<H3 class="struct"><A NAME="8_4_2">
-<!--span class=&quot;info&quot;-->
-&nbsp;Mini-XML 2.1&nbsp;<A name="mxml_custom_s">mxml_custom_s</A></A></H3>
-<P class="description">An XML custom value.</P>
-<P class="code">struct mxml_custom_s {
-<BR> &nbsp;&nbsp;&nbsp;&nbsp;void *data;
-<BR> &nbsp;&nbsp;&nbsp;&nbsp;<A href="#mxml_custom_destroy_cb_t">mxml_custom_destroy_cb_t</A>
- destroy;
-<BR> };</P>
-<H4 class="members">Members</H4>
-<DL>
-<DT>data</DT>
-<DD class="description">Pointer to (allocated) custom data</DD>
-<DT>destroy</DT>
-<DD class="description">Pointer to destructor function</DD>
-</DL>
-<H3 class="struct"><A name="mxml_element_s">mxml_element_s</A></H3>
-<P class="description">An XML element value.</P>
-<P class="code">struct mxml_element_s {
-<BR> &nbsp;&nbsp;&nbsp;&nbsp;<A href="#mxml_attr_t">mxml_attr_t</A> *attrs;
-<BR> &nbsp;&nbsp;&nbsp;&nbsp;char *name;
-<BR> &nbsp;&nbsp;&nbsp;&nbsp;int num_attrs;
-<BR> };</P>
-<H4 class="members">Members</H4>
-<DL>
-<DT>attrs</DT>
-<DD class="description">Attributes</DD>
-<DT>name</DT>
-<DD class="description">Name of element</DD>
-<DT>num_attrs</DT>
-<DD class="description">Number of attributes</DD>
-</DL>
-<H3 class="struct"><A name="mxml_index_s">mxml_index_s</A></H3>
-<P class="description">An XML node index.</P>
-<P class="code">struct mxml_index_s {
-<BR> &nbsp;&nbsp;&nbsp;&nbsp;int alloc_nodes;
-<BR> &nbsp;&nbsp;&nbsp;&nbsp;char *attr;
-<BR> &nbsp;&nbsp;&nbsp;&nbsp;int cur_node;
-<BR> &nbsp;&nbsp;&nbsp;&nbsp;<A href="#mxml_node_t">mxml_node_t</A> **nodes;
-<BR> &nbsp;&nbsp;&nbsp;&nbsp;int num_nodes;
-<BR> };</P>
-<H4 class="members">Members</H4>
-<DL>
-<DT>alloc_nodes</DT>
-<DD class="description">Allocated nodes in index</DD>
-<DT>attr</DT>
-<DD class="description">Attribute used for indexing or NULL</DD>
-<DT>cur_node</DT>
-<DD class="description">Current node</DD>
-<DT>nodes</DT>
-<DD class="description">Node array</DD>
-<DT>num_nodes</DT>
-<DD class="description">Number of nodes in index</DD>
-</DL>
-<H3 class="struct"><A name="mxml_node_s">mxml_node_s</A></H3>
-<P class="description">An XML node.</P>
-<P class="code">struct mxml_node_s {
-<BR> &nbsp;&nbsp;&nbsp;&nbsp;struct <A href="#mxml_node_s">mxml_node_s</A> *child;
-<BR> &nbsp;&nbsp;&nbsp;&nbsp;struct <A href="#mxml_node_s">mxml_node_s</A> *last_child;
-<BR> &nbsp;&nbsp;&nbsp;&nbsp;struct <A href="#mxml_node_s">mxml_node_s</A> *next;
-<BR> &nbsp;&nbsp;&nbsp;&nbsp;struct <A href="#mxml_node_s">mxml_node_s</A> *parent;
-<BR> &nbsp;&nbsp;&nbsp;&nbsp;struct <A href="#mxml_node_s">mxml_node_s</A> *prev;
-<BR> &nbsp;&nbsp;&nbsp;&nbsp;int ref_count;
-<BR> &nbsp;&nbsp;&nbsp;&nbsp;<A href="#mxml_type_t">mxml_type_t</A> type;
-<BR> &nbsp;&nbsp;&nbsp;&nbsp;void *user_data;
-<BR> &nbsp;&nbsp;&nbsp;&nbsp;<A href="#mxml_value_t">mxml_value_t</A> value;
-<BR> };</P>
-<H4 class="members">Members</H4>
-<DL>
-<DT>child</DT>
-<DD class="description">First child node</DD>
-<DT>last_child</DT>
-<DD class="description">Last child node</DD>
-<DT>next</DT>
-<DD class="description">Next node under same parent</DD>
-<DT>parent</DT>
-<DD class="description">Parent node</DD>
-<DT>prev</DT>
-<DD class="description">Previous node under same parent</DD>
-<DT>ref_count</DT>
-<DD class="description">Use count</DD>
-<DT>type</DT>
-<DD class="description">Node type</DD>
-<DT>user_data</DT>
-<DD class="description">User data</DD>
-<DT>value</DT>
-<DD class="description">Node value</DD>
-</DL>
-<H3 class="struct"><A name="mxml_text_s">mxml_text_s</A></H3>
-<P class="description">An XML text value.</P>
-<P class="code">struct mxml_text_s {
-<BR> &nbsp;&nbsp;&nbsp;&nbsp;char *string;
-<BR> &nbsp;&nbsp;&nbsp;&nbsp;int whitespace;
-<BR> };</P>
-<H4 class="members">Members</H4>
-<DL>
-<DT>string</DT>
-<DD class="description">Fragment string</DD>
-<DT>whitespace</DT>
-<DD class="description">Leading whitespace?</DD>
-</DL>
-<H2 class="title"><A name="UNIONS">Unions</A></H2>
-<H3 class="union"><A name="mxml_value_u">mxml_value_u</A></H3>
-<P class="description">An XML node value.</P>
-<P class="code">union mxml_value_u {
-<BR> &nbsp;&nbsp;&nbsp;&nbsp;<A href="#mxml_custom_t">mxml_custom_t</A> custom;
-<BR> &nbsp;&nbsp;&nbsp;&nbsp;<A href="#mxml_element_t">mxml_element_t</A> element;
-<BR> &nbsp;&nbsp;&nbsp;&nbsp;int integer;
-<BR> &nbsp;&nbsp;&nbsp;&nbsp;char *opaque;
-<BR> &nbsp;&nbsp;&nbsp;&nbsp;double real;
-<BR> &nbsp;&nbsp;&nbsp;&nbsp;<A href="#mxml_text_t">mxml_text_t</A> text;
-<BR> };</P>
-<H4 class="members">Members</H4>
-<DL>
-<DT>custom
-<!--span class=&quot;info&quot;-->
- &nbsp;Mini-XML 2.1&nbsp;</DT>
-<DD class="description">Custom data</DD>
-<DT>element</DT>
-<DD class="description">Element</DD>
-<DT>integer</DT>
-<DD class="description">Integer number</DD>
-<DT>opaque</DT>
-<DD class="description">Opaque string</DD>
-<DT>real</DT>
-<DD class="description">Real number</DD>
-<DT>text</DT>
-<DD class="description">Text fragment</DD>
-</DL>
 <H2 class="title"><A name="ENUMERATIONS">Constants</A></H2>
 <H3 class="enumeration"><A name="mxml_sax_event_e">mxml_sax_event_e</A></H3>
 <P class="description">SAX event type.</P>

@@ -1,9 +1,9 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
 <HTML>
 <HEAD>
-<TITLE>Mini-XML Programmers Manual, Version 2.6</TITLE>
+<TITLE>Mini-XML Programmers Manual, Version 2.7</TITLE>
 <META NAME="author" CONTENT="Michael R. Sweet">
-<META NAME="copyright" CONTENT="Copyright 2003-2009">
+<META NAME="copyright" CONTENT="Copyright 2003-2011">
 <META HTTP-EQUIV="Content-Type" CONTENT="text/html; CHARSET=iso-iso-8859-1">
 <LINK REL="Start" HREF="index.html">
 <LINK REL="Contents" HREF="index.html">
@@ -76,7 +76,7 @@ MXML_REAL</TT>, or <TT>MXML_TEXT</TT>. The function is called<I> after</I>
 
       type = mxmlElementGetAttr(node, &quot;type&quot;);
       if (type == NULL)
-	type = node-&gt;value.element.name;
+	type = mxmlGetElement(node);
 
       if (!strcmp(type, &quot;integer&quot;))
 	return (MXML_INTEGER);
@@ -127,7 +127,7 @@ MXML_WS_BEFORE_CLOSE</TT>, or <TT>MXML_WS_AFTER_CLOSE</TT>. The callback
       * just common HTML elements...
       */
 
-      name = node-&gt;value.element.name;
+      name = mxmlGetElement(node);
 
       if (!strcmp(name, &quot;html&quot;) ||
           !strcmp(name, &quot;head&quot;) ||
@@ -291,8 +291,7 @@ MXML_WS_BEFORE_CLOSE</TT>, or <TT>MXML_WS_AFTER_CLOSE</TT>. The callback
       * function pointers...
       */
 
-      node-&gt;value.custom.data    = dt;
-      node-&gt;value.custom.destroy = free;
+      mxmlSetCustom(node, data, destroy);
 
      /*
       * Return with no errors...
@@ -306,6 +305,8 @@ MXML_WS_BEFORE_CLOSE</TT>, or <TT>MXML_WS_AFTER_CLOSE</TT>. The callback
  contain a <TT>void</TT> pointer to the allocated custom data for the
  node and a pointer to a destructor function which will free the custom
  data when the node is deleted.</P>
+
+<!-- NEED 15 -->
 <P>The save callback receives the node pointer and returns an allocated
  string containing the custom data value. The following save callback
  could be used for our ISO date/time type:</P>
@@ -317,7 +318,7 @@ MXML_WS_BEFORE_CLOSE</TT>, or <TT>MXML_WS_AFTER_CLOSE</TT>. The callback
       iso_date_time_t *dt;
 
 
-      dt = (iso_date_time_t *)node-&gt;custom.data;
+      dt = (iso_date_time_t *)mxmlGetCustom(node);
 
       snprintf(data, sizeof(data),
                &quot;%04u-%02u-%02uT%02u:%02u:%02uZ&quot;,
@@ -512,7 +513,7 @@ mxmlIndexEnum</TT>.</P>
         * Retain headings and titles...
         */
 
-        char *name = node-&gt;value.element.name;
+        char *name = mxmlGetElement(node);
 
         if (!strcmp(name, &quot;html&quot;) ||
             !strcmp(name, &quot;head&quot;) ||
@@ -528,15 +529,17 @@ mxmlIndexEnum</TT>.</P>
       }
       else if (event == MXML_SAX_DIRECTIVE)
         mxmlRetain(node);
-      else if (event == MXML_SAX_DATA &amp;&amp;
-               node-&gt;parent-&gt;ref_count &gt; 1)
+      else if (event == MXML_SAX_DATA)
       {
-       /*
-        * If the parent was retained, then retain
-        * this data node as well.
-        */
+        if (mxmlGetRefCount(mxmlGetParent(node)) &gt; 1)
+        {
+         /*
+          * If the parent was retained, then retain
+          * this data node as well.
+          */
 
-        mxmlRetain(node);
+          mxmlRetain(node);
+        }
       }
     }
 </PRE>
@@ -564,9 +567,9 @@ mxmlIndexEnum</TT>.</P>
 
     if (body)
     {
-      for (heading = body-&gt;child;
+      for (heading = mxmlGetFirstChild(body);
            heading;
-           heading = heading-&gt;next)
+           heading = mxmlGetNextSibling(heading))
         print_children(heading);
     }
 </PRE>

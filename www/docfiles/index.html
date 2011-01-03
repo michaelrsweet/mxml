@@ -1,9 +1,9 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
 <HTML>
 <HEAD>
-<TITLE>Mini-XML Programmers Manual, Version 2.6</TITLE>
+<TITLE>Mini-XML Programmers Manual, Version 2.7</TITLE>
 <META NAME="author" CONTENT="Michael R. Sweet">
-<META NAME="copyright" CONTENT="Copyright 2003-2009">
+<META NAME="copyright" CONTENT="Copyright 2003-2011">
 <META HTTP-EQUIV="Content-Type" CONTENT="text/html; CHARSET=iso-iso-8859-1">
 <LINK REL="Start" HREF="index.html">
 <LINK REL="Contents" HREF="index.html">
@@ -47,7 +47,20 @@ A { text-decoration: none }
 <B><A HREF="basics.html#BASICS">Getting Started with Mini-XML</A></B>
 <UL>
 <LI><A HREF="basics.html#3_1">The Basics</A></LI>
-<LI><A HREF="basics.html#3_2">Nodes</A></LI>
+<LI><A HREF="basics.html#3_2">Nodes</A>
+<UL>
+<LI><A HREF="basics.html#3_2_1">CDATA Nodes</A></LI>
+<LI><A HREF="basics.html#3_2_2">Custom Nodes</A></LI>
+<LI><A HREF="basics.html#3_2_3">Comment Nodes</A></LI>
+<LI><A HREF="basics.html#3_2_4">Element Nodes</A></LI>
+<LI><A HREF="basics.html#3_2_5">Integer Nodes</A></LI>
+<LI><A HREF="basics.html#3_2_6">Opaque Nodes</A></LI>
+<LI><A HREF="basics.html#3_2_7">Text Nodes</A></LI>
+<LI><A HREF="basics.html#3_2_8">Processing Instruction Nodes</A></LI>
+<LI><A HREF="basics.html#3_2_9">Real Number Nodes</A></LI>
+<LI><A HREF="basics.html#3_2_10">XML Declaration Nodes</A></LI>
+</UL>
+</LI>
 <LI><A HREF="basics.html#3_3">Creating XML Documents</A></LI>
 <LI><A HREF="basics.html#3_4">Loading XML</A></LI>
 <LI><A HREF="basics.html#3_5">Saving XML</A>
@@ -55,7 +68,9 @@ A { text-decoration: none }
 <LI><A HREF="basics.html#3_5_1">Controlling Line Wrapping</A></LI>
 </UL>
 </LI>
-<LI><A HREF="basics.html#3_6">Finding and Iterating Nodes</A></LI>
+<LI><A HREF="basics.html#3_6">Memory Management</A></LI>
+<LI><A HREF="basics.html#3_7">Finding and Iterating Nodes</A></LI>
+<LI><A HREF="basics.html#3_8">Finding Specific Nodes</A></LI>
 </UL>
 <B><A HREF="advanced.html#ADVANCED">More Mini-XML Programming Techniques</A>
 </B>
@@ -101,35 +116,52 @@ A { text-decoration: none }
 <LI><A HREF="reference.html#mxmlEntityRemoveCallback">
 mxmlEntityRemoveCallback</A></LI>
 <LI><A HREF="reference.html#mxmlFindElement">mxmlFindElement</A></LI>
+<LI><A HREF="reference.html#8_2_12">mxmlFindPath</A></LI>
+<LI><A HREF="reference.html#8_2_13">mxmlGetCDATA</A></LI>
+<LI><A HREF="reference.html#8_2_14">mxmlGetCustom</A></LI>
+<LI><A HREF="reference.html#8_2_15">mxmlGetElement</A></LI>
+<LI><A HREF="reference.html#8_2_16">mxmlGetFirstChild</A></LI>
+<LI><A HREF="reference.html#8_2_17">mxmlGetInteger</A></LI>
+<LI><A HREF="reference.html#8_2_18">mxmlGetLastChild</A></LI>
+<LI><A HREF="reference.html#mxmlGetNextSibling">mxmlGetNextSibling</A></LI>
+<LI><A HREF="reference.html#8_2_20">mxmlGetOpaque</A></LI>
+<LI><A HREF="reference.html#8_2_21">mxmlGetParent</A></LI>
+<LI><A HREF="reference.html#8_2_22">mxmlGetPrevSibling</A></LI>
+<LI><A HREF="reference.html#8_2_23">mxmlGetReal</A></LI>
+<LI><A HREF="reference.html#8_2_24">mxmlGetRefCount</A></LI>
+<LI><A HREF="reference.html#8_2_25">mxmlGetText</A></LI>
+<LI><A HREF="reference.html#8_2_26">mxmlGetType</A></LI>
+<LI><A HREF="reference.html#8_2_27">mxmlGetUserData</A></LI>
 <LI><A HREF="reference.html#mxmlIndexDelete">mxmlIndexDelete</A></LI>
 <LI><A HREF="reference.html#mxmlIndexEnum">mxmlIndexEnum</A></LI>
 <LI><A HREF="reference.html#mxmlIndexFind">mxmlIndexFind</A></LI>
+<LI><A HREF="reference.html#8_2_31">mxmlIndexGetCount</A></LI>
 <LI><A HREF="reference.html#mxmlIndexNew">mxmlIndexNew</A></LI>
 <LI><A HREF="reference.html#mxmlIndexReset">mxmlIndexReset</A></LI>
 <LI><A HREF="reference.html#mxmlLoadFd">mxmlLoadFd</A></LI>
 <LI><A HREF="reference.html#mxmlLoadFile">mxmlLoadFile</A></LI>
 <LI><A HREF="reference.html#mxmlLoadString">mxmlLoadString</A></LI>
-<LI><A HREF="reference.html#8_2_20">mxmlNewCDATA</A></LI>
-<LI><A HREF="reference.html#8_2_21">mxmlNewCustom</A></LI>
+<LI><A HREF="reference.html#8_2_37">mxmlNewCDATA</A></LI>
+<LI><A HREF="reference.html#8_2_38">mxmlNewCustom</A></LI>
 <LI><A HREF="reference.html#mxmlNewElement">mxmlNewElement</A></LI>
 <LI><A HREF="reference.html#mxmlNewInteger">mxmlNewInteger</A></LI>
 <LI><A HREF="reference.html#mxmlNewOpaque">mxmlNewOpaque</A></LI>
 <LI><A HREF="reference.html#mxmlNewReal">mxmlNewReal</A></LI>
 <LI><A HREF="reference.html#mxmlNewText">mxmlNewText</A></LI>
 <LI><A HREF="reference.html#mxmlNewTextf">mxmlNewTextf</A></LI>
-<LI><A HREF="reference.html#8_2_28">mxmlNewXML</A></LI>
-<LI><A HREF="reference.html#8_2_29">mxmlRelease</A></LI>
+<LI><A HREF="reference.html#8_2_45">mxmlNewXML</A></LI>
+<LI><A HREF="reference.html#8_2_46">mxmlRelease</A></LI>
 <LI><A HREF="reference.html#mxmlRemove">mxmlRemove</A></LI>
-<LI><A HREF="reference.html#8_2_31">mxmlRetain</A></LI>
-<LI><A HREF="reference.html#8_2_32">mxmlSAXLoadFd</A></LI>
-<LI><A HREF="reference.html#8_2_33">mxmlSAXLoadFile</A></LI>
-<LI><A HREF="reference.html#8_2_34">mxmlSAXLoadString</A></LI>
+<LI><A HREF="reference.html#8_2_48">mxmlRetain</A></LI>
+<LI><A HREF="reference.html#8_2_49">mxmlSAXLoadFd</A></LI>
+<LI><A HREF="reference.html#8_2_50">mxmlSAXLoadFile</A></LI>
+<LI><A HREF="reference.html#8_2_51">mxmlSAXLoadString</A></LI>
 <LI><A HREF="reference.html#mxmlSaveAllocString">mxmlSaveAllocString</A></LI>
 <LI><A HREF="reference.html#mxmlSaveFd">mxmlSaveFd</A></LI>
 <LI><A HREF="reference.html#mxmlSaveFile">mxmlSaveFile</A></LI>
 <LI><A HREF="reference.html#mxmlSaveString">mxmlSaveString</A></LI>
-<LI><A HREF="reference.html#8_2_39">mxmlSetCDATA</A></LI>
-<LI><A HREF="reference.html#8_2_40">mxmlSetCustom</A></LI>
+<LI><A HREF="reference.html#8_2_56">mxmlSetCDATA</A></LI>
+<LI><A HREF="reference.html#8_2_57">mxmlSetCustom</A></LI>
 <LI><A HREF="reference.html#mxmlSetCustomHandlers">mxmlSetCustomHandlers</A>
 </LI>
 <LI><A HREF="reference.html#mxmlSetElement">mxmlSetElement</A></LI>
@@ -140,22 +172,20 @@ mxmlEntityRemoveCallback</A></LI>
 <LI><A HREF="reference.html#mxmlSetReal">mxmlSetReal</A></LI>
 <LI><A HREF="reference.html#mxmlSetText">mxmlSetText</A></LI>
 <LI><A HREF="reference.html#mxmlSetTextf">mxmlSetTextf</A></LI>
-<LI><A HREF="reference.html#8_2_49">mxmlSetWrapMargin</A></LI>
+<LI><A HREF="reference.html#8_2_66">mxmlSetUserData</A></LI>
+<LI><A HREF="reference.html#8_2_67">mxmlSetWrapMargin</A></LI>
 <LI><A HREF="reference.html#mxmlWalkNext">mxmlWalkNext</A></LI>
 <LI><A HREF="reference.html#mxmlWalkPrev">mxmlWalkPrev</A></LI>
 </UL>
 </LI>
 <LI><A HREF="reference.html#TYPES">Data Types</A>
 <UL>
-<LI><A HREF="reference.html#mxml_attr_t">mxml_attr_t</A></LI>
 <LI><A HREF="reference.html#mxml_custom_destroy_cb_t">
 mxml_custom_destroy_cb_t</A></LI>
 <LI><A HREF="reference.html#mxml_custom_load_cb_t">mxml_custom_load_cb_t</A>
 </LI>
 <LI><A HREF="reference.html#mxml_custom_save_cb_t">mxml_custom_save_cb_t</A>
 </LI>
-<LI><A HREF="reference.html#8_3_5">mxml_custom_t</A></LI>
-<LI><A HREF="reference.html#mxml_element_t">mxml_element_t</A></LI>
 <LI><A HREF="reference.html#mxml_entity_cb_t">mxml_entity_cb_t</A></LI>
 <LI><A HREF="reference.html#mxml_error_cb_t">mxml_error_cb_t</A></LI>
 <LI><A HREF="reference.html#mxml_index_t">mxml_index_t</A></LI>
@@ -164,24 +194,7 @@ mxml_custom_destroy_cb_t</A></LI>
 <LI><A HREF="reference.html#mxml_save_cb_t">mxml_save_cb_t</A></LI>
 <LI><A HREF="reference.html#mxml_sax_cb_t">mxml_sax_cb_t</A></LI>
 <LI><A HREF="reference.html#mxml_sax_event_t">mxml_sax_event_t</A></LI>
-<LI><A HREF="reference.html#mxml_text_t">mxml_text_t</A></LI>
 <LI><A HREF="reference.html#mxml_type_t">mxml_type_t</A></LI>
-<LI><A HREF="reference.html#mxml_value_t">mxml_value_t</A></LI>
-</UL>
-</LI>
-<LI><A HREF="reference.html#STRUCTURES">Structures</A>
-<UL>
-<LI><A HREF="reference.html#mxml_attr_s">mxml_attr_s</A></LI>
-<LI><A HREF="reference.html#8_4_2">mxml_custom_s</A></LI>
-<LI><A HREF="reference.html#mxml_element_s">mxml_element_s</A></LI>
-<LI><A HREF="reference.html#mxml_index_s">mxml_index_s</A></LI>
-<LI><A HREF="reference.html#mxml_node_s">mxml_node_s</A></LI>
-<LI><A HREF="reference.html#mxml_text_s">mxml_text_s</A></LI>
-</UL>
-</LI>
-<LI><A HREF="reference.html#UNIONS">Unions</A>
-<UL>
-<LI><A HREF="reference.html#mxml_value_u">mxml_value_u</A></LI>
 </UL>
 </LI>
 <LI><A HREF="reference.html#ENUMERATIONS">Constants</A>

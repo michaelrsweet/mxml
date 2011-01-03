@@ -163,13 +163,22 @@ else
   if ($q != "")
   {
     // Run htmlsearch to search the documentation...
-    $matches = array();
-    $fp      = popen("/usr/local/bin/websearch docfiles " . escapeshellarg($q), "r");
+    $matches  = array();
+    $scores   = array();
+    $maxscore = 0;
+    $fp       = popen("/usr/local/bin/websearch docfiles " . escapeshellarg($q),
+                      "r");
+
+    fgets($fp, 1024);
 
     while ($line = fgets($fp, 1024))
     {
-      $data              = explode(":", $line);
-      $matches[$data[0]] = $data[1];
+      $data              = explode("|", $line);
+      $matches[$data[1]] = $data[2];
+      $scores[$data[1]]  = $data[0];
+
+      if ($maxscore == 0)
+        $maxscore = $data[0];
     }
 
     pclose($fp);
@@ -181,17 +190,20 @@ else
       $total = sizeof($matches) . " matches";
 
     print("<p>$total found:</p>\n"
-         ."<ol>\n");
+         ."<table symmary=\"Search Results\">\n");
 
     reset($matches);
     foreach ($matches as $file => $text)
     {
-      $link = "$PHP_SELF/$file";
+      $link  = "$PHP_SELF/$file";
+      $score = str_repeat("&#x2605;",
+                          (int)(4 * $scores[$file] / $maxscore) + 1);
 
-      print("<li><a href='$link'>$text</a></li>\n");
+      print("<tr><td style=\"font-size: 50%;\">$score&nbsp;&nbsp;&nbsp;</td>"
+           ."<td><a href='$link'>$text</a></td></tr>\n");
     }
 
-    print("</ol>\n");
+    print("</table>\n");
   }
   else
   {

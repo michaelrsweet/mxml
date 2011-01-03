@@ -1,4 +1,4 @@
-CHANGES - 2011-01-01
+CHANGES - 2011-01-02
 --------------------
 
 CHANGES IN Mini-XML 2.7
@@ -8,7 +8,7 @@ CHANGES IN Mini-XML 2.7
 	  header to preserve source compatibility (STR #118)
 	- Updated the source headers to reference the Mini-XML license and its
 	  exceptions to the LGPL2 (STR #108)
-      	- Added a new mxmlFindValue() function to find the value node of a
+      	- Added a new mxmlFindPath() function to find the value node of a
 	  named element (STR #110)
 	- Building a static version of the library did not work on Windows
 	  (STR #112)

@@ -155,7 +155,7 @@ Reference</h1>
 <li><a href="#mxmlEntityGetValue" title="Get the character corresponding to a named entity.">mxmlEntityGetValue</a></li>
 <li><a href="#mxmlEntityRemoveCallback" title="Remove a callback.">mxmlEntityRemoveCallback</a></li>
 <li><a href="#mxmlFindElement" title="Find the named element.">mxmlFindElement</a></li>
-<li><a href="#mxmlFindValue" title="Find a value with the given path.">mxmlFindValue</a></li>
+<li><a href="#mxmlFindPath" title="Find a node with the given path.">mxmlFindPath</a></li>
 <li><a href="#mxmlGetCDATA" title="Get the value for a CDATA node.">mxmlGetCDATA</a></li>
 <li><a href="#mxmlGetCustom" title="Get the value for a custom node.">mxmlGetCustom</a></li>
 <li><a href="#mxmlGetElement" title="Get the name for an element node.">mxmlGetElement</a></li>
@@ -163,11 +163,12 @@ Reference</h1>
 <li><a href="#mxmlGetInteger" title="Get the integer value from the specified node or its
 first child.">mxmlGetInteger</a></li>
 <li><a href="#mxmlGetLastChild" title="Get the last child of an element node.">mxmlGetLastChild</a></li>
-<li><a href="#mxmlGetNext" title="Return the node type...">mxmlGetNext</a></li>
+<li><a href="#mxmlGetNextSibling" title="Return the node type...">mxmlGetNextSibling</a></li>
 <li><a href="#mxmlGetOpaque" title="Get an opaque string value for a node or its first child.">mxmlGetOpaque</a></li>
 <li><a href="#mxmlGetParent" title="Get the parent node.">mxmlGetParent</a></li>
-<li><a href="#mxmlGetPrevious" title="Get the previous node for the current parent.">mxmlGetPrevious</a></li>
+<li><a href="#mxmlGetPrevSibling" title="Get the previous node for the current parent.">mxmlGetPrevSibling</a></li>
 <li><a href="#mxmlGetReal" title="Get the real value for a node or its first child.">mxmlGetReal</a></li>
+<li><a href="#mxmlGetRefCount" title="Get the current reference (use) count for a node.">mxmlGetRefCount</a></li>
 <li><a href="#mxmlGetText" title="Get the text value for a node or its first child.">mxmlGetText</a></li>
 <li><a href="#mxmlGetType" title="Get the node type.">mxmlGetType</a></li>
 <li><a href="#mxmlGetUserData" title="Get the user data pointer for a node.">mxmlGetUserData</a></li>
@@ -452,10 +453,10 @@ whether the search descends into child nodes; normally you will use
 MXML_DESCEND_FIRST for the initial search and MXML_NO_DESCEND to find
 additional direct descendents of the node. The top node argument
 constrains the search to a particular node's children.</p>
-<h3 class="function"><span class="info">&nbsp;Mini-XML 2.7&nbsp;</span><a name="mxmlFindValue">mxmlFindValue</a></h3>
-<p class="description">Find a value with the given path.</p>
+<h3 class="function"><span class="info">&nbsp;Mini-XML 2.7&nbsp;</span><a name="mxmlFindPath">mxmlFindPath</a></h3>
+<p class="description">Find a node with the given path.</p>
 <p class="code">
-<a href="#mxml_node_t">mxml_node_t</a> *mxmlFindValue (<br>
+<a href="#mxml_node_t">mxml_node_t</a> *mxmlFindPath (<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#mxml_node_t">mxml_node_t</a> *top,<br>
 &nbsp;&nbsp;&nbsp;&nbsp;const char *path<br>
 );</p>
@@ -467,17 +468,20 @@ constrains the search to a particular node's children.</p>
 <dd class="description">Path to element</dd>
 </dl>
 <h4 class="returnvalue">Return Value</h4>
-<p class="description">First value node or NULL</p>
+<p class="description">Found node or NULL</p>
 <h4 class="discussion">Discussion</h4>
 <p class="discussion">The &quot;path&quot; is a slash-separated list of element names. The name &quot;*&quot; is
 considered a wildcard for one or more levels of elements.  For example,
-&quot;foo/one/two&quot;, &quot;bar/two/one&quot;, &quot;*/one&quot;, and so forth.
+&quot;foo/one/two&quot;, &quot;bar/two/one&quot;, &quot;*/one&quot;, and so forth.<br>
+<br>
+The first child node of the found node is returned if the given node has
+children and the first child is a value node.
 
 </p>
 <h3 class="function"><span class="info">&nbsp;Mini-XML 2.7&nbsp;</span><a name="mxmlGetCDATA">mxmlGetCDATA</a></h3>
 <p class="description">Get the value for a CDATA node.</p>
 <p class="code">
-char *mxmlGetCDATA (<br>
+const char *mxmlGetCDATA (<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#mxml_node_t">mxml_node_t</a> *node<br>
 );</p>
 <h4 class="parameters">Parameters</h4>
@@ -494,7 +498,7 @@ char *mxmlGetCDATA (<br>
 <h3 class="function"><span class="info">&nbsp;Mini-XML 2.7&nbsp;</span><a name="mxmlGetCustom">mxmlGetCustom</a></h3>
 <p class="description">Get the value for a custom node.</p>
 <p class="code">
-void *mxmlGetCustom (<br>
+const void *mxmlGetCustom (<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#mxml_node_t">mxml_node_t</a> *node<br>
 );</p>
 <h4 class="parameters">Parameters</h4>
@@ -512,7 +516,7 @@ value node.
 <h3 class="function"><span class="info">&nbsp;Mini-XML 2.7&nbsp;</span><a name="mxmlGetElement">mxmlGetElement</a></h3>
 <p class="description">Get the name for an element node.</p>
 <p class="code">
-char *mxmlGetElement (<br>
+const char *mxmlGetElement (<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#mxml_node_t">mxml_node_t</a> *node<br>
 );</p>
 <h4 class="parameters">Parameters</h4>
@@ -580,10 +584,10 @@ int mxmlGetInteger (<br>
 has no children.
 
 </p>
-<h3 class="function"><a name="mxmlGetNext">mxmlGetNext</a></h3>
+<h3 class="function"><a name="mxmlGetNextSibling">mxmlGetNextSibling</a></h3>
 <p class="description">Return the node type...</p>
 <p class="code">
-<a href="#mxml_node_t">mxml_node_t</a> *mxmlGetNext (<br>
+<a href="#mxml_node_t">mxml_node_t</a> *mxmlGetNextSibling (<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#mxml_node_t">mxml_node_t</a> *node<br>
 );</p>
 <h4 class="parameters">Parameters</h4>
@@ -599,7 +603,7 @@ has no children.
 <h3 class="function"><span class="info">&nbsp;Mini-XML 2.7&nbsp;</span><a name="mxmlGetOpaque">mxmlGetOpaque</a></h3>
 <p class="description">Get an opaque string value for a node or its first child.</p>
 <p class="code">
-char *mxmlGetOpaque (<br>
+const char *mxmlGetOpaque (<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#mxml_node_t">mxml_node_t</a> *node<br>
 );</p>
 <h4 class="parameters">Parameters</h4>
@@ -631,10 +635,10 @@ value node.
 <p class="discussion"><code>NULL</code> is returned for a root node.
 
 </p>
-<h3 class="function"><span class="info">&nbsp;Mini-XML 2.7&nbsp;</span><a name="mxmlGetPrevious">mxmlGetPrevious</a></h3>
+<h3 class="function"><span class="info">&nbsp;Mini-XML 2.7&nbsp;</span><a name="mxmlGetPrevSibling">mxmlGetPrevSibling</a></h3>
 <p class="description">Get the previous node for the current parent.</p>
 <p class="code">
-<a href="#mxml_node_t">mxml_node_t</a> *mxmlGetPrevious (<br>
+<a href="#mxml_node_t">mxml_node_t</a> *mxmlGetPrevSibling (<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#mxml_node_t">mxml_node_t</a> *node<br>
 );</p>
 <h4 class="parameters">Parameters</h4>
@@ -665,10 +669,29 @@ double mxmlGetReal (<br>
 <p class="discussion">0.0 is returned if the node (or its first child) is not a real value node.
 
 </p>
+<h3 class="function"><span class="info">&nbsp;Mini-XML 2.7&nbsp;</span><a name="mxmlGetRefCount">mxmlGetRefCount</a></h3>
+<p class="description">Get the current reference (use) count for a node.</p>
+<p class="code">
+int mxmlGetRefCount (<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#mxml_node_t">mxml_node_t</a> *node<br>
+);</p>
+<h4 class="parameters">Parameters</h4>
+<dl>
+<dt>node</dt>
+<dd class="description">Node</dd>
+</dl>
+<h4 class="returnvalue">Return Value</h4>
+<p class="description">Reference count</p>
+<h4 class="discussion">Discussion</h4>
+<p class="discussion">The initial reference count of new nodes is 1. Use the <a href="#mxmlRetain"><code>mxmlRetain</code></a>
+and <a href="#mxmlRelease"><code>mxmlRelease</code></a> functions to increment and decrement a node's
+reference count.
+
+.</p>
 <h3 class="function"><span class="info">&nbsp;Mini-XML 2.7&nbsp;</span><a name="mxmlGetText">mxmlGetText</a></h3>
 <p class="description">Get the text value for a node or its first child.</p>
 <p class="code">
-char *mxmlGetText (<br>
+const char *mxmlGetText (<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#mxml_node_t">mxml_node_t</a> *node,<br>
 &nbsp;&nbsp;&nbsp;&nbsp;int *whitespace<br>
 );</p>

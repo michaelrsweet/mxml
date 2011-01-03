@@ -17,10 +17,26 @@ EXPORTS
  mxmlEntityGetValue
  mxmlEntityRemoveCallback
  mxmlFindElement
- mxmlFindValue
+ mxmlFindPath
+ mxmlGetCDATA
+ mxmlGetCustom
+ mxmlGetElement
+ mxmlGetFirstChild
+ mxmlGetInteger
+ mxmlGetLastChild
+ mxmlGetNextSibling
+ mxmlGetOpaque
+ mxmlGetParent
+ mxmlGetPrevSibling
+ mxmlGetReal
+ mxmlGetRefCount
+ mxmlGetText
+ mxmlGetType
+ mxmlGetUserData
  mxmlIndexDelete
  mxmlIndexEnum
  mxmlIndexFind
+ mxmlIndexGetCount
  mxmlIndexNew
  mxmlIndexReset
  mxmlLoadFd
@@ -55,6 +71,7 @@ EXPORTS
  mxmlSetReal
  mxmlSetText
  mxmlSetTextf
+ mxmlSetUserData
  mxmlSetWrapMargin
  mxmlWalkNext
  mxmlWalkPrev

@@ -9,10 +9,14 @@ hspace="10" width="100" height="100" alt="B"></a>Release Notes</h1>
 
 <ul>
 
+	<li>Added data accessor ("get") functions and made the mxml_node_t and
+        mxml_index_t structures private but still available in the Mini-XML
+	header to preserve source compatibility (STR #118)</li>
+
 	<li>Updated the source headers to reference the Mini-XML license and its
 	exceptions to the LGPL2 (STR #108)</li>
 
-      	<li>Added a new mxmlFindValue() function to find the value node of a
+      	<li>Added a new mxmlFindPath() function to find the value node of a
       	named element (STR #110)</li>
 
 	<li>Building a static version of the library did not work on Windows

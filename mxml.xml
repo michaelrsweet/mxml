@@ -197,16 +197,19 @@ constrains the search to a particular node's children.</description>
       <description>Descend into tree - MXML_DESCEND, MXML_NO_DESCEND, or MXML_DESCEND_FIRST</description>
     </argument>
   </function>
-  <function name="mxmlFindValue">
+  <function name="mxmlFindPath">
     <returnvalue>
       <type>mxml_node_t *</type>
-      <description>First value node or NULL</description>
+      <description>Found node or NULL</description>
     </returnvalue>
-    <description>Find a value with the given path.
+    <description>Find a node with the given path.
 
 The &quot;path&quot; is a slash-separated list of element names. The name &quot;*&quot; is
 considered a wildcard for one or more levels of elements.  For example,
 &quot;foo/one/two&quot;, &quot;bar/two/one&quot;, &quot;*/one&quot;, and so forth.
+
+The first child node of the found node is returned if the given node has
+children and the first child is a value node.
 
 @since Mini-XML 2.7@</description>
     <argument name="top" direction="I">
@@ -220,7 +223,7 @@ considered a wildcard for one or more levels of elements.  For example,
   </function>
   <function name="mxmlGetCDATA">
     <returnvalue>
-      <type>char *</type>
+      <type>const char *</type>
       <description>CDATA value or NULL</description>
     </returnvalue>
     <description>Get the value for a CDATA node.
@@ -235,7 +238,7 @@ considered a wildcard for one or more levels of elements.  For example,
   </function>
   <function name="mxmlGetCustom">
     <returnvalue>
-      <type>void *</type>
+      <type>const void *</type>
       <description>Custom value or NULL</description>
     </returnvalue>
     <description>Get the value for a custom node.
@@ -251,7 +254,7 @@ value node.
   </function>
   <function name="mxmlGetElement">
     <returnvalue>
-      <type>char *</type>
+      <type>const char *</type>
       <description>Element name or NULL</description>
     </returnvalue>
     <description>Get the name for an element node.
@@ -312,7 +315,7 @@ has no children.
       <description>Node to get</description>
     </argument>
   </function>
-  <function name="mxmlGetNext">
+  <function name="mxmlGetNextSibling">
     <returnvalue>
       <type>mxml_node_t *</type>
       <description>Get the next node for the current parent.
@@ -329,7 +332,7 @@ has no children.
   </function>
   <function name="mxmlGetOpaque">
     <returnvalue>
-      <type>char *</type>
+      <type>const char *</type>
       <description>Opaque string or NULL</description>
     </returnvalue>
     <description>Get an opaque string value for a node or its first child.
@@ -358,7 +361,7 @@ value node.
       <description>Node to get</description>
     </argument>
   </function>
-  <function name="mxmlGetPrevious">
+  <function name="mxmlGetPrevSibling">
     <returnvalue>
       <type>mxml_node_t *</type>
       <description>Previous node or NULL</description>
@@ -388,9 +391,26 @@ value node.
       <description>Node to get</description>
     </argument>
   </function>
+  <function name="mxmlGetRefCount">
+    <returnvalue>
+      <type>int</type>
+      <description>Reference count</description>
+    </returnvalue>
+    <description>Get the current reference (use) count for a node.
+
+The initial reference count of new nodes is 1. Use the @link mxmlRetain@
+and @link mxmlRelease@ functions to increment and decrement a node's
+reference count.
+
+@since Mini-XML 2.7@.</description>
+    <argument name="node" direction="I">
+      <type>mxml_node_t *</type>
+      <description>Node</description>
+    </argument>
+  </function>
   <function name="mxmlGetText">
     <returnvalue>
-      <type>char *</type>
+      <type>const char *</type>
       <description>Text string or NULL</description>
     </returnvalue>
     <description>Get the text value for a node or its first child.

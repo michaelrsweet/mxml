@@ -24,7 +24,7 @@ $file    = $data[2];
 <div style='margin-left: 20px; float: right; line-height: 200%;
 text-align: center;'><a
 href='software.php?FILE=<?print($file);?>&amp;VERSION=<?print($version);?>'><img
-src='images/logo-large.png' width='150' height='150' alt='Mini-XML logo'><br>
+src='images/logo-large.gif' width='150' height='150' alt='Mini-XML logo'><br>
 Download v<?print($version);?></a></div>
 
 <h1>Mini-XML: Lightweight XML Library</h1>

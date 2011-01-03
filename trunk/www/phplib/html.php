@@ -101,7 +101,7 @@ html_header($title = "",		// I - Additional document title
        ."  <meta http-equiv='Content-Type' content='text/html; "
        ."charset=utf-8'>\n"
        ."  <link rel='stylesheet' type='text/css' href='$html_path/style.css'>\n"
-       ."  <link rel='shortcut icon' href='$html_path/images/logo.png' "
+       ."  <link rel='shortcut icon' href='$html_path/images/logo.gif' "
        ."type='image/x-icon'>\n");
 
   // If refresh URL is specified, add the META tag...
@@ -161,7 +161,7 @@ html_header($title = "",		// I - Additional document title
   print("<table width='100%' style='height: 100%;' border='0' cellspacing='0' "
        ."cellpadding='0' summary=''>\n"
        ."<tr>"
-       ."<td class='unsel'><img src='$html_path/images/logo.png' width='32' "
+       ."<td class='unsel'><img src='$html_path/images/logo.gif' width='32' "
        ."height='32' alt=''></td>"
        ."<td class='$classes[0]'>");
 
@@ -193,7 +193,7 @@ html_footer()
 {
   print("</td></tr>\n"
        ."<td class='footer' colspan='8'>"
-       ."Copyright 2003-2010 by Michael Sweet. This library is free "
+       ."Copyright 2003-2011 by Michael Sweet. This library is free "
        ."software; you can redistribute it and/or modify it "
        ."under the terms of the <a href='$html_path/docfiles/license.html'>"
        ."Mini-XML License</a>.</td></tr>\n"

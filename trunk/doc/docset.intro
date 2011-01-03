@@ -18,7 +18,7 @@ as do most vendors' ANSI C compilers) and a "make" program.</p>
 	<li>Supports arbitrary element names, attributes, and attribute values
 	with no preset limits, just available memory.</li>
 
-	<li>Supports integer, real, opaque ("cdata"), and text data types in
+	<li>Supports integer, real, opaque ("CDATA"), and text data types in
 	"leaf" nodes.</li>
 
 	<li>Functions for creating, indexing, and managing trees of data.</li>
@@ -144,6 +144,29 @@ for (node = mxmlFindElement(tree, tree, "name", NULL,
 {
   ... do something ...
 }
+</pre>
+
+<p>The "mxmlFindPath()" function finds the (first) value node under a specific
+element using a "path":</p>
+
+<pre class='example'>
+mxml_node_t *value = mxmlFindPath(tree, "path/to/*/foo/bar");
+</pre>
+
+<p>The "mxmlGetInteger()", "mxmlGetOpaque()", "mxmlGetReal()", and
+"mxmlGetText()" functions retrieve the value from a node:</p>
+
+<pre class='example'>
+mxml_node_t *node;
+
+int intvalue = mxmlGetInteger(node);
+
+const char *opaquevalue = mxmlGetOpaque(node);
+
+double realvalue = mxmlGetReal(node);
+
+int whitespacevalue;
+const char *textvalue = mxmlGetText(node, &amp;whitespacevalue);
 </pre>
 
 <p>Finally, once you are done with the XML data, use the

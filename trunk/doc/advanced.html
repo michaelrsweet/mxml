@@ -64,7 +64,7 @@ child nodes:</p>
 
       type = mxmlElementGetAttr(node, "type");
       if (type == NULL)
-	type = node->value.element.name;
+	type = mxmlGetElement(node);
 
       if (!strcmp(type, "integer"))
 	return (MXML_INTEGER);
@@ -125,7 +125,7 @@ text editor:</p>
       * just common HTML elements...
       */
 
-      name = node->value.element.name;
+      name = mxmlGetElement(node);
 
       if (!strcmp(name, "html") ||
           !strcmp(name, "head") ||
@@ -243,10 +243,10 @@ following:</p>
       */
 
       if (sscanf(data, "%u-%u-%uT%u:%u:%uZ",
-                 &(dt->year), &(dt->month),
-                 &(dt->day), &(dt->hour),
-                 &(dt->minute),
-                 &(dt->second)) != 6)
+                 &amp;(dt->year), &amp;(dt->month),
+                 &amp;(dt->day), &amp;(dt->hour),
+                 &amp;(dt->minute),
+                 &amp;(dt->second)) != 6)
       {
        /*
         * Unable to read numbers, free the data
@@ -296,8 +296,7 @@ following:</p>
       * function pointers...
       */
 
-      node->value.custom.data    = dt;
-      node->value.custom.destroy = free;
+      mxmlSetCustom(node, data, destroy);
 
      /*
       * Return with no errors...
@@ -314,6 +313,7 @@ allocated custom data for the node and a pointer to a destructor
 function which will free the custom data when the node is
 deleted.</p>
 
+<!-- NEED 15 -->
 <p>The save callback receives the node pointer and returns an
 allocated string containing the custom data value. The following
 save callback could be used for our ISO date/time type:</p>
@@ -326,7 +326,7 @@ save callback could be used for our ISO date/time type:</p>
       iso_date_time_t *dt;
 
 
-      dt = (iso_date_time_t *)node->custom.data;
+      dt = (iso_date_time_t *)mxmlGetCustom(node);
 
       snprintf(data, sizeof(data),
                "%04u-%02u-%02uT%02u:%02u:%02uZ",
@@ -404,9 +404,8 @@ an index is approximately equal to walking the XML document
 tree. Nodes in the index are sorted by element name and
 attribute value.</p>
 
-<p>Indices are stored in <a
-href='#mxml_index_t'><tt>mxml_index_t</tt></a> structures. The
-<a href='#mxmlIndexNew'><tt>mxmlIndexNew()</tt></a> function
+<p>Indices are stored in <a href='#mxml_index_t'><tt>mxml_index_t</tt></a>
+structures. The <a href='#mxmlIndexNew'><tt>mxmlIndexNew()</tt></a> function
 creates a new index:</p>
 
 <pre>
@@ -568,7 +567,7 @@ directives like  <tt>&lt;?xml ... ?&gt;</tt> and  <tt>&lt;!DOCTYPE ... &gt;</tt>
         * Retain headings and titles...
         */
 
-        char *name = node->value.element.name;
+        char *name = mxmlGetElement(node);
 
         if (!strcmp(name, "html") ||
             !strcmp(name, "head") ||
@@ -584,15 +583,17 @@ directives like  <tt>&lt;?xml ... ?&gt;</tt> and  <tt>&lt;!DOCTYPE ... &gt;</tt>
       }
       else if (event == MXML_SAX_DIRECTIVE)
         mxmlRetain(node);
-      else if (event == MXML_SAX_DATA &amp;&amp;
-               node->parent->ref_count > 1)
+      else if (event == MXML_SAX_DATA)
       {
-       /*
-        * If the parent was retained, then retain
-        * this data node as well.
-        */
+        if (mxmlGetRefCount(mxmlGetParent(node)) > 1)
+        {
+         /*
+          * If the parent was retained, then retain
+          * this data node as well.
+          */
 
-        mxmlRetain(node);
+          mxmlRetain(node);
+        }
       }
     }
 </pre>
@@ -622,9 +623,9 @@ title and headings in the document would look like:</p>
 
     if (body)
     {
-      for (heading = body->child;
+      for (heading = mxmlGetFirstChild(body);
            heading;
-           heading = heading->next)
+           heading = mxmlGetNextSibling(heading))
         print_children(heading);
     }
 </pre>

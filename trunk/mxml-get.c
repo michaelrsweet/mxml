@@ -15,22 +15,22 @@
  *
  * Contents:
  *
- *   mxmlGetCDATA()      - Get the value for a CDATA node.
- *   mxmlGetCustom()     - Get the value for a custom node.
- *   mxmlGetElement()    - Get the name for an element node.
- *   mxmlGetFirstChild() - Get the first child of an element node.
- *   mxmlGetInteger()    - Get the integer value from the specified node or its
- *                         first child.
- *   mxmlGetLastChild()  - Get the last child of an element node.
- *   mxmlGetNext()       - Get the next node for the current parent.
- *   mxmlGetOpaque()     - Get an opaque string value for a node or its first
- *                         child.
- *   mxmlGetParent()     - Get the parent node.
- *   mxmlGetPrevious()   - Get the previous node for the current parent.
- *   mxmlGetReal()       - Get the real value for a node or its first child.
- *   mxmlGetText()       - Get the text value for a node or its first child.
- *   mxmlGetType()       - Get the node type.
- *   mxmlGetUserData()   - Get the user data pointer for a node.
+ *   mxmlGetCDATA()       - Get the value for a CDATA node.
+ *   mxmlGetCustom()      - Get the value for a custom node.
+ *   mxmlGetElement()     - Get the name for an element node.
+ *   mxmlGetFirstChild()  - Get the first child of an element node.
+ *   mxmlGetInteger()     - Get the integer value from the specified node or its
+ *                          first child.
+ *   mxmlGetLastChild()   - Get the last child of an element node.
+ *   mxmlGetNextSibling() - Get the next node for the current parent.
+ *   mxmlGetOpaque()      - Get an opaque string value for a node or its first
+ *                          child.
+ *   mxmlGetParent()      - Get the parent node.
+ *   mxmlGetPrevSibling() - Get the previous node for the current parent.
+ *   mxmlGetReal()        - Get the real value for a node or its first child.
+ *   mxmlGetText()        - Get the text value for a node or its first child.
+ *   mxmlGetType()        - Get the node type.
+ *   mxmlGetUserData()    - Get the user data pointer for a node.
  */
 
 /*
@@ -49,7 +49,7 @@
  * @since Mini-XML 2.7@
  */
 
-char *					/* O - CDATA value or NULL */
+const char *				/* O - CDATA value or NULL */
 mxmlGetCDATA(mxml_node_t *node)		/* I - Node to get */
 {
  /*
@@ -77,7 +77,7 @@ mxmlGetCDATA(mxml_node_t *node)		/* I - Node to get */
  * @since Mini-XML 2.7@
  */
 
-void *					/* O - Custom value or NULL */
+const void *				/* O - Custom value or NULL */
 mxmlGetCustom(mxml_node_t *node)	/* I - Node to get */
 {
  /*
@@ -110,7 +110,7 @@ mxmlGetCustom(mxml_node_t *node)	/* I - Node to get */
  * @since Mini-XML 2.7@
  */
 
-char *					/* O - Element name or NULL */
+const char *				/* O - Element name or NULL */
 mxmlGetElement(mxml_node_t *node)	/* I - Node to get */
 {
  /*
@@ -217,7 +217,7 @@ mxmlGetLastChild(mxml_node_t *node)	/* I - Node to get */
 
 
 /*
- * 'mxmlGetNext()' - Get the next node for the current parent.
+ * 'mxmlGetNextSibling()' - Get the next node for the current parent.
  *
  * @code NULL@ is returned if this is the last child for the current parent.
  *
@@ -225,7 +225,7 @@ mxmlGetLastChild(mxml_node_t *node)	/* I - Node to get */
  */
 
 mxml_node_t *
-mxmlGetNext(mxml_node_t *node)		/* I - Node to get */
+mxmlGetNextSibling(mxml_node_t *node)	/* I - Node to get */
 {
  /*
   * Range check input...
@@ -251,7 +251,7 @@ mxmlGetNext(mxml_node_t *node)		/* I - Node to get */
  * @since Mini-XML 2.7@
  */
 
-char *					/* O - Opaque string or NULL */
+const char *				/* O - Opaque string or NULL */
 mxmlGetOpaque(mxml_node_t *node)	/* I - Node to get */
 {
  /*
@@ -303,7 +303,7 @@ mxmlGetParent(mxml_node_t *node)	/* I - Node to get */
 
 
 /*
- * 'mxmlGetPrevious()' - Get the previous node for the current parent.
+ * 'mxmlGetPrevSibling()' - Get the previous node for the current parent.
  *
  * @code NULL@ is returned if this is the first child for the current parent.
  *
@@ -311,7 +311,7 @@ mxmlGetParent(mxml_node_t *node)	/* I - Node to get */
  */
 
 mxml_node_t *				/* O - Previous node or NULL */
-mxmlGetPrevious(mxml_node_t *node)	/* I - Node to get */
+mxmlGetPrevSibling(mxml_node_t *node)	/* I - Node to get */
 {
  /*
   * Range check input...
@@ -370,7 +370,7 @@ mxmlGetReal(mxml_node_t *node)		/* I - Node to get */
  * @since Mini-XML 2.7@
  */
 
-char *					/* O - Text string or NULL */
+const char *				/* O - Text string or NULL */
 mxmlGetText(mxml_node_t *node,		/* I - Node to get */
             int         *whitespace)	/* O - 1 if string is preceded by whitespace, 0 otherwise */
 {

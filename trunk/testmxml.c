@@ -261,10 +261,10 @@ main(int  argc,				/* I - Number of command-line args */
   }
 
  /*
-  * Test mxmlFindValue...
+  * Test mxmlFindPath...
   */
 
-  node = mxmlFindValue(tree, "*/two");
+  node = mxmlFindPath(tree, "*/two");
   if (!node)
   {
     fputs("ERROR: Unable to find value for \"*/two\".\n", stderr);
@@ -278,7 +278,7 @@ main(int  argc,				/* I - Number of command-line args */
     return (1);
   }
 
-  node = mxmlFindValue(tree, "foo/*/two");
+  node = mxmlFindPath(tree, "foo/*/two");
   if (!node)
   {
     fputs("ERROR: Unable to find value for \"foo/*/two\".\n", stderr);
@@ -292,7 +292,7 @@ main(int  argc,				/* I - Number of command-line args */
     return (1);
   }
 
-  node = mxmlFindValue(tree, "foo/bar/one/two");
+  node = mxmlFindPath(tree, "foo/bar/one/two");
   if (!node)
   {
     fputs("ERROR: Unable to find value for \"foo/bar/one/two\".\n", stderr);

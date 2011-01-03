@@ -197,6 +197,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\mxml-get.c"
+				>
+			</File>
+			<File
 				RelativePath="..\mxml-index.c"
 				>
 			</File>

@@ -1,4 +1,4 @@
-README - 2010-11-08
+README - 2011-01-02
 -------------------
 
 
@@ -133,7 +133,7 @@ DOCUMENTATION
 
         /* Find the first "a" element with "href" to a URL */
         node = mxmlFindElement(tree, tree, "a", "href",
-	                       "http://www.easysw.com/~mike/mxml/",
+	                       "http://www.minixml.org/",
 			       MXML_DESCEND);
 
         /* Find the first element with a "src" attribute*/
@@ -156,11 +156,25 @@ DOCUMENTATION
 	  ... do something ...
 	}
 
-    The "mxmlFindValue()" function finds the (first) value node under a specific
+    The "mxmlFindPath()" function finds the (first) value node under a specific
     element using a "path":
 
-        mxml_node_t *value = mxmlFindValue(tree, "path/to/*/foo/bar");
-    
+        mxml_node_t *value = mxmlFindPath(tree, "path/to/*/foo/bar");
+
+    The "mxmlGetInteger()", "mxmlGetOpaque()", "mxmlGetReal()", and
+    "mxmlGetText()" functions retrieve the value from a node:
+
+        mxml_node_t *node;
+
+        int intvalue = mxmlGetInteger(node);
+
+        const char *opaquevalue = mxmlGetOpaque(node);
+
+        double realvalue = mxmlGetReal(node);
+
+        int whitespacevalue;
+        const char *textvalue = mxmlGetText(node, &whitespacevalue);
+
     Finally, once you are done with the XML data, use the "mxmlDelete()"
     function to recursively free the memory that is used for a particular node
     or the entire tree:
@@ -178,5 +192,5 @@ GETTING HELP AND REPORTING PROBLEMS
 
 LEGAL STUFF
 
-    The Mini-XML library is Copyright 2003-2010 by Michael Sweet.  License terms
+    The Mini-XML library is Copyright 2003-2011 by Michael Sweet.  License terms
     are described in the file "COPYING".

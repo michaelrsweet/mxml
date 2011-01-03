@@ -164,7 +164,7 @@ else
   {
     // Run htmlsearch to search the documentation...
     $matches = array();
-    $fp      = popen("/usr/local/bin/websearch " . escapeshellarg($q), "r");
+    $fp      = popen("/usr/local/bin/websearch docfiles " . escapeshellarg($q), "r");
 
     while ($line = fgets($fp, 1024))
     {

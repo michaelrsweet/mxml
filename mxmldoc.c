@@ -3180,15 +3180,19 @@ write_html(const char  *section,	/* I - Section */
           "\"http://www.w3.org/TR/html4/frameset.dtd\">\n"
 	  "<html>\n"
 	  "<head>\n"
-	  "<title>", out);
+	  "\t<title>", out);
     write_string(out, title, OUTPUT_HTML);
     fputs("</title>\n", out);
 
     if (section)
-      fprintf(out, "<meta name=\"keywords\" content=\"%s\">\n", section);
+      fprintf(out, "\t<meta name=\"keywords\" content=\"%s\">\n", section);
 
-    fputs("<meta name=\"creator\" content=\"" MXML_VERSION "\">\n"
-          "<frameset cols=\"250,*\">\n", out);
+    fputs("\t<meta http-equiv=\"Content-Type\" "
+          "content=\"text/html;charset=utf-8\">\n"
+	  "\t<meta name=\"creator\" content=\"" MXML_VERSION "\">\n"
+          "</head>\n", out);
+
+    fputs("<frameset cols=\"250,*\">\n", out);
     fprintf(out, "<frame src=\"%s-toc.html\">\n", basename);
     fprintf(out, "<frame name=\"body\" src=\"%s-body.html\">\n", basename);
     fputs("</frameset>\n"
@@ -3828,14 +3832,16 @@ write_html_head(FILE       *out,	/* I - Output file */
     fprintf(out, "<!-- SECTION: %s -->\n", section);
 
   fputs("<head>\n"
-        "<title>", out);
+        "\t<title>", out);
   write_string(out, title, OUTPUT_HTML);
-  fputs("</title>\n", out);
+  fputs("\t</title>\n", out);
 
   if (section)
-    fprintf(out, "<meta name=\"keywords\" content=\"%s\">\n", section);
+    fprintf(out, "\t<meta name=\"keywords\" content=\"%s\">\n", section);
 
-  fputs("<meta name=\"creator\" content=\"" MXML_VERSION "\">\n"
+  fputs("\t<meta http-equiv=\"Content-Type\" "
+	"content=\"text/html;charset=utf-8\">\n"
+	"\t<meta name=\"creator\" content=\"" MXML_VERSION "\">\n"
         "<style type=\"text/css\"><!--\n", out);
 
   if (cssfile)
@@ -3853,7 +3859,8 @@ write_html_head(FILE       *out,	/* I - Output file */
     */
 
     fputs("body, p, h1, h2, h3, h4 {\n"
-	  "  font-family: lucida grande, geneva, helvetica, arial, sans-serif;\n"
+	  "  font-family: \"lucida grande\", geneva, helvetica, arial, "
+	  "sans-serif;\n"
 	  "}\n"
 	  "div.body h1 {\n"
 	  "  font-size: 250%;\n"
@@ -4806,7 +4813,7 @@ write_toc(FILE        *out,		/* I - Output file */
 		*end,			/* End of line */
 		*anchor,		/* Anchor name */
 		quote,			/* Quote character for value */
-		level = '1',		/* Current heading level */
+		level = '2',		/* Current heading level */
 		newlevel;		/* New heading level */
     int		inelement;		/* In an element? */
 
@@ -4960,8 +4967,8 @@ write_toc(FILE        *out,		/* I - Output file */
 	level = newlevel;
 	xmlid ++;
 
-	fprintf(out, "<li><a href=\"%s#%s\"%s>", target ? target : "", anchor,
-		targetattr);
+	fprintf(out, "%s<li><a href=\"%s#%s\"%s>", level > '2' ? "\t" : "",
+	        target ? target : "", anchor, targetattr);
 
 	quote = 0;
 
@@ -5047,7 +5054,7 @@ write_toc(FILE        *out,		/* I - Output file */
       }
       else
       {
-	fprintf(out, "<li><a href=\"%s#%s\"%s title=\"",
+	fprintf(out, "\t<li><a href=\"%s#%s\"%s title=\"",
 		target ? target : "", name, targetattr);
 	write_description(out, description, "", 1);
 	fprintf(out, "\">%s</a></li>\n", name);
@@ -5094,7 +5101,7 @@ write_toc(FILE        *out,		/* I - Output file */
       }
       else
       {
-	fprintf(out, "<li><a href=\"%s#%s\"%s title=\"",
+	fprintf(out, "\t<li><a href=\"%s#%s\"%s title=\"",
 		target ? target : "", name, targetattr);
 	write_description(out, description, "", 1);
 	fprintf(out, "\">%s</a></li>\n", name);
@@ -5344,6 +5351,13 @@ write_toc(FILE        *out,		/* I - Output file */
     else
       fputs("</ul></li>\n", out);
   }
+
+ /*
+  * Close out the HTML table-of-contents list as needed...
+  */
+
+  if (!xml)
+    fputs("</ul>\n", out);
 }
 
 

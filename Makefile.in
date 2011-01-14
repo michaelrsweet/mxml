@@ -391,6 +391,7 @@ mxml.xml:	mxmldoc-static mxml.h $(PUBLIBOBJS:.o=.c)
 			--header doc/docset.header --intro doc/docset.intro \
 			--css doc/docset.css --title "Mini-XML API Reference" \
 			mxml.xml || exit 1; \
+		$(RM) org.minixml.atom; \
 		/Developer/usr/bin/docsetutil package --output org.minixml.xar \
 			--atom org.minixml.atom \
 			--download-url http://www.minixml.org/org.minixml.xar \

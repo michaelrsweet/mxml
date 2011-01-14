@@ -1,11 +1,11 @@
 body {
   background: white;
   color: black;
-  font-family: lucida grande, geneva, helvetica, arial, sans-serif;
+  font-family: "lucida grande", geneva, helvetica, arial, sans-serif;
 }
 
 h1, h2, h3, h4, h5, h6, p, td, th {
-  font-family: lucida grande, geneva, helvetica, arial, sans-serif;
+  font-family: "lucida grande", geneva, helvetica, arial, sans-serif;
 }
 
 kbd {
@@ -27,7 +27,7 @@ pre.example {
 
 pre.example em {
   color: #3f0000;
-  font-family: lucida grande, geneva, helvetica, arial, sans-serif;
+  font-family: "lucida grande", geneva, helvetica, arial, sans-serif;
 }
 
 div.summary table {

@@ -1,8 +1,9 @@
-CHANGES - 2011-01-02
+CHANGES - 2011-01-14
 --------------------
 
 CHANGES IN Mini-XML 2.7
 
+	- Fixed conformance of mxmldoc's HTML and CSS output.
 	- Added data accessor ("get") functions and made the mxml_node_t and
 	  mxml_index_t structures private but still available in the Mini-XML
 	  header to preserve source compatibility (STR #118)

@@ -15,6 +15,22 @@
  *
  * Contents:
  *
+ *   mxmlAdd()         - Add a node to a tree.
+ *   mxmlDelete()      - Delete a node and all of its children.
+ *   mxmlGetRefCount() - Get the current reference (use) count for a node.
+ *   mxmlNewCDATA()    - Create a new CDATA node.
+ *   mxmlNewCustom()   - Create a new custom data node.
+ *   mxmlNewElement()  - Create a new element node.
+ *   mxmlNewInteger()  - Create a new integer node.
+ *   mxmlNewOpaque()   - Create a new opaque string.
+ *   mxmlNewReal()     - Create a new real number node.
+ *   mxmlNewText()     - Create a new text fragment node.
+ *   mxmlNewTextf()    - Create a new formatted text fragment node.
+ *   mxmlRemove()      - Remove a node from its parent.
+ *   mxmlNewXML()      - Create a new XML document tree.
+ *   mxmlRelease()     - Release a node.
+ *   mxmlRetain()      - Retain a node.
+ *   mxml_new()        - Create a new node.
  */
 
 /*

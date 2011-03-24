@@ -1565,18 +1565,21 @@ mxml_load_data(
 
     if (ch == '<' && whitespace && type == MXML_TEXT)
     {
-      node = mxmlNewText(parent, whitespace, "");
-
-      if (sax_cb)
+      if (parent)
       {
-        (*sax_cb)(node, MXML_SAX_DATA, sax_data);
+	node = mxmlNewText(parent, whitespace, "");
 
-        if (!mxmlRelease(node))
-          node = NULL;
+	if (sax_cb)
+	{
+	  (*sax_cb)(node, MXML_SAX_DATA, sax_data);
+
+	  if (!mxmlRelease(node))
+	    node = NULL;
+	}
+
+	if (!first && node)
+	  first = node;
       }
-
-      if (!first && node)
-        first = node;
 
       whitespace = 0;
     }

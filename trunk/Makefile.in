@@ -373,6 +373,10 @@ testmxml:	libmxml.a testmxml.o
 		echo File descriptor test failed!; \
 	fi
 
+testmxml-vg:	$(LIBOBJS) testmxml.o
+	echo Linking $@...
+	$(CC) $(LDFLAGS) -o $@ testmxml.o $(LIBOBJS) $(LIBS)
+
 testmxml.o:	mxml.h
 
 

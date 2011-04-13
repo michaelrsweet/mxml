@@ -5,7 +5,7 @@
  * Documentation generator using Mini-XML, a small XML-like file parsing
  * library.
  *
- * Copyright 2003-2010 by Michael R Sweet.
+ * Copyright 2003-2011 by Michael R Sweet.
  *
  * These coded instructions, statements, and computer programs are the
  * property of Michael R Sweet and are protected by Federal copyright
@@ -82,17 +82,17 @@ extern char **environ;
  *     <constant name="">
  *       <description>descriptive text</description>
  *     </constant>
- *  
+ *
  *     <enumeration name="">
  *       <description>descriptive text</description>
  *       <constant name="">...</constant>
  *     </enumeration>
- *  
+ *
  *     <typedef name="">
  *       <description>descriptive text</description>
  *       <type>type string</type>
  *     </typedef>
- *  
+ *
  *     <function name="" scope="">
  *       <description>descriptive text</description>
  *       <argument name="" direction="I|O|IO" default="">
@@ -105,23 +105,23 @@ extern char **environ;
  *       </returnvalue>
  *       <seealso>function names separated by spaces</seealso>
  *     </function>
- *  
+ *
  *     <variable name="" scope="">
  *       <description>descriptive text</description>
  *       <type>type string</type>
  *     </variable>
- *  
+ *
  *     <struct name="">
  *       <description>descriptive text</description>
  *       <variable name="">...</variable>
  *       <function name="">...</function>
  *     </struct>
- *  
+ *
  *     <union name="">
  *       <description>descriptive text</description>
  *       <variable name="">...</variable>
  *     </union>
- *  
+ *
  *     <class name="" parent="">
  *       <description>descriptive text</description>
  *       <class name="">...</class>
@@ -133,7 +133,7 @@ extern char **environ;
  *   </namespace>
  * </mxmldoc>
  */
- 
+
 
 /*
  * Basic states for file parser...
@@ -273,6 +273,15 @@ main(int  argc,				/* I - Number of command-line args */
       */
 
       usage(NULL);
+    }
+    else if (!strcmp(argv[i], "--version"))
+    {
+     /*
+      * Show version...
+      */
+
+      puts(MXML_VERSION + 10);
+      return (0);
     }
     else if (!strcmp(argv[i], "--css") && !cssfile)
     {
@@ -1196,7 +1205,7 @@ scan_file(const char  *filename,	/* I - Filename */
 		  }
 		  else
 		    typedefnode = NULL;
-	
+
 		  structclass = mxmlNewElement(MXML_NO_PARENT,
 		                               type->child->value.text.string);
 
@@ -1313,7 +1322,7 @@ scan_file(const char  *filename,	/* I - Filename */
 		  }
 		  else
 		    typedefnode = NULL;
-	
+
 		  enumeration = mxmlNewElement(MXML_NO_PARENT, "enumeration");
 
 #ifdef DEBUG
@@ -1547,7 +1556,7 @@ scan_file(const char  *filename,	/* I - Filename */
 		    type = NULL;
 		    break;
 		  }
-		  
+
 		  mxmlDelete(type);
 		  type = NULL;
 		}
@@ -2740,6 +2749,7 @@ usage(const char *option)		/* I - Unknown option */
   puts("    --section section          Set section name");
   puts("    --title title              Set documentation title");
   puts("    --tokens path              Generate Xcode docset Tokens.xml file");
+  puts("    --version                  Show mxmldoc/Mini-XML version");
 
   exit(1);
 }
@@ -5017,7 +5027,7 @@ write_toc(FILE        *out,		/* I - Output file */
 	  fputs("</ul></li>\n", out);
       }
     }
-  
+
     fclose(fp);
   }
 

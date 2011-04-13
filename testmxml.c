@@ -3,7 +3,7 @@
  *
  * Test program for Mini-XML, a small XML-like file parsing library.
  *
- * Copyright 2003-2010 by Michael R Sweet.
+ * Copyright 2003-2011 by Michael R Sweet.
  *
  * These coded instructions, statements, and computer programs are the
  * property of Michael R Sweet and are protected by Federal copyright
@@ -615,9 +615,9 @@ main(int  argc,				/* I - Number of command-line args */
       return (1);
     }
 
-    if (event_counts[MXML_SAX_DATA] != 61)
+    if (event_counts[MXML_SAX_DATA] != 60)
     {
-      fprintf(stderr, "MXML_SAX_DATA seen %d times, expected 61 times!\n",
+      fprintf(stderr, "MXML_SAX_DATA seen %d times, expected 60 times!\n",
               event_counts[MXML_SAX_DATA]);
       return (1);
     }

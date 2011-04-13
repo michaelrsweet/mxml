@@ -105,7 +105,7 @@ all:		Makefile config.h $(TARGETS)
 clean:
 	echo Cleaning build files...
 	$(RM) $(OBJS) $(TARGETS)
-	$(RM) mxmldoc-static libmxml.a
+	$(RM) mxmldoc-static libmxml.a libmxml.so.1.5 libmxml.sl.1 libmxml.1.dylib
 
 
 #

@@ -55,10 +55,12 @@
 #ifndef WIN32
 #  include <dirent.h>
 #  include <unistd.h>
+#endif /* !WIN32 */
+#ifdef __APPLE__
 #  include <spawn.h>
 #  include <sys/wait.h>
 extern char **environ;
-#endif /* !WIN32 */
+#endif /* __APPLE__ */
 
 
 /*

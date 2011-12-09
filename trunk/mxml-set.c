@@ -37,7 +37,7 @@
 /*
  * 'mxmlSetCDATA()' - Set the element name of a CDATA node.
  *
- * The node is not changed if it is not a CDATA element node.
+ * The node is not changed if it (or its first child) is not a CDATA element node.
  *
  * @since Mini-XML 2.3@
  */
@@ -49,6 +49,12 @@ mxmlSetCDATA(mxml_node_t *node,		/* I - Node to set */
  /*
   * Range check input...
   */
+
+  if (node && node->type == MXML_ELEMENT &&
+      strncmp(node->value.element.name, "![CDATA[", 8) &&
+      node->child && node->child->type == MXML_ELEMENT &&
+      !strncmp(node->child->value.element.name, "![CDATA[", 8))
+    node = node->child;
 
   if (!node || node->type != MXML_ELEMENT || !data ||
       strncmp(node->value.element.name, "![CDATA[", 8))
@@ -70,7 +76,7 @@ mxmlSetCDATA(mxml_node_t *node,		/* I - Node to set */
 /*
  * 'mxmlSetCustom()' - Set the data and destructor of a custom data node.
  *
- * The node is not changed if it is not a custom node.
+ * The node is not changed if it (or its first child) is not a custom node.
  *
  * @since Mini-XML 2.1@
  */
@@ -84,6 +90,10 @@ mxmlSetCustom(
  /*
   * Range check input...
   */
+
+  if (node && node->type == MXML_ELEMENT &&
+      node->child && node->child->type == MXML_CUSTOM)
+    node = node->child;
 
   if (!node || node->type != MXML_CUSTOM)
     return (-1);
@@ -135,7 +145,7 @@ mxmlSetElement(mxml_node_t *node,	/* I - Node to set */
 /*
  * 'mxmlSetInteger()' - Set the value of an integer node.
  *
- * The node is not changed if it is not an integer node.
+ * The node is not changed if it (or its first child) is not an integer node.
  */
 
 int					/* O - 0 on success, -1 on failure */
@@ -145,6 +155,10 @@ mxmlSetInteger(mxml_node_t *node,	/* I - Node to set */
  /*
   * Range check input...
   */
+
+  if (node && node->type == MXML_ELEMENT &&
+      node->child && node->child->type == MXML_INTEGER)
+    node = node->child;
 
   if (!node || node->type != MXML_INTEGER)
     return (-1);
@@ -162,7 +176,7 @@ mxmlSetInteger(mxml_node_t *node,	/* I - Node to set */
 /*
  * 'mxmlSetOpaque()' - Set the value of an opaque node.
  *
- * The node is not changed if it is not an opaque node.
+ * The node is not changed if it (or its first child) is not an opaque node.
  */
 
 int					/* O - 0 on success, -1 on failure */
@@ -172,6 +186,10 @@ mxmlSetOpaque(mxml_node_t *node,	/* I - Node to set */
  /*
   * Range check input...
   */
+
+  if (node && node->type == MXML_ELEMENT &&
+      node->child && node->child->type == MXML_OPAQUE)
+    node = node->child;
 
   if (!node || node->type != MXML_OPAQUE || !opaque)
     return (-1);
@@ -192,7 +210,7 @@ mxmlSetOpaque(mxml_node_t *node,	/* I - Node to set */
 /*
  * 'mxmlSetReal()' - Set the value of a real number node.
  *
- * The node is not changed if it is not a real number node.
+ * The node is not changed if it (or its first child) is not a real number node.
  */
 
 int					/* O - 0 on success, -1 on failure */
@@ -202,6 +220,10 @@ mxmlSetReal(mxml_node_t *node,		/* I - Node to set */
  /*
   * Range check input...
   */
+
+  if (node && node->type == MXML_ELEMENT &&
+      node->child && node->child->type == MXML_REAL)
+    node = node->child;
 
   if (!node || node->type != MXML_REAL)
     return (-1);
@@ -219,7 +241,7 @@ mxmlSetReal(mxml_node_t *node,		/* I - Node to set */
 /*
  * 'mxmlSetText()' - Set the value of a text node.
  *
- * The node is not changed if it is not a text node.
+ * The node is not changed if it (or its first child) is not a text node.
  */
 
 int					/* O - 0 on success, -1 on failure */
@@ -230,6 +252,10 @@ mxmlSetText(mxml_node_t *node,		/* I - Node to set */
  /*
   * Range check input...
   */
+
+  if (node && node->type == MXML_ELEMENT &&
+      node->child && node->child->type == MXML_TEXT)
+    node = node->child;
 
   if (!node || node->type != MXML_TEXT || !string)
     return (-1);
@@ -251,7 +277,7 @@ mxmlSetText(mxml_node_t *node,		/* I - Node to set */
 /*
  * 'mxmlSetTextf()' - Set the value of a text node to a formatted string.
  *
- * The node is not changed if it is not a text node.
+ * The node is not changed if it (or its first child) is not a text node.
  */
 
 int					/* O - 0 on success, -1 on failure */
@@ -266,6 +292,10 @@ mxmlSetTextf(mxml_node_t *node,		/* I - Node to set */
  /*
   * Range check input...
   */
+
+  if (node && node->type == MXML_ELEMENT &&
+      node->child && node->child->type == MXML_TEXT)
+    node = node->child;
 
   if (!node || node->type != MXML_TEXT || !format)
     return (-1);

@@ -1,8 +1,9 @@
-CHANGES - 2011-12-09
+CHANGES - 2011-12-20
 --------------------
 
 CHANGES IN Mini-XML 2.7
 
+	- Added 64-bit configurations to the VC++ project files (STR #129)
 	- Fixed conformance of mxmldoc's HTML and CSS output.
 	- Added data accessor ("get") functions and made the mxml_node_t and
 	  mxml_index_t structures private but still available in the Mini-XML

@@ -1,0 +1,115 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML>
+<HEAD>
+<TITLE>Mini-XML Programmers Manual, Version 2.7</TITLE>
+<META NAME="author" CONTENT="Michael R. Sweet">
+<META NAME="copyright" CONTENT="Copyright 2003-2011">
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; CHARSET=iso-iso-8859-1">
+<LINK REL="Start" HREF="index.html">
+<LINK REL="Contents" HREF="index.html">
+<LINK REL="Prev" HREF="intro.html">
+<LINK REL="Next" HREF="basics.html">
+<STYLE TYPE="text/css"><!--
+BODY { font-family: sans-serif }
+H1 { font-family: sans-serif }
+H2 { font-family: sans-serif }
+H3 { font-family: sans-serif }
+H4 { font-family: sans-serif }
+H5 { font-family: sans-serif }
+H6 { font-family: sans-serif }
+SUB { font-size: smaller }
+SUP { font-size: smaller }
+PRE { font-family: monospace }
+A { text-decoration: none }
+--></STYLE>
+</HEAD>
+<BODY>
+<A HREF="index.html">Contents</A>
+<A HREF="intro.html">Previous</A>
+<A HREF="basics.html">Next</A>
+<HR NOSHADE>
+<H1 align="right"><A name="INSTALL"><IMG align="right" alt="1" height="100"
+hspace="10" src="1.gif" width="100"></A>Building, Installing, and
+ Packaging Mini-XML</H1>
+<P>This chapter describes how to build, install, and package Mini-XML on
+ your system from the source archive. You will need an ANSI/ISO-C
+ compatible compiler to build Mini-XML - GCC works, as do most vendors'
+ C compilers. If you are building Mini-XML on Windows, we recommend
+ using the Visual C++ environment with the supplied solution file. For
+ other operating systems, you'll need a POSIX-compatible shell and <TT>
+make</TT> program in addition to the C compiler.</P>
+<H2><A NAME="2_1">Compiling Mini-XML</A></H2>
+<P>Mini-XML comes with both an autoconf-based configure script and a
+ Visual C++ solution that can be used to compile the library and
+ associated tools.</P>
+<H3><A NAME="2_1_1">Compiling with Visual C++</A></H3>
+<P>Open the<VAR> mxml.sln</VAR> solution in the<VAR> vcnet</VAR> folder.
+ Choose the desired build configuration, &quot;Debug&quot; (the default) or
+ &quot;Release&quot;, and then choose<VAR> Build Solution</VAR> from the<VAR>
+ Build</VAR> menu.</P>
+<H3><A NAME="2_1_2">Compiling with Command-Line Tools</A></H3>
+<P>Type the following command to configure the Mini-XML source code for
+ your system:</P>
+<PRE>
+    <KBD>./configure ENTER</KBD>
+</PRE>
+<P>The default install prefix is<VAR> /usr/local</VAR>, which can be
+ overridden using the <KBD>--prefix</KBD> option:</P>
+<PRE>
+    <KBD>./configure --prefix=/foo ENTER</KBD>
+</PRE>
+<P>Other configure options can be found using the <KBD>--help</KBD>
+ option:</P>
+<PRE>
+    <KBD>./configure --help ENTER</KBD>
+</PRE>
+<P>Once you have configured the software, use the <TT>make(1)</TT>
+ program to do the build and run the test program to verify that things
+ are working, as follows:</P>
+<PRE>
+    <KBD>make ENTER</KBD>
+</PRE>
+<H2><A NAME="2_2">Installing Mini-XML</A></H2>
+<P>If you are using Visual C++, copy the<VAR> mxml.lib</VAR> and and<VAR>
+ mxml.h</VAR> files to the Visual C++<VAR> lib</VAR> and<VAR> include<VAR>
+ directories, respectively.</VAR></VAR></P>
+<P>Otherwise, use the <TT>make</TT> command with the <KBD>install</KBD>
+ target to install Mini-XML in the configured directories:</P>
+<PRE>
+    <KBD>make install ENTER</KBD>
+</PRE>
+<H2><A NAME="2_3">Creating Mini-XML Packages</A></H2>
+<P>Mini-XML includes two files that can be used to create binary
+ packages. The first file is<VAR> mxml.spec</VAR> which is used by the <TT>
+rpmbuild(8)</TT> software to create Red Hat Package Manager (&quot;RPM&quot;)
+ packages which are commonly used on Linux. Since <TT>rpmbuild</TT>
+ wants to compile the software on its own, you can provide it with the
+ Mini-XML tar file to build the package:</P>
+<PRE>
+    <KBD>rpmbuild -ta mxml-<I>version</I>.tar.gz ENTER</KBD>
+</PRE>
+<P>The second file is<VAR> mxml.list</VAR> which is used by the <TT>
+epm(1)</TT> program to create software packages in a variety of formats.
+ The <TT>epm</TT> program is available from the following URL:</P>
+<PRE>
+    <A href="http://www.epmhome.org/">http://www.epmhome.org/</A>
+</PRE>
+<P>Use the <TT>make</TT> command with the <KBD>epm</KBD> target to
+ create portable and native packages for your system:</P>
+<PRE>
+    <KBD>make epm ENTER</KBD>
+</PRE>
+<P>The packages are stored in a subdirectory named<VAR> dist</VAR> for
+ your convenience. The portable packages utilize scripts and tar files
+ to install the software on the target system. After extracting the
+ package archive, use the<VAR> mxml.install</VAR> script to install the
+ software.</P>
+<P>The native packages will be in the local OS's native format: RPM for
+ Red Hat Linux, DPKG for Debian Linux, PKG for Solaris, and so forth.
+ Use the corresponding commands to install the native packages.</P>
+<HR NOSHADE>
+<A HREF="index.html">Contents</A>
+<A HREF="intro.html">Previous</A>
+<A HREF="basics.html">Next</A>
+</BODY>
+</HTML>

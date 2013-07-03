@@ -1,5 +1,12 @@
-CHANGES - 2011-12-20
+CHANGES - 2013-07-03
 --------------------
+
+CHANGES IN Mini-XML 2.8
+
+	- Now call docsetutil using xcrun on OS X.
+	- mxmldoc did not escape special HTML characters inside @code foo@
+	  comments.
+
 
 CHANGES IN Mini-XML 2.7
 

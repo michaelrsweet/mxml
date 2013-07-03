@@ -3,7 +3,7 @@
 #
 # Makefile for Mini-XML, a small XML-like file parsing library.
 #
-# Copyright 2003-2011 by Michael R Sweet.
+# Copyright 2003-2013 by Michael R Sweet.
 #
 # These coded instructions, statements, and computer programs are the
 # property of Michael R Sweet and are protected by Federal copyright
@@ -396,7 +396,7 @@ mxml.xml:	mxmldoc-static mxml.h $(PUBLIBOBJS:.o=.c)
 			--css doc/docset.css --title "Mini-XML API Reference" \
 			mxml.xml || exit 1; \
 		$(RM) org.minixml.atom; \
-		/Developer/usr/bin/docsetutil package --output org.minixml.xar \
+		xcrun docsetutil package --output org.minixml.xar \
 			--atom org.minixml.atom \
 			--download-url http://www.minixml.org/org.minixml.xar \
 			org.minixml.docset || exit 1; \

@@ -5,7 +5,7 @@
  * Documentation generator using Mini-XML, a small XML-like file parsing
  * library.
  *
- * Copyright 2003-2011 by Michael R Sweet.
+ * Copyright 2003-2013 by Michael R Sweet.
  *
  * These coded instructions, statements, and computer programs are the
  * property of Michael R Sweet and are protected by Federal copyright
@@ -2824,7 +2824,21 @@ write_description(
         ptr --;
 
       if (element && *element)
-        fprintf(out, "<code>%s</code>", start);
+      {
+        fputs("<code>", out);
+        for (; *start; start ++)
+        {
+          if (*start == '<')
+            fputs("&lt;", out);
+          else if (*start == '>')
+            fputs("&gt;", out);
+          else if (*start == '&')
+            fputs("&amp;", out);
+          else
+            putc(*start, out);
+        }
+        fputs("</code>", out);
+      }
       else if (element)
         fputs(start, out);
       else
@@ -3778,15 +3792,17 @@ write_html(const char  *section,	/* I - Section */
 
   if (docset)
   {
-    const char	*args[4];		/* Argument array */
+    int		argc = 0;		/* Argument count */
+    const char	*args[5];		/* Argument array */
     pid_t	pid;			/* Process ID */
     int		status;			/* Exit status */
 
 
-    args[0] = "/Developer/usr/bin/docsetutil";
-    args[1] = "index";
-    args[2] = docset;
-    args[3] = NULL;
+    args[argc++] = "/usr/bin/xcrun";
+    args[argc++] = "docsetutil";
+    args[argc++] = "index";
+    args[argc++] = docset;
+    args[argc  ] = NULL;
 
     if (posix_spawn(&pid, args[0], NULL, NULL, (char **)args, environ))
     {

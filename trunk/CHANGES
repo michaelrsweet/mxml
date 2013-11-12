@@ -6,7 +6,8 @@ CHANGES IN Mini-XML 2.8
 	- Now call docsetutil using xcrun on OS X.
 	- mxmldoc did not escape special HTML characters inside @code foo@
 	  comments.
-	- Fixed a memory leak in mxmlElementDeleteAttr (STR #452)
+	- Fixed a memory leak in mxmlElementDeleteAttr (Bug #452)
+	- Added MXML_MAJOR/MINOR_VERSION definitions to mxml.h (Bug $461)
 
 
 CHANGES IN Mini-XML 2.7

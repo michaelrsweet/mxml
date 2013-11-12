@@ -3,7 +3,7 @@
  *
  * Header file for Mini-XML, a small XML-like file parsing library.
  *
- * Copyright 2003-2011 by Michael R Sweet.
+ * Copyright 2003-2013 by Michael R Sweet.
  *
  * These coded instructions, statements, and computer programs are the
  * property of Michael R Sweet and are protected by Federal copyright
@@ -35,6 +35,9 @@
 /*
  * Constants...
  */
+
+#  define MXML_MAJOR_VERSION	2	/* Major version number */
+#  define MXML_MINOR_VERSION	8	/* Minor version number */
 
 #  define MXML_TAB		8	/* Tabs every N columns */
 
@@ -93,7 +96,7 @@ typedef enum mxml_type_e		/**** The XML node type. ****/
 typedef void (*mxml_custom_destroy_cb_t)(void *);
 					/**** Custom data destructor ****/
 
-typedef void (*mxml_error_cb_t)(const char *);  
+typedef void (*mxml_error_cb_t)(const char *);
 					/**** Error callback function ****/
 
 typedef struct mxml_attr_s		/**** An XML element attribute value. @private@ ****/
@@ -161,7 +164,7 @@ typedef struct mxml_index_s mxml_index_t;
 typedef int (*mxml_custom_load_cb_t)(mxml_node_t *, const char *);
 					/**** Custom data load callback function ****/
 
-typedef char *(*mxml_custom_save_cb_t)(mxml_node_t *);  
+typedef char *(*mxml_custom_save_cb_t)(mxml_node_t *);
 					/**** Custom data save callback function ****/
 
 typedef int (*mxml_entity_cb_t)(const char *);
@@ -173,7 +176,7 @@ typedef mxml_type_t (*mxml_load_cb_t)(mxml_node_t *);
 typedef const char *(*mxml_save_cb_t)(mxml_node_t *, int);
 					/**** Save callback function ****/
 
-typedef void (*mxml_sax_cb_t)(mxml_node_t *, mxml_sax_event_t, void *);  
+typedef void (*mxml_sax_cb_t)(mxml_node_t *, mxml_sax_event_t, void *);
 					/**** SAX callback function ****/
 
 

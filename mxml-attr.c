@@ -3,7 +3,7 @@
  *
  * Attribute support code for Mini-XML, a small XML-like file parsing library.
  *
- * Copyright 2003-2010 by Michael R Sweet.
+ * Copyright 2003-2013 by Michael R Sweet.
  *
  * These coded instructions, statements, and computer programs are the
  * property of Michael R Sweet and are protected by Federal copyright
@@ -12,14 +12,6 @@
  * missing or damaged, see the license at:
  *
  *     http://www.minixml.org/
- *
- * Contents:
- *
- *   mxmlElementDeleteAttr() - Delete an attribute.
- *   mxmlElementGetAttr()    - Get an attribute.
- *   mxmlElementSetAttr()    - Set an attribute.
- *   mxmlElementSetAttrf()   - Set an attribute with a formatted value.
- *   mxml_set_attr()         - Set or add an attribute name/value pair.
  */
 
 /*
@@ -90,6 +82,9 @@ mxmlElementDeleteAttr(mxml_node_t *node,/* I - Element */
         memmove(attr, attr + 1, i * sizeof(mxml_attr_t));
 
       node->value.element.num_attrs --;
+
+      if (node->value.element.num_attrs == 0)
+        free(node->value.element.attrs);
       return;
     }
   }

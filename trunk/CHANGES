@@ -1,4 +1,4 @@
-CHANGES - 2013-07-03
+CHANGES - 2013-11-11
 --------------------
 
 CHANGES IN Mini-XML 2.8
@@ -6,6 +6,7 @@ CHANGES IN Mini-XML 2.8
 	- Now call docsetutil using xcrun on OS X.
 	- mxmldoc did not escape special HTML characters inside @code foo@
 	  comments.
+	- Fixed a memory leak in mxmlElementDeleteAttr (STR #452)
 
 
 CHANGES IN Mini-XML 2.7

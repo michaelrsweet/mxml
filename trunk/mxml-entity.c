@@ -4,7 +4,7 @@
  * Character entity support code for Mini-XML, a small XML-like
  * file parsing library.
  *
- * Copyright 2003-2010 by Michael R Sweet.
+ * Copyright 2003-2014 by Michael R Sweet.
  *
  * These coded instructions, statements, and computer programs are the
  * property of Michael R Sweet and are protected by Federal copyright
@@ -12,18 +12,7 @@
  * which should have been included with this file.  If this file is
  * missing or damaged, see the license at:
  *
- *     http://www.minixml.org/
- *
- * Contents:
- *
- *   mxmlEntityAddCallback()    - Add a callback to convert entities to
- *                                Unicode.
- *   mxmlEntityGetName()        - Get the name that corresponds to the
- *                                character value.
- *   mxmlEntityGetValue()       - Get the character corresponding to a named
- *                                entity.
- *   mxmlEntityRemoveCallback() - Remove a callback.
- *   _mxml_entity_cb()          - Lookup standard (X)HTML entities.
+ *     http://www.msweet.org/projects.php/Mini-XML
  */
 
 /*

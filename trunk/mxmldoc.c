@@ -5,7 +5,7 @@
  * Documentation generator using Mini-XML, a small XML-like file parsing
  * library.
  *
- * Copyright 2003-2013 by Michael R Sweet.
+ * Copyright 2003-2014 by Michael R Sweet.
  *
  * These coded instructions, statements, and computer programs are the
  * property of Michael R Sweet and are protected by Federal copyright
@@ -14,34 +14,6 @@
  * missing or damaged, see the license at:
  *
  *     http://www.minixml.org/
- *
- * Contents:
- *
- *   main()              - Main entry for test program.
- *   add_variable()      - Add a variable or argument.
- *   find_public()       - Find a public function, type, etc.
- *   get_comment_info()  - Get info from comment.
- *   get_text()          - Get the text for a node.
- *   load_cb()           - Set the type of child nodes.
- *   new_documentation() - Create a new documentation tree.
- *   remove_directory()  - Remove a directory.
- *   safe_strcpy()       - Copy a string allowing for overlapping strings.
- *   scan_file()         - Scan a source file.
- *   sort_node()         - Insert a node sorted into a tree.
- *   update_comment()    - Update a comment node.
- *   usage()             - Show program usage...
- *   write_description() - Write the description text.
- *   write_element()     - Write an element's text nodes.
- *   write_file()        - Copy a file to the output.
- *   write_function()    - Write documentation for a function.
- *   write_html()        - Write HTML documentation.
- *   write_html_head()   - Write the standard HTML header.
- *   write_man()         - Write manpage documentation.
- *   write_scu()         - Write a structure, class, or union.
- *   write_string()      - Write a string, quoting HTML special chars as needed.
- *   write_toc()         - Write a table-of-contents.
- *   write_tokens()      - Write <Token> nodes for all APIs.
- *   ws_cb()             - Whitespace callback for saving.
  */
 
 /*

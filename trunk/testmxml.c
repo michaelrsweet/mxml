@@ -3,7 +3,7 @@
  *
  * Test program for Mini-XML, a small XML-like file parsing library.
  *
- * Copyright 2003-2011 by Michael R Sweet.
+ * Copyright 2003-2014 by Michael R Sweet.
  *
  * These coded instructions, statements, and computer programs are the
  * property of Michael R Sweet and are protected by Federal copyright
@@ -11,15 +11,7 @@
  * which should have been included with this file.  If this file is
  * missing or damaged, see the license at:
  *
- *     http://www.minixml.org/
- *
- * Contents:
- *
- *   main()          - Main entry for test program.
- *   sax_cb()        - SAX callback.
- *   type_cb()       - XML data type callback for mxmlLoadFile()...
- *   whitespace_cb() - Let the mxmlSaveFile() function know when to insert
- *                     newlines and tabs...
+ *     http://www.msweet.org/projects.php/Mini-XML
  */
 
 /*

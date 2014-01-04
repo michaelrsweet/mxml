@@ -3,7 +3,7 @@
 #
 # EPM software list file for Mini-XML, a small XML library.
 #
-# Copyright 2003-2009 by Michael Sweet.
+# Copyright 2003-2014 by Michael Sweet.
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Library General Public
@@ -31,7 +31,7 @@ $PICFLAG=@PICFLAG@
 
 # Product information
 %product mxml
-%copyright 2003-2009 by Michael Sweet
+%copyright 2003-2014 by Michael Sweet
 %vendor Michael Sweet
 %license ${srcdir}/COPYING
 %readme ${srcdir}/README
@@ -79,9 +79,9 @@ f 0555 root sys ${libdir}/libmxml.1.dylib libmxml.1.dylib
 l 0555 root sys ${libdir}/libmxml.dylib libmxml.1.dylib
 
 %system freebsd irix linux netbsd openbsd solaris tru64
-f 0555 root sys ${libdir}/libmxml.so.1.4 libmxml.so.1.4
-l 0555 root sys ${libdir}/libmxml.so.1 libmxml.so.1.4
-l 0555 root sys ${libdir}/libmxml.so libmxml.so.1.4
+f 0555 root sys ${libdir}/libmxml.so.1.5 libmxml.so.1.5
+l 0555 root sys ${libdir}/libmxml.so.1 libmxml.so.1.5
+l 0555 root sys ${libdir}/libmxml.so libmxml.so.1.5
 
 %system all
 %endif

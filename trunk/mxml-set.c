@@ -3,7 +3,7 @@
  *
  * Node set functions for Mini-XML, a small XML-like file parsing library.
  *
- * Copyright 2003-2011 by Michael R Sweet.
+ * Copyright 2003-2014 by Michael R Sweet.
  *
  * These coded instructions, statements, and computer programs are the
  * property of Michael R Sweet and are protected by Federal copyright
@@ -11,19 +11,7 @@
  * which should have been included with this file.  If this file is
  * missing or damaged, see the license at:
  *
- *     http://www.minixml.org/
- *
- * Contents:
- *
- *   mxmlSetCDATA()    - Set the element name of a CDATA node.
- *   mxmlSetCustom()   - Set the data and destructor of a custom data node.
- *   mxmlSetElement()  - Set the name of an element node.
- *   mxmlSetInteger()  - Set the value of an integer node.
- *   mxmlSetOpaque()   - Set the value of an opaque node.
- *   mxmlSetReal()     - Set the value of a real number node.
- *   mxmlSetText()     - Set the value of a text node.
- *   mxmlSetTextf()    - Set the value of a text node to a formatted string.
- *   mxmlSetUserData() - Set the user data pointer for a node.
+ *     http://www.msweet.org/projects.php/Mini-XML
  */
 
 /*

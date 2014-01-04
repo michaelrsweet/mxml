@@ -1,10 +1,10 @@
-README - 2011-12-20
+README - 2014-01-04
 -------------------
 
 
 INTRODUCTION
 
-    This README file describes the Mini-XML library version 2.7.
+    This README file describes the Mini-XML library version 2.8.
 
     Mini-XML is a small XML parsing library that you can use to read XML and
     XML-like data files in your application without requiring large non-standard
@@ -50,8 +50,8 @@ BUILDING Mini-XML
 
         make
 
-    If you are using Mini-XML under Microsoft Windows with Visual C++ 2008, use
-    the included project files in the "vcnet" subdirectory to build the library
+    If you are using Mini-XML under Microsoft Windows with Visual C++, use the
+    included project files in the "vcnet" subdirectory to build the library
     instead.
 
 
@@ -184,13 +184,13 @@ DOCUMENTATION
 
 GETTING HELP AND REPORTING PROBLEMS
 
-    The Mini-XML web site provides access to a discussion forum and bug
+    The Mini-XML project page provides access to a discussion forum and bug
     reporting page:
 
-        http://www.minixml.org/
+        http://www.msweet.org/projects.php/Mini-XML
 
 
 LEGAL STUFF
 
-    The Mini-XML library is Copyright 2003-2011 by Michael Sweet.  License terms
+    The Mini-XML library is Copyright 2003-2014 by Michael Sweet.  License terms
     are described in the file "COPYING".

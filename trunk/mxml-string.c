@@ -149,7 +149,8 @@ _mxml_vsnprintf(char       *buffer,	/* O - Output buffer */
 
       if (*format == '%')
       {
-        if (bufptr && bufptr < bufend) *bufptr++ = *format;
+        if (bufptr && bufptr < bufend)
+          *bufptr++ = *format;
         bytes ++;
         format ++;
 	continue;

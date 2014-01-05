@@ -1,0 +1,7 @@
+TODO - 2011-12-20
+-----------------
+
+	- Add C++ class/struct.
+	  -- Make this the core implementation which the C API accesses?
+	  -- Class would allow for subclassing, is that necessary?
+	- Binary XML support???

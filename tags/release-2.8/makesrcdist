@@ -1,0 +1,51 @@
+#!/bin/sh
+#
+# "$Id$"
+#
+# makesrcdist - make a source distribution of mxml.
+#
+
+echo "Getting distribution..."
+
+if test $# = 0; then
+	echo -n "Version number for distribution? "
+	read version
+else
+	version=$1
+fi
+
+cd /tmp
+
+if test $version = snapshot; then
+	url="https://svn.msweet.org/mxml/trunk"
+else
+	url="svn+ssh://msweet.org/var/svn/mxml/tags/release-$version"
+
+	svn copy svn+ssh://msweet.org/var/svn/mxml/trunk "$url" \
+		-m "Tag $version" || exit 1
+fi
+
+rm -rf mxml-$version
+svn export $url mxml-$version
+cd mxml-$version
+
+echo "Removing Subversion files and directories..."
+
+rm -f makesrcdist TODO mvalidate.c
+rm -rf www
+rm -rf doc/mxml-cover* doc/hires
+cd ..
+
+echo "Making .tar.gz distribution..."
+
+tar czf mxml-$version.tar.gz mxml-$version
+
+echo "Removing distribution directory..."
+
+rm -rf mxml-$version
+
+echo "Done!"
+
+#
+# End of "$Id$".
+#

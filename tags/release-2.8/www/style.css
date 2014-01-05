@@ -1,0 +1,241 @@
+BODY {
+  background: #ffffff;
+  color: #000000;
+  font-family: sans-serif;
+  margin: 15px;
+}
+
+P, TD, TH {
+  color: #000000;
+  font-family: sans-serif;
+}
+
+H1, H2, H3, H4, H5, H6 {
+  color: #000000;
+  font-family: sans-serif;
+}
+
+H2, H3, H4, H5, H6 {
+  font-style: italic;
+}
+
+KBD {
+  color: #006600;
+  font-family: monospace;
+  font-weight: bold;
+}
+
+PRE {
+  color: #7f0000;
+  font-family: monospace;
+}
+
+SUB, SUP {
+  font-size: smaller;
+}
+
+FORM {
+  display: inline;
+}
+
+INPUT[TYPE="TEXT"], INPUT[TYPE="PASSWORD"], INPUT[TYPE="SEARCH"], TEXTAREA {
+  font-family: monospace;
+}
+
+A:link {
+  font-family: sans-serif;
+  text-decoration: none;
+  color: #00007f;
+}
+
+A:visited {
+  font-family: sans-serif;
+  text-decoration: none;
+  color: #0000bf;
+}
+
+A:hover {
+  font-family: sans-serif;
+  text-decoration: none;
+  color: #7f0000;
+}
+
+A:active {
+  font-family: sans-serif;
+  text-decoration: underline;
+  color: #bf0000;
+}
+
+TD.unsel, TD.sel {
+  border-bottom: solid 1px black;
+  padding: 1px 10px;
+  vertical-align: bottom;
+}
+
+TD.unsel A, TD.sel A {
+  font-weight: bold;
+  padding: 1px 10px;
+}
+
+TD.sel A {
+  border-bottom: solid 3px black;
+}
+
+TD.unsel A:hover, TD.sel A:hover {
+  background: #f4f4f4;
+  border-bottom: solid 3px #999999;
+}
+
+TD.page {
+  height: 100%;
+  padding: 10px 0px;
+  vertical-align: top;
+}
+
+TD.footer {
+  border-top: solid thin #666666;
+  color: #666666;
+  font-size: 80%;
+  padding: 5px;
+}
+
+P.links {
+  border-bottom: solid 1px #999999;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0px 10px;
+  text-align: center;
+  vertical-align: bottom;
+  width: 80%;
+}
+
+P.links A {
+  padding: 0px 5px;
+}
+
+P.links A:hover {
+  background: #f8f8f8;
+  border-bottom: solid 3px #cccccc;
+}
+
+TABLE.standard {
+  border-bottom: solid thin black;
+  border-collapse: collapse;
+}
+
+TR.header TH {
+  border-bottom: solid thin black;
+  padding: 0px 5px;
+  vertical-align: bottom;
+}
+
+TR.data0 TD, TR.data0 TH {
+  background-color: #f8f8f8;
+  padding: 2px;
+}
+
+TR.data1 TD, TR.data1 TH {
+  background-color: #f4f4f4;
+  padding: 2px;
+}
+
+.dateinfo {
+  font-size: 80%;
+  font-style: italic;
+}
+
+.invalid {
+  background: red;
+  color: white;
+  font-weight: bold;
+  padding: 2px;
+}
+/* Styles for documentation */
+.class {
+  border-bottom: solid 2px gray;
+}
+.constants {
+}
+.description {
+  margin-top: 0.5em;
+}
+.discussion {
+}
+.enumeration {
+  border-bottom: solid 2px gray;
+}
+.function {
+  border-bottom: solid 2px gray;
+  margin-bottom: 0;
+}
+.members {
+}
+.method {
+}
+.parameters {
+}
+.returnvalue {
+}
+.struct {
+  border-bottom: solid 2px gray;
+}
+.typedef {
+  border-bottom: solid 2px gray;
+}
+.union {
+  border-bottom: solid 2px gray;
+}
+.variable {
+}
+code, p.code, pre, ul.code li {
+  font-family: monaco, courier, monospace;
+  font-size: 90%;
+}
+a:link, a:visited {
+  text-decoration: none;
+}
+span.info {
+  background: black;
+  border: solid thin black;
+  color: white;
+  font-size: 80%;
+  font-style: italic;
+  font-weight: bold;
+  white-space: nowrap;
+}
+h3 span.info, h4 span.info {
+  float: right;
+  font-size: 100%;
+}
+ul.code, ul.contents, ul.subcontents {
+  list-style-type: none;
+  margin: 0;
+  padding-left: 0;
+}
+ul.code li {
+  margin: 0;
+}
+ul.contents > li {
+  margin-top: 1em;
+}
+ul.contents li ul.code, ul.contents li ul.subcontents {
+  padding-left: 2em;
+}
+div.body dl {
+  margin-top: 0;
+}
+div.body dt {
+  font-style: italic;
+  margin-top: 0;
+}
+div.body dd {
+  margin-bottom: 0.5em;
+}
+h1.title {
+}
+h2.title {
+  border-bottom: solid 2px black;
+}
+h3.title {
+  border-bottom: solid 2px black;
+}

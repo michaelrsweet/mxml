@@ -1428,8 +1428,10 @@ mxml_load_data(
 
   if (cb && parent)
     type = (*cb)(parent);
-  else
+  else if (parent)
     type = MXML_TEXT;
+  else
+    type = MXML_IGNORE;
 
   while ((ch = (*getc_cb)(p, &encoding)) != EOF)
   {

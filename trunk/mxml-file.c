@@ -2043,7 +2043,7 @@ mxml_load_data(
   {
     node = parent;
 
-    while (parent->parent != top && parent->parent)
+    while (parent != top && parent->parent)
       parent = parent->parent;
 
     if (node != parent)

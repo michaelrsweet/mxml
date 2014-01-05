@@ -10,6 +10,7 @@ CHANGES IN Mini-XML 2.8
 	- Added MXML_MAJOR/MINOR_VERSION definitions to mxml.h (Bug $461)
 	- Fixed a bug reading UTF-16 characters from a file (Bug #454)
 	- Fixed a memory leak when loading invalid XML (Bug #496)
+	- Fixed an XML fragment loading problem (Bug #494)
 
 
 CHANGES IN Mini-XML 2.7

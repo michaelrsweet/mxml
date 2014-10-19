@@ -1798,6 +1798,8 @@ mxml_load_data(
 
 	    if (cb)
 	      type = (*cb)(parent);
+	    else
+	      type = MXML_TEXT;
 	  }
 	}
       }
@@ -1884,6 +1886,8 @@ mxml_load_data(
 
 	    if (cb)
 	      type = (*cb)(parent);
+	    else
+	      type = MXML_TEXT;
 	  }
 	}
       }

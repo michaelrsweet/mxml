@@ -3,6 +3,11 @@
  *
  * Test program for Mini-XML, a small XML-like file parsing library.
  *
+ * Usage:
+ *
+ *   ./testmxml input.xml [string-output.xml] >stdio-output.xml
+ *   ./testmxml "<?xml ..." [string-output.xml] >stdio-output.xml
+ *
  * Copyright 2003-2014 by Michael R Sweet.
  *
  * These coded instructions, statements, and computer programs are the
@@ -74,9 +79,9 @@ main(int  argc,				/* I - Number of command-line args */
   * Check arguments...
   */
 
-  if (argc != 2)
+  if (argc != 2 && argc != 3)
   {
-    fputs("Usage: testmxml filename.xml\n", stderr);
+    fputs("Usage: testmxml filename.xml [string-output.xml]\n", stderr);
     return (1);
   }
 
@@ -446,6 +451,68 @@ main(int  argc,				/* I - Number of command-line args */
   mxmlDelete(tree);
 
  /*
+  * Open the file/string using the default (MXML_NO_CALLBACK) callback...
+  */
+
+  if (argv[1][0] == '<')
+    tree = mxmlLoadString(NULL, argv[1], MXML_NO_CALLBACK);
+  else if ((fp = fopen(argv[1], "rb")) == NULL)
+  {
+    perror(argv[1]);
+    return (1);
+  }
+  else
+  {
+   /*
+    * Read the file...
+    */
+
+    tree = mxmlLoadFile(NULL, fp, MXML_NO_CALLBACK);
+
+    fclose(fp);
+  }
+
+  if (!tree)
+  {
+    fputs("Unable to read XML file with default callback!\n", stderr);
+    return (1);
+  }
+
+  if (!strcmp(argv[1], "test.xml"))
+  {
+    const char	*text;			/* Text value */
+
+   /*
+    * Verify that mxmlFindElement() and indirectly mxmlWalkNext() work
+    * properly...
+    */
+
+    if ((node = mxmlFindPath(tree, "group/option/keyword")) == NULL)
+    {
+      fputs("Unable to find group/option/keyword element in XML tree!\n", stderr);
+      mxmlDelete(tree);
+      return (1);
+    }
+
+    if (node->type != MXML_TEXT)
+    {
+      fputs("No child node of group/option/keyword!\n", stderr);
+      mxmlSaveFile(tree, stderr, MXML_NO_CALLBACK);
+      mxmlDelete(tree);
+      return (1);
+    }
+
+    if ((text = mxmlGetText(node, NULL)) == NULL || strcmp(text, "InputSlot"))
+    {
+      fprintf(stderr, "Child node of group/option/value has value \"%s\" instead of \"InputSlot\"!\n", text ? text : "(null)");
+      mxmlDelete(tree);
+      return (1);
+    }
+  }
+
+  mxmlDelete(tree);
+
+ /*
   * Open the file...
   */
 
@@ -507,7 +574,14 @@ main(int  argc,				/* I - Number of command-line args */
   */
 
   if (mxmlSaveString(tree, buffer, sizeof(buffer), whitespace_cb) > 0)
-    fputs(buffer, stderr);
+  {
+    if (argc == 3)
+    {
+      fp = fopen(argv[2], "w");
+      fputs(buffer, fp);
+      fclose(fp);
+    }
+  }
 
  /*
   * Delete the tree...

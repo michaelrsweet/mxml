@@ -1,5 +1,11 @@
-CHANGES - 2014-01-04
+CHANGES - 2014-10-19
 --------------------
+
+CHANGES IN Mini-XML 2.9
+
+	- mxmlLoad* did not correctly load value nodes with MXML_NO_CALLBACK
+	  or MXML_TEXT_CALLBACK (Bug #502)
+
 
 CHANGES IN Mini-XML 2.8
 

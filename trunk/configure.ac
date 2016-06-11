@@ -3,7 +3,7 @@ dnl "$Id$"
 dnl
 dnl Configuration script for Mini-XML, a small XML-like file parsing library.
 dnl
-dnl Copyright 2003-2014 by Michael R Sweet.
+dnl Copyright 2003-2016 by Michael R Sweet.
 dnl
 dnl These coded instructions, statements, and computer programs are the
 dnl property of Michael R Sweet and are protected by Federal copyright
@@ -14,14 +14,14 @@ dnl
 dnl     http://www.msweet.org/projects.php/Mini-XML
 dnl
 
-dnl Specify a source file from the distribution...
-AC_INIT(mxml.h)
+dnl Package name and version...
+AC_INIT([Mini-XML], [2.10], [http://www.msweet.org/bugs.php/Mini-XML], [mxml], [http://www.msweet.org/projects.php/Mini-XML])
 
 dnl Set the name of the config header file...
 AC_CONFIG_HEADER(config.h)
 
 dnl Version number...
-VERSION=2.9
+VERSION="AC_PACKAGE_VERSION"
 AC_SUBST(VERSION)
 AC_DEFINE_UNQUOTED(MXML_VERSION, "Mini-XML v$VERSION")
 

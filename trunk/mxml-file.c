@@ -3,7 +3,7 @@
  *
  * File loading code for Mini-XML, a small XML-like file parsing library.
  *
- * Copyright 2003-2014 by Michael R Sweet.
+ * Copyright 2003-2016 by Michael R Sweet.
  *
  * These coded instructions, statements, and computer programs are the
  * property of Michael R Sweet and are protected by Federal copyright
@@ -2710,6 +2710,8 @@ mxml_write_node(mxml_node_t     *node,	/* I - Node to write */
 		_mxml_putc_cb_t putc_cb,/* I - Output callback */
 		_mxml_global_t  *global)/* I - Global data */
 {
+  mxml_node_t	*current,		/* Current node */
+		*next;			/* Next node */
   int		i,			/* Looping var */
 		width;			/* Width of attr + value */
   mxml_attr_t	*attr;			/* Current attribute */
@@ -2717,252 +2719,264 @@ mxml_write_node(mxml_node_t     *node,	/* I - Node to write */
 
 
  /*
-  * Print the node value...
+  * Loop through this node and all of its children...
   */
 
-  switch (node->type)
+  for (current = node; current; current = next)
   {
-    case MXML_ELEMENT :
-	col = mxml_write_ws(node, p, cb, MXML_WS_BEFORE_OPEN, col, putc_cb);
+   /*
+    * Print the node value...
+    */
 
-	if ((*putc_cb)('<', p) < 0)
-	  return (-1);
-	if (node->value.element.name[0] == '?' ||
-	    !strncmp(node->value.element.name, "!--", 3) ||
-	    !strncmp(node->value.element.name, "![CDATA[", 8))
-	{
-	 /*
-	  * Comments, CDATA, and processing instructions do not
-	  * use character entities.
-	  */
+    switch (current->type)
+    {
+      case MXML_ELEMENT :
+	  col = mxml_write_ws(current, p, cb, MXML_WS_BEFORE_OPEN, col, putc_cb);
 
-	  const char	*ptr;		/* Pointer into name */
-
-
-	  for (ptr = node->value.element.name; *ptr; ptr ++)
-	    if ((*putc_cb)(*ptr, p) < 0)
-	      return (-1);
-	}
-	else if (mxml_write_name(node->value.element.name, p, putc_cb) < 0)
-	  return (-1);
-
-	col += strlen(node->value.element.name) + 1;
-
-	for (i = node->value.element.num_attrs, attr = node->value.element.attrs;
-	     i > 0;
-	     i --, attr ++)
-	{
-	  width = strlen(attr->name);
-
-	  if (attr->value)
-	    width += strlen(attr->value) + 3;
-
-	  if (global->wrap > 0 && (col + width) > global->wrap)
+	  if ((*putc_cb)('<', p) < 0)
+	    return (-1);
+	  if (current->value.element.name[0] == '?' ||
+	      !strncmp(current->value.element.name, "!--", 3) ||
+	      !strncmp(current->value.element.name, "![CDATA[", 8))
 	  {
-	    if ((*putc_cb)('\n', p) < 0)
+	   /*
+	    * Comments, CDATA, and processing instructions do not
+	    * use character entities.
+	    */
+
+	    const char	*ptr;		/* Pointer into name */
+
+	    for (ptr = current->value.element.name; *ptr; ptr ++)
+	      if ((*putc_cb)(*ptr, p) < 0)
+		return (-1);
+	  }
+	  else if (mxml_write_name(current->value.element.name, p, putc_cb) < 0)
+	    return (-1);
+
+	  col += strlen(current->value.element.name) + 1;
+
+	  for (i = current->value.element.num_attrs, attr = current->value.element.attrs;
+	       i > 0;
+	       i --, attr ++)
+	  {
+	    width = strlen(attr->name);
+
+	    if (attr->value)
+	      width += strlen(attr->value) + 3;
+
+	    if (global->wrap > 0 && (col + width) > global->wrap)
+	    {
+	      if ((*putc_cb)('\n', p) < 0)
+		return (-1);
+
+	      col = 0;
+	    }
+	    else
+	    {
+	      if ((*putc_cb)(' ', p) < 0)
+		return (-1);
+
+	      col ++;
+	    }
+
+	    if (mxml_write_name(attr->name, p, putc_cb) < 0)
 	      return (-1);
 
-	    col = 0;
+	    if (attr->value)
+	    {
+	      if ((*putc_cb)('=', p) < 0)
+		return (-1);
+	      if ((*putc_cb)('\"', p) < 0)
+		return (-1);
+	      if (mxml_write_string(attr->value, p, putc_cb) < 0)
+		return (-1);
+	      if ((*putc_cb)('\"', p) < 0)
+		return (-1);
+	    }
+
+	    col += width;
+	  }
+
+	  if (current->child)
+	  {
+	   /*
+	    * Write children...
+	    */
+
+	    if ((*putc_cb)('>', p) < 0)
+	      return (-1);
+	    else
+	      col ++;
+
+	    col = mxml_write_ws(current, p, cb, MXML_WS_AFTER_OPEN, col, putc_cb);
+	  }
+	  else if (current->value.element.name[0] == '!' ||
+		   current->value.element.name[0] == '?')
+	  {
+	   /*
+	    * The ? and ! elements are special-cases...
+	    */
+
+	    if ((*putc_cb)('>', p) < 0)
+	      return (-1);
+	    else
+	      col ++;
+
+	    col = mxml_write_ws(current, p, cb, MXML_WS_AFTER_OPEN, col, putc_cb);
 	  }
 	  else
 	  {
 	    if ((*putc_cb)(' ', p) < 0)
 	      return (-1);
-
-	    col ++;
-	  }
-
-	  if (mxml_write_name(attr->name, p, putc_cb) < 0)
-	    return (-1);
-
-	  if (attr->value)
-	  {
-	    if ((*putc_cb)('=', p) < 0)
-	      return (-1);
-	    if ((*putc_cb)('\"', p) < 0)
-	      return (-1);
-	    if (mxml_write_string(attr->value, p, putc_cb) < 0)
-	      return (-1);
-	    if ((*putc_cb)('\"', p) < 0)
-	      return (-1);
-	  }
-
-	  col += width;
-	}
-
-	if (node->child)
-	{
-	 /*
-	  * Write children...
-	  */
-
-	  mxml_node_t *child;		/* Current child */
-
-
-	  if ((*putc_cb)('>', p) < 0)
-	    return (-1);
-	  else
-	    col ++;
-
-	  col = mxml_write_ws(node, p, cb, MXML_WS_AFTER_OPEN, col, putc_cb);
-
-          for (child = node->child; child; child = child->next)
-	  {
-	    if ((col = mxml_write_node(child, p, cb, col, putc_cb, global)) < 0)
-	      return (-1);
-	  }
-
-	 /*
-	  * The ? and ! elements are special-cases and have no end tags...
-	  */
-
-	  if (node->value.element.name[0] != '!' &&
-	      node->value.element.name[0] != '?')
-	  {
-	    col = mxml_write_ws(node, p, cb, MXML_WS_BEFORE_CLOSE, col, putc_cb);
-
-	    if ((*putc_cb)('<', p) < 0)
-	      return (-1);
 	    if ((*putc_cb)('/', p) < 0)
-	      return (-1);
-	    if (mxml_write_string(node->value.element.name, p, putc_cb) < 0)
 	      return (-1);
 	    if ((*putc_cb)('>', p) < 0)
 	      return (-1);
 
-	    col += strlen(node->value.element.name) + 3;
+	    col += 3;
 
-	    col = mxml_write_ws(node, p, cb, MXML_WS_AFTER_CLOSE, col, putc_cb);
+	    col = mxml_write_ws(current, p, cb, MXML_WS_AFTER_OPEN, col, putc_cb);
 	  }
-	}
-	else if (node->value.element.name[0] == '!' ||
-		 node->value.element.name[0] == '?')
-	{
-	 /*
-	  * The ? and ! elements are special-cases...
-	  */
+	  break;
 
-	  if ((*putc_cb)('>', p) < 0)
+      case MXML_INTEGER :
+	  if (current->prev)
+	  {
+	    if (global->wrap > 0 && col > global->wrap)
+	    {
+	      if ((*putc_cb)('\n', p) < 0)
+		return (-1);
+
+	      col = 0;
+	    }
+	    else if ((*putc_cb)(' ', p) < 0)
+	      return (-1);
+	    else
+	      col ++;
+	  }
+
+	  sprintf(s, "%d", current->value.integer);
+	  if (mxml_write_string(s, p, putc_cb) < 0)
 	    return (-1);
-	  else
-	    col ++;
 
-	  col = mxml_write_ws(node, p, cb, MXML_WS_AFTER_OPEN, col, putc_cb);
-	}
-	else
+	  col += strlen(s);
+	  break;
+
+      case MXML_OPAQUE :
+	  if (mxml_write_string(current->value.opaque, p, putc_cb) < 0)
+	    return (-1);
+
+	  col += strlen(current->value.opaque);
+	  break;
+
+      case MXML_REAL :
+	  if (current->prev)
+	  {
+	    if (global->wrap > 0 && col > global->wrap)
+	    {
+	      if ((*putc_cb)('\n', p) < 0)
+		return (-1);
+
+	      col = 0;
+	    }
+	    else if ((*putc_cb)(' ', p) < 0)
+	      return (-1);
+	    else
+	      col ++;
+	  }
+
+	  sprintf(s, "%f", current->value.real);
+	  if (mxml_write_string(s, p, putc_cb) < 0)
+	    return (-1);
+
+	  col += strlen(s);
+	  break;
+
+      case MXML_TEXT :
+	  if (current->value.text.whitespace && col > 0)
+	  {
+	    if (global->wrap > 0 && col > global->wrap)
+	    {
+	      if ((*putc_cb)('\n', p) < 0)
+		return (-1);
+
+	      col = 0;
+	    }
+	    else if ((*putc_cb)(' ', p) < 0)
+	      return (-1);
+	    else
+	      col ++;
+	  }
+
+	  if (mxml_write_string(current->value.text.string, p, putc_cb) < 0)
+	    return (-1);
+
+	  col += strlen(current->value.text.string);
+	  break;
+
+      case MXML_CUSTOM :
+	  if (global->custom_save_cb)
+	  {
+	    char	*data;		/* Custom data string */
+	    const char	*newline;	/* Last newline in string */
+
+
+	    if ((data = (*global->custom_save_cb)(node)) == NULL)
+	      return (-1);
+
+	    if (mxml_write_string(data, p, putc_cb) < 0)
+	      return (-1);
+
+	    if ((newline = strrchr(data, '\n')) == NULL)
+	      col += strlen(data);
+	    else
+	      col = strlen(newline);
+
+	    free(data);
+	    break;
+	  }
+
+      default : /* Should never happen */
+	  return (-1);
+    }
+
+   /*
+    * Figure out the next node...
+    */
+
+    if ((next = current->child) == NULL)
+    {
+      while ((next = current->next) == NULL)
+      {
+        if (current == node)
+          break;
+
+       /*
+	* The ? and ! elements are special-cases and have no end tags...
+	*/
+
+	current = current->parent;
+
+	if (current->value.element.name[0] != '!' &&
+	    current->value.element.name[0] != '?')
 	{
-	  if ((*putc_cb)(' ', p) < 0)
+	  col = mxml_write_ws(current, p, cb, MXML_WS_BEFORE_CLOSE, col, putc_cb);
+
+	  if ((*putc_cb)('<', p) < 0)
 	    return (-1);
 	  if ((*putc_cb)('/', p) < 0)
 	    return (-1);
+	  if (mxml_write_string(current->value.element.name, p, putc_cb) < 0)
+	    return (-1);
 	  if ((*putc_cb)('>', p) < 0)
 	    return (-1);
 
-	  col += 3;
+	  col += strlen(current->value.element.name) + 3;
 
-	  col = mxml_write_ws(node, p, cb, MXML_WS_AFTER_OPEN, col, putc_cb);
+	  col = mxml_write_ws(current, p, cb, MXML_WS_AFTER_CLOSE, col, putc_cb);
 	}
-	break;
-
-    case MXML_INTEGER :
-	if (node->prev)
-	{
-	  if (global->wrap > 0 && col > global->wrap)
-	  {
-	    if ((*putc_cb)('\n', p) < 0)
-	      return (-1);
-
-	    col = 0;
-	  }
-	  else if ((*putc_cb)(' ', p) < 0)
-	    return (-1);
-	  else
-	    col ++;
-	}
-
-	sprintf(s, "%d", node->value.integer);
-	if (mxml_write_string(s, p, putc_cb) < 0)
-	  return (-1);
-
-	col += strlen(s);
-	break;
-
-    case MXML_OPAQUE :
-	if (mxml_write_string(node->value.opaque, p, putc_cb) < 0)
-	  return (-1);
-
-	col += strlen(node->value.opaque);
-	break;
-
-    case MXML_REAL :
-	if (node->prev)
-	{
-	  if (global->wrap > 0 && col > global->wrap)
-	  {
-	    if ((*putc_cb)('\n', p) < 0)
-	      return (-1);
-
-	    col = 0;
-	  }
-	  else if ((*putc_cb)(' ', p) < 0)
-	    return (-1);
-	  else
-	    col ++;
-	}
-
-	sprintf(s, "%f", node->value.real);
-	if (mxml_write_string(s, p, putc_cb) < 0)
-	  return (-1);
-
-	col += strlen(s);
-	break;
-
-    case MXML_TEXT :
-	if (node->value.text.whitespace && col > 0)
-	{
-	  if (global->wrap > 0 && col > global->wrap)
-	  {
-	    if ((*putc_cb)('\n', p) < 0)
-	      return (-1);
-
-	    col = 0;
-	  }
-	  else if ((*putc_cb)(' ', p) < 0)
-	    return (-1);
-	  else
-	    col ++;
-	}
-
-	if (mxml_write_string(node->value.text.string, p, putc_cb) < 0)
-	  return (-1);
-
-	col += strlen(node->value.text.string);
-	break;
-
-    case MXML_CUSTOM :
-	if (global->custom_save_cb)
-	{
-	  char	*data;		/* Custom data string */
-	  const char	*newline;	/* Last newline in string */
-
-
-	  if ((data = (*global->custom_save_cb)(node)) == NULL)
-	    return (-1);
-
-	  if (mxml_write_string(data, p, putc_cb) < 0)
-	    return (-1);
-
-	  if ((newline = strrchr(data, '\n')) == NULL)
-	    col += strlen(data);
-	  else
-	    col = strlen(newline);
-
-	  free(data);
-	  break;
-	}
-
-    default : /* Should never happen */
-	return (-1);
+      }
+    }
   }
 
   return (col);

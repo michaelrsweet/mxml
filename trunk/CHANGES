@@ -1,10 +1,12 @@
-CHANGES - 2016-06-11
+CHANGES - 2016-06-12
 --------------------
 
 CHANGES IN Mini-XML 2.10
 
 	- mxmlDelete used a recursive algorithm which could require large
-	  amounts of stack space depending on the file (Bug #549)
+	  amounts of stack space depending on the file (Bug #549, CVE-2016-4570)
+	- mxmlWrite* used a recursive algorithm which could require large
+	  amounts of stack space depending on the file (Bug #549, CVE-2016-4571)
 
 
 CHANGES IN Mini-XML 2.9

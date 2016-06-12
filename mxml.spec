@@ -3,29 +3,27 @@
 #
 # RPM "spec" file for Mini-XML, a small XML library.
 #
-# Copyright 2003-2009 by Michael Sweet.
+# Copyright 2003-2016 by Michael Sweet.
 #
-# This program is free software; you can redistribute it and/or
-# modify it under the terms of the GNU Library General Public
-# License as published by the Free Software Foundation; either
-# version 2, or (at your option) any later version.
+# These coded instructions, statements, and computer programs are the
+# property of Michael R Sweet and are protected by Federal copyright
+# law.  Distribution and use rights are outlined in the file "COPYING"
+# which should have been included with this file.  If this file is
+# missing or damaged, see the license at:
 #
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
+#     http://www.msweet.org/projects.php/Mini-XML
 #
 
 Summary: Miniature XML development library
 Name: mxml
-Version: 2.6
+Version: 2.10
 Release: 1
 License: LGPL
 Group: Development/Libraries
-Source: http://www.easysw.com/~mike/mxml/mxml-%{version}.tar.gz
-Url: http://www.easysw.com/~mike/mxml/
-Packager: Michael Sweet <mxml@easysw.com>
-Vendor: Michael Sweet
+Source: https://www.msweet.org/files/project3/mxml-%{version}.tar.gz
+Url: http://www.msweet.org/projects.php/Mini-XML
+Packager: John Doe <johndoe@example.com>
+Vendor: Michael R Sweet
 
 # Use buildroot so as not to disturb the version already installed
 BuildRoot: /var/tmp/%{name}-root

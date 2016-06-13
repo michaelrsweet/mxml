@@ -8,7 +8,7 @@
  *   ./testmxml input.xml [string-output.xml] >stdio-output.xml
  *   ./testmxml "<?xml ..." [string-output.xml] >stdio-output.xml
  *
- * Copyright 2003-2014 by Michael R Sweet.
+ * Copyright 2003-2016 by Michael R Sweet.
  *
  * These coded instructions, statements, and computer programs are the
  * property of Michael R Sweet and are protected by Federal copyright
@@ -93,13 +93,13 @@ main(int  argc,				/* I - Number of command-line args */
 
   if (!tree)
   {
-    fputs("ERROR: No parent node in basic test!\n", stderr);
+    fputs("ERROR: No parent node in basic test.\n", stderr);
     return (1);
   }
 
   if (tree->type != MXML_ELEMENT)
   {
-    fprintf(stderr, "ERROR: Parent has type %s (%d), expected MXML_ELEMENT!\n",
+    fprintf(stderr, "ERROR: Parent has type %s (%d), expected MXML_ELEMENT.\n",
             tree->type < MXML_ELEMENT || tree->type > MXML_TEXT ?
 	        "UNKNOWN" : types[tree->type], tree->type);
     mxmlDelete(tree);
@@ -108,7 +108,7 @@ main(int  argc,				/* I - Number of command-line args */
 
   if (strcmp(tree->value.element.name, "element"))
   {
-    fprintf(stderr, "ERROR: Parent value is \"%s\", expected \"element\"!\n",
+    fprintf(stderr, "ERROR: Parent value is \"%s\", expected \"element\".\n",
             tree->value.element.name);
     mxmlDelete(tree);
     return (1);
@@ -134,14 +134,14 @@ main(int  argc,				/* I - Number of command-line args */
 
   if (!node)
   {
-    fputs("ERROR: No first child node in basic test!\n", stderr);
+    fputs("ERROR: No first child node in basic test.\n", stderr);
     mxmlDelete(tree);
     return (1);
   }
 
   if (node->type != MXML_INTEGER)
   {
-    fprintf(stderr, "ERROR: First child has type %s (%d), expected MXML_INTEGER!\n",
+    fprintf(stderr, "ERROR: First child has type %s (%d), expected MXML_INTEGER.\n",
             node->type < MXML_ELEMENT || node->type > MXML_TEXT ?
 	        "UNKNOWN" : types[node->type], node->type);
     mxmlDelete(tree);
@@ -150,7 +150,7 @@ main(int  argc,				/* I - Number of command-line args */
 
   if (node->value.integer != 123)
   {
-    fprintf(stderr, "ERROR: First child value is %d, expected 123!\n",
+    fprintf(stderr, "ERROR: First child value is %d, expected 123.\n",
             node->value.integer);
     mxmlDelete(tree);
     return (1);
@@ -160,14 +160,14 @@ main(int  argc,				/* I - Number of command-line args */
 
   if (!node)
   {
-    fputs("ERROR: No second child node in basic test!\n", stderr);
+    fputs("ERROR: No second child node in basic test.\n", stderr);
     mxmlDelete(tree);
     return (1);
   }
 
   if (node->type != MXML_OPAQUE)
   {
-    fprintf(stderr, "ERROR: Second child has type %s (%d), expected MXML_OPAQUE!\n",
+    fprintf(stderr, "ERROR: Second child has type %s (%d), expected MXML_OPAQUE.\n",
             node->type < MXML_ELEMENT || node->type > MXML_TEXT ?
 	        "UNKNOWN" : types[node->type], node->type);
     mxmlDelete(tree);
@@ -176,7 +176,7 @@ main(int  argc,				/* I - Number of command-line args */
 
   if (!node->value.opaque || strcmp(node->value.opaque, "opaque"))
   {
-    fprintf(stderr, "ERROR: Second child value is \"%s\", expected \"opaque\"!\n",
+    fprintf(stderr, "ERROR: Second child value is \"%s\", expected \"opaque\".\n",
             node->value.opaque ? node->value.opaque : "(null)");
     mxmlDelete(tree);
     return (1);
@@ -186,14 +186,14 @@ main(int  argc,				/* I - Number of command-line args */
 
   if (!node)
   {
-    fputs("ERROR: No third child node in basic test!\n", stderr);
+    fputs("ERROR: No third child node in basic test.\n", stderr);
     mxmlDelete(tree);
     return (1);
   }
 
   if (node->type != MXML_REAL)
   {
-    fprintf(stderr, "ERROR: Third child has type %s (%d), expected MXML_REAL!\n",
+    fprintf(stderr, "ERROR: Third child has type %s (%d), expected MXML_REAL.\n",
             node->type < MXML_ELEMENT || node->type > MXML_TEXT ?
 	        "UNKNOWN" : types[node->type], node->type);
     mxmlDelete(tree);
@@ -202,7 +202,7 @@ main(int  argc,				/* I - Number of command-line args */
 
   if (node->value.real != 123.4f)
   {
-    fprintf(stderr, "ERROR: Third child value is %f, expected 123.4!\n",
+    fprintf(stderr, "ERROR: Third child value is %f, expected 123.4.\n",
             node->value.real);
     mxmlDelete(tree);
     return (1);
@@ -212,14 +212,14 @@ main(int  argc,				/* I - Number of command-line args */
 
   if (!node)
   {
-    fputs("ERROR: No fourth child node in basic test!\n", stderr);
+    fputs("ERROR: No fourth child node in basic test.\n", stderr);
     mxmlDelete(tree);
     return (1);
   }
 
   if (node->type != MXML_TEXT)
   {
-    fprintf(stderr, "ERROR: Fourth child has type %s (%d), expected MXML_TEXT!\n",
+    fprintf(stderr, "ERROR: Fourth child has type %s (%d), expected MXML_TEXT.\n",
             node->type < MXML_ELEMENT || node->type > MXML_TEXT ?
 	        "UNKNOWN" : types[node->type], node->type);
     mxmlDelete(tree);
@@ -229,7 +229,7 @@ main(int  argc,				/* I - Number of command-line args */
   if (!node->value.text.whitespace ||
       !node->value.text.string || strcmp(node->value.text.string, "text"))
   {
-    fprintf(stderr, "ERROR: Fourth child value is %d,\"%s\", expected 1,\"text\"!\n",
+    fprintf(stderr, "ERROR: Fourth child value is %d,\"%s\", expected 1,\"text\".\n",
             node->value.text.whitespace,
 	    node->value.text.string ? node->value.text.string : "(null)");
     mxmlDelete(tree);
@@ -242,14 +242,14 @@ main(int  argc,				/* I - Number of command-line args */
 
     if (!node)
     {
-      fprintf(stderr, "ERROR: No group #%d child node in basic test!\n", i + 1);
+      fprintf(stderr, "ERROR: No group #%d child node in basic test.\n", i + 1);
       mxmlDelete(tree);
       return (1);
     }
 
     if (node->type != MXML_ELEMENT)
     {
-      fprintf(stderr, "ERROR: Group child #%d has type %s (%d), expected MXML_ELEMENT!\n",
+      fprintf(stderr, "ERROR: Group child #%d has type %s (%d), expected MXML_ELEMENT.\n",
               i + 1, node->type < MXML_ELEMENT || node->type > MXML_TEXT ?
 	                 "UNKNOWN" : types[node->type], node->type);
       mxmlDelete(tree);
@@ -310,7 +310,7 @@ main(int  argc,				/* I - Number of command-line args */
   ind = mxmlIndexNew(tree, NULL, NULL);
   if (!ind)
   {
-    fputs("ERROR: Unable to create index of all nodes!\n", stderr);
+    fputs("ERROR: Unable to create index of all nodes.\n", stderr);
     mxmlDelete(tree);
     return (1);
   }
@@ -318,7 +318,7 @@ main(int  argc,				/* I - Number of command-line args */
   if (ind->num_nodes != 10)
   {
     fprintf(stderr, "ERROR: Index of all nodes contains %d "
-                    "nodes; expected 10!\n", ind->num_nodes);
+                    "nodes; expected 10.\n", ind->num_nodes);
     mxmlIndexDelete(ind);
     mxmlDelete(tree);
     return (1);
@@ -327,7 +327,7 @@ main(int  argc,				/* I - Number of command-line args */
   mxmlIndexReset(ind);
   if (!mxmlIndexFind(ind, "group", NULL))
   {
-    fputs("ERROR: mxmlIndexFind for \"group\" failed!\n", stderr);
+    fputs("ERROR: mxmlIndexFind for \"group\" failed.\n", stderr);
     mxmlIndexDelete(ind);
     mxmlDelete(tree);
     return (1);
@@ -338,7 +338,7 @@ main(int  argc,				/* I - Number of command-line args */
   ind = mxmlIndexNew(tree, "group", NULL);
   if (!ind)
   {
-    fputs("ERROR: Unable to create index of groups!\n", stderr);
+    fputs("ERROR: Unable to create index of groups.\n", stderr);
     mxmlDelete(tree);
     return (1);
   }
@@ -346,7 +346,7 @@ main(int  argc,				/* I - Number of command-line args */
   if (ind->num_nodes != 4)
   {
     fprintf(stderr, "ERROR: Index of groups contains %d "
-                    "nodes; expected 4!\n", ind->num_nodes);
+                    "nodes; expected 4.\n", ind->num_nodes);
     mxmlIndexDelete(ind);
     mxmlDelete(tree);
     return (1);
@@ -355,7 +355,7 @@ main(int  argc,				/* I - Number of command-line args */
   mxmlIndexReset(ind);
   if (!mxmlIndexEnum(ind))
   {
-    fputs("ERROR: mxmlIndexEnum failed!\n", stderr);
+    fputs("ERROR: mxmlIndexEnum failed.\n", stderr);
     mxmlIndexDelete(ind);
     mxmlDelete(tree);
     return (1);
@@ -366,7 +366,7 @@ main(int  argc,				/* I - Number of command-line args */
   ind = mxmlIndexNew(tree, NULL, "type");
   if (!ind)
   {
-    fputs("ERROR: Unable to create index of type attributes!\n", stderr);
+    fputs("ERROR: Unable to create index of type attributes.\n", stderr);
     mxmlDelete(tree);
     return (1);
   }
@@ -374,7 +374,7 @@ main(int  argc,				/* I - Number of command-line args */
   if (ind->num_nodes != 3)
   {
     fprintf(stderr, "ERROR: Index of type attributes contains %d "
-                    "nodes; expected 3!\n", ind->num_nodes);
+                    "nodes; expected 3.\n", ind->num_nodes);
     mxmlIndexDelete(ind);
     mxmlDelete(tree);
     return (1);
@@ -383,7 +383,7 @@ main(int  argc,				/* I - Number of command-line args */
   mxmlIndexReset(ind);
   if (!mxmlIndexFind(ind, NULL, "string"))
   {
-    fputs("ERROR: mxmlIndexFind for \"string\" failed!\n", stderr);
+    fputs("ERROR: mxmlIndexFind for \"string\" failed.\n", stderr);
     mxmlIndexDelete(ind);
     mxmlDelete(tree);
     return (1);
@@ -394,7 +394,7 @@ main(int  argc,				/* I - Number of command-line args */
   ind = mxmlIndexNew(tree, "group", "type");
   if (!ind)
   {
-    fputs("ERROR: Unable to create index of elements and attributes!\n", stderr);
+    fputs("ERROR: Unable to create index of elements and attributes.\n", stderr);
     mxmlDelete(tree);
     return (1);
   }
@@ -402,7 +402,7 @@ main(int  argc,				/* I - Number of command-line args */
   if (ind->num_nodes != 3)
   {
     fprintf(stderr, "ERROR: Index of elements and attributes contains %d "
-                    "nodes; expected 3!\n", ind->num_nodes);
+                    "nodes; expected 3.\n", ind->num_nodes);
     mxmlIndexDelete(ind);
     mxmlDelete(tree);
     return (1);
@@ -411,7 +411,7 @@ main(int  argc,				/* I - Number of command-line args */
   mxmlIndexReset(ind);
   if (!mxmlIndexFind(ind, "group", "string"))
   {
-    fputs("ERROR: mxmlIndexFind for \"string\" failed!\n", stderr);
+    fputs("ERROR: mxmlIndexFind for \"string\" failed.\n", stderr);
     mxmlIndexDelete(ind);
     mxmlDelete(tree);
     return (1);
@@ -438,13 +438,13 @@ main(int  argc,				/* I - Number of command-line args */
 
   if (tree->child)
   {
-    fputs("ERROR: Child pointer not NULL after deleting all children!\n", stderr);
+    fputs("ERROR: Child pointer not NULL after deleting all children.\n", stderr);
     return (1);
   }
 
   if (tree->last_child)
   {
-    fputs("ERROR: Last child pointer not NULL after deleting all children!\n", stderr);
+    fputs("ERROR: Last child pointer not NULL after deleting all children.\n", stderr);
     return (1);
   }
 
@@ -474,7 +474,7 @@ main(int  argc,				/* I - Number of command-line args */
 
   if (!tree)
   {
-    fputs("Unable to read XML file with default callback!\n", stderr);
+    fputs("Unable to read XML file with default callback.\n", stderr);
     return (1);
   }
 
@@ -489,14 +489,14 @@ main(int  argc,				/* I - Number of command-line args */
 
     if ((node = mxmlFindPath(tree, "group/option/keyword")) == NULL)
     {
-      fputs("Unable to find group/option/keyword element in XML tree!\n", stderr);
+      fputs("Unable to find group/option/keyword element in XML tree.\n", stderr);
       mxmlDelete(tree);
       return (1);
     }
 
     if (node->type != MXML_TEXT)
     {
-      fputs("No child node of group/option/keyword!\n", stderr);
+      fputs("No child node of group/option/keyword.\n", stderr);
       mxmlSaveFile(tree, stderr, MXML_NO_CALLBACK);
       mxmlDelete(tree);
       return (1);
@@ -504,7 +504,7 @@ main(int  argc,				/* I - Number of command-line args */
 
     if ((text = mxmlGetText(node, NULL)) == NULL || strcmp(text, "InputSlot"))
     {
-      fprintf(stderr, "Child node of group/option/value has value \"%s\" instead of \"InputSlot\"!\n", text ? text : "(null)");
+      fprintf(stderr, "Child node of group/option/value has value \"%s\" instead of \"InputSlot\".\n", text ? text : "(null)");
       mxmlDelete(tree);
       return (1);
     }
@@ -536,7 +536,7 @@ main(int  argc,				/* I - Number of command-line args */
 
   if (!tree)
   {
-    fputs("Unable to read XML file!\n", stderr);
+    fputs("Unable to read XML file.\n", stderr);
     return (1);
   }
 
@@ -550,14 +550,14 @@ main(int  argc,				/* I - Number of command-line args */
     if ((node = mxmlFindElement(tree, tree, "choice", NULL, NULL,
                                 MXML_DESCEND)) == NULL)
     {
-      fputs("Unable to find first <choice> element in XML tree!\n", stderr);
+      fputs("Unable to find first <choice> element in XML tree.\n", stderr);
       mxmlDelete(tree);
       return (1);
     }
 
     if (!mxmlFindElement(node, tree, "choice", NULL, NULL, MXML_NO_DESCEND))
     {
-      fputs("Unable to find second <choice> element in XML tree!\n", stderr);
+      fputs("Unable to find second <choice> element in XML tree.\n", stderr);
       mxmlDelete(tree);
       return (1);
     }
@@ -669,42 +669,42 @@ main(int  argc,				/* I - Number of command-line args */
   {
     if (event_counts[MXML_SAX_CDATA] != 1)
     {
-      fprintf(stderr, "MXML_SAX_CDATA seen %d times, expected 1 times!\n",
+      fprintf(stderr, "MXML_SAX_CDATA seen %d times, expected 1 times.\n",
               event_counts[MXML_SAX_CDATA]);
       return (1);
     }
 
     if (event_counts[MXML_SAX_COMMENT] != 1)
     {
-      fprintf(stderr, "MXML_SAX_COMMENT seen %d times, expected 1 times!\n",
+      fprintf(stderr, "MXML_SAX_COMMENT seen %d times, expected 1 times.\n",
               event_counts[MXML_SAX_COMMENT]);
       return (1);
     }
 
     if (event_counts[MXML_SAX_DATA] != 60)
     {
-      fprintf(stderr, "MXML_SAX_DATA seen %d times, expected 60 times!\n",
+      fprintf(stderr, "MXML_SAX_DATA seen %d times, expected 60 times.\n",
               event_counts[MXML_SAX_DATA]);
       return (1);
     }
 
     if (event_counts[MXML_SAX_DIRECTIVE] != 1)
     {
-      fprintf(stderr, "MXML_SAX_DIRECTIVE seen %d times, expected 1 times!\n",
+      fprintf(stderr, "MXML_SAX_DIRECTIVE seen %d times, expected 1 times.\n",
               event_counts[MXML_SAX_DIRECTIVE]);
       return (1);
     }
 
     if (event_counts[MXML_SAX_ELEMENT_CLOSE] != 20)
     {
-      fprintf(stderr, "MXML_SAX_ELEMENT_CLOSE seen %d times, expected 20 times!\n",
+      fprintf(stderr, "MXML_SAX_ELEMENT_CLOSE seen %d times, expected 20 times.\n",
               event_counts[MXML_SAX_ELEMENT_CLOSE]);
       return (1);
     }
 
     if (event_counts[MXML_SAX_ELEMENT_OPEN] != 20)
     {
-      fprintf(stderr, "MXML_SAX_ELEMENT_OPEN seen %d times, expected 20 times!\n",
+      fprintf(stderr, "MXML_SAX_ELEMENT_OPEN seen %d times, expected 20 times.\n",
               event_counts[MXML_SAX_ELEMENT_OPEN]);
       return (1);
     }
@@ -727,9 +727,23 @@ sax_cb(mxml_node_t      *node,		/* I - Current node */
        mxml_sax_event_t event,		/* I - SAX event */
        void             *data)		/* I - SAX user data */
 {
+  static const char * const events[] =	/* Events */
+  {
+    "MXML_SAX_CDATA",			/* CDATA node */
+    "MXML_SAX_COMMENT",			/* Comment node */
+    "MXML_SAX_DATA",			/* Data node */
+    "MXML_SAX_DIRECTIVE",		/* Processing directive node */
+    "MXML_SAX_ELEMENT_CLOSE",		/* Element closed */
+    "MXML_SAX_ELEMENT_OPEN"		/* Element opened */
+  };
+
+
  /*
   * This SAX callback just counts the different events.
   */
+
+  if (!node)
+    fprintf(stderr, "ERROR: SAX callback for event %s has NULL node.\n", events[event]);
 
   event_counts[event] ++;
 }

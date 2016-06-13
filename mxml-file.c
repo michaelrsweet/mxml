@@ -1998,6 +1998,8 @@ mxml_load_data(
 
 	  if (cb && parent)
 	    type = (*cb)(parent);
+	  else
+	    type = MXML_TEXT;
 	}
         else if (sax_cb)
         {

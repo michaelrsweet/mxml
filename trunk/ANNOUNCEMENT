@@ -1,11 +1,17 @@
-Mini-XML 2.8 is now available for download from:
+Mini-XML 2.10 is now available for download from:
 
     http://www.msweet.org/downloads.php/Mini-XML
 
-Mini-XML 2.8 fixes some minor platform and XML issues. Changes include:
+Mini-XML 2.10 fixes some stack overflow, XML, and API issues. Changes include:
 
-- Now call docsetutil using xcrun on OS X (Bug #458)
-- mxmldoc did not escape special HTML characters inside @code foo@ comments.
-- Fixed a memory leak in mxmlElementDeleteAttr (Bug #452)
-- Added MXML_MAJOR/MINOR_VERSION definitions to mxml.h (Bug $461)
-- Fixed a bug reading UTF-16 characters from a file (Bug #454)
+- The version number in mxml.h was wrong (Bug #532)
+- The mxml.spec file was out of date (Bug #521)
+- Mini-XML no longer allows malformed element names (Bug #509)
+- mxmlLoad* and mxmlSAXLoad* did not properly create text nodes when
+  MXML_TEXT_CALLBACK was specified (Bug #531)
+- mxmlDelete used a recursive algorithm which could require large amounts of
+  stack space depending on the file (Bug #549, CVE-2016-4570)
+- mxmlWrite* used a recursive algorithm which could require large amounts of
+  stack space depending on the file (Bug #549, CVE-2016-4571)
+
+Enjoy!

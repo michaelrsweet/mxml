@@ -1,0 +1,187 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML>
+<HEAD>
+<TITLE>Mini-XML Programmers Manual, Version 2.7</TITLE>
+<META NAME="author" CONTENT="Michael R. Sweet">
+<META NAME="copyright" CONTENT="Copyright 2003-2011">
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; CHARSET=iso-iso-8859-1">
+<LINK REL="Start" HREF="index.html">
+<LINK REL="Contents" HREF="index.html">
+<LINK REL="Prev" HREF="advanced.html">
+<LINK REL="Next" HREF="license.html">
+<STYLE TYPE="text/css"><!--
+BODY { font-family: sans-serif }
+H1 { font-family: sans-serif }
+H2 { font-family: sans-serif }
+H3 { font-family: sans-serif }
+H4 { font-family: sans-serif }
+H5 { font-family: sans-serif }
+H6 { font-family: sans-serif }
+SUB { font-size: smaller }
+SUP { font-size: smaller }
+PRE { font-family: monospace }
+A { text-decoration: none }
+--></STYLE>
+</HEAD>
+<BODY>
+<A HREF="index.html">Contents</A>
+<A HREF="advanced.html">Previous</A>
+<A HREF="license.html">Next</A>
+<HR NOSHADE>
+<H1 align="right"><A name="MXMLDOC"><IMG align="right" alt="4" height="100"
+hspace="10" src="4.gif" width="100"></A>Using the mxmldoc Utility</H1>
+<P>This chapter describes how to use <TT>mxmldoc(1)</TT> program to
+ automatically generate documentation from C and C++ source files.</P>
+<H2><A NAME="5_1">The Basics</A></H2>
+<P>Originally developed to generate the Mini-XML and CUPS API
+ documentation, <TT>mxmldoc</TT> is now a general-purpose utility which
+ scans C and C++ source files to produce HTML and man page documentation
+ along with an XML file representing the functions, types, and
+ definitions in those source files. Unlike popular documentation
+ generators like Doxygen or Javadoc, <TT>mxmldoc</TT> uses in-line
+ comments rather than comment headers, allowing for more &quot;natural&quot; code
+ documentation.</P>
+<P>By default, <TT>mxmldoc</TT> produces HTML documentation. For
+ example, the following command will scan all of the C source and header
+ files in the current directory and produce a HTML documentation file
+ called<VAR> filename.html</VAR>:</P>
+<PRE>
+    <KBD>mxmldoc *.h *.c &gt;filename.html ENTER</KBD>
+</PRE>
+<P>You can also specify an XML file to create which contains all of the
+ information from the source files. For example, the following command
+ creates an XML file called<VAR> filename.xml</VAR> in addition to the
+ HTML file:</P>
+<PRE>
+    <KBD>mxmldoc filename.xml *.h *.c &gt;filename.html ENTER</KBD>
+</PRE>
+<P>The <TT>--no-output</TT> option disables the normal HTML output:</P>
+<PRE>
+    <KBD>mxmldoc --no-output filename.xml *.h *.c ENTER</KBD>
+</PRE>
+<P>You can then run <TT>mxmldoc</TT> again with the XML file alone to
+ generate the HTML documentation:</P>
+<PRE>
+    <KBD>mxmldoc filename.xml &gt;filename.html ENTER</KBD>
+</PRE>
+<H3><A NAME="5_1_1">Creating Man Pages</A></H3>
+<P>The <TT>--man filename</TT> option tells <TT>mxmldoc</TT> to create a
+ man page instead of HTML documentation, for example:</P>
+<PRE>
+    <KBD>mxmldoc --man filename filename.xml \
+        &gt;filename.man ENTER</KBD>
+
+    <KBD>mxmldoc --man filename *.h *.c \
+        &gt;filename.man ENTER</KBD>
+</PRE>
+<H3><A NAME="5_1_2">Creating Xcode Documentation Sets</A></H3>
+<P>The <TT>--docset directory.docset</TT> option tells <TT>mxmldoc</TT>
+ to create an Xcode documentation set containing the HTML documentation,
+ for example:</P>
+<PRE>
+    <KBD>mxmldoc --docset foo.docset *.h *.c foo.xml ENTER</KBD>
+</PRE>
+<P>Xcode documentation sets can only be built on Mac OS X with Xcode 3.0
+ or higher installed.</P>
+<H2><A NAME="5_2">Commenting Your Code</A></H2>
+<P>As noted previously, <TT>mxmldoc</TT> looks for in-line comments to
+ describe the functions, types, and constants in your code. <TT>Mxmldoc</TT>
+ will document all public names it finds in your source files - any
+ names starting with the underscore character (_) or names that are
+ documented with the <A HREF="#ATDIRECTIVES">@private@</A> directive are
+ treated as private and are not documented.</P>
+<P>Comments appearing directly before a function or type definition are
+ used to document that function or type. Comments appearing after
+ argument, definition, return type, or variable declarations are used to
+ document that argument, definition, return type, or variable. For
+ example, the following code excerpt defines a key/value structure and a
+ function that creates a new instance of that structure:</P>
+<PRE>
+    /* A key/value pair. This is used with the
+       dictionary structure. */
+
+    struct keyval
+    {
+      char *key; /* Key string */
+      char *val; /* Value string */
+    };
+
+    /* Create a new key/value pair. */
+
+    struct keyval * /* New key/value pair */
+    new_keyval(
+        const char *key, /* Key string */
+	const char *val) /* Value string */
+    {
+      ...
+    }
+</PRE>
+<P><TT>Mxmldoc</TT> also knows to remove extra asterisks (*) from the
+ comment string, so the comment string:</P>
+<PRE>
+    /*
+     * Compute the value of PI.
+     *
+     * The function connects to an Internet server
+     * that streams audio of mathematical monks
+     * chanting the first 100 digits of PI.
+     */
+</PRE>
+<P>will be shown as:</P>
+<PRE>
+    Compute the value of PI.
+
+    The function connects to an Internet server
+    that streams audio of mathematical monks
+    chanting the first 100 digits of PI.
+</PRE>
+<P><A name="ATDIRECTIVES">Comments</A> can also include the following
+ special <TT>@name ...@</TT> directive strings:</P>
+<UL>
+<LI><TT>@deprecated@</TT> - flags the item as deprecated to discourage
+ its use</LI>
+<LI><TT>@private@</TT> - flags the item as private so it will not be
+ included in the documentation</LI>
+<LI><TT>@since ...@</TT> - flags the item as new since a particular
+ release. The text following the <TT>@since</TT> up to the closing <TT>@</TT>
+ is highlighted in the generated documentation, e.g. <TT>@since Mini-XML
+ 2.7@</TT>.</LI>
+</UL>
+
+<!-- NEED 10 -->
+<H2><A NAME="5_3">Titles, Sections, and Introductions</A></H2>
+<P><TT>Mxmldoc</TT> also provides options to set the title, section, and
+ introduction text for the generated documentation. The <TT>--title text</TT>
+ option specifies the title for the documentation. The title string is
+ usually put in quotes:</P>
+<PRE>
+    <KBD>mxmldoc filename.xml \
+        --title &quot;My Famous Documentation&quot; \
+        &gt;filename.html ENTER</KBD>
+</PRE>
+<P>The <TT>--section name</TT> option specifies the section for the
+ documentation. For HTML documentation, the name is placed in a HTML
+ comment such as:</P>
+<PRE>
+    &lt;!-- SECTION: name --&gt;
+</PRE>
+<P>For man pages, the section name is usually just a number (&quot;3&quot;), or a
+ number followed by a vendor name (&quot;3acme&quot;). The section name is used in
+ the <TT>.TH</TT> directive in the man page:</P>
+<PRE>
+    .TH mylibrary 3acme &quot;My Title&quot; ...
+</PRE>
+<P>The default section name for man page output is &quot;3&quot;. There is no
+ default section name for HTML output.</P>
+<P>Finally, the <TT>--intro filename</TT> option specifies a file to
+ embed after the title and section but before the generated
+ documentation. For HTML documentation, the file must consist of valid
+ HTML without the usual <TT>DOCTYPE</TT>, <TT>html</TT>, and <TT>body</TT>
+ elements. For man page documentation, the file must consist of valid <TT>
+nroff(1)</TT> text.</P>
+<HR NOSHADE>
+<A HREF="index.html">Contents</A>
+<A HREF="advanced.html">Previous</A>
+<A HREF="license.html">Next</A>
+</BODY>
+</HTML>

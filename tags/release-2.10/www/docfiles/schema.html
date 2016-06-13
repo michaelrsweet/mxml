@@ -1,0 +1,223 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML>
+<HEAD>
+<TITLE>Mini-XML Programmers Manual, Version 2.7</TITLE>
+<META NAME="author" CONTENT="Michael R. Sweet">
+<META NAME="copyright" CONTENT="Copyright 2003-2011">
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; CHARSET=iso-iso-8859-1">
+<LINK REL="Start" HREF="index.html">
+<LINK REL="Contents" HREF="index.html">
+<LINK REL="Prev" HREF="reference.html">
+<STYLE TYPE="text/css"><!--
+BODY { font-family: sans-serif }
+H1 { font-family: sans-serif }
+H2 { font-family: sans-serif }
+H3 { font-family: sans-serif }
+H4 { font-family: sans-serif }
+H5 { font-family: sans-serif }
+H6 { font-family: sans-serif }
+SUB { font-size: smaller }
+SUP { font-size: smaller }
+PRE { font-family: monospace }
+A { text-decoration: none }
+--></STYLE>
+</HEAD>
+<BODY>
+<A HREF="index.html">Contents</A>
+<A HREF="reference.html">Previous</A>
+<HR NOSHADE>
+<H1 align="right"><A name="SCHEMA"><IMG align="right" alt="D" height="100"
+hspace="10" src="D.gif" width="100"></A>XML Schema</H1>
+<P>This appendix provides the XML schema that is used for the XML files
+ produced by <TT>mxmldoc</TT>. This schema is available on-line at:</P>
+<PRE>
+    http://www.minixml.org/mxmldoc.xsd
+</PRE>
+<H2><A NAME="9_1">mxmldoc.xsd</A></H2>
+<PRE><SMALL>
+&lt;?xml version=&quot;1.0&quot;?&gt;
+&lt;xsd:schema xmlns:xsd=&quot;http://www.w3.org/2001/XMLSchema&quot;&gt;
+  &lt;xsd:annotation&gt;
+    &lt;xsd:documentation xml:lang=&quot;en&quot;&gt;
+      Mini-XML 2.7 documentation schema for mxmldoc output.
+      Copyright 2003-2011 by Michael Sweet.
+    &lt;/xsd:documentation&gt;
+  &lt;/xsd:annotation&gt;
+
+  &lt;!-- basic element definitions --&gt;
+  &lt;xsd:element name=&quot;argument&quot; type=&quot;argumentType&quot;/&gt;
+  &lt;xsd:element name=&quot;class&quot; type=&quot;classType&quot;/&gt;
+  &lt;xsd:element name=&quot;constant&quot; type=&quot;constantType&quot;/&gt;
+  &lt;xsd:element name=&quot;description&quot; type=&quot;xsd:string&quot;/&gt;
+  &lt;xsd:element name=&quot;enumeration&quot; type=&quot;enumerationType&quot;/&gt;
+  &lt;xsd:element name=&quot;function&quot; type=&quot;functionType&quot;/&gt;
+  &lt;xsd:element name=&quot;mxmldoc&quot; type=&quot;mxmldocType&quot;/&gt;
+  &lt;xsd:element name=&quot;namespace&quot; type=&quot;namespaceType&quot;/&gt;
+  &lt;xsd:element name=&quot;returnvalue&quot; type=&quot;returnvalueType&quot;/&gt;
+  &lt;xsd:element name=&quot;seealso&quot; type=&quot;identifierList&quot;/&gt;
+  &lt;xsd:element name=&quot;struct&quot; type=&quot;structType&quot;/&gt;
+  &lt;xsd:element name=&quot;typedef&quot; type=&quot;typedefType&quot;/&gt;
+  &lt;xsd:element name=&quot;type&quot; type=&quot;xsd:string&quot;/&gt;
+  &lt;xsd:element name=&quot;union&quot; type=&quot;unionType&quot;/&gt;
+  &lt;xsd:element name=&quot;variable&quot; type=&quot;variableType&quot;/&gt;
+
+  &lt;!-- descriptions of complex elements --&gt;
+  &lt;xsd:complexType name=&quot;argumentType&quot;&gt;
+    &lt;xsd:sequence&gt;
+      &lt;xsd:element ref=&quot;type&quot; minOccurs=&quot;1&quot; maxOccurs=&quot;1&quot;/&gt;
+      &lt;xsd:element ref=&quot;description&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;1&quot;/&gt;
+    &lt;/xsd:sequence&gt;
+    &lt;xsd:attribute name=&quot;default&quot; type=&quot;xsd:string&quot; use=&quot;optional&quot;/&gt;
+    &lt;xsd:attribute name=&quot;name&quot; type=&quot;identifier&quot; use=&quot;required&quot;/&gt;
+    &lt;xsd:attribute name=&quot;direction&quot; type=&quot;direction&quot; use=&quot;optional&quot;
+     default=&quot;I&quot;/&gt;
+  &lt;/xsd:complexType&gt;
+
+  &lt;xsd:complexType name=&quot;classType&quot;&gt;
+    &lt;xsd:sequence&gt;
+      &lt;xsd:element ref=&quot;description&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;1&quot;/&gt;
+      &lt;xsd:choice minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot;&gt;
+	&lt;xsd:element ref=&quot;class&quot;/&gt;
+	&lt;xsd:element ref=&quot;enumeration&quot;/&gt;
+	&lt;xsd:element ref=&quot;function&quot;/&gt;
+	&lt;xsd:element ref=&quot;struct&quot;/&gt;
+	&lt;xsd:element ref=&quot;typedef&quot;/&gt;
+	&lt;xsd:element ref=&quot;union&quot;/&gt;
+	&lt;xsd:element ref=&quot;variable&quot;/&gt;
+      &lt;/xsd:choice&gt;
+    &lt;/xsd:sequence&gt;
+    &lt;xsd:attribute name=&quot;name&quot; type=&quot;identifier&quot; use=&quot;required&quot;/&gt;
+    &lt;xsd:attribute name=&quot;parent&quot; type=&quot;xsd:string&quot; use=&quot;optional&quot;/&gt;
+  &lt;/xsd:complexType&gt;
+
+  &lt;xsd:complexType name=&quot;constantType&quot;&gt;
+    &lt;xsd:sequence&gt;
+      &lt;xsd:element ref=&quot;description&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;1&quot;/&gt;
+    &lt;/xsd:sequence&gt;
+    &lt;xsd:attribute name=&quot;name&quot; type=&quot;identifier&quot; use=&quot;required&quot;/&gt;
+  &lt;/xsd:complexType&gt;
+
+  &lt;xsd:complexType name=&quot;enumerationType&quot;&gt;
+    &lt;xsd:sequence&gt;
+      &lt;xsd:element ref=&quot;description&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;1&quot;/&gt;
+      &lt;xsd:element ref=&quot;constant&quot; minOccurs=&quot;1&quot; maxOccurs=&quot;unbounded&quot;/&gt;
+    &lt;/xsd:sequence&gt;
+    &lt;xsd:attribute name=&quot;name&quot; type=&quot;identifier&quot; use=&quot;required&quot;/&gt;
+  &lt;/xsd:complexType&gt;
+
+  &lt;xsd:complexType name=&quot;functionType&quot;&gt;
+    &lt;xsd:sequence&gt;
+      &lt;xsd:element ref=&quot;returnvalue&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;1&quot;/&gt;
+      &lt;xsd:element ref=&quot;description&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;1&quot;/&gt;
+      &lt;xsd:element ref=&quot;argument&quot; minOccurs=&quot;1&quot; maxOccurs=&quot;unbounded&quot;/&gt;
+      &lt;xsd:element ref=&quot;seealso&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;1&quot;/&gt;
+    &lt;/xsd:sequence&gt;
+    &lt;xsd:attribute name=&quot;name&quot; type=&quot;identifier&quot; use=&quot;required&quot;/&gt;
+    &lt;xsd:attribute name=&quot;scope&quot; type=&quot;scope&quot; use=&quot;optional&quot;/&gt;
+  &lt;/xsd:complexType&gt;
+
+  &lt;xsd:complexType name=&quot;mxmldocType&quot;&gt;
+    &lt;xsd:choice minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot;&gt;
+      &lt;xsd:element ref=&quot;class&quot;/&gt;
+      &lt;xsd:element ref=&quot;enumeration&quot;/&gt;
+      &lt;xsd:element ref=&quot;function&quot;/&gt;
+      &lt;xsd:element ref=&quot;namespace&quot;/&gt;
+      &lt;xsd:element ref=&quot;struct&quot;/&gt;
+      &lt;xsd:element ref=&quot;typedef&quot;/&gt;
+      &lt;xsd:element ref=&quot;union&quot;/&gt;
+      &lt;xsd:element ref=&quot;variable&quot;/&gt;
+    &lt;/xsd:choice&gt;
+  &lt;/xsd:complexType&gt;
+
+  &lt;xsd:complexType name=&quot;namespaceType&quot;&gt;
+    &lt;xsd:sequence&gt;
+      &lt;xsd:element ref=&quot;description&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;1&quot;/&gt;
+      &lt;xsd:choice minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot;&gt;
+	&lt;xsd:element ref=&quot;class&quot;/&gt;
+	&lt;xsd:element ref=&quot;enumeration&quot;/&gt;
+	&lt;xsd:element ref=&quot;function&quot;/&gt;
+	&lt;xsd:element ref=&quot;struct&quot;/&gt;
+	&lt;xsd:element ref=&quot;typedef&quot;/&gt;
+	&lt;xsd:element ref=&quot;union&quot;/&gt;
+	&lt;xsd:element ref=&quot;variable&quot;/&gt;
+      &lt;/xsd:choice&gt;
+    &lt;/xsd:sequence&gt;
+    &lt;xsd:attribute name=&quot;name&quot; type=&quot;identifier&quot; use=&quot;required&quot;/&gt;
+  &lt;/xsd:complexType&gt;
+
+  &lt;xsd:complexType name=&quot;returnvalueType&quot;&gt;
+    &lt;xsd:sequence&gt;
+      &lt;xsd:element ref=&quot;type&quot; minOccurs=&quot;1&quot; maxOccurs=&quot;1&quot;/&gt;
+      &lt;xsd:element ref=&quot;description&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;1&quot;/&gt;
+    &lt;/xsd:sequence&gt;
+  &lt;/xsd:complexType&gt;
+
+  &lt;xsd:complexType name=&quot;structType&quot;&gt;
+    &lt;xsd:sequence&gt;
+      &lt;xsd:element ref=&quot;description&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;1&quot;/&gt;
+      &lt;xsd:choice minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot;&gt;
+	&lt;xsd:element ref=&quot;variable&quot;/&gt;
+	&lt;xsd:element ref=&quot;function&quot;/&gt;
+      &lt;/xsd:choice&gt;
+    &lt;/xsd:sequence&gt;
+    &lt;xsd:attribute name=&quot;name&quot; type=&quot;identifier&quot; use=&quot;required&quot;/&gt;
+  &lt;/xsd:complexType&gt;
+
+  &lt;xsd:complexType name=&quot;typedefType&quot;&gt;
+    &lt;xsd:sequence&gt;
+      &lt;xsd:element ref=&quot;type&quot; minOccurs=&quot;1&quot; maxOccurs=&quot;1&quot;/&gt;
+      &lt;xsd:element ref=&quot;description&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;1&quot;/&gt;
+    &lt;/xsd:sequence&gt;
+    &lt;xsd:attribute name=&quot;name&quot; type=&quot;identifier&quot; use=&quot;required&quot;/&gt;
+  &lt;/xsd:complexType&gt;
+
+  &lt;xsd:complexType name=&quot;unionType&quot;&gt;
+    &lt;xsd:sequence&gt;
+      &lt;xsd:element ref=&quot;description&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;1&quot;/&gt;
+      &lt;xsd:element ref=&quot;variable&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot;/&gt;
+    &lt;/xsd:sequence&gt;
+    &lt;xsd:attribute name=&quot;name&quot; type=&quot;identifier&quot; use=&quot;required&quot;/&gt;
+  &lt;/xsd:complexType&gt;
+
+  &lt;xsd:complexType name=&quot;variableType&quot;&gt;
+    &lt;xsd:sequence&gt;
+      &lt;xsd:element ref=&quot;type&quot; minOccurs=&quot;1&quot; maxOccurs=&quot;1&quot;/&gt;
+      &lt;xsd:element ref=&quot;description&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;1&quot;/&gt;
+    &lt;/xsd:sequence&gt;
+    &lt;xsd:attribute name=&quot;name&quot; type=&quot;identifier&quot; use=&quot;required&quot;/&gt;
+  &lt;/xsd:complexType&gt;
+
+  &lt;!-- data types --&gt;
+  &lt;xsd:simpleType name=&quot;direction&quot;&gt;
+    &lt;xsd:restriction base=&quot;xsd:string&quot;&gt;
+      &lt;xsd:enumeration value=&quot;I&quot;/&gt;
+      &lt;xsd:enumeration value=&quot;O&quot;/&gt;
+      &lt;xsd:enumeration value=&quot;IO&quot;/&gt;
+    &lt;/xsd:restriction&gt;
+  &lt;/xsd:simpleType&gt;
+
+  &lt;xsd:simpleType name=&quot;identifier&quot;&gt;
+    &lt;xsd:restriction base=&quot;xsd:string&quot;&gt;
+      &lt;xsd:pattern value=&quot;[a-zA-Z_(.]([a-zA-Z_(.,)* 0-9])*&quot;/&gt;
+    &lt;/xsd:restriction&gt;
+  &lt;/xsd:simpleType&gt;
+
+  &lt;xsd:simpleType name=&quot;identifierList&quot;&gt;
+    &lt;xsd:list itemType=&quot;identifier&quot;/&gt;
+  &lt;/xsd:simpleType&gt;
+
+  &lt;xsd:simpleType name=&quot;scope&quot;&gt;
+    &lt;xsd:restriction base=&quot;xsd:string&quot;&gt;
+      &lt;xsd:enumeration value=&quot;&quot;/&gt;
+      &lt;xsd:enumeration value=&quot;private&quot;/&gt;
+      &lt;xsd:enumeration value=&quot;protected&quot;/&gt;
+      &lt;xsd:enumeration value=&quot;public&quot;/&gt;
+    &lt;/xsd:restriction&gt;
+  &lt;/xsd:simpleType&gt;
+&lt;/xsd:schema&gt;
+</SMALL></PRE>
+<HR NOSHADE>
+<A HREF="index.html">Contents</A>
+<A HREF="reference.html">Previous</A>
+</BODY>
+</HTML>

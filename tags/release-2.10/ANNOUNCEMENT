@@ -1,0 +1,17 @@
+Mini-XML 2.10 is now available for download from:
+
+    http://www.msweet.org/downloads.php/Mini-XML
+
+Mini-XML 2.10 fixes some stack overflow, XML, and API issues. Changes include:
+
+- The version number in mxml.h was wrong (Bug #532)
+- The mxml.spec file was out of date (Bug #521)
+- Mini-XML no longer allows malformed element names (Bug #509)
+- mxmlLoad* and mxmlSAXLoad* did not properly create text nodes when
+  MXML_TEXT_CALLBACK was specified (Bug #531)
+- mxmlDelete used a recursive algorithm which could require large amounts of
+  stack space depending on the file (Bug #549, CVE-2016-4570)
+- mxmlWrite* used a recursive algorithm which could require large amounts of
+  stack space depending on the file (Bug #549, CVE-2016-4571)
+
+Enjoy!

@@ -1577,6 +1577,8 @@ mxml_load_data(
 	  if (mxml_add_char(ch, &bufptr, &buffer, &bufsize))
 	    goto error;
 	}
+	else if (ch < '0' && ch != '!' && ch != '-' && ch != '.' && ch != '/')
+	  goto error;
 	else if (mxml_add_char(ch, &bufptr, &buffer, &bufsize))
 	  goto error;
 	else if (((bufptr - buffer) == 1 && buffer[0] == '?') ||

@@ -1,9 +1,7 @@
 #
-# "$Id$"
-#
 # EPM software list file for Mini-XML, a small XML library.
 #
-# Copyright 2003-2016 by Michael R Sweet.
+# Copyright 2003-2017 by Michael R Sweet.
 #
 # These coded instructions, statements, and computer programs are the
 # property of Michael R Sweet and are protected by Federal copyright
@@ -11,7 +9,7 @@
 # which should have been included with this file.  If this file is
 # missing or damaged, see the license at:
 #
-#     http://www.msweet.org/projects.php/Mini-XML
+#     https://michaelrsweet.github.io/mxml
 #
 
 # Directories...
@@ -29,7 +27,7 @@ $PICFLAG=@PICFLAG@
 
 # Product information
 %product mxml
-%copyright 2003-2016 by Michael R Sweet
+%copyright 2003-2017 by Michael R Sweet
 %vendor Michael R Sweet
 %license ${srcdir}/COPYING
 %readme ${srcdir}/README
@@ -90,16 +88,12 @@ f 0444 root sys ${libdir}/libmxml.a libmxml.a
 f 0444 root sys $(libdir)/pkgconfig/mxml.pc mxml.pc
 
 # Documentation
-f 0444 root sys ${docdir}/README $srcdir/README
+f 0444 root sys ${docdir}/README $srcdir/README.md
 f 0444 root sys ${docdir}/COPYING $srcdir/COPYING
-f 0444 root sys ${docdir}/CHANGES $srcdir/CHANGES
+f 0444 root sys ${docdir}/CHANGES $srcdir/CHANGES.md
 f 0444 root sys ${docdir}/mxml.html $srcdir/doc/mxml.html
 f 0444 root sys ${docdir}/mxml.pdf $srcdir/doc/mxml.pdf
 
 # Man pages
 f 0444 root sys ${mandir}/man1/mxmldoc.1 $srcdir/mxmldoc.man
 f 0444 root sys ${mandir}/man3/mxml.3 $srcdir/mxml.man
-
-#
-# End of "$Id$".
-#

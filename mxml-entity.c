@@ -1,10 +1,7 @@
 /*
- * "$Id$"
+ * Character entity support code for Mini-XML, a small XML file parsing library.
  *
- * Character entity support code for Mini-XML, a small XML-like
- * file parsing library.
- *
- * Copyright 2003-2014 by Michael R Sweet.
+ * Copyright 2003-2017 by Michael R Sweet.
  *
  * These coded instructions, statements, and computer programs are the
  * property of Michael R Sweet and are protected by Federal copyright
@@ -12,7 +9,7 @@
  * which should have been included with this file.  If this file is
  * missing or damaged, see the license at:
  *
- *     http://www.msweet.org/projects.php/Mini-XML
+ *     https://michaelrsweet.github.io/mxml
  */
 
 /*
@@ -442,8 +439,3 @@ _mxml_entity_cb(const char *name)	/* I - Entity name */
   else
     return (-1);
 }
-
-
-/*
- * End of "$Id$".
- */

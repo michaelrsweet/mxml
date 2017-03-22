@@ -1,11 +1,9 @@
 /*#define DEBUG 1*/
 /*
- * "$Id$"
- *
- * Documentation generator using Mini-XML, a small XML-like file parsing
+ * Documentation generator using Mini-XML, a small XML file parsing
  * library.
  *
- * Copyright 2003-2014 by Michael R Sweet.
+ * Copyright 2003-2017 by Michael R Sweet.
  *
  * These coded instructions, statements, and computer programs are the
  * property of Michael R Sweet and are protected by Federal copyright
@@ -13,7 +11,7 @@
  * which should have been included with this file.  If this file is
  * missing or damaged, see the license at:
  *
- *     http://www.minixml.org/
+ *     https://michaelrsweet.github.io/mxml
  */
 
 /*
@@ -5790,8 +5788,3 @@ ws_cb(mxml_node_t *node,		/* I - Element node */
           return ("\n");
   }
 }
-
-
-/*
- * End of "$Id$".
- */

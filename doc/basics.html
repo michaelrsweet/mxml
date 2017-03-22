@@ -1,9 +1,8 @@
 <html>
 <body>
 
-<h1 align='right'><a name='BASICS'><img src="2.gif" align="right"
-hspace="10" width="100" height="100" alt="2"></a>Getting Started
-with Mini-XML</h1>
+<h1 align='right'><a name='BASICS'>Chapter 2 - Getting Started
+with Mini-XML</a></h1>
 
 <p>This chapter describes how to write programs that use Mini-XML to
 access data in an XML file. Mini-XML provides the following
@@ -333,7 +332,7 @@ the <tt>MXML_TEXT_CALLBACK</tt> constant which specifies that all
 data nodes in the document contain whitespace-separated text
 values. Other standard callbacks include
 <tt>MXML_IGNORE_CALLBACK</tt>, <tt>MXML_INTEGER_CALLBACK</tt>,
-<tt>MXML_OPAQUE_CALLBACK</tt>, and 
+<tt>MXML_OPAQUE_CALLBACK</tt>, and
 <tt>MXML_REAL_CALLBACK</tt>.</p>
 
 <p>The <a href='#mxmlLoadString'><tt>mxmlLoadString</tt></a>
@@ -459,7 +458,7 @@ can be used to iterate through the XML node tree:</p>
 
 <pre>
     mxml_node_t *node;
-    
+
     node = mxmlWalkPrev(current, tree,
                         MXML_DESCEND);
 
@@ -473,7 +472,7 @@ function:</p>
 
 <pre>
     mxml_node_t *node;
-    
+
     node = mxmlFindElement(tree, tree, "name",
                            "attr", "value",
                            MXML_DESCEND);

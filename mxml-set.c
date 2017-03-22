@@ -1,9 +1,7 @@
 /*
- * "$Id$"
+ * Node set functions for Mini-XML, a small XML file parsing library.
  *
- * Node set functions for Mini-XML, a small XML-like file parsing library.
- *
- * Copyright 2003-2014 by Michael R Sweet.
+ * Copyright 2003-2017 by Michael R Sweet.
  *
  * These coded instructions, statements, and computer programs are the
  * property of Michael R Sweet and are protected by Federal copyright
@@ -11,7 +9,7 @@
  * which should have been included with this file.  If this file is
  * missing or damaged, see the license at:
  *
- *     http://www.msweet.org/projects.php/Mini-XML
+ *     https://michaelrsweet.github.io/mxml
  */
 
 /*
@@ -330,8 +328,3 @@ mxmlSetUserData(mxml_node_t *node,	/* I - Node to set */
   node->user_data = data;
   return (0);
 }
-
-
-/*
- * End of "$Id$".
- */

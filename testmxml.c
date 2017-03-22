@@ -1,14 +1,12 @@
 /*
- * "$Id$"
- *
- * Test program for Mini-XML, a small XML-like file parsing library.
+ * Test program for Mini-XML, a small XML file parsing library.
  *
  * Usage:
  *
  *   ./testmxml input.xml [string-output.xml] >stdio-output.xml
  *   ./testmxml "<?xml ..." [string-output.xml] >stdio-output.xml
  *
- * Copyright 2003-2016 by Michael R Sweet.
+ * Copyright 2003-2017 by Michael R Sweet.
  *
  * These coded instructions, statements, and computer programs are the
  * property of Michael R Sweet and are protected by Federal copyright
@@ -16,7 +14,7 @@
  * which should have been included with this file.  If this file is
  * missing or damaged, see the license at:
  *
- *     http://www.msweet.org/projects.php/Mini-XML
+ *     https://michaelrsweet.github.io/mxml
  */
 
 /*
@@ -867,8 +865,3 @@ whitespace_cb(mxml_node_t *node,	/* I - Element node */
 
   return (NULL);
 }
-
-
-/*
- * End of "$Id$".
- */

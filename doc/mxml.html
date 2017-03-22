@@ -1,9 +1,9 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
 <HTML>
 <HEAD>
-<TITLE>Mini-XML Programmers Manual, Version 2.10</TITLE>
+<TITLE>Mini-XML Programmers Manual, Version 2.11</TITLE>
 <META NAME="author" CONTENT="Michael R Sweet">
-<META NAME="copyright" CONTENT="Copyright 2003-2016">
+<META NAME="copyright" CONTENT="Copyright 2003-2017">
 <META HTTP-EQUIV="Content-Type" CONTENT="text/html; CHARSET=iso-iso-8859-1">
 <STYLE TYPE="text/css"><!--
 BODY { font-family: sans-serif }
@@ -30,7 +30,8 @@ A { text-decoration: none }
 <LI><A HREF="#1_4">Other References</A></LI>
 <LI><A HREF="#1_5">Legal Stuff</A></LI>
 </UL>
-<B><A HREF="#INSTALL">Building, Installing, and Packaging Mini-XML</A></B>
+<B><A HREF="#INSTALL">Chapter 1 - Building, Installing, and Packaging
+ Mini-XML</A></B>
 <UL>
 <LI><A HREF="#2_1">Compiling Mini-XML</A>
 <UL>
@@ -41,7 +42,7 @@ A { text-decoration: none }
 <LI><A HREF="#2_2">Installing Mini-XML</A></LI>
 <LI><A HREF="#2_3">Creating Mini-XML Packages</A></LI>
 </UL>
-<B><A HREF="#BASICS">Getting Started with Mini-XML</A></B>
+<B><A HREF="#BASICS">Chapter 2 - Getting Started with Mini-XML</A></B>
 <UL>
 <LI><A HREF="#3_1">The Basics</A></LI>
 <LI><A HREF="#3_2">Nodes</A>
@@ -69,7 +70,8 @@ A { text-decoration: none }
 <LI><A HREF="#3_7">Finding and Iterating Nodes</A></LI>
 <LI><A HREF="#3_8">Finding Specific Nodes</A></LI>
 </UL>
-<B><A HREF="#ADVANCED">More Mini-XML Programming Techniques</A></B>
+<B><A HREF="#ADVANCED">Chapter 3 - More Mini-XML Programming Techniques</A>
+</B>
 <UL>
 <LI><A HREF="#LOAD_CALLBACKS">Load Callbacks</A></LI>
 <LI><A HREF="#SAVE_CALLBACKS">Save Callbacks</A></LI>
@@ -79,7 +81,7 @@ A { text-decoration: none }
 <LI><A HREF="#4_6">Indexing</A></LI>
 <LI><A HREF="#4_7">SAX (Stream) Loading of Documents</A></LI>
 </UL>
-<B><A HREF="#MXMLDOC">Using the mxmldoc Utility</A></B>
+<B><A HREF="#MXMLDOC">Chapter 4 - Using the mxmldoc Utility</A></B>
 <UL>
 <LI><A HREF="#5_1">The Basics</A>
 <UL>
@@ -90,72 +92,70 @@ A { text-decoration: none }
 <LI><A HREF="#5_2">Commenting Your Code</A></LI>
 <LI><A HREF="#5_3">Titles, Sections, and Introductions</A></LI>
 </UL>
-<B><A HREF="#LICENSE">Mini-XML License</A></B>
+<B><A HREF="#LICENSE">Appendix A - Mini-XML License</A></B>
 <BR>
-<BR><B><A HREF="#RELNOTES">Release Notes</A></B>
-<UL></UL>
-<B><A HREF="#REFERENCE">Library Reference</A></B>
+<BR><B><A HREF="#REFERENCE">Appendix B - Library Reference</A></B>
 <UL>
-<LI><A HREF="#8_1">Contents</A></LI>
+<LI><A HREF="#7_1">Contents</A></LI>
 <LI><A HREF="#FUNCTIONS">Functions</A>
 <UL>
 <LI><A HREF="#mxmlAdd">mxmlAdd</A></LI>
 <LI><A HREF="#mxmlDelete">mxmlDelete</A></LI>
-<LI><A HREF="#8_2_3">mxmlElementDeleteAttr</A></LI>
+<LI><A HREF="#7_2_3">mxmlElementDeleteAttr</A></LI>
 <LI><A HREF="#mxmlElementGetAttr">mxmlElementGetAttr</A></LI>
 <LI><A HREF="#mxmlElementSetAttr">mxmlElementSetAttr</A></LI>
-<LI><A HREF="#8_2_6">mxmlElementSetAttrf</A></LI>
+<LI><A HREF="#7_2_6">mxmlElementSetAttrf</A></LI>
 <LI><A HREF="#mxmlEntityAddCallback">mxmlEntityAddCallback</A></LI>
 <LI><A HREF="#mxmlEntityGetName">mxmlEntityGetName</A></LI>
 <LI><A HREF="#mxmlEntityGetValue">mxmlEntityGetValue</A></LI>
 <LI><A HREF="#mxmlEntityRemoveCallback">mxmlEntityRemoveCallback</A></LI>
 <LI><A HREF="#mxmlFindElement">mxmlFindElement</A></LI>
-<LI><A HREF="#8_2_12">mxmlFindPath</A></LI>
-<LI><A HREF="#8_2_13">mxmlGetCDATA</A></LI>
-<LI><A HREF="#8_2_14">mxmlGetCustom</A></LI>
-<LI><A HREF="#8_2_15">mxmlGetElement</A></LI>
-<LI><A HREF="#8_2_16">mxmlGetFirstChild</A></LI>
-<LI><A HREF="#8_2_17">mxmlGetInteger</A></LI>
-<LI><A HREF="#8_2_18">mxmlGetLastChild</A></LI>
+<LI><A HREF="#7_2_12">mxmlFindPath</A></LI>
+<LI><A HREF="#7_2_13">mxmlGetCDATA</A></LI>
+<LI><A HREF="#7_2_14">mxmlGetCustom</A></LI>
+<LI><A HREF="#7_2_15">mxmlGetElement</A></LI>
+<LI><A HREF="#7_2_16">mxmlGetFirstChild</A></LI>
+<LI><A HREF="#7_2_17">mxmlGetInteger</A></LI>
+<LI><A HREF="#7_2_18">mxmlGetLastChild</A></LI>
 <LI><A HREF="#mxmlGetNextSibling">mxmlGetNextSibling</A></LI>
-<LI><A HREF="#8_2_20">mxmlGetOpaque</A></LI>
-<LI><A HREF="#8_2_21">mxmlGetParent</A></LI>
-<LI><A HREF="#8_2_22">mxmlGetPrevSibling</A></LI>
-<LI><A HREF="#8_2_23">mxmlGetReal</A></LI>
-<LI><A HREF="#8_2_24">mxmlGetRefCount</A></LI>
-<LI><A HREF="#8_2_25">mxmlGetText</A></LI>
-<LI><A HREF="#8_2_26">mxmlGetType</A></LI>
-<LI><A HREF="#8_2_27">mxmlGetUserData</A></LI>
+<LI><A HREF="#7_2_20">mxmlGetOpaque</A></LI>
+<LI><A HREF="#7_2_21">mxmlGetParent</A></LI>
+<LI><A HREF="#7_2_22">mxmlGetPrevSibling</A></LI>
+<LI><A HREF="#7_2_23">mxmlGetReal</A></LI>
+<LI><A HREF="#7_2_24">mxmlGetRefCount</A></LI>
+<LI><A HREF="#7_2_25">mxmlGetText</A></LI>
+<LI><A HREF="#7_2_26">mxmlGetType</A></LI>
+<LI><A HREF="#7_2_27">mxmlGetUserData</A></LI>
 <LI><A HREF="#mxmlIndexDelete">mxmlIndexDelete</A></LI>
 <LI><A HREF="#mxmlIndexEnum">mxmlIndexEnum</A></LI>
 <LI><A HREF="#mxmlIndexFind">mxmlIndexFind</A></LI>
-<LI><A HREF="#8_2_31">mxmlIndexGetCount</A></LI>
+<LI><A HREF="#7_2_31">mxmlIndexGetCount</A></LI>
 <LI><A HREF="#mxmlIndexNew">mxmlIndexNew</A></LI>
 <LI><A HREF="#mxmlIndexReset">mxmlIndexReset</A></LI>
 <LI><A HREF="#mxmlLoadFd">mxmlLoadFd</A></LI>
 <LI><A HREF="#mxmlLoadFile">mxmlLoadFile</A></LI>
 <LI><A HREF="#mxmlLoadString">mxmlLoadString</A></LI>
-<LI><A HREF="#8_2_37">mxmlNewCDATA</A></LI>
-<LI><A HREF="#8_2_38">mxmlNewCustom</A></LI>
+<LI><A HREF="#7_2_37">mxmlNewCDATA</A></LI>
+<LI><A HREF="#7_2_38">mxmlNewCustom</A></LI>
 <LI><A HREF="#mxmlNewElement">mxmlNewElement</A></LI>
 <LI><A HREF="#mxmlNewInteger">mxmlNewInteger</A></LI>
 <LI><A HREF="#mxmlNewOpaque">mxmlNewOpaque</A></LI>
 <LI><A HREF="#mxmlNewReal">mxmlNewReal</A></LI>
 <LI><A HREF="#mxmlNewText">mxmlNewText</A></LI>
 <LI><A HREF="#mxmlNewTextf">mxmlNewTextf</A></LI>
-<LI><A HREF="#8_2_45">mxmlNewXML</A></LI>
-<LI><A HREF="#8_2_46">mxmlRelease</A></LI>
+<LI><A HREF="#7_2_45">mxmlNewXML</A></LI>
+<LI><A HREF="#7_2_46">mxmlRelease</A></LI>
 <LI><A HREF="#mxmlRemove">mxmlRemove</A></LI>
-<LI><A HREF="#8_2_48">mxmlRetain</A></LI>
-<LI><A HREF="#8_2_49">mxmlSAXLoadFd</A></LI>
-<LI><A HREF="#8_2_50">mxmlSAXLoadFile</A></LI>
-<LI><A HREF="#8_2_51">mxmlSAXLoadString</A></LI>
+<LI><A HREF="#7_2_48">mxmlRetain</A></LI>
+<LI><A HREF="#7_2_49">mxmlSAXLoadFd</A></LI>
+<LI><A HREF="#7_2_50">mxmlSAXLoadFile</A></LI>
+<LI><A HREF="#7_2_51">mxmlSAXLoadString</A></LI>
 <LI><A HREF="#mxmlSaveAllocString">mxmlSaveAllocString</A></LI>
 <LI><A HREF="#mxmlSaveFd">mxmlSaveFd</A></LI>
 <LI><A HREF="#mxmlSaveFile">mxmlSaveFile</A></LI>
 <LI><A HREF="#mxmlSaveString">mxmlSaveString</A></LI>
-<LI><A HREF="#8_2_56">mxmlSetCDATA</A></LI>
-<LI><A HREF="#8_2_57">mxmlSetCustom</A></LI>
+<LI><A HREF="#7_2_56">mxmlSetCDATA</A></LI>
+<LI><A HREF="#7_2_57">mxmlSetCustom</A></LI>
 <LI><A HREF="#mxmlSetCustomHandlers">mxmlSetCustomHandlers</A></LI>
 <LI><A HREF="#mxmlSetElement">mxmlSetElement</A></LI>
 <LI><A HREF="#mxmlSetErrorCallback">mxmlSetErrorCallback</A></LI>
@@ -164,8 +164,8 @@ A { text-decoration: none }
 <LI><A HREF="#mxmlSetReal">mxmlSetReal</A></LI>
 <LI><A HREF="#mxmlSetText">mxmlSetText</A></LI>
 <LI><A HREF="#mxmlSetTextf">mxmlSetTextf</A></LI>
-<LI><A HREF="#8_2_66">mxmlSetUserData</A></LI>
-<LI><A HREF="#8_2_67">mxmlSetWrapMargin</A></LI>
+<LI><A HREF="#7_2_66">mxmlSetUserData</A></LI>
+<LI><A HREF="#7_2_67">mxmlSetWrapMargin</A></LI>
 <LI><A HREF="#mxmlWalkNext">mxmlWalkNext</A></LI>
 <LI><A HREF="#mxmlWalkPrev">mxmlWalkPrev</A></LI>
 </UL>
@@ -193,12 +193,11 @@ A { text-decoration: none }
 </UL>
 </LI>
 </UL>
-<B><A HREF="#SCHEMA">XML Schema</A></B>
+<B><A HREF="#SCHEMA">Appendix C - XML Schema</A></B>
 <UL></UL>
 <HR NOSHADE>
-<H1 align="right"><A name="INTRO"><IMG align="right" alt="0" height="100"
-hspace="10" src="0.gif" width="100"></A>Introduction</H1>
-<P>This programmers manual describes Mini-XML version 2.10, a small XML
+<H1 align="right"><A name="INTRO">Introduction</A></H1>
+<P>This programmers manual describes Mini-XML version 2.11, a small XML
  parsing library that you can use to read and write XML data files in
  your C and C++ applications.</P>
 <P>Mini-XML was initially developed for the <A href="http://gutenprint.sf.net/">
@@ -226,8 +225,8 @@ libxml2</TT> library with something substantially smaller and
 <LI><A href="https://www.cups.org/">CUPS</A></LI>
 <LI><A href="http://zynaddsubfx.sourceforge.net">ZynAddSubFX</A></LI>
 </UL>
-<P>Please file a bug on msweet.org if you would like your project added
- or removed from this list, or if you have any comments/quotes you would
+<P>Please file a bug on Github if you would like your project added or
+ removed from this list, or if you have any comments/quotes you would
  like me to publish about your experiences with Mini-XML.</P>
 
 <!-- NEED 1in -->
@@ -246,11 +245,9 @@ libxml2</TT> library with something substantially smaller and
  software documentation.</LI>
 <LI>Appendix A, &quot;<A href="#LICENSE">Mini-XML License</A>&quot;, provides the
  terms and conditions for using and distributing Mini-XML.</LI>
-<LI>Appendix B, &quot;<A href="#RELNOTES">Release Notes</A>&quot;, lists the
- changes in each release of Mini-XML.</LI>
-<LI>Appendix C, &quot;<A href="#REFERENCE">Library Reference</A>&quot;, contains a
+<LI>Appendix B, &quot;<A href="#REFERENCE">Library Reference</A>&quot;, contains a
  complete reference for Mini-XML, generated by <TT>mxmldoc</TT>.</LI>
-<LI>Appendix D, &quot;<A href="#SCHEMA">XML Schema</A>&quot;, shows the XML schema
+<LI>Appendix C, &quot;<A href="#SCHEMA">XML Schema</A>&quot;, shows the XML schema
  used for the XML files produced by <TT>mxmldoc</TT>.</LI>
 </UL>
 
@@ -333,13 +330,12 @@ libxml2</TT> library with something substantially smaller and
 
 <!-- NEED 6 -->
 <H2><A NAME="1_5">Legal Stuff</A></H2>
-<P>The Mini-XML library is copyright 2003-2016 by Michael R Sweet.
+<P>The Mini-XML library is copyright 2003-2017 by Michael R Sweet.
  License terms are described in <A href="#LICENSE">Appendix A - Mini-XML
  License</A>.</P>
 <HR NOSHADE>
-<H1 align="right"><A name="INSTALL"><IMG align="right" alt="1" height="100"
-hspace="10" src="1.gif" width="100"></A>Building, Installing, and
- Packaging Mini-XML</H1>
+<H1 align="right"><A name="INSTALL">Chapter 1 - Building, Installing,
+ and Packaging Mini-XML</A></H1>
 <P>This chapter describes how to build, install, and package Mini-XML on
  your system from the source archive. You will need an ANSI/ISO-C
  compatible compiler to build Mini-XML - GCC works, as do most vendors'
@@ -417,8 +413,8 @@ epm(1)</TT> program to create software packages in a variety of formats.
  Red Hat Linux, DPKG for Debian Linux, PKG for Solaris, and so forth.
  Use the corresponding commands to install the native packages.</P>
 <HR NOSHADE>
-<H1 align="right"><A name="BASICS"><IMG align="right" alt="2" height="100"
-hspace="10" src="2.gif" width="100"></A>Getting Started with Mini-XML</H1>
+<H1 align="right"><A name="BASICS">Chapter 2 - Getting Started with
+ Mini-XML</A></H1>
 <P>This chapter describes how to write programs that use Mini-XML to
  access data in an XML file. Mini-XML provides the following
  functionality:</P>
@@ -767,7 +763,7 @@ mxmlDelete</TT></A> function to recursively free the memory that is used
  XML node tree:</P>
 <PRE>
     mxml_node_t *node;
-    
+
     node = mxmlWalkPrev(current, tree,
                         MXML_DESCEND);
 
@@ -778,7 +774,7 @@ mxmlDelete</TT></A> function to recursively free the memory that is used
 <TT>mxmlFindElement</TT></A> function:</P>
 <PRE>
     mxml_node_t *node;
-    
+
     node = mxmlFindElement(tree, tree, &quot;name&quot;,
                            &quot;attr&quot;, &quot;value&quot;,
                            MXML_DESCEND);
@@ -896,9 +892,8 @@ mxmlDelete</TT></A> function to recursively free the memory that is used
  the document tree or a wildcard (*) path representing 0 or more
  intervening nodes.</P>
 <HR NOSHADE>
-<H1 align="right"><A name="ADVANCED"><IMG align="right" alt="3" height="100"
-hspace="10" src="3.gif" width="100"></A>More Mini-XML Programming
- Techniques</H1>
+<H1 align="right"><A name="ADVANCED">Chapter 3 - More Mini-XML
+ Programming Techniques</A></H1>
 <P>This chapter shows additional ways to use the Mini-XML library in
  your programs.</P>
 <H2><A name="LOAD_CALLBACKS">Load Callbacks</A></H2>
@@ -1438,8 +1433,8 @@ mxmlRetain</TT></A> function. For example, the following SAX callback
     }
 </PRE>
 <HR NOSHADE>
-<H1 align="right"><A name="MXMLDOC"><IMG align="right" alt="4" height="100"
-hspace="10" src="4.gif" width="100"></A>Using the mxmldoc Utility</H1>
+<H1 align="right"><A name="MXMLDOC">Chapter 4 - Using the mxmldoc
+ Utility</A></H1>
 <P>This chapter describes how to use <TT>mxmldoc(1)</TT> program to
  automatically generate documentation from C and C++ source files.</P>
 <H2><A NAME="5_1">The Basics</A></H2>
@@ -1590,8 +1585,7 @@ hspace="10" src="4.gif" width="100"></A>Using the mxmldoc Utility</H1>
  elements. For man page documentation, the file must consist of valid <TT>
 nroff(1)</TT> text.</P>
 <HR NOSHADE>
-<H1 align="right"><A name="LICENSE"><IMG align="right" alt="A" height="100"
-hspace="10" src="A.gif" width="100"></A>Mini-XML License</H1>
+<H1 align="right"><A name="LICENSE">Appendix A - Mini-XML License</A></H1>
 <P>The Mini-XML library and included programs are provided under the
  terms of the GNU Library General Public License version 2 (LGPL2) with
  the following exceptions:</P>
@@ -2022,333 +2016,9 @@ hspace="10" src="A.gif" width="100"></A>Mini-XML License</H1>
 </UL>
 <P>That's all there is to it!</P>
 <HR NOSHADE>
-<H1 align="right"><A name="RELNOTES"><IMG align="right" alt="B" height="100"
-hspace="10" src="B.gif" width="100"></A>Release Notes</H1>
-<H2><A NAME="7_1">Changes in Mini-XML 2.10</A></H2>
-<UL>
-<LI>The version number in mxml.h was wrong (Bug #532)</LI>
-<LI>The mxml.spec file was out of date (Bug #521)</LI>
-<LI>Mini-XML no longer allows malformed element names (Bug #509)</LI>
-<LI>mxmlLoad* and mxmlSAXLoad* did not properly create text nodes when
- MXML_TEXT_CALLBACK was specified (Bug #531)</LI>
-<LI>mxmlDelete used a recursive algorithm which could require large
- amounts of stack space depending on the file (Bug #549, CVE-2016-4570)</LI>
-<LI>mxmlWrite* used a recursive algorithm which could require large
- amounts of stack space depending on the file (Bug #549, CVE-2016-4571)</LI>
-</UL>
-<H2><A NAME="7_2">Changes in Mini-XML 2.9</A></H2>
-<UL>
-<LI>mxmlLoad* did not correctly load value nodes with MXML_NO_CALLBACK
- or MXML_TEXT_CALLBACK (Bug #502)</LI>
-</UL>
-<H2><A NAME="7_3">Changes in Mini-XML 2.8</A></H2>
-<UL>
-<LI>Now call docsetutil using xcrun on OS X (Bug #458)</LI>
-<LI>mxmldoc did not escape special HTML characters inside @code foo@
- comments.</LI>
-<LI>Fixed a memory leak in mxmlElementDeleteAttr (Bug #452)</LI>
-<LI>Added MXML_MAJOR/MINOR_VERSION definitions to mxml.h (Bug $461)</LI>
-<LI>Fixed a bug reading UTF-16 characters from a file (Bug #454)</LI>
-<LI>Fixed a memory leak when loading invalid XML (Bug #496)</LI>
-<LI>Fixed an XML fragment loading problem (Bug #494)</LI>
-</UL>
-<H2><A NAME="7_4">Changes in Mini-XML 2.7</A></H2>
-<UL>
-<LI>Added 64-bit configurations to the VC++ project files (STR #129)</LI>
-<LI>Fixed conformance of mxmldoc's HTML and CSS output.</LI>
-<LI>Added data accessor (&quot;get&quot;) functions and made the mxml_node_t and
- mxml_index_t structures private but still available in the Mini-XML
- header to preserve source compatibility (STR #118)</LI>
-<LI>Updated the source headers to reference the Mini-XML license and its
- exceptions to the LGPL2 (STR #108)</LI>
-<LI>Added a new mxmlFindPath() function to find the value node of a
- named element (STR #110)</LI>
-<LI>Building a static version of the library did not work on Windows
- (STR #112)</LI>
-<LI>The shared library did not include a destructor for the thread-
- specific data key on UNIX-based operating systems (STR #103)</LI>
-<LI>mxmlLoad* did not error out on XML with multiple root nodes (STR
- #101)</LI>
-<LI>Fixed an issue with the _mxml_vstrdupf function (STR #107)</LI>
-<LI>mxmlSave* no longer write all siblings of the passed node, just that
- node and its children (STR #109)</LI>
-</UL>
-<H2><A NAME="7_5">Changes in Mini-XML 2.6</A></H2>
-<UL>
-<LI>Documentation fixes (STR #91, STR #92)</LI>
-<LI>The mxmldoc program did not handle typedef comments properly (STR
- #72)</LI>
-<LI>Added support for &quot;long long&quot; printf formats.</LI>
-<LI>The XML parser now ignores BOMs in UTF-8 XML files (STR #89)</LI>
-<LI>The mxmldoc program now supports generating Xcode documentation
- sets.</LI>
-<LI>mxmlSave*() did not output UTF-8 correctly on some platforms.</LI>
-<LI>mxmlNewXML() now adds encoding=&quot;utf-8&quot; in the ?xml directive to
- avoid problems with non-conformant XML parsers that assume something
- other than UTF-8 as the default encoding.</LI>
-<LI>Wrapping was not disabled when mxmlSetWrapMargin(0) was called, and
- &quot;&lt;?xml ... ?&gt;&quot; was always followed by a newline (STR #76)</LI>
-<LI>The mxml.pc.in file was broken (STR #79)</LI>
-<LI>The mxmldoc program now handles &quot;typedef enum name {} name&quot;
- correctly (STR #72)</LI>
-</UL>
-<H2><A NAME="7_6">Changes in Mini-XML 2.5</A></H2>
-<UL>
-<LI>The mxmldoc program now makes greater use of CSS and supports a
- --css option to embed an alternate stylesheet.</LI>
-<LI>The mxmldoc program now supports --header and --footer options to
- insert documentation content before and after the generated content.</LI>
-<LI>The mxmldoc program now supports a --framed option to generate
- framed HTML output.</LI>
-<LI>The mxmldoc program now creates a table of contents including any
- headings in the --intro file when generating HTML output.</LI>
-<LI>The man pages and man page output from mxmldoc did not use &quot;\-&quot; for
- dashes (STR #68)</LI>
-<LI>The debug version of the Mini-XML DLL could not be built (STR #65)</LI>
-<LI>Processing instructions and directives did not work when not at the
- top level of a document (STR #67)</LI>
-<LI>Spaces around the &quot;=&quot; in attributes were not supported (STR #67)</LI>
-</UL>
-<H2><A NAME="7_7">Changes in Mini-XML 2.4</A></H2>
-<UL>
-<LI>Fixed shared library build problems on HP-UX and Mac OS X.</LI>
-<LI>The mxmldoc program did not output argument descriptions for
- functions properly.</LI>
-<LI>All global settings (custom, error, and entity callbacks and the
- wrap margin) are now managed separately for each thread.</LI>
-<LI>Added mxmlElementDeleteAttr() function (STR #59)</LI>
-<LI>mxmlElementSetAttrf() did not work (STR #57)</LI>
-<LI>mxmlLoad*() incorrectly treated declarations as parent elements (STR
- #56)</LI>
-<LI>mxmlLoad*() incorrectly allowed attributes without values (STR #47)</LI>
-<LI>Fixed Visual C++ build problems (STR #49)</LI>
-<LI>mxmlLoad*() did not return NULL when an element contained an error
- (STR #46)</LI>
-<LI>Added support for the apos character entity (STR #54)</LI>
-<LI>Fixed whitespace detection with Unicode characters (STR #48)</LI>
-<LI>mxmlWalkNext() and mxmlWalkPrev() did not work correctly when called
- with a node with no children as the top node (STR #53)</LI>
-</UL>
-<H2><A NAME="7_8">Changes in Mini-XML 2.3</A></H2>
-<UL>
-<LI>Added two exceptions to the LGPL to support static linking of
- applications against Mini-XML</LI>
-<LI>The mxmldoc utility can now generate man pages, too.</LI>
-<LI>Added a mxmlNewXML() function</LI>
-<LI>Added a mxmlElementSetAttrf() function (STR #43)</LI>
-<LI>Added a snprintf() emulation function for the test program (STR #32)</LI>
-<LI>Added the _CRT_SECURE_NO_DEPRECATE definition when building on VC++
- 2005 (STR #36)</LI>
-<LI>mxmlLoad*() did not detect missing &gt; characters in elements (STR
- #41)</LI>
-<LI>mxmlLoad*() did not detect missing close tags at the end of an XML
- document (STR #45)</LI>
-<LI>Added user_data and ref_count members to mxml_node_t structure</LI>
-<LI>Added mxmlReleaseNode() and mxmlRetainNode() APIs for
- reference-counted nodes</LI>
-<LI>Added mxmlSetWrapMargin() to control the wrapping of XML output</LI>
-<LI>Added conditional check for EINTR error code for certain Windows
- compilers that do not define it (STR #33)</LI>
-<LI>The mxmldoc program now generates correct HTML 4.0 output -
- previously it generated invalid XHTML</LI>
-<LI>The mxmldoc program now supports &quot;@deprecated@, &quot;@private@&quot;, and
- &quot;@since version@&quot; comments</LI>
-<LI>Fixed function and enumeration type bugs in mxmldoc</LI>
-<LI>Fixed the XML schema for mxmldoc</LI>
-<LI>The mxmldoc program now supports --intro, --section, and --title
- options</LI>
-<LI>The mxmlLoad*() functions could leak a node on an error (STR #27)</LI>
-<LI>The mxml_vsnprintf() function could get in an infinite loop on a
- buffer overflow (STR #25)</LI>
-<LI>Added new mxmlNewCDATA() and mxmlSetCDATA() functions to create and
- set CDATA nodes, which are really just special element nodes</LI>
-<LI>Added new MXML_IGNORE type and MXML_IGNORE_CB callback to ignore
- non-element nodes, e.g. whitespace</LI>
-<LI>mxmlLoad*() did not treat custom data as opaque, so whitespace
- characters would be lost</LI>
-</UL>
-<H2><A NAME="7_9">Changes in Mini-XML 2.2.2</A></H2>
-<UL>
-<LI>mxmlLoad*() did not treat custom data as opaque, so whitespace
- characters would be lost.</LI>
-</UL>
-<H2><A NAME="7_10">Changes in Mini-XML 2.2.1</A></H2>
-<UL>
-<LI>mxmlLoadFd(), mxmlLoadFile(), and mxmlLoadString() now correctly
- return NULL on error (STR #21)</LI>
-<LI>mxmlNewInteger(), mxmlNewOpaque(), mxmlNewReal(), mxmlNewText(), and
- mxmlNewTextf() incorrectly required a parent node (STR #22)</LI>
-<LI>Fixed an XML output bug in mxmldoc.</LI>
-<LI>The &quot;make install&quot; target now uses the install command to set the
- proper permissions on UNIX/Linux/OSX.</LI>
-<LI>Fixed a MingW/Cygwin compilation problem (STR #18)</LI>
-</UL>
-<H2><A NAME="7_11">Changes in Mini-XML 2.2</A></H2>
-<UL>
-<LI>Added shared library support (STR #17)</LI>
-<LI>mxmlLoad*() now returns an error when an XML stream contains illegal
- control characters (STR #10)</LI>
-<LI>mxmlLoad*() now returns an error when an element contains two
- attributes with the same name in conformance with the XML spec (STR
- #16)</LI>
-<LI>Added support for CDATA (STR #14, STR #15)</LI>
-<LI>Updated comment and processing instruction handling - no entity
- support per XML specification.</LI>
-<LI>Added checking for invalid comment termination (&quot;---&gt;&quot; is not
- allowed)</LI>
-</UL>
-<H2><A NAME="7_12">Changes in Mini-XML 2.1</A></H2>
-<UL>
-<LI>Added support for custom data nodes (STR #6)</LI>
-<LI>Now treat UTF-8 sequences which are longer than necessary as an
- error (STR #4)</LI>
-<LI>Fixed entity number support (STR #8)</LI>
-<LI>Fixed mxmlLoadString() bug with UTF-8 (STR #7)</LI>
-<LI>Fixed entity lookup bug (STR #5)</LI>
-<LI>Added mxmlLoadFd() and mxmlSaveFd() functions.</LI>
-<LI>Fixed multi-word UTF-16 handling.</LI>
-</UL>
-<H2><A NAME="7_13">Changes in Mini-XML 2.0</A></H2>
-<UL>
-<LI>New programmers manual.</LI>
-<LI>Added Visual C++ project files for Microsoft Windows users.</LI>
-<LI>Added optimizations to mxmldoc, mxmlSaveFile(), and mxmlIndexNew()
- (STR #2)</LI>
-<LI>mxmlEntityAddCallback() now returns an integer status (STR #2)</LI>
-<LI>Added UTF-16 support (input only; all output is UTF-8)</LI>
-<LI>Added index functions to build a searchable index of XML nodes.</LI>
-<LI>Added character entity callback interface to support additional
- character entities beyond those defined in the XHTML specification.</LI>
-<LI>Added support for XHTML character entities.</LI>
-<LI>The mxmldoc utility now produces XML output which conforms to an
- updated XML schema, described in the file &quot;doc/mxmldoc.xsd&quot;.</LI>
-<LI>Changed the whitespace callback interface to return strings instead
- of a single character, allowing for greater control over the formatting
- of XML files written using Mini-XML. THIS CHANGE WILL REQUIRE CHANGES
- TO YOUR 1.x CODE IF YOU USE WHITESPACE CALLBACKS.</LI>
-<LI>The mxmldoc utility now produces XML output which conforms to an
- updated XML schema, described in the file &quot;doc/mxmldoc.xsd&quot;.</LI>
-<LI>Changed the whitespace callback interface to return strings instead
- of a single character, allowing for greater control over the formatting
- of XML files written using Mini-XML. THIS CHANGE WILL REQUIRE CHANGES
- TO YOUR 1.x CODE IF YOU USE WHITESPACE CALLBACKS.</LI>
-<LI>The mxmldoc utility is now capable of documenting C++ classes,
- functions, and structures, and correctly handles C++ comments.</LI>
-<LI>Added new modular tests for mxmldoc.</LI>
-<LI>Updated the mxmldoc output to be more compatible with embedding in
- manuals produced with HTMLDOC.</LI>
-<LI>The makefile incorrectly included a &quot;/&quot; separator between the
- destination path and install path. This caused problems when building
- and installing with MingW.</LI>
-</UL>
-<H2><A NAME="7_14">Changes in Mini-XML 1.3</A></H2>
-<UL>
-<LI>Fixes for mxmldoc.</LI>
-<LI>Added support for reading standard HTML entity names.</LI>
-<LI>mxmlLoadString/File() did not decode character entities in element
- names, attribute names, or attribute values.</LI>
-<LI>mxmlLoadString/File() would crash when loading non- conformant XML
- data under an existing parent (top) node.</LI>
-<LI>Fixed several bugs in the mxmldoc utility.</LI>
-<LI>Added new error callback function to catch a variety of errors and
- log them to someplace other than stderr.</LI>
-<LI>The mxmlElementSetAttr() function now allows for NULL attribute
- values.</LI>
-<LI>The load and save functions now properly handle quoted element and
- attribute name strings properly, e.g. for !DOCTYPE declarations.</LI>
-</UL>
-<H2><A NAME="7_15">Changes in Mini-XML 1.2</A></H2>
-<UL>
-<LI>Added new &quot;set&quot; methods to set the value of a node.</LI>
-<LI>Added new formatted text methods mxmlNewTextf() and mxmlSetTextf()
- to create/set a text node value using printf-style formats.</LI>
-<LI>Added new standard callbacks for use with the mxmlLoad functions.</LI>
-<LI>Updated the HTML documentation to include examples of the walk and
- load function output.</LI>
-<LI>Added --with/without-ansi configure option to control the strdup()
- function check.</LI>
-<LI>Added --with/without-snprintf configure option to control the
- snprintf() and vsnprintf() function checks.</LI>
-</UL>
-<H2><A NAME="7_16">Changes in Mini-XML 1.1.2</A></H2>
-<UL>
-<LI>The mxml(3) man page wasn't updated for the string functions.</LI>
-<LI>mxmlSaveString() returned the wrong number of characters.</LI>
-<LI>mxml_add_char() updated the buffer pointer in the wrong place.</LI>
-</UL>
-<H2><A NAME="7_17">Changes in Mini-XML 1.1.1</A></H2>
-<UL>
-<LI>The private mxml_add_ch() function did not update the
- start-of-buffer pointer which could cause a crash when using
- mxmlSaveString().</LI>
-<LI>The private mxml_write_ws() function called putc() instead of using
- the proper callback which could cause a crash when using
- mxmlSaveString().</LI>
-<LI>Added a mxmlSaveAllocString() convenience function for saving an XML
- node tree to an allocated string.</LI>
-</UL>
-<H2><A NAME="7_18">Changes in Mini-XML 1.1</A></H2>
-<UL>
-<LI>The mxmlLoadFile() function now uses dynamically allocated string
- buffers for element names, attribute names, and attribute values.
- Previously they were capped at 16383, 255, and 255 bytes, respectively.</LI>
-<LI>Added a new mxmlLoadString() function for loading an XML node tree
- from a string.</LI>
-<LI>Added a new mxmlSaveString() function for saving an XML node tree to
- a string.</LI>
-<LI>Add emulation of strdup() if the local platform does not provide the
- function.</LI>
-</UL>
-<H2><A NAME="7_19">Changes in Mini-XML 1.0</A></H2>
-<UL>
-<LI>The mxmldoc program now handles function arguments, structures,
- unions, enumerations, classes, and typedefs properly.</LI>
-<LI>Documentation provided via mxmldoc and more in-line comments in the
- code.</LI>
-<LI>Added man pages and packaging files.</LI>
-</UL>
-<H2><A NAME="7_20">Changes in Mini-XML 0.93</A></H2>
-<UL>
-<LI>New mxmldoc example program that is also used to create and update
- code documentation using XML and produce HTML reference pages.</LI>
-<LI>Added mxmlAdd() and mxmlRemove() functions to add and remove nodes
- from a tree. This provides more flexibility over where the nodes are
- inserted and allows nodes to be moved within the tree as needed.</LI>
-<LI>mxmlLoadFile() now correctly handles comments.</LI>
-<LI>mxmlLoadFile() now supports the required &quot;gt&quot;, &quot;quot&quot;, and &quot;nbsp&quot;
- character entities.</LI>
-<LI>mxmlSaveFile() now uses newlines as whitespace when valid to do so.</LI>
-<LI>mxmlFindElement() now also takes attribute name and attribute value
- string arguments to limit the search to specific elements with
- attributes and/or values.</LI>
- NULL pointers can be used as &quot;wildcards&quot;.
-<LI>Added uninstall target to makefile, and auto-reconfig if Makefile.in
- or configure.in are changed.</LI>
-<LI>mxmlFindElement(), mxmlWalkNext(), and mxmlWalkPrev() now all
- provide &quot;descend&quot; arguments to control whether they descend into child
- nodes in the tree.</LI>
-<LI>Fixed some whitespace issues in mxmlLoadFile().</LI>
-<LI>Fixed Unicode output and whitespace issues in mxmlSaveFile().</LI>
-<LI>mxmlSaveFile() now supports a whitespace callback to provide more
- human-readable XML output under program control.</LI>
-</UL>
-<H2><A NAME="7_21">Changes in Mini-XML 0.92</A></H2>
-<UL>
-<LI>mxmlSaveFile() didn't return a value on success.</LI>
-</UL>
-<H2><A NAME="7_22">Changes in Mini-XML 0.91</A></H2>
-<UL>
-<LI>mxmlWalkNext() would go into an infinite loop.</LI>
-</UL>
-<H2><A NAME="7_23">Changes in Mini-XML 0.9</A></H2>
-<UL>
-<LI>Initial public release.</LI>
-</UL>
-<HR NOSHADE>
 <DIV class="body">
-<H1 align="right"><A name="REFERENCE"><IMG align="right" alt="C" height="100"
-hspace="10" src="C.gif" width="100"></A>Library Reference</H1>
-<H2 class="title"><A NAME="8_1">Contents</A></H2>
+<H1 align="right"><A name="REFERENCE">Appendix B - Library Reference</A></H1>
+<H2 class="title"><A NAME="7_1">Contents</A></H2>
 <UL class="contents">
 <LI><A href="#FUNCTIONS">Functions</A>
 <UL class="code">
@@ -2561,7 +2231,7 @@ mxml_save_cb_t</A></LI>
 <H4 class="discussion">Discussion</H4>
 <P class="discussion">If the specified node has a parent, this function
  first removes the node from its parent using the mxmlRemove() function.</P>
-<H3 class="function"><A NAME="8_2_3">
+<H3 class="function"><A NAME="7_2_3">
 <!--span class=&quot;info&quot;-->
 &nbsp;Mini-XML 2.4&nbsp;<A name="mxmlElementDeleteAttr">mxmlElementDeleteAttr</A></A>
 </H3>
@@ -2616,7 +2286,7 @@ mxml_save_cb_t</A></LI>
  of the attribute is replaced by the new string value. The string value
  is copied into the element node. This function does nothing if the node
  is not an element.</P>
-<H3 class="function"><A NAME="8_2_6">
+<H3 class="function"><A NAME="7_2_6">
 <!--span class=&quot;info&quot;-->
 &nbsp;Mini-XML 2.3&nbsp;<A name="mxmlElementSetAttrf">mxmlElementSetAttrf</A></A></H3>
 <P class="description">Set an attribute with a formatted value.</P>
@@ -2737,7 +2407,7 @@ mxmlEntityRemoveCallback</A></H3>
  and MXML_NO_DESCEND to find additional direct descendents of the node.
  The top node argument constrains the search to a particular node's
  children.</P>
-<H3 class="function"><A NAME="8_2_12">
+<H3 class="function"><A NAME="7_2_12">
 <!--span class=&quot;info&quot;-->
 &nbsp;Mini-XML 2.7&nbsp;<A name="mxmlFindPath">mxmlFindPath</A></A></H3>
 <P class="description">Find a node with the given path.</P>
@@ -2762,7 +2432,7 @@ mxmlEntityRemoveCallback</A></H3>
 <BR>
 <BR> The first child node of the found node is returned if the given
  node has children and the first child is a value node.</P>
-<H3 class="function"><A NAME="8_2_13">
+<H3 class="function"><A NAME="7_2_13">
 <!--span class=&quot;info&quot;-->
 &nbsp;Mini-XML 2.7&nbsp;<A name="mxmlGetCDATA">mxmlGetCDATA</A></A></H3>
 <P class="description">Get the value for a CDATA node.</P>
@@ -2779,7 +2449,7 @@ mxmlEntityRemoveCallback</A></H3>
 <H4 class="discussion">Discussion</H4>
 <P class="discussion"><CODE>NULL</CODE> is returned if the node is not a
  CDATA element.</P>
-<H3 class="function"><A NAME="8_2_14">
+<H3 class="function"><A NAME="7_2_14">
 <!--span class=&quot;info&quot;-->
 &nbsp;Mini-XML 2.7&nbsp;<A name="mxmlGetCustom">mxmlGetCustom</A></A></H3>
 <P class="description">Get the value for a custom node.</P>
@@ -2796,7 +2466,7 @@ mxmlEntityRemoveCallback</A></H3>
 <H4 class="discussion">Discussion</H4>
 <P class="discussion"><CODE>NULL</CODE> is returned if the node (or its
  first child) is not a custom value node.</P>
-<H3 class="function"><A NAME="8_2_15">
+<H3 class="function"><A NAME="7_2_15">
 <!--span class=&quot;info&quot;-->
 &nbsp;Mini-XML 2.7&nbsp;<A name="mxmlGetElement">mxmlGetElement</A></A></H3>
 <P class="description">Get the name for an element node.</P>
@@ -2813,7 +2483,7 @@ mxmlEntityRemoveCallback</A></H3>
 <H4 class="discussion">Discussion</H4>
 <P class="discussion"><CODE>NULL</CODE> is returned if the node is not
  an element node.</P>
-<H3 class="function"><A NAME="8_2_16">
+<H3 class="function"><A NAME="7_2_16">
 <!--span class=&quot;info&quot;-->
 &nbsp;Mini-XML 2.7&nbsp;<A name="mxmlGetFirstChild">mxmlGetFirstChild</A></A></H3>
 <P class="description">Get the first child of an element node.</P>
@@ -2831,7 +2501,7 @@ mxmlEntityRemoveCallback</A></H3>
 <H4 class="discussion">Discussion</H4>
 <P class="discussion"><CODE>NULL</CODE> is returned if the node is not
  an element node or if the node has no children.</P>
-<H3 class="function"><A NAME="8_2_17">
+<H3 class="function"><A NAME="7_2_17">
 <!--span class=&quot;info&quot;-->
 &nbsp;Mini-XML 2.7&nbsp;<A name="mxmlGetInteger">mxmlGetInteger</A></A></H3>
 <P class="description">Get the integer value from the specified node or
@@ -2849,7 +2519,7 @@ mxmlEntityRemoveCallback</A></H3>
 <H4 class="discussion">Discussion</H4>
 <P class="discussion">0 is returned if the node (or its first child) is
  not an integer value node.</P>
-<H3 class="function"><A NAME="8_2_18">
+<H3 class="function"><A NAME="7_2_18">
 <!--span class=&quot;info&quot;-->
 &nbsp;Mini-XML 2.7&nbsp;<A name="mxmlGetLastChild">mxmlGetLastChild</A></A></H3>
 <P class="description">Get the last child of an element node.</P>
@@ -2882,7 +2552,7 @@ mxmlEntityRemoveCallback</A></H3>
 <P class="description">Get the next node for the current parent.</P>
 <P class="discussion"><CODE>NULL</CODE> is returned if this is the last
  child for the current parent.</P>
-<H3 class="function"><A NAME="8_2_20">
+<H3 class="function"><A NAME="7_2_20">
 <!--span class=&quot;info&quot;-->
 &nbsp;Mini-XML 2.7&nbsp;<A name="mxmlGetOpaque">mxmlGetOpaque</A></A></H3>
 <P class="description">Get an opaque string value for a node or its
@@ -2900,7 +2570,7 @@ mxmlEntityRemoveCallback</A></H3>
 <H4 class="discussion">Discussion</H4>
 <P class="discussion"><CODE>NULL</CODE> is returned if the node (or its
  first child) is not an opaque value node.</P>
-<H3 class="function"><A NAME="8_2_21">
+<H3 class="function"><A NAME="7_2_21">
 <!--span class=&quot;info&quot;-->
 &nbsp;Mini-XML 2.7&nbsp;<A name="mxmlGetParent">mxmlGetParent</A></A></H3>
 <P class="description">Get the parent node.</P>
@@ -2916,7 +2586,7 @@ mxmlEntityRemoveCallback</A></H3>
 <P class="description">Parent node or NULL</P>
 <H4 class="discussion">Discussion</H4>
 <P class="discussion"><CODE>NULL</CODE> is returned for a root node.</P>
-<H3 class="function"><A NAME="8_2_22">
+<H3 class="function"><A NAME="7_2_22">
 <!--span class=&quot;info&quot;-->
 &nbsp;Mini-XML 2.7&nbsp;<A name="mxmlGetPrevSibling">mxmlGetPrevSibling</A></A></H3>
 <P class="description">Get the previous node for the current parent.</P>
@@ -2934,7 +2604,7 @@ mxmlEntityRemoveCallback</A></H3>
 <H4 class="discussion">Discussion</H4>
 <P class="discussion"><CODE>NULL</CODE> is returned if this is the first
  child for the current parent.</P>
-<H3 class="function"><A NAME="8_2_23">
+<H3 class="function"><A NAME="7_2_23">
 <!--span class=&quot;info&quot;-->
 &nbsp;Mini-XML 2.7&nbsp;<A name="mxmlGetReal">mxmlGetReal</A></A></H3>
 <P class="description">Get the real value for a node or its first child.</P>
@@ -2951,7 +2621,7 @@ mxmlEntityRemoveCallback</A></H3>
 <H4 class="discussion">Discussion</H4>
 <P class="discussion">0.0 is returned if the node (or its first child)
  is not a real value node.</P>
-<H3 class="function"><A NAME="8_2_24">
+<H3 class="function"><A NAME="7_2_24">
 <!--span class=&quot;info&quot;-->
 &nbsp;Mini-XML 2.7&nbsp;<A name="mxmlGetRefCount">mxmlGetRefCount</A></A></H3>
 <P class="description">Get the current reference (use) count for a node.</P>
@@ -2970,7 +2640,7 @@ mxmlEntityRemoveCallback</A></H3>
  the <A href="#mxmlRetain"><CODE>mxmlRetain</CODE></A> and <A href="#mxmlRelease">
 <CODE>mxmlRelease</CODE></A> functions to increment and decrement a
  node's reference count. .</P>
-<H3 class="function"><A NAME="8_2_25">
+<H3 class="function"><A NAME="7_2_25">
 <!--span class=&quot;info&quot;-->
 &nbsp;Mini-XML 2.7&nbsp;<A name="mxmlGetText">mxmlGetText</A></A></H3>
 <P class="description">Get the text value for a node or its first child.</P>
@@ -2991,7 +2661,7 @@ mxmlEntityRemoveCallback</A></H3>
 <H4 class="discussion">Discussion</H4>
 <P class="discussion"><CODE>NULL</CODE> is returned if the node (or its
  first child) is not a text node. The &quot;whitespace&quot; argument can be NULL.</P>
-<H3 class="function"><A NAME="8_2_26">
+<H3 class="function"><A NAME="7_2_26">
 <!--span class=&quot;info&quot;-->
 &nbsp;Mini-XML 2.7&nbsp;<A name="mxmlGetType">mxmlGetType</A></A></H3>
 <P class="description">Get the node type.</P>
@@ -3008,7 +2678,7 @@ mxmlEntityRemoveCallback</A></H3>
 <H4 class="discussion">Discussion</H4>
 <P class="discussion"><CODE>MXML_IGNORE</CODE> is returned if &quot;node&quot; is <CODE>
 NULL</CODE>.</P>
-<H3 class="function"><A NAME="8_2_27">
+<H3 class="function"><A NAME="7_2_27">
 <!--span class=&quot;info&quot;-->
 &nbsp;Mini-XML 2.7&nbsp;<A name="mxmlGetUserData">mxmlGetUserData</A></A></H3>
 <P class="description">Get the user data pointer for a node.</P>
@@ -3070,7 +2740,7 @@ NULL</CODE>.</P>
  this function for the first time with a particular set of &quot;element&quot; and
  &quot;value&quot; strings. Passing NULL for both &quot;element&quot; and &quot;value&quot; is
  equivalent to calling mxmlIndexEnum().</P>
-<H3 class="function"><A NAME="8_2_31">
+<H3 class="function"><A NAME="7_2_31">
 <!--span class=&quot;info&quot;-->
 &nbsp;Mini-XML 2.7&nbsp;<A name="mxmlIndexGetCount">mxmlIndexGetCount</A></A></H3>
 <P class="description">Get the number of nodes in an index.</P>
@@ -3214,7 +2884,7 @@ NULL</CODE>.</P>
 <BR> The constants MXML_INTEGER_CALLBACK, MXML_OPAQUE_CALLBACK,
  MXML_REAL_CALLBACK, and MXML_TEXT_CALLBACK are defined for loading
  child nodes of the specified type.</P>
-<H3 class="function"><A NAME="8_2_37">
+<H3 class="function"><A NAME="7_2_37">
 <!--span class=&quot;info&quot;-->
 &nbsp;Mini-XML 2.3&nbsp;<A name="mxmlNewCDATA">mxmlNewCDATA</A></A></H3>
 <P class="description">Create a new CDATA node.</P>
@@ -3237,7 +2907,7 @@ NULL</CODE>.</P>
  to specify that the new CDATA node has no parent. The data string must
  be nul-terminated and is copied into the new node. CDATA nodes use the
  MXML_ELEMENT type.</P>
-<H3 class="function"><A NAME="8_2_38">
+<H3 class="function"><A NAME="7_2_38">
 <!--span class=&quot;info&quot;-->
 &nbsp;Mini-XML 2.1&nbsp;<A name="mxmlNewCustom">mxmlNewCustom</A></A></H3>
 <P class="description">Create a new custom data node.</P>
@@ -3396,7 +3066,7 @@ NULL</CODE>.</P>
  parameter is used to specify whether leading whitespace is present
  before the node. The format string must be nul-terminated and is
  formatted into the new node.</P>
-<H3 class="function"><A NAME="8_2_45">
+<H3 class="function"><A NAME="7_2_45">
 <!--span class=&quot;info&quot;-->
 &nbsp;Mini-XML 2.3&nbsp;<A name="mxmlNewXML">mxmlNewXML</A></A></H3>
 <P class="description">Create a new XML document tree.</P>
@@ -3414,7 +3084,7 @@ NULL</CODE>.</P>
 <P class="discussion">The &quot;version&quot; argument specifies the version
  number to put in the ?xml element node. If NULL, version 1.0 is
  assumed.</P>
-<H3 class="function"><A NAME="8_2_46">
+<H3 class="function"><A NAME="7_2_46">
 <!--span class=&quot;info&quot;-->
 &nbsp;Mini-XML 2.3&nbsp;<A name="mxmlRelease">mxmlRelease</A></A></H3>
 <P class="description">Release a node.</P>
@@ -3445,7 +3115,7 @@ NULL</CODE>.</P>
 <P class="discussion">Does not free memory used by the node - use
  mxmlDelete() for that. This function does nothing if the node has no
  parent.</P>
-<H3 class="function"><A NAME="8_2_48">
+<H3 class="function"><A NAME="7_2_48">
 <!--span class=&quot;info&quot;-->
 &nbsp;Mini-XML 2.3&nbsp;<A name="mxmlRetain">mxmlRetain</A></A></H3>
 <P class="description">Retain a node.</P>
@@ -3459,7 +3129,7 @@ NULL</CODE>.</P>
 </DL>
 <H4 class="returnvalue">Return Value</H4>
 <P class="description">New reference count</P>
-<H3 class="function"><A NAME="8_2_49">
+<H3 class="function"><A NAME="7_2_49">
 <!--span class=&quot;info&quot;-->
 &nbsp;Mini-XML 2.3&nbsp;<A name="mxmlSAXLoadFd">mxmlSAXLoadFd</A></A></H3>
 <P class="description">Load a file descriptor into an XML node tree
@@ -3501,7 +3171,7 @@ NULL</CODE>.</P>
 <BR> The SAX callback must call mxmlRetain() for any nodes that need to
  be kept for later use. Otherwise, nodes are deleted when the parent
  node is closed or after each data, comment, CDATA, or directive node.</P>
-<H3 class="function"><A NAME="8_2_50">
+<H3 class="function"><A NAME="7_2_50">
 <!--span class=&quot;info&quot;-->
 &nbsp;Mini-XML 2.3&nbsp;<A name="mxmlSAXLoadFile">mxmlSAXLoadFile</A></A></H3>
 <P class="description">Load a file into an XML node tree using a SAX
@@ -3544,7 +3214,7 @@ NULL</CODE>.</P>
 <BR> The SAX callback must call mxmlRetain() for any nodes that need to
  be kept for later use. Otherwise, nodes are deleted when the parent
  node is closed or after each data, comment, CDATA, or directive node.</P>
-<H3 class="function"><A NAME="8_2_51">
+<H3 class="function"><A NAME="7_2_51">
 <!--span class=&quot;info&quot;-->
 &nbsp;Mini-XML 2.3&nbsp;<A name="mxmlSAXLoadString">mxmlSAXLoadString</A></A></H3>
 <P class="description">Load a string into an XML node tree using a SAX
@@ -3694,7 +3364,7 @@ NULL</CODE>.</P>
  MXML_NO_CALLBACK is specified, whitespace will only be added before
  MXML_TEXT nodes with leading whitespace and before attribute names
  inside opening element tags.</P>
-<H3 class="function"><A NAME="8_2_56">
+<H3 class="function"><A NAME="7_2_56">
 <!--span class=&quot;info&quot;-->
 &nbsp;Mini-XML 2.3&nbsp;<A name="mxmlSetCDATA">mxmlSetCDATA</A></A></H3>
 <P class="description">Set the element name of a CDATA node.</P>
@@ -3714,7 +3384,7 @@ NULL</CODE>.</P>
 <H4 class="discussion">Discussion</H4>
 <P class="discussion">The node is not changed if it (or its first child)
  is not a CDATA element node.</P>
-<H3 class="function"><A NAME="8_2_57">
+<H3 class="function"><A NAME="7_2_57">
 <!--span class=&quot;info&quot;-->
 &nbsp;Mini-XML 2.1&nbsp;<A name="mxmlSetCustom">mxmlSetCustom</A></A></H3>
 <P class="description">Set the data and destructor of a custom data
@@ -3889,7 +3559,7 @@ mxmlSetCustomHandlers</A></H3>
 <H4 class="discussion">Discussion</H4>
 <P class="discussion">The node is not changed if it (or its first child)
  is not a text node.</P>
-<H3 class="function"><A NAME="8_2_66">
+<H3 class="function"><A NAME="7_2_66">
 <!--span class=&quot;info&quot;-->
 &nbsp;Mini-XML 2.7&nbsp;<A name="mxmlSetUserData">mxmlSetUserData</A></A></H3>
 <P class="description">Set the user data pointer for a node.</P>
@@ -3906,7 +3576,7 @@ mxmlSetCustomHandlers</A></H3>
 </DL>
 <H4 class="returnvalue">Return Value</H4>
 <P class="description">0 on success, -1 on failure</P>
-<H3 class="function"><A NAME="8_2_67">
+<H3 class="function"><A NAME="7_2_67">
 <!--span class=&quot;info&quot;-->
 &nbsp;Mini-XML 2.3&nbsp;<A name="mxmlSetWrapMargin">mxmlSetWrapMargin</A></A></H3>
 <P class="description">Set the wrap margin when saving XML data.</P>
@@ -4057,21 +3727,20 @@ mxml_sax_event_e</A> mxml_sax_event_t;</P>
 <DD class="description">Text fragment</DD>
 </DL>
 </DIV><HR NOSHADE>
-<H1 align="right"><A name="SCHEMA"><IMG align="right" alt="D" height="100"
-hspace="10" src="D.gif" width="100"></A>XML Schema</H1>
+<H1 align="right"><A name="SCHEMA">Appendix C - XML Schema</A></H1>
 <P>This appendix provides the XML schema that is used for the XML files
  produced by <TT>mxmldoc</TT>. This schema is available on-line at:</P>
 <PRE>
-    http://www.msweet.org/schema/mxmldoc.xsd
+    https://michaelrsweet.github.io/mxml/mxmldoc.xsd
 </PRE>
-<H2><A NAME="9_1">mxmldoc.xsd</A></H2>
+<H2><A NAME="8_1">mxmldoc.xsd</A></H2>
 <PRE><SMALL>
 &lt;?xml version=&quot;1.0&quot;?&gt;
 &lt;xsd:schema xmlns:xsd=&quot;http://www.w3.org/2001/XMLSchema&quot;&gt;
   &lt;xsd:annotation&gt;
     &lt;xsd:documentation xml:lang=&quot;en&quot;&gt;
-      Mini-XML 2.9 documentation schema for mxmldoc output.
-      Copyright 2003-2014 by Michael Sweet.
+      Mini-XML 2.11 documentation schema for mxmldoc output.
+      Copyright 2003-2017 by Michael R Sweet.
     &lt;/xsd:documentation&gt;
   &lt;/xsd:annotation&gt;
 

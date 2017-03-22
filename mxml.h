@@ -1,9 +1,7 @@
 /*
- * "$Id$"
+ * Header file for Mini-XML, a small XML file parsing library.
  *
- * Header file for Mini-XML, a small XML-like file parsing library.
- *
- * Copyright 2003-2016 by Michael R Sweet.
+ * Copyright 2003-2017 by Michael R Sweet.
  *
  * These coded instructions, statements, and computer programs are the
  * property of Michael R Sweet and are protected by Federal copyright
@@ -11,7 +9,7 @@
  * which should have been included with this file.  If this file is
  * missing or damaged, see the license at:
  *
- *     http://www.msweet.org/projects.php/Mini-XML
+ *     https://michaelrsweet.github.io/mxml
  */
 
 /*
@@ -37,7 +35,7 @@
  */
 
 #  define MXML_MAJOR_VERSION	2	/* Major version number */
-#  define MXML_MINOR_VERSION	10	/* Minor version number */
+#  define MXML_MINOR_VERSION	11	/* Minor version number */
 
 #  define MXML_TAB		8	/* Tabs every N columns */
 
@@ -325,8 +323,3 @@ extern mxml_type_t	mxml_real_cb(mxml_node_t *node);
 }
 #  endif /* __cplusplus */
 #endif /* !_mxml_h_ */
-
-
-/*
- * End of "$Id$".
- */

@@ -1,5 +1,6 @@
 # Changes in Mini-XML 2.11
 
+- Fixed a memory leak in mxmlDelete (Issue #183)
 - The configure script now properly supports cross-compilation (Issue #188)
 
 

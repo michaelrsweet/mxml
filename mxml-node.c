@@ -219,29 +219,23 @@ mxmlDelete(mxml_node_t *node)		/* I - Node to delete */
 
     if ((next = current->next) == NULL)
     {
-      mxml_node_t *temp = current->parent;
-					/* Pointer to parent node */
+     /*
+      * Next node is the parent, which we'll free as needed...
+      */
 
-      if (temp == node)
-      {
-       /*
-        * Got back to the top node...
-        */
-
+      if ((next = current->parent) == node)
         next = NULL;
-      }
-      else if ((next = temp->next) == NULL)
-      {
-	if ((next = temp->parent) == node)
-	  next = NULL;
-      }
     }
+
+   /*
+    * Free child...
+    */
 
     mxml_free(current);
   }
 
  /*
-  * Then free the memory used by this node...
+  * Then free the memory used by the parent node...
   */
 
   mxml_free(node);

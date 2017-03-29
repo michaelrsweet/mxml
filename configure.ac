@@ -15,7 +15,8 @@ dnl
 dnl Package name and version...
 AC_INIT([Mini-XML], [2.11], [https://github.com/michaelrsweet/mxml/issues], [mxml], [https://michaelrsweet.github.io/mxml])
 
-dnl Get the compile host and split the host_os value
+dnl Get the build and host platforms and split the host_os value
+AC_CANONICAL_BUILD
 AC_CANONICAL_HOST
 
 [host_os_name=`echo $host_os | sed -e '1,$s/[0-9.]*$//g'`]
@@ -280,6 +281,14 @@ else
 	esac
 fi
 
+dnl Determine whether we are cross-compiling...
+if test "$build" = "$host"; then
+	TARGETS="ALLTARGETS"
+else
+	TARGETS="CROSSTARGETS"
+fi
+AC_SUBST(TARGETS)
+
 dnl Fix "prefix" variable if it hasn't been specified...
 if test "$prefix" = "NONE"; then
 	prefix="/usr/local"
@@ -330,4 +339,4 @@ AC_SUBST(PC_CFLAGS)
 AC_SUBST(PC_LIBS)
 
 dnl Output the makefile, etc...
-AC_OUTPUT(Makefile mxml.list mxml.pc)
+AC_OUTPUT(Makefile mxml.pc)

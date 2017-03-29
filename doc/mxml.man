@@ -1,0 +1,1290 @@
+.TH mxml 3 "Mini-XML API" "03/29/17" "Mini-XML API"
+.SH NAME
+mxml \- Mini-XML API
+.SH INCLUDE FILE
+#include <mxml.h>
+.SH LIBRARY
+\-lmxml
+.SH DESCRIPTION
+Mini-XML is a small XML parsing library that you can use to
+read XML and XML-like data files in your application without
+requiring large non-standard libraries.  Mini-XML only
+requires an ANSI C compatible compiler (GCC works, as do
+most vendors' ANSI C compilers) and a "make" program.
+.PP
+Mini-XML provides the following functionality:
+.IP \(bu 4
+Reading of UTF-8 and UTF-16 and writing of UTF-8 encoded XML files and strings.
+.IP \(bu 4
+Data is stored in a linked-list tree structure,
+preserving the XML data hierarchy.
+.IP \(bu 4
+Supports arbitrary element names, attributes, and attribute
+values with no preset limits, just available memory.
+.IP \(bu 4
+Supports integer, real, opaque ("CDATA"), and text data types in
+"leaf" nodes.
+.IP \(bu 4
+Functions for creating, indexing, and managing trees of data.
+.IP \(bu 4
+"Find" and "walk" functions for easily locating and navigating
+trees of data.
+.PP
+Mini-XML doesn't do validation or other types of processing
+on the data based upon schema files or other sources of
+definition information, nor does it support character
+entities other than those required by the XML
+specification.
+.SH USING MINI-XML
+Mini-XML provides a single header file which you include:
+.nf
+
+    #include <mxml.h>
+.fi
+.PP
+Nodes are defined by the "mxml_node_t" structure; the "type"
+member defines the node type (element, integer, opaque,
+real, or text) which determines which value you want to look
+at in the "value" union.  New nodes can be created using the
+"mxmlNewElement()", "mxmlNewInteger()", "mxmlNewOpaque()",
+"mxmlNewReal()", and "mxmlNewText()" functions.  Only
+elements can have child nodes, and the top node must be an
+element, usually "?xml".
+.PP
+You load an XML file using the "mxmlLoadFile()" function:
+.nf
+
+    FILE *fp;
+    mxml_node_t *tree;
+
+    fp = fopen("filename.xml", "r");
+    tree = mxmlLoadFile(NULL, fp, MXML_NO_CALLBACK);
+    fclose(fp);
+.fi
+.PP
+Similarly, you save an XML file using the "mxmlSaveFile()"
+function:
+.nf
+
+    FILE *fp;
+    mxml_node_t *tree;
+
+    fp = fopen("filename.xml", "w");
+    mxmlSaveFile(tree, fp, MXML_NO_CALLBACK);
+    fclose(fp);
+.fi
+.PP
+The "mxmlLoadString()", "mxmlSaveAllocString()", and
+"mxmlSaveString()" functions load XML node trees from and save
+XML node trees to strings:
+.nf
+
+    char buffer[8192];
+    char *ptr;
+    mxml_node_t *tree;
+
+    ...
+    tree = mxmlLoadString(NULL, buffer, MXML_NO_CALLBACK);
+
+    ...
+    mxmlSaveString(tree, buffer, sizeof(buffer),
+                   MXML_NO_CALLBACK);
+
+    ...
+    ptr = mxmlSaveAllocString(tree, MXML_NO_CALLBACK);
+.fi
+.PP
+You can find a named element/node using the "mxmlFindElement()"
+function:
+.nf
+
+    mxml_node_t *node = mxmlFindElement(tree, tree, "name",
+                                        "attr", "value",
+                                        MXML_DESCEND);
+.fi
+.PP
+The "name", "attr", and "value" arguments can be passed as
+NULL to act as wildcards, e.g.:
+.nf
+
+    /* Find the first "a" element */
+    node = mxmlFindElement(tree, tree, "a", NULL, NULL,
+                           MXML_DESCEND);
+
+    /* Find the first "a" element with "href" attribute */
+    node = mxmlFindElement(tree, tree, "a", "href", NULL,
+                           MXML_DESCEND);
+
+    /* Find the first "a" element with "href" to a URL */
+    node = mxmlFindElement(tree, tree, "a", "href",
+                           "http://www.easysw.com/~mike/mxml/",
+                           MXML_DESCEND);
+
+    /* Find the first element with a "src" attribute*/
+    node = mxmlFindElement(tree, tree, NULL, "src", NULL,
+                           MXML_DESCEND);
+
+    /* Find the first element with a "src" = "foo.jpg" */
+    node = mxmlFindElement(tree, tree, NULL, "src",
+                           "foo.jpg", MXML_DESCEND);
+.fi
+.PP
+You can also iterate with the same function:
+.nf
+
+    mxml_node_t *node;
+
+    for (node = mxmlFindElement(tree, tree, "name", NULL,
+                                NULL, MXML_DESCEND);
+         node != NULL;
+         node = mxmlFindElement(node, tree, "name", NULL,
+                                NULL, MXML_DESCEND))
+    {
+      ... do something ...
+    }
+.fi
+.PP
+To find the value of a specific node in the tree, use the "mxmlFindPath()"
+function:
+.nf
+
+    mxml_node_t *value = mxmlFindPath(tree, "path/to/*/foo/bar");
+.fi
+.PP
+The "mxmlGetInteger()", "mxmlGetOpaque()", "mxmlGetReal()", and "mxmlGetText()"
+functions retrieve the value from a node:
+.nf
+
+    mxml_node_t *node;
+
+    int intvalue = mxmlGetInteger(node);
+
+    const char *opaquevalue = mxmlGetOpaque(node);
+
+    double realvalue = mxmlGetReal(node);
+
+    int whitespacevalue;
+    const char *textvalue = mxmlGetText(node, &whitespacevalue);
+.fi
+.PP
+Finally, once you are done with the XML data, use the
+"mxmlDelete()" function to recursively free the memory that
+is used for a particular node or the entire tree:
+.nf
+
+    mxmlDelete(tree);
+.fi
+.SH ENUMERATIONS
+.SS mxml_sax_event_e
+SAX event type.
+.TP 5
+MXML_SAX_CDATA
+.br
+CDATA node
+.TP 5
+MXML_SAX_COMMENT
+.br
+Comment node
+.TP 5
+MXML_SAX_DATA
+.br
+Data node
+.TP 5
+MXML_SAX_DIRECTIVE
+.br
+Processing directive node
+.TP 5
+MXML_SAX_ELEMENT_CLOSE
+.br
+Element closed
+.TP 5
+MXML_SAX_ELEMENT_OPEN
+.br
+Element opened
+.SS mxml_type_e
+The XML node type.
+.TP 5
+MXML_CUSTOM
+.br
+Custom data 
+.TP 5
+MXML_ELEMENT
+.br
+XML element with attributes
+.TP 5
+MXML_IGNORE
+.br
+Ignore/throw away node 
+.TP 5
+MXML_INTEGER
+.br
+Integer value
+.TP 5
+MXML_OPAQUE
+.br
+Opaque string
+.TP 5
+MXML_REAL
+.br
+Real value
+.TP 5
+MXML_TEXT
+.br
+Text fragment
+.SH FUNCTIONS
+.SS mxmlAdd
+Add a node to a tree.
+.PP
+.nf
+void mxmlAdd (
+    mxml_node_t *parent,
+    int where,
+    mxml_node_t *child,
+    mxml_node_t *node
+);
+.fi
+.PP
+Adds the specified node to the parent. If the child argument is not
+NULL, puts the new node before or after the specified child depending
+on the value of the where argument. If the child argument is NULL,
+puts the new node at the beginning of the child list (MXML_ADD_BEFORE)
+or at the end of the child list (MXML_ADD_AFTER). The constant
+MXML_ADD_TO_PARENT can be used to specify a NULL child pointer.
+.SS mxmlDelete
+Delete a node and all of its children.
+.PP
+.nf
+void mxmlDelete (
+    mxml_node_t *node
+);
+.fi
+.PP
+If the specified node has a parent, this function first removes the
+node from its parent using the mxmlRemove() function.
+.SS mxmlElementDeleteAttr
+Delete an attribute.
+.PP
+.nf
+void mxmlElementDeleteAttr (
+    mxml_node_t *node,
+    const char *name
+);
+.fi
+.PP
+
+.SS mxmlElementGetAttr
+Get an attribute.
+.PP
+.nf
+const char * mxmlElementGetAttr (
+    mxml_node_t *node,
+    const char *name
+);
+.fi
+.PP
+This function returns NULL if the node is not an element or the
+named attribute does not exist.
+.SS mxmlElementSetAttr
+Set an attribute.
+.PP
+.nf
+void mxmlElementSetAttr (
+    mxml_node_t *node,
+    const char *name,
+    const char *value
+);
+.fi
+.PP
+If the named attribute already exists, the value of the attribute
+is replaced by the new string value. The string value is copied
+into the element node. This function does nothing if the node is
+not an element.
+.SS mxmlElementSetAttrf
+Set an attribute with a formatted value.
+.PP
+.nf
+void mxmlElementSetAttrf (
+    mxml_node_t *node,
+    const char *name,
+    const char *format,
+    ...
+);
+.fi
+.PP
+If the named attribute already exists, the value of the attribute
+is replaced by the new formatted string. The formatted string value is
+copied into the element node. This function does nothing if the node
+is not an element.
+
+
+.SS mxmlEntityAddCallback
+Add a callback to convert entities to Unicode.
+.PP
+.nf
+int  mxmlEntityAddCallback (
+    mxml_entity_cb_t cb
+);
+.fi
+.SS mxmlEntityGetName
+Get the name that corresponds to the character value.
+.PP
+.nf
+const char * mxmlEntityGetName (
+    int val
+);
+.fi
+.PP
+If val does not need to be represented by a named entity, NULL is returned.
+.SS mxmlEntityGetValue
+Get the character corresponding to a named entity.
+.PP
+.nf
+int  mxmlEntityGetValue (
+    const char *name
+);
+.fi
+.PP
+The entity name can also be a numeric constant. -1 is returned if the
+name is not known.
+.SS mxmlEntityRemoveCallback
+Remove a callback.
+.PP
+.nf
+void mxmlEntityRemoveCallback (
+    mxml_entity_cb_t cb
+);
+.fi
+.SS mxmlFindElement
+Find the named element.
+.PP
+.nf
+mxml_node_t * mxmlFindElement (
+    mxml_node_t *node,
+    mxml_node_t *top,
+    const char *name,
+    const char *attr,
+    const char *value,
+    int descend
+);
+.fi
+.PP
+The search is constrained by the name, attribute name, and value; any
+NULL names or values are treated as wildcards, so different kinds of
+searches can be implemented by looking for all elements of a given name
+or all elements with a specific attribute. The descend argument determines
+whether the search descends into child nodes; normally you will use
+MXML_DESCEND_FIRST for the initial search and MXML_NO_DESCEND to find
+additional direct descendents of the node. The top node argument
+constrains the search to a particular node's children.
+.SS mxmlFindPath
+Find a node with the given path.
+.PP
+.nf
+mxml_node_t * mxmlFindPath (
+    mxml_node_t *top,
+    const char *path
+);
+.fi
+.PP
+The "path" is a slash-separated list of element names. The name "*" is
+considered a wildcard for one or more levels of elements.  For example,
+"foo/one/two", "bar/two/one", "*/one", and so forth.
+.PP
+The first child node of the found node is returned if the given node has
+children and the first child is a value node.
+
+
+.SS mxmlGetCDATA
+Get the value for a CDATA node.
+.PP
+.nf
+const char * mxmlGetCDATA (
+    mxml_node_t *node
+);
+.fi
+.PP
+\fBNULL\fR is returned if the node is not a CDATA element.
+
+
+.SS mxmlGetCustom
+Get the value for a custom node.
+.PP
+.nf
+const void * mxmlGetCustom (
+    mxml_node_t *node
+);
+.fi
+.PP
+\fBNULL\fR is returned if the node (or its first child) is not a custom
+value node.
+
+
+.SS mxmlGetElement
+Get the name for an element node.
+.PP
+.nf
+const char * mxmlGetElement (
+    mxml_node_t *node
+);
+.fi
+.PP
+\fBNULL\fR is returned if the node is not an element node.
+
+
+.SS mxmlGetFirstChild
+Get the first child of an element node.
+.PP
+.nf
+mxml_node_t * mxmlGetFirstChild (
+    mxml_node_t *node
+);
+.fi
+.PP
+\fBNULL\fR is returned if the node is not an element node or if the node
+has no children.
+
+
+.SS mxmlGetInteger
+Get the integer value from the specified node or its
+first child.
+.PP
+.nf
+int  mxmlGetInteger (
+    mxml_node_t *node
+);
+.fi
+.PP
+0 is returned if the node (or its first child) is not an integer value node.
+
+
+.SS mxmlGetLastChild
+Get the last child of an element node.
+.PP
+.nf
+mxml_node_t * mxmlGetLastChild (
+    mxml_node_t *node
+);
+.fi
+.PP
+\fBNULL\fR is returned if the node is not an element node or if the node
+has no children.
+
+
+.SS mxmlGetNextSibling
+Return the node type...
+.PP
+.nf
+mxml_node_t * mxmlGetNextSibling (
+    mxml_node_t *node
+);
+.fi
+.SS mxmlGetOpaque
+Get an opaque string value for a node or its first child.
+.PP
+.nf
+const char * mxmlGetOpaque (
+    mxml_node_t *node
+);
+.fi
+.PP
+\fBNULL\fR is returned if the node (or its first child) is not an opaque
+value node.
+
+
+.SS mxmlGetParent
+Get the parent node.
+.PP
+.nf
+mxml_node_t * mxmlGetParent (
+    mxml_node_t *node
+);
+.fi
+.PP
+\fBNULL\fR is returned for a root node.
+
+
+.SS mxmlGetPrevSibling
+Get the previous node for the current parent.
+.PP
+.nf
+mxml_node_t * mxmlGetPrevSibling (
+    mxml_node_t *node
+);
+.fi
+.PP
+\fBNULL\fR is returned if this is the first child for the current parent.
+
+
+.SS mxmlGetReal
+Get the real value for a node or its first child.
+.PP
+.nf
+double  mxmlGetReal (
+    mxml_node_t *node
+);
+.fi
+.PP
+0.0 is returned if the node (or its first child) is not a real value node.
+
+
+.SS mxmlGetRefCount
+Get the current reference (use) count for a node.
+.PP
+.nf
+int  mxmlGetRefCount (
+    mxml_node_t *node
+);
+.fi
+.PP
+The initial reference count of new nodes is 1. Use the \fImxmlRetain\fR
+and \fImxmlRelease\fR functions to increment and decrement a node's
+reference count.
+
+\.
+.SS mxmlGetText
+Get the text value for a node or its first child.
+.PP
+.nf
+const char * mxmlGetText (
+    mxml_node_t *node,
+    int *whitespace
+);
+.fi
+.PP
+\fBNULL\fR is returned if the node (or its first child) is not a text node.
+The "whitespace" argument can be NULL.
+
+
+.SS mxmlGetType
+Get the node type.
+.PP
+.nf
+mxml_type_t  mxmlGetType (
+    mxml_node_t *node
+);
+.fi
+.PP
+\fBMXML_IGNORE\fR is returned if "node" is \fBNULL\fR.
+
+
+.SS mxmlGetUserData
+Get the user data pointer for a node.
+.PP
+.nf
+void * mxmlGetUserData (
+    mxml_node_t *node
+);
+.fi
+.PP
+
+.SS mxmlIndexDelete
+Delete an index.
+.PP
+.nf
+void mxmlIndexDelete (
+    mxml_index_t *ind
+);
+.fi
+.SS mxmlIndexEnum
+Return the next node in the index.
+.PP
+.nf
+mxml_node_t * mxmlIndexEnum (
+    mxml_index_t *ind
+);
+.fi
+.PP
+Nodes are returned in the sorted order of the index.
+.SS mxmlIndexFind
+Find the next matching node.
+.PP
+.nf
+mxml_node_t * mxmlIndexFind (
+    mxml_index_t *ind,
+    const char *element,
+    const char *value
+);
+.fi
+.PP
+You should call mxmlIndexReset() prior to using this function for
+the first time with a particular set of "element" and "value"
+strings. Passing NULL for both "element" and "value" is equivalent
+to calling mxmlIndexEnum().
+.SS mxmlIndexGetCount
+Get the number of nodes in an index.
+.PP
+.nf
+int  mxmlIndexGetCount (
+    mxml_index_t *ind
+);
+.fi
+.PP
+
+.SS mxmlIndexNew
+Create a new index.
+.PP
+.nf
+mxml_index_t * mxmlIndexNew (
+    mxml_node_t *node,
+    const char *element,
+    const char *attr
+);
+.fi
+.PP
+The index will contain all nodes that contain the named element and/or
+attribute. If both "element" and "attr" are NULL, then the index will
+contain a sorted list of the elements in the node tree.  Nodes are
+sorted by element name and optionally by attribute value if the "attr"
+argument is not NULL.
+.SS mxmlIndexReset
+Reset the enumeration/find pointer in the index and
+return the first node in the index.
+.PP
+.nf
+mxml_node_t * mxmlIndexReset (
+    mxml_index_t *ind
+);
+.fi
+.PP
+This function should be called prior to using mxmlIndexEnum() or
+mxmlIndexFind() for the first time.
+.SS mxmlLoadFd
+Load a file descriptor into an XML node tree.
+.PP
+.nf
+mxml_node_t * mxmlLoadFd (
+    mxml_node_t *top,
+    int fd,
+    mxml_load_cb_t cb
+);
+.fi
+.PP
+The nodes in the specified file are added to the specified top node.
+If no top node is provided, the XML file MUST be well-formed with a
+single parent node like <?xml> for the entire file. The callback
+function returns the value type that should be used for child nodes.
+If MXML_NO_CALLBACK is specified then all child nodes will be either
+MXML_ELEMENT or MXML_TEXT nodes.
+.PP
+The constants MXML_INTEGER_CALLBACK, MXML_OPAQUE_CALLBACK,
+MXML_REAL_CALLBACK, and MXML_TEXT_CALLBACK are defined for loading
+child nodes of the specified type.
+.SS mxmlLoadFile
+Load a file into an XML node tree.
+.PP
+.nf
+mxml_node_t * mxmlLoadFile (
+    mxml_node_t *top,
+    FILE *fp,
+    mxml_load_cb_t cb
+);
+.fi
+.PP
+The nodes in the specified file are added to the specified top node.
+If no top node is provided, the XML file MUST be well-formed with a
+single parent node like <?xml> for the entire file. The callback
+function returns the value type that should be used for child nodes.
+If MXML_NO_CALLBACK is specified then all child nodes will be either
+MXML_ELEMENT or MXML_TEXT nodes.
+.PP
+The constants MXML_INTEGER_CALLBACK, MXML_OPAQUE_CALLBACK,
+MXML_REAL_CALLBACK, and MXML_TEXT_CALLBACK are defined for loading
+child nodes of the specified type.
+.SS mxmlLoadString
+Load a string into an XML node tree.
+.PP
+.nf
+mxml_node_t * mxmlLoadString (
+    mxml_node_t *top,
+    const char *s,
+    mxml_load_cb_t cb
+);
+.fi
+.PP
+The nodes in the specified string are added to the specified top node.
+If no top node is provided, the XML string MUST be well-formed with a
+single parent node like <?xml> for the entire string. The callback
+function returns the value type that should be used for child nodes.
+If MXML_NO_CALLBACK is specified then all child nodes will be either
+MXML_ELEMENT or MXML_TEXT nodes.
+.PP
+The constants MXML_INTEGER_CALLBACK, MXML_OPAQUE_CALLBACK,
+MXML_REAL_CALLBACK, and MXML_TEXT_CALLBACK are defined for loading
+child nodes of the specified type.
+.SS mxmlNewCDATA
+Create a new CDATA node.
+.PP
+.nf
+mxml_node_t * mxmlNewCDATA (
+    mxml_node_t *parent,
+    const char *data
+);
+.fi
+.PP
+The new CDATA node is added to the end of the specified parent's child
+list. The constant MXML_NO_PARENT can be used to specify that the new
+CDATA node has no parent. The data string must be nul-terminated and
+is copied into the new node. CDATA nodes use the MXML_ELEMENT type.
+
+
+.SS mxmlNewCustom
+Create a new custom data node.
+.PP
+.nf
+mxml_node_t * mxmlNewCustom (
+    mxml_node_t *parent,
+    void *data,
+    mxml_custom_destroy_cb_t destroy
+);
+.fi
+.PP
+The new custom node is added to the end of the specified parent's child
+list. The constant MXML_NO_PARENT can be used to specify that the new
+element node has no parent. NULL can be passed when the data in the
+node is not dynamically allocated or is separately managed.
+
+
+.SS mxmlNewElement
+Create a new element node.
+.PP
+.nf
+mxml_node_t * mxmlNewElement (
+    mxml_node_t *parent,
+    const char *name
+);
+.fi
+.PP
+The new element node is added to the end of the specified parent's child
+list. The constant MXML_NO_PARENT can be used to specify that the new
+element node has no parent.
+.SS mxmlNewInteger
+Create a new integer node.
+.PP
+.nf
+mxml_node_t * mxmlNewInteger (
+    mxml_node_t *parent,
+    int integer
+);
+.fi
+.PP
+The new integer node is added to the end of the specified parent's child
+list. The constant MXML_NO_PARENT can be used to specify that the new
+integer node has no parent.
+.SS mxmlNewOpaque
+Create a new opaque string.
+.PP
+.nf
+mxml_node_t * mxmlNewOpaque (
+    mxml_node_t *parent,
+    const char *opaque
+);
+.fi
+.PP
+The new opaque node is added to the end of the specified parent's child
+list. The constant MXML_NO_PARENT can be used to specify that the new
+opaque node has no parent. The opaque string must be nul-terminated and
+is copied into the new node.
+.SS mxmlNewReal
+Create a new real number node.
+.PP
+.nf
+mxml_node_t * mxmlNewReal (
+    mxml_node_t *parent,
+    double real
+);
+.fi
+.PP
+The new real number node is added to the end of the specified parent's
+child list. The constant MXML_NO_PARENT can be used to specify that
+the new real number node has no parent.
+.SS mxmlNewText
+Create a new text fragment node.
+.PP
+.nf
+mxml_node_t * mxmlNewText (
+    mxml_node_t *parent,
+    int whitespace,
+    const char *string
+);
+.fi
+.PP
+The new text node is added to the end of the specified parent's child
+list. The constant MXML_NO_PARENT can be used to specify that the new
+text node has no parent. The whitespace parameter is used to specify
+whether leading whitespace is present before the node. The text
+string must be nul-terminated and is copied into the new node.
+.SS mxmlNewTextf
+Create a new formatted text fragment node.
+.PP
+.nf
+mxml_node_t * mxmlNewTextf (
+    mxml_node_t *parent,
+    int whitespace,
+    const char *format,
+    ...
+);
+.fi
+.PP
+The new text node is added to the end of the specified parent's child
+list. The constant MXML_NO_PARENT can be used to specify that the new
+text node has no parent. The whitespace parameter is used to specify
+whether leading whitespace is present before the node. The format
+string must be nul-terminated and is formatted into the new node.
+.SS mxmlNewXML
+Create a new XML document tree.
+.PP
+.nf
+mxml_node_t * mxmlNewXML (
+    const char *version
+);
+.fi
+.PP
+The "version" argument specifies the version number to put in the
+?xml element node. If NULL, version 1.0 is assumed.
+
+
+.SS mxmlRelease
+Release a node.
+.PP
+.nf
+int  mxmlRelease (
+    mxml_node_t *node
+);
+.fi
+.PP
+When the reference count reaches zero, the node (and any children)
+is deleted via mxmlDelete().
+
+
+.SS mxmlRemove
+Remove a node from its parent.
+.PP
+.nf
+void mxmlRemove (
+    mxml_node_t *node
+);
+.fi
+.PP
+Does not free memory used by the node - use mxmlDelete() for that.
+This function does nothing if the node has no parent.
+.SS mxmlRetain
+Retain a node.
+.PP
+.nf
+int  mxmlRetain (
+    mxml_node_t *node
+);
+.fi
+.PP
+
+.SS mxmlSAXLoadFd
+Load a file descriptor into an XML node tree
+using a SAX callback.
+.PP
+.nf
+mxml_node_t * mxmlSAXLoadFd (
+    mxml_node_t *top,
+    int fd,
+    mxml_load_cb_t cb,
+    mxml_sax_cb_t sax_cb,
+    void *sax_data
+);
+.fi
+.PP
+The nodes in the specified file are added to the specified top node.
+If no top node is provided, the XML file MUST be well-formed with a
+single parent node like <?xml> for the entire file. The callback
+function returns the value type that should be used for child nodes.
+If MXML_NO_CALLBACK is specified then all child nodes will be either
+MXML_ELEMENT or MXML_TEXT nodes.
+.PP
+The constants MXML_INTEGER_CALLBACK, MXML_OPAQUE_CALLBACK,
+MXML_REAL_CALLBACK, and MXML_TEXT_CALLBACK are defined for loading
+child nodes of the specified type.
+.PP
+The SAX callback must call mxmlRetain() for any nodes that need to
+be kept for later use. Otherwise, nodes are deleted when the parent
+node is closed or after each data, comment, CDATA, or directive node.
+
+
+.SS mxmlSAXLoadFile
+Load a file into an XML node tree
+using a SAX callback.
+.PP
+.nf
+mxml_node_t * mxmlSAXLoadFile (
+    mxml_node_t *top,
+    FILE *fp,
+    mxml_load_cb_t cb,
+    mxml_sax_cb_t sax_cb,
+    void *sax_data
+);
+.fi
+.PP
+The nodes in the specified file are added to the specified top node.
+If no top node is provided, the XML file MUST be well-formed with a
+single parent node like <?xml> for the entire file. The callback
+function returns the value type that should be used for child nodes.
+If MXML_NO_CALLBACK is specified then all child nodes will be either
+MXML_ELEMENT or MXML_TEXT nodes.
+.PP
+The constants MXML_INTEGER_CALLBACK, MXML_OPAQUE_CALLBACK,
+MXML_REAL_CALLBACK, and MXML_TEXT_CALLBACK are defined for loading
+child nodes of the specified type.
+.PP
+The SAX callback must call mxmlRetain() for any nodes that need to
+be kept for later use. Otherwise, nodes are deleted when the parent
+node is closed or after each data, comment, CDATA, or directive node.
+
+
+.SS mxmlSAXLoadString
+Load a string into an XML node tree
+using a SAX callback.
+.PP
+.nf
+mxml_node_t * mxmlSAXLoadString (
+    mxml_node_t *top,
+    const char *s,
+    mxml_load_cb_t cb,
+    mxml_sax_cb_t sax_cb,
+    void *sax_data
+);
+.fi
+.PP
+The nodes in the specified string are added to the specified top node.
+If no top node is provided, the XML string MUST be well-formed with a
+single parent node like <?xml> for the entire string. The callback
+function returns the value type that should be used for child nodes.
+If MXML_NO_CALLBACK is specified then all child nodes will be either
+MXML_ELEMENT or MXML_TEXT nodes.
+.PP
+The constants MXML_INTEGER_CALLBACK, MXML_OPAQUE_CALLBACK,
+MXML_REAL_CALLBACK, and MXML_TEXT_CALLBACK are defined for loading
+child nodes of the specified type.
+.PP
+The SAX callback must call mxmlRetain() for any nodes that need to
+be kept for later use. Otherwise, nodes are deleted when the parent
+node is closed or after each data, comment, CDATA, or directive node.
+
+
+.SS mxmlSaveAllocString
+Save an XML tree to an allocated string.
+.PP
+.nf
+char * mxmlSaveAllocString (
+    mxml_node_t *node,
+    mxml_save_cb_t cb
+);
+.fi
+.PP
+This function returns a pointer to a string containing the textual
+representation of the XML node tree.  The string should be freed
+using the free() function when you are done with it.  NULL is returned
+if the node would produce an empty string or if the string cannot be
+allocated.
+.PP
+The callback argument specifies a function that returns a whitespace
+string or NULL before and after each element. If MXML_NO_CALLBACK
+is specified, whitespace will only be added before MXML_TEXT nodes
+with leading whitespace and before attribute names inside opening
+element tags.
+.SS mxmlSaveFd
+Save an XML tree to a file descriptor.
+.PP
+.nf
+int  mxmlSaveFd (
+    mxml_node_t *node,
+    int fd,
+    mxml_save_cb_t cb
+);
+.fi
+.PP
+The callback argument specifies a function that returns a whitespace
+string or NULL before and after each element. If MXML_NO_CALLBACK
+is specified, whitespace will only be added before MXML_TEXT nodes
+with leading whitespace and before attribute names inside opening
+element tags.
+.SS mxmlSaveFile
+Save an XML tree to a file.
+.PP
+.nf
+int  mxmlSaveFile (
+    mxml_node_t *node,
+    FILE *fp,
+    mxml_save_cb_t cb
+);
+.fi
+.PP
+The callback argument specifies a function that returns a whitespace
+string or NULL before and after each element. If MXML_NO_CALLBACK
+is specified, whitespace will only be added before MXML_TEXT nodes
+with leading whitespace and before attribute names inside opening
+element tags.
+.SS mxmlSaveString
+Save an XML node tree to a string.
+.PP
+.nf
+int  mxmlSaveString (
+    mxml_node_t *node,
+    char *buffer,
+    int bufsize,
+    mxml_save_cb_t cb
+);
+.fi
+.PP
+This function returns the total number of bytes that would be
+required for the string but only copies (bufsize - 1) characters
+into the specified buffer.
+.PP
+The callback argument specifies a function that returns a whitespace
+string or NULL before and after each element. If MXML_NO_CALLBACK
+is specified, whitespace will only be added before MXML_TEXT nodes
+with leading whitespace and before attribute names inside opening
+element tags.
+.SS mxmlSetCDATA
+Set the element name of a CDATA node.
+.PP
+.nf
+int  mxmlSetCDATA (
+    mxml_node_t *node,
+    const char *data
+);
+.fi
+.PP
+The node is not changed if it (or its first child) is not a CDATA element node.
+
+
+.SS mxmlSetCustom
+Set the data and destructor of a custom data node.
+.PP
+.nf
+int  mxmlSetCustom (
+    mxml_node_t *node,
+    void *data,
+    mxml_custom_destroy_cb_t destroy
+);
+.fi
+.PP
+The node is not changed if it (or its first child) is not a custom node.
+
+
+.SS mxmlSetCustomHandlers
+Set the handling functions for custom data.
+.PP
+.nf
+void mxmlSetCustomHandlers (
+    mxml_custom_load_cb_t load,
+    mxml_custom_save_cb_t save
+);
+.fi
+.PP
+The load function accepts a node pointer and a data string and must
+return 0 on success and non-zero on error.
+.PP
+The save function accepts a node pointer and must return a malloc'd
+string on success and NULL on error.
+.SS mxmlSetElement
+Set the name of an element node.
+.PP
+.nf
+int  mxmlSetElement (
+    mxml_node_t *node,
+    const char *name
+);
+.fi
+.PP
+The node is not changed if it is not an element node.
+.SS mxmlSetErrorCallback
+Set the error message callback.
+.PP
+.nf
+void mxmlSetErrorCallback (
+    mxml_error_cb_t cb
+);
+.fi
+.SS mxmlSetInteger
+Set the value of an integer node.
+.PP
+.nf
+int  mxmlSetInteger (
+    mxml_node_t *node,
+    int integer
+);
+.fi
+.PP
+The node is not changed if it (or its first child) is not an integer node.
+.SS mxmlSetOpaque
+Set the value of an opaque node.
+.PP
+.nf
+int  mxmlSetOpaque (
+    mxml_node_t *node,
+    const char *opaque
+);
+.fi
+.PP
+The node is not changed if it (or its first child) is not an opaque node.
+.SS mxmlSetReal
+Set the value of a real number node.
+.PP
+.nf
+int  mxmlSetReal (
+    mxml_node_t *node,
+    double real
+);
+.fi
+.PP
+The node is not changed if it (or its first child) is not a real number node.
+.SS mxmlSetText
+Set the value of a text node.
+.PP
+.nf
+int  mxmlSetText (
+    mxml_node_t *node,
+    int whitespace,
+    const char *string
+);
+.fi
+.PP
+The node is not changed if it (or its first child) is not a text node.
+.SS mxmlSetTextf
+Set the value of a text node to a formatted string.
+.PP
+.nf
+int  mxmlSetTextf (
+    mxml_node_t *node,
+    int whitespace,
+    const char *format,
+    ...
+);
+.fi
+.PP
+The node is not changed if it (or its first child) is not a text node.
+.SS mxmlSetUserData
+Set the user data pointer for a node.
+.PP
+.nf
+int  mxmlSetUserData (
+    mxml_node_t *node,
+    void *data
+);
+.fi
+.PP
+
+.SS mxmlSetWrapMargin
+Set the wrap margin when saving XML data.
+.PP
+.nf
+void mxmlSetWrapMargin (
+    int column
+);
+.fi
+.PP
+Wrapping is disabled when "column" is 0.
+
+
+.SS mxmlWalkNext
+Walk to the next logical node in the tree.
+.PP
+.nf
+mxml_node_t * mxmlWalkNext (
+    mxml_node_t *node,
+    mxml_node_t *top,
+    int descend
+);
+.fi
+.PP
+The descend argument controls whether the first child is considered
+to be the next node. The top node argument constrains the walk to
+the node's children.
+.SS mxmlWalkPrev
+Walk to the previous logical node in the tree.
+.PP
+.nf
+mxml_node_t * mxmlWalkPrev (
+    mxml_node_t *node,
+    mxml_node_t *top,
+    int descend
+);
+.fi
+.PP
+The descend argument controls whether the previous node's last child
+is considered to be the previous node. The top node argument constrains
+the walk to the node's children.
+.SH TYPES
+.SS mxml_custom_destroy_cb_t
+Custom data destructor
+.PP
+.nf
+typedef void(*)(void *) mxml_custom_destroy_cb_t;
+.fi
+.SS mxml_custom_load_cb_t
+Custom data load callback function
+.PP
+.nf
+typedef int(*)(mxml_node_t *, const char *) mxml_custom_load_cb_t;
+.fi
+.SS mxml_custom_save_cb_t
+Custom data save callback function
+.PP
+.nf
+typedef char *(*)(mxml_node_t *) mxml_custom_save_cb_t;
+.fi
+.SS mxml_entity_cb_t
+Entity callback function
+.PP
+.nf
+typedef int(*)(const char *) mxml_entity_cb_t;
+.fi
+.SS mxml_error_cb_t
+Error callback function
+.PP
+.nf
+typedef void(*)(const char *) mxml_error_cb_t;
+.fi
+.SS mxml_index_t
+An XML node index.
+.PP
+.nf
+typedef struct mxml_index_s mxml_index_t;
+.fi
+.SS mxml_load_cb_t
+Load callback function
+.PP
+.nf
+typedef mxml_type_t(*)(mxml_node_t *) mxml_load_cb_t;
+.fi
+.SS mxml_node_t
+An XML node.
+.PP
+.nf
+typedef struct mxml_node_s mxml_node_t;
+.fi
+.SS mxml_save_cb_t
+Save callback function
+.PP
+.nf
+typedef const char *(*)(mxml_node_t *, int) mxml_save_cb_t;
+.fi
+.SS mxml_sax_cb_t
+SAX callback function
+.PP
+.nf
+typedef void(*)(mxml_node_t *, mxml_sax_event_t, void *) mxml_sax_cb_t;
+.fi
+.SS mxml_sax_event_t
+SAX event type.
+.PP
+.nf
+typedef enum mxml_sax_event_e mxml_sax_event_t;
+.fi
+.SS mxml_type_t
+The XML node type.
+.PP
+.nf
+typedef enum mxml_type_e mxml_type_t;
+.fi
+.SH SEE ALSO
+mxmldoc(1), Mini-XML Programmers Manual, http://www.minixml.org/
+.SH COPYRIGHT
+Copyright 2003-2011 by Michael Sweet.

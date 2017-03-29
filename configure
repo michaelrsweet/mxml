@@ -625,6 +625,7 @@ ac_subst_vars='LTLIBOBJS
 LIBOBJS
 PC_LIBS
 PC_CFLAGS
+TARGETS
 PICFLAG
 LIBMXML
 DSOFLAGS
@@ -4504,6 +4505,13 @@ else
 			;;
 	esac
 fi
+
+if test "$build" = "$host"; then
+	TARGETS="ALLTARGETS"
+else
+	TARGETS="CROSSTARGETS"
+fi
+
 
 if test "$prefix" = "NONE"; then
 	prefix="/usr/local"

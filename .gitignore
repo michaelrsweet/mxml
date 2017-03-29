@@ -5,7 +5,6 @@ config.h
 config.log
 config.status
 doc/mxml.d
-doc/mxml.man
 libmxml.1.dylib
 libmxml.a
 libmxml.dylib
@@ -14,7 +13,6 @@ libmxml.sl.1
 libmxml.so
 libmxml.so.1
 libmxml.so.1.5
-mxml.list
 mxml.pc
 mxml.xml
 mxmldoc

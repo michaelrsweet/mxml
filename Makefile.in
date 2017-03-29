@@ -78,22 +78,21 @@ INSTALL_SCRIPT	=	$(INSTALL) -m 755
 # Targets...
 #
 
-DOCFILES	=	doc/0.gif doc/1.gif doc/2.gif doc/3.gif doc/4.gif \
-			doc/A.gif doc/B.gif doc/C.gif doc/D.gif \
-			doc/mxml.html doc/mxmldoc.xsd \
-			README COPYING CHANGES
+DOCFILES	=	doc/mxml.html doc/mxmldoc.xsd README.md COPYING CHANGES.md
 PUBLIBOBJS	=	mxml-attr.o mxml-entity.o mxml-file.o mxml-get.o \
 			mxml-index.o mxml-node.o mxml-search.o mxml-set.o
 LIBOBJS		=	$(PUBLIBOBJS) mxml-private.o mxml-string.o
 OBJS		=	mxmldoc.o testmxml.o $(LIBOBJS)
-TARGETS		=	$(LIBMXML) mxmldoc testmxml mxml.xml doc/mxml.man
+ALLTARGETS	=	$(LIBMXML) mxmldoc testmxml mxml.xml
+CROSSTARGETS	=	$(LIBMXML) mxmldoc
+TARGETS		=	$(@TARGETS@)
 
 
 #
 # Make everything...
 #
 
-all:		Makefile config.h $(TARGETS)
+all:		$(TARGETS)
 
 
 #
@@ -144,7 +143,7 @@ install:	$(TARGETS) install-$(LIBMXML) install-libmxml.a
 	echo Installing documentation in $(BUILDROOT)$(docdir)...
 	$(INSTALL_DIR) $(BUILDROOT)$(docdir)
 	for file in $(DOCFILES); do \
-		$(INSTALL_MAN) $$file $(BUILDROOT)$(docdir); \
+		$(INSTALL_MAN) $$file $(BUILDROOT)$(docdir)/`basename $$file .md`; \
 	done
 	echo Installing header files in $(BUILDROOT)$(includedir)...
 	$(INSTALL_DIR) $(BUILDROOT)$(includedir)
@@ -224,43 +223,6 @@ uninstall-libmxml.1.dylib:
 	echo Uninstalling libmxml.dylib from $(BUILDROOT)$(libdir)...
 	$(RM) $(BUILDROOT)$(libdir)/libmxml.dylib
 	$(RM) $(BUILDROOT)$(libdir)/libmxml.1.dylib
-
-
-#
-# Make packages using EPM (http://www.epmhome.org/)
-#
-
-epm:	all
-	echo Creating distribution packages...
-	epm --output-dir dist -v -f native mxml
-	epm --output-dir dist -v -f portable mxml
-
-
-#
-# autoconf stuff...
-#
-
-Makefile:	configure Makefile.in
-	echo Updating makefile...
-	if test -f config.status; then \
-		./config.status --recheck; \
-		./config.status; \
-	else \
-		./configure; \
-	fi
-	touch config.h
-
-
-config.h:	configure config.h.in
-	echo Updating config.h...
-	autoconf
-	if test -f config.status; then \
-		./config.status --recheck; \
-		./config.status; \
-	else \
-		./configure; \
-	fi
-	touch config.h
 
 
 #
@@ -386,6 +348,9 @@ mxml.xml:	mxmldoc-static mxml.h $(PUBLIBOBJS:.o=.c)
 	echo Generating API documentation...
 	$(RM) mxml.xml
 	./mxmldoc-static --header doc/reference.heading mxml.xml mxml.h $(PUBLIBOBJS:.o=.c) >doc/reference.html
+	./mxmldoc-static --man mxml --title "Mini-XML API" \
+		--intro doc/intro.man --footer doc/footer.man \
+		mxml.xml >doc/mxml.man
 	if test "x`uname`" = xDarwin; then \
 		./mxmldoc-static --docset org.minixml.docset \
 			--docversion @VERSION@ --feedname minixml.org \
@@ -406,18 +371,6 @@ valgrind:	mxmldoc-static
 	valgrind --tool=memcheck --leak-check=yes ./mxmldoc-static \
 		valgrind.xml mxml.h $(PUBLIBOBJS:.o=.c) \
 		>valgrind.html 2>valgrind.out
-
-
-#
-# doc/mxml.man
-#
-
-doc/mxml.man: mxmldoc-static mxml.xml
-	echo "Generating mxml(3) man page..."
-	$(RM) doc/mxml.man
-	./mxmldoc-static --man mxml --title "Mini-XML API" \
-		--intro doc/intro.man --footer doc/footer.man \
-		mxml.xml >doc/mxml.man
 
 
 #

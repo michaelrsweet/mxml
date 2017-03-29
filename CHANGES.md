@@ -1,5 +1,7 @@
 # Changes in Mini-XML 2.11
 
+- The configure script now properly supports cross-compilation (Issue #188)
+
 
 # Changes in Mini-XML 2.10
 

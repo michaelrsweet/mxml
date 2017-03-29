@@ -15,6 +15,12 @@ dnl
 dnl Package name and version...
 AC_INIT([Mini-XML], [2.11], [https://github.com/michaelrsweet/mxml/issues], [mxml], [https://michaelrsweet.github.io/mxml])
 
+dnl Get the compile host and split the host_os value
+AC_CANONICAL_HOST
+
+[host_os_name=`echo $host_os | sed -e '1,$s/[0-9.]*$//g'`]
+[host_os_version=`echo $host_os | sed -e '1,$s/^[^0-9.]*//g'`]
+
 dnl Set the name of the config header file...
 AC_CONFIG_HEADER(config.h)
 
@@ -56,13 +62,6 @@ AC_ARG_WITH(vsnprintf, [  --with-vsnprintf        use vsnprintf emulation functi
 	use_vsnprintf="$withval",
 	use_vsnprintf="no")
 
-dnl Get the operating system and version number...
-uname=`uname`
-uversion=`uname -r | sed -e '1,$s/[[^0-9]]//g'`
-if test x$uname = xIRIX64; then
-	uname="IRIX"
-fi
-
 dnl Checks for programs...
 AC_PROG_CC
 AC_PROG_CXX
@@ -79,8 +78,8 @@ AC_PATH_PROG(MKDIR,mkdir)
 AC_PATH_PROG(RM,rm)
 
 dnl Flags for "ar" command...
-case "$uname" in
-        Darwin* | *BSD*)
+case "$host_os_name" in
+        darwin* | *bsd)
                 ARFLAGS="-rcv"
                 ;;
         *)
@@ -144,9 +143,11 @@ if test "x$enable_threads" != xno; then
 
 				# Solaris requires -D_POSIX_PTHREAD_SEMANTICS to
 				# be POSIX-compliant... :(
-				if test $uname = SunOS; then
+				case "$host_os_name" in
+					sunos)
 					PTHREAD_FLAGS="$PTHREAD_FLAGS -D_POSIX_PTHREAD_SEMANTICS"
-				fi
+					;;
+				esac
 				break
 			fi
 		done
@@ -166,8 +167,8 @@ if test x$enable_shared != xno; then
 	AC_MSG_CHECKING(for shared library support)
 	PICFLAG=1
 
-	case "$uname" in
-		SunOS* | UNIX_S*)
+	case "$host_os_name" in
+		sunos | unix_s)
 			AC_MSG_RESULT(yes)
 			LIBMXML="libmxml.so.1.5"
 			DSO="\$(CC)"
@@ -175,7 +176,7 @@ if test x$enable_shared != xno; then
 			LDFLAGS="$LDFLAGS -R\$(libdir)"
                 	;;
 
-		HP-UX*)
+		hp-ux)
 			AC_MSG_RESULT(yes)
 			LIBMXML="libmxml.sl.1"
 			DSO="ld"
@@ -183,14 +184,14 @@ if test x$enable_shared != xno; then
 			LDFLAGS="$LDFLAGS -Wl,+s,+b,\$(libdir)"
 			;;
 
-		IRIX)
+		irix)
 			AC_MSG_RESULT(yes)
 			LIBMXML="libmxml.so.1.5"
 			DSO="\$(CC)"
 			DSOFLAGS="$DSOFLAGS -Wl,-rpath,\$(libdir),-set_version,sgi1.0,-soname,libmxml.so.1 -shared \$(OPTIM)"
 			;;
 
-		OSF1* | Linux | GNU)
+		osf | linux | gnu)
 			AC_MSG_RESULT(yes)
 			LIBMXML="libmxml.so.1.5"
 			DSO="\$(CC)"
@@ -198,7 +199,7 @@ if test x$enable_shared != xno; then
                         LDFLAGS="$LDFLAGS -Wl,-rpath,\$(libdir)"
 			;;
 
-		*BSD*)
+		*bsd)
 			AC_MSG_RESULT(yes)
 			LIBMXML="libmxml.so.1.5"
 			DSO="\$(CC)"
@@ -206,7 +207,7 @@ if test x$enable_shared != xno; then
 			LDFLAGS="$LDFLAGS -Wl,-R\$(libdir)"
                         ;;
 
-		Darwin*)
+		darwin)
 			AC_MSG_RESULT(yes)
 			LIBMXML="libmxml.1.dylib"
 			DSO="\$(CC)"
@@ -242,12 +243,12 @@ if test -n "$GCC"; then
 		CFLAGS="-ansi -pedantic $CFLAGS"
 	fi
 
-	if test $PICFLAG = 1 -a $uname != AIX; then
+	if test $PICFLAG = 1 -a "$host_os_name" != aix; then
     		OPTIM="-fPIC $OPTIM"
 	fi
 else
-	case $uname in
-		HP-UX*)
+	case "$host_os_name" in
+		hp-ux)
 			CFLAGS="-Ae $CFLAGS"
 
 			if test "x$OPTIM" = x; then
@@ -261,7 +262,7 @@ else
 			fi
 			;;
 
-		UNIX_SVR* | SunOS*)
+		unix_svr | sunos)
 			if test "x$OPTIM" = x; then
 				OPTIM="-O"
 			fi
@@ -296,12 +297,12 @@ fi
 
 dnl Fix "mandir" variable if it hasn't been specified...
 if test "$mandir" = "\${prefix}/man" -a "$prefix" = "/usr"; then
-	case "$uname" in
-        	*BSD* | Darwin* | Linux*)
-        		# BSD, Darwin (MacOS X), and Linux
+	case "$host_os_name" in
+        	*bsd | darwin | linux)
+        		# *BSD, Darwin (macOS), and Linux
         		mandir="/usr/share/man"
         		;;
-        	IRIX*)
+        	irix)
         		# SGI IRIX
         		mandir="/usr/share/catman/u_man"
         		;;
@@ -330,7 +331,3 @@ AC_SUBST(PC_LIBS)
 
 dnl Output the makefile, etc...
 AC_OUTPUT(Makefile mxml.list mxml.pc)
-
-dnl
-dnl End of "$Id$".
-dnl

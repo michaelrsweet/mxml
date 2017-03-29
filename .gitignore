@@ -16,6 +16,7 @@ libmxml.so.1
 libmxml.so.1.5
 mxml.list
 mxml.pc
+mxml.xml
 mxmldoc
 mxmldoc-static
 org.minixml.atom

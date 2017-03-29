@@ -72,7 +72,7 @@ if test "$INSTALL" = "$ac_install_sh"; then
 	INSTALL="`pwd`/install-sh -c"
 fi
 AC_PROG_RANLIB
-AC_PATH_PROG(AR,ar)
+AC_CHECK_TOOL(AR,ar)
 AC_PATH_PROG(CP,cp)
 AC_PATH_PROG(LN,ln)
 AC_PATH_PROG(MKDIR,mkdir)
@@ -192,7 +192,7 @@ if test x$enable_shared != xno; then
 			DSOFLAGS="$DSOFLAGS -Wl,-rpath,\$(libdir),-set_version,sgi1.0,-soname,libmxml.so.1 -shared \$(OPTIM)"
 			;;
 
-		osf | linux | gnu)
+		osf | linux* | gnu)
 			AC_MSG_RESULT(yes)
 			LIBMXML="libmxml.so.1.5"
 			DSO="\$(CC)"
@@ -307,7 +307,7 @@ fi
 dnl Fix "mandir" variable if it hasn't been specified...
 if test "$mandir" = "\${prefix}/man" -a "$prefix" = "/usr"; then
 	case "$host_os_name" in
-        	*bsd | darwin | linux)
+        	*bsd | darwin | linux*)
         		# *BSD, Darwin (macOS), and Linux
         		mandir="/usr/share/man"
         		;;

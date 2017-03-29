@@ -708,8 +708,19 @@ main(int  argc,				/* I - Number of command-line args */
     }
   }
 
+ /*
+  * Debug hooks...
+  */
+
   if (getenv("TEST_DELAY") != NULL)
     sleep(atoi(getenv("TEST_DELAY")));
+  if (getenv("TEST_LEAKS") != NULL)
+  {
+    char command[1024];
+
+    snprintf(command, sizeof(command), "leaks %d", (int)getpid());
+    system(command);
+  }
 
  /*
   * Return...

@@ -97,11 +97,51 @@ _mxml_strdupf(const char *format,	/* I - Printf-style format string */
   */
 
   va_start(ap, format);
+#ifdef HAVE_VASPRINTF
+  vasprintf(&s, format, ap);
+#else
   s = _mxml_vstrdupf(format, ap);
+#endif /* HAVE_VASPRINTF */
   va_end(ap);
 
   return (s);
 }
+
+
+#ifndef HAVE_STRLCPY
+/*
+ * '_mxml_strlcpy()' - Safely copy a string.
+ */
+
+size_t					/* O - Number of bytes copied */
+_mxml_strlcpy(char       *dst,		/* I - Destination buffer */
+              const char *src,		/* I - Source string */
+              size_t     dstsize)	/* I - Size of destinatipon buffer */
+{
+  size_t        srclen;                 /* Length of source string */
+
+
+ /*
+  * Figure out how much room is needed...
+  */
+
+  dstsize --;
+
+  srclen = strlen(src);
+
+ /*
+  * Copy the appropriate amount...
+  */
+
+  if (srclen > dstsize)
+    srclen = dstsize;
+
+  memmove(dst, src, srclen);
+  dst[srclen] = '\0';
+
+  return (srclen);
+}
+#endif /* !HAVE_STRLCPY */
 
 
 #ifndef HAVE_VSNPRINTF
@@ -423,6 +463,14 @@ char *					/* O - New string pointer */
 _mxml_vstrdupf(const char *format,	/* I - Printf-style format string */
                va_list    ap)		/* I - Pointer to additional arguments */
 {
+#ifdef HAVE_VASPRINTF
+  char		*s;			/* String */
+
+  vasprintf(&s, format, ap);
+
+  return (s);
+
+#else
   int		bytes;			/* Number of bytes required */
   char		*buffer,		/* String buffer */
 		temp[256];		/* Small buffer for first vsnprintf */
@@ -459,4 +507,5 @@ _mxml_vstrdupf(const char *format,	/* I - Printf-style format string */
   */
 
   return (buffer);
+#endif /* HAVE_VASPRINTF */
 }

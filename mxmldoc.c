@@ -644,7 +644,7 @@ add_variable(mxml_node_t *parent,	/* I - Parent node */
       if (node->value.text.whitespace && bufptr > buffer)
 	*bufptr++ = ' ';
 
-      strcpy(bufptr, node->value.text.string);
+      strlcpy(bufptr, node->value.text.string, sizeof(buffer) - (size_t)(bufptr - buffer));
 
       next = node->next;
       mxmlDelete(node);
@@ -673,7 +673,7 @@ add_variable(mxml_node_t *parent,	/* I - Parent node */
       if (node->value.text.whitespace && bufptr > buffer)
 	*bufptr++ = ' ';
 
-      strcpy(bufptr, node->value.text.string);
+      strlcpy(bufptr, node->value.text.string, sizeof(buffer) - (size_t)(bufptr - buffer));
 
       next = node->next;
       mxmlDelete(node);
@@ -686,7 +686,7 @@ add_variable(mxml_node_t *parent,	/* I - Parent node */
     * Handle "type name"...
     */
 
-    strcpy(buffer, type->last_child->value.text.string);
+    strlcpy(buffer, type->last_child->value.text.string, sizeof(buffer));
     mxmlDelete(type->last_child);
   }
 
@@ -797,8 +797,7 @@ get_comment_info(
       return ("<span class=\"info\">&nbsp;DEPRECATED&nbsp;</span>");
     else if (!strncmp(ptr, "@since ", 7))
     {
-      strncpy(since, ptr + 7, sizeof(since) - 1);
-      since[sizeof(since) - 1] = '\0';
+      strlcpy(since, ptr + 7, sizeof(since));
 
       if ((ptr = strchr(since, '@')) != NULL)
         *ptr = '\0';
@@ -1215,7 +1214,7 @@ scan_file(const char  *filename,	/* I - Filename */
 		      if (node->value.text.whitespace && bufptr > buffer)
 			*bufptr++ = ' ';
 
-		      strcpy(bufptr, node->value.text.string);
+		      strlcpy(bufptr, node->value.text.string, sizeof(buffer) - (size_t)(bufptr - buffer));
 
 		      next = node->next;
 		      mxmlDelete(node);

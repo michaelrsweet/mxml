@@ -3899,12 +3899,13 @@ esac
 
 
 if test "x$use_ansi" != xyes; then
-	for ac_func in strdup
+	for ac_func in strdup strlcpy
 do :
-  ac_fn_c_check_func "$LINENO" "strdup" "ac_cv_func_strdup"
-if test "x$ac_cv_func_strdup" = xyes; then :
+  as_ac_var=`$as_echo "ac_cv_func_$ac_func" | $as_tr_sh`
+ac_fn_c_check_func "$LINENO" "$ac_func" "$as_ac_var"
+if eval test \"x\$"$as_ac_var"\" = x"yes"; then :
   cat >>confdefs.h <<_ACEOF
-#define HAVE_STRDUP 1
+#define `$as_echo "HAVE_$ac_func" | $as_tr_cpp` 1
 _ACEOF
 
 fi
@@ -3913,7 +3914,7 @@ done
 fi
 
 if test "x$use_vsnprintf" != xyes; then
-	for ac_func in snprintf vsnprintf
+	for ac_func in snprintf vasprintf vsnprintf
 do :
   as_ac_var=`$as_echo "ac_cv_func_$ac_func" | $as_tr_sh`
 ac_fn_c_check_func "$LINENO" "$ac_func" "$as_ac_var"

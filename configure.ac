@@ -95,11 +95,11 @@ AC_C_INLINE
 
 dnl Checks for string functions.
 if test "x$use_ansi" != xyes; then
-	AC_CHECK_FUNCS(strdup)
+	AC_CHECK_FUNCS(strdup strlcpy)
 fi
 
 if test "x$use_vsnprintf" != xyes; then
-	AC_CHECK_FUNCS(snprintf vsnprintf)
+	AC_CHECK_FUNCS(snprintf vasprintf vsnprintf)
 fi
 
 dnl Check for "long long" support...

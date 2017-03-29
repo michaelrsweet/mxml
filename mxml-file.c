@@ -394,7 +394,7 @@ mxmlSaveString(mxml_node_t    *node,	/* I - Node to write */
   * Return the number of characters...
   */
 
-  return (ptr[0] - buffer);
+  return ((int)(ptr[0] - buffer));
 }
 
 
@@ -1016,7 +1016,7 @@ mxml_fd_read(_mxml_fdbuf_t *buf)		/* I - File descriptor buffer */
   * Read from the file descriptor...
   */
 
-  while ((bytes = read(buf->fd, buf->buffer, sizeof(buf->buffer))) < 0)
+  while ((bytes = (int)read(buf->fd, buf->buffer, sizeof(buf->buffer))) < 0)
 #ifdef EINTR
     if (errno != EAGAIN && errno != EINTR)
 #else
@@ -1068,7 +1068,7 @@ mxml_fd_write(_mxml_fdbuf_t *buf)	/* I - File descriptor buffer */
   */
 
   for (ptr = buf->buffer; ptr < buf->current; ptr += bytes)
-    if ((bytes = write(buf->fd, ptr, buf->current - ptr)) < 0)
+    if ((bytes = (int)write(buf->fd, ptr, buf->current - ptr)) < 0)
       return (-1);
 
  /*
@@ -1352,9 +1352,9 @@ mxml_get_entity(mxml_node_t *parent,	/* I  - Parent node */
   if (entity[0] == '#')
   {
     if (entity[1] == 'x')
-      ch = strtol(entity + 2, NULL, 16);
+      ch = (int)strtol(entity + 2, NULL, 16);
     else
-      ch = strtol(entity + 1, NULL, 10);
+      ch = (int)strtol(entity + 1, NULL, 10);
   }
   else if ((ch = mxmlEntityGetValue(entity)) < 0)
     mxml_error("Entity name \"%s;\" not supported under parent <%s>!",
@@ -1446,7 +1446,7 @@ mxml_load_data(
       switch (type)
       {
 	case MXML_INTEGER :
-            node = mxmlNewInteger(parent, strtol(buffer, &bufptr, 0));
+            node = mxmlNewInteger(parent, (int)strtol(buffer, &bufptr, 0));
 	    break;
 
 	case MXML_OPAQUE :
@@ -2761,7 +2761,7 @@ mxml_write_node(mxml_node_t     *node,	/* I - Node to write */
 	       i > 0;
 	       i --, attr ++)
 	  {
-	    width = strlen(attr->name);
+	    width = (int)strlen(attr->name);
 
 	    if (attr->value)
 	      width += strlen(attr->value) + 3;
@@ -2932,7 +2932,7 @@ mxml_write_node(mxml_node_t     *node,	/* I - Node to write */
 	    if ((newline = strrchr(data, '\n')) == NULL)
 	      col += strlen(data);
 	    else
-	      col = strlen(newline);
+	      col = (int)strlen(newline);
 
 	    free(data);
 	    break;

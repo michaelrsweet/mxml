@@ -708,6 +708,9 @@ main(int  argc,				/* I - Number of command-line args */
     }
   }
 
+  if (getenv("TEST_DELAY") != NULL)
+    sleep(atoi(getenv("TEST_DELAY")));
+
  /*
   * Return...
   */
@@ -735,6 +738,8 @@ sax_cb(mxml_node_t      *node,		/* I - Current node */
     "MXML_SAX_ELEMENT_OPEN"		/* Element opened */
   };
 
+
+  (void)data;
 
  /*
   * This SAX callback just counts the different events.

@@ -1,16 +1,12 @@
-Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual Studio 2008
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mxmldoc", "mxmldoc.vcproj", "{D909892E-520A-4322-9A47-DAEBDA9CC7A7}"
-	ProjectSection(ProjectDependencies) = postProject
-		{E5AA9476-9751-4654-8109-B1A2112D5E73} = {E5AA9476-9751-4654-8109-B1A2112D5E73}
-	EndProjectSection
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.31101.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mxmldoc", "mxmldoc.vcxproj", "{D909892E-520A-4322-9A47-DAEBDA9CC7A7}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mxml1", "mxml1.vcproj", "{E5AA9476-9751-4654-8109-B1A2112D5E73}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mxml1", "mxml1.vcxproj", "{E5AA9476-9751-4654-8109-B1A2112D5E73}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "testmxml", "testmxml.vcproj", "{75CAC6C4-A6BC-4935-A3C9-8F0AE0744227}"
-	ProjectSection(ProjectDependencies) = postProject
-		{E5AA9476-9751-4654-8109-B1A2112D5E73} = {E5AA9476-9751-4654-8109-B1A2112D5E73}
-	EndProjectSection
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "testmxml", "testmxml.vcxproj", "{75CAC6C4-A6BC-4935-A3C9-8F0AE0744227}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

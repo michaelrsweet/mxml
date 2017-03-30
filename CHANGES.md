@@ -1,5 +1,6 @@
 # Changes in Mini-XML 2.11
 
+- CDATA nodes now omit the trailing "]]" for convenience (Issue #170)
 - Fixed a memory leak in mxmlDelete (Issue #183)
 - mxmlElementSetAttrf did not work with some versions of Visual Studio
   (Issue #184)

@@ -1664,7 +1664,14 @@ mxml_load_data(
 	while ((ch = (*getc_cb)(p, &encoding)) != EOF)
 	{
 	  if (ch == '>' && !strncmp(bufptr - 2, "]]", 2))
+	  {
+	   /*
+	    * Drop terminator from CDATA string...
+	    */
+
+	    bufptr[-2] = '\0';
 	    break;
+	  }
 	  else if (mxml_add_char(ch, &bufptr, &buffer, &bufsize))
 	    goto error;
 	}
@@ -2738,12 +2745,11 @@ mxml_write_node(mxml_node_t     *node,	/* I - Node to write */
 	  if ((*putc_cb)('<', p) < 0)
 	    return (-1);
 	  if (current->value.element.name[0] == '?' ||
-	      !strncmp(current->value.element.name, "!--", 3) ||
-	      !strncmp(current->value.element.name, "![CDATA[", 8))
+	      !strncmp(current->value.element.name, "!--", 3))
 	  {
 	   /*
-	    * Comments, CDATA, and processing instructions do not
-	    * use character entities.
+	    * Comments and processing instructions do not use character
+	    * entities.
 	    */
 
 	    const char	*ptr;		/* Pointer into name */
@@ -2751,6 +2757,24 @@ mxml_write_node(mxml_node_t     *node,	/* I - Node to write */
 	    for (ptr = current->value.element.name; *ptr; ptr ++)
 	      if ((*putc_cb)(*ptr, p) < 0)
 		return (-1);
+	  }
+	  else if (!strncmp(current->value.element.name, "![CDATA[", 8))
+	  {
+	   /*
+	    * CDATA elements do not use character entities, but also need the
+	    * "]]" terminator added at the end.
+	    */
+
+	    const char	*ptr;		/* Pointer into name */
+
+	    for (ptr = current->value.element.name; *ptr; ptr ++)
+	      if ((*putc_cb)(*ptr, p) < 0)
+		return (-1);
+
+            if ((*putc_cb)(']', p) < 0)
+              return (-1);
+            if ((*putc_cb)(']', p) < 0)
+              return (-1);
 	  }
 	  else if (mxml_write_name(current->value.element.name, p, putc_cb) < 0)
 	    return (-1);

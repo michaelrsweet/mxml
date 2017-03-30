@@ -1,6 +1,8 @@
 # Changes in Mini-XML 2.11
 
 - Fixed a memory leak in mxmlDelete (Issue #183)
+- mxmlElementSetAttrf did not work with some versions of Visual Studio
+  (Issue #184)
 - The configure script now properly supports cross-compilation (Issue #188)
 
 

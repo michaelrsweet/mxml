@@ -474,7 +474,6 @@ _mxml_vstrdupf(const char *format,	/* I - Printf-style format string */
   int		bytes;			/* Number of bytes required */
   char		*buffer,		/* String buffer */
 		temp[256];		/* Small buffer for first vsnprintf */
-  va_list	apcopy;			/* Copy of argument list */
 
 
  /*
@@ -482,8 +481,15 @@ _mxml_vstrdupf(const char *format,	/* I - Printf-style format string */
   * needed...
   */
 
+#  ifdef WIN32
+  bytes = _vscprintf(format, ap);
+
+#  else
+  va_list	apcopy;			/* Copy of argument list */
+
   va_copy(apcopy, ap);
   bytes = vsnprintf(temp, sizeof(temp), format, apcopy);
+#  endif /* WIN32 */
 
   if (bytes < sizeof(temp))
   {

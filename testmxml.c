@@ -708,6 +708,7 @@ main(int  argc,				/* I - Number of command-line args */
     }
   }
 
+#ifndef WIN32
  /*
   * Debug hooks...
   */
@@ -721,6 +722,7 @@ main(int  argc,				/* I - Number of command-line args */
     snprintf(command, sizeof(command), "leaks %d", (int)getpid());
     system(command);
   }
+#endif /* !WIN32 */
 
  /*
   * Return...

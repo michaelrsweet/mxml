@@ -365,6 +365,22 @@ mxml.xml:	mxmldoc-static mxml.h $(PUBLIBOBJS:.o=.c)
 			org.minixml.docset || exit 1; \
 	fi
 
+
+#
+# mxml.epub
+#
+
+mxml.epub:	mxml.xml
+	echo Generating EPUB API documentation...
+	./mxmldoc-static --header doc/docset.header \
+		--intro doc/docset.intro --css doc/docset.css \
+		--title "Mini-XML API Reference" --epub mxml.epub mxml.xml
+
+
+#
+# Use Valgrind (http://valgrind.org) to check for problems in mxmldoc.
+#
+
 valgrind:	mxmldoc-static
 	echo Doing dynamic code analysis using Valgrind...
 	$(RM) valgrind.xml
@@ -374,7 +390,7 @@ valgrind:	mxmldoc-static
 
 
 #
-# All object files depend on the makefile...
+# All object files depend on the makefile and config header...
 #
 
 $(OBJS):	Makefile config.h

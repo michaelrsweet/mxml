@@ -3963,18 +3963,7 @@ if test $ac_cv_c_long_long = yes; then
 
 fi
 
-# Check whether --enable-threads was given.
-if test "${enable_threads+set}" = set; then :
-  enableval=$enable_threads;
-fi
-
-
-have_pthread=no
-PTHREAD_FLAGS=""
-PTHREAD_LIBS=""
-
-if test "x$enable_threads" != xno; then
-	ac_ext=c
+ac_ext=c
 ac_cpp='$CPP $CPPFLAGS'
 ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
 ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
@@ -4371,7 +4360,68 @@ fi
 done
 
 
-ac_fn_c_check_header_mongrel "$LINENO" "pthread.h" "ac_cv_header_pthread_h" "$ac_includes_default"
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for archive_write_new in -larchive" >&5
+$as_echo_n "checking for archive_write_new in -larchive... " >&6; }
+if ${ac_cv_lib_archive_archive_write_new+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-larchive  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char archive_write_new ();
+int
+main ()
+{
+return archive_write_new ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_archive_archive_write_new=yes
+else
+  ac_cv_lib_archive_archive_write_new=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_archive_archive_write_new" >&5
+$as_echo "$ac_cv_lib_archive_archive_write_new" >&6; }
+if test "x$ac_cv_lib_archive_archive_write_new" = xyes; then :
+
+	LIBS="-larchive $LIBS"
+	ac_fn_c_check_header_mongrel "$LINENO" "archive.h" "ac_cv_header_archive_h" "$ac_includes_default"
+if test "x$ac_cv_header_archive_h" = xyes; then :
+  $as_echo "#define HAVE_ARCHIVE_H 1" >>confdefs.h
+
+fi
+
+
+
+fi
+
+
+# Check whether --enable-threads was given.
+if test "${enable_threads+set}" = set; then :
+  enableval=$enable_threads;
+fi
+
+
+have_pthread=no
+PTHREAD_FLAGS=""
+PTHREAD_LIBS=""
+
+if test "x$enable_threads" != xno; then
+	ac_fn_c_check_header_mongrel "$LINENO" "pthread.h" "ac_cv_header_pthread_h" "$ac_includes_default"
 if test "x$ac_cv_header_pthread_h" = xyes; then :
   $as_echo "#define HAVE_PTHREAD_H 1" >>confdefs.h
 

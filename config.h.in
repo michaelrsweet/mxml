@@ -45,6 +45,13 @@
 
 
 /*
+ * Do we have libarchive's archive.h header?
+ */
+
+#undef HAVE_ARCHIVE_H
+
+
+/*
  * Do we have the *printf() functions?
  */
 

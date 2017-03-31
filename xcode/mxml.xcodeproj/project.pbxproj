@@ -40,6 +40,7 @@
 		272C00431E8C6B34007EBCAC /* mxmldoc.c in Sources */ = {isa = PBXBuildFile; fileRef = 272C00331E8C6ADE007EBCAC /* mxmldoc.c */; };
 		272C00501E8C6B89007EBCAC /* libmxml.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 272C00051E8C6664007EBCAC /* libmxml.a */; };
 		272C00511E8C6B8E007EBCAC /* libmxml.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 272C00051E8C6664007EBCAC /* libmxml.a */; };
+		272C00561E8EF972007EBCAC /* libarchive.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 272C00551E8EF972007EBCAC /* libarchive.tbd */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -120,6 +121,7 @@
 		272C00331E8C6ADE007EBCAC /* mxmldoc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = mxmldoc.c; path = ../mxmldoc.c; sourceTree = "<group>"; };
 		272C00391E8C6AEB007EBCAC /* testmxml */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = testmxml; sourceTree = BUILT_PRODUCTS_DIR; };
 		272C00401E8C6B1B007EBCAC /* testmxml.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = testmxml.c; path = ../testmxml.c; sourceTree = "<group>"; };
+		272C00551E8EF972007EBCAC /* libarchive.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libarchive.tbd; path = usr/lib/libarchive.tbd; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -134,6 +136,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				272C00561E8EF972007EBCAC /* libarchive.tbd in Frameworks */,
 				272C00511E8C6B8E007EBCAC /* libmxml.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -188,12 +191,21 @@
 			name = tools;
 			sourceTree = "<group>";
 		};
+		272C00541E8EF971007EBCAC /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				272C00551E8EF972007EBCAC /* libarchive.tbd */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		272CFFFC1E8C6664007EBCAC = {
 			isa = PBXGroup;
 			children = (
 				272C000C1E8C66A2007EBCAC /* libmxml */,
 				272C00321E8C6ABB007EBCAC /* tools */,
 				272C00061E8C6664007EBCAC /* Products */,
+				272C00541E8EF971007EBCAC /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};

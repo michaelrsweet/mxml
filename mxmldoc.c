@@ -141,14 +141,37 @@ extern char **environ;
 
 
 /*
+ * Local types...
+ */
+
+typedef struct
+{
+  char	level,				/* Table of contents level (0-N) */
+	anchor[64],			/* Anchor in file */
+	title[447];			/* Title of section */
+} toc_entry_t;
+
+typedef struct
+{
+  size_t	alloc_entries,		/* Allocated entries */
+                num_entries;		/* Number of entries */
+  toc_entry_t	*entries;		/* Entries */
+} toc_t;
+
+
+/*
  * Local functions...
  */
 
+static void		add_toc(toc_t *toc, int level, const char *anchor, const char *title);
 static mxml_node_t	*add_variable(mxml_node_t *parent, const char *name,
 			              mxml_node_t *type);
+static toc_t		*build_toc(mxml_node_t *doc, const char *introfile);
 static mxml_node_t	*find_public(mxml_node_t *node, mxml_node_t *top,
 			             const char *name);
+static void		free_toc(toc_t *toc);
 static char		*get_comment_info(mxml_node_t *description);
+static char		*get_iso_date(time_t t);
 static char		*get_text(mxml_node_t *node, char *buffer, int buflen);
 static mxml_type_t	load_cb(mxml_node_t *node);
 static mxml_node_t	*new_documentation(mxml_node_t **mxmldoc);
@@ -164,7 +187,7 @@ static void		write_description(FILE *out, mxml_node_t *description,
 			                  const char *element, int summary);
 static void		write_element(FILE *out, mxml_node_t *doc,
 			              mxml_node_t *element, int mode);
-static void		write_epub(const char *section, const char *title, const char *footerfile, const char *headerfile, const char *introfile, const char *cssfile, const char *epubfile, mxml_node_t *doc);
+static void		write_epub(const char *section, const char *title, const char *author, const char *copyright, const char *docversion, const char *footerfile, const char *headerfile, const char *introfile, const char *cssfile, const char *epubfile, mxml_node_t *doc);
 static void		write_file(FILE *out, const char *file);
 static void		write_function(FILE *out, int xhtml, mxml_node_t *doc, mxml_node_t *function, int level);
 static void		write_html(const char *section, const char *title,
@@ -203,7 +226,9 @@ main(int  argc,				/* I - Number of command-line args */
   FILE		*fp;			/* File to read */
   mxml_node_t	*doc = NULL;		/* XML documentation tree */
   mxml_node_t	*mxmldoc = NULL;	/* mxmldoc node */
-  const char	*cssfile = NULL,	/* CSS stylesheet file */
+  const char	*author = NULL,		/* Author */
+              	*copyright = NULL,	/* Copyright */
+		*cssfile = NULL,	/* CSS stylesheet file */
 		*docset = NULL,		/* Documentation set directory */
 		*docversion = NULL,	/* Documentation set version */
                 *epubfile = NULL,	/* EPUB filename */
@@ -243,6 +268,30 @@ main(int  argc,				/* I - Number of command-line args */
 
       puts(MXML_VERSION + 10);
       return (0);
+    }
+    else if (!strcmp(argv[i], "--author") && !author)
+    {
+     /*
+      * Set author...
+      */
+
+      i ++;
+      if (i < argc)
+        author = argv[i];
+      else
+        usage(NULL);
+    }
+    else if (!strcmp(argv[i], "--copyright") && !copyright)
+    {
+     /*
+      * Set copyright...
+      */
+
+      i ++;
+      if (i < argc)
+        copyright = argv[i];
+      else
+        usage(NULL);
     }
     else if (!strcmp(argv[i], "--css") && !cssfile)
     {
@@ -560,8 +609,7 @@ main(int  argc,				/* I - Number of command-line args */
         * Write EPUB (XHTML) documentation...
         */
 
-        write_epub(section, title ? title : "Documentation", footerfile,
-	           headerfile, introfile, cssfile, epubfile, mxmldoc);
+        write_epub(section, title ? title : "Documentation", author ? author : "Unknown", copyright ? copyright : "Unknown", docversion ? docversion : "0.0", footerfile, headerfile, introfile, cssfile, epubfile, mxmldoc);
         break;
 
     case OUTPUT_HTML :
@@ -600,6 +648,42 @@ main(int  argc,				/* I - Number of command-line args */
   mxmlDelete(doc);
 
   return (0);
+}
+
+
+/*
+ * 'add_toc()' - Add a TOC entry.
+ */
+
+static void
+add_toc(toc_t      *toc,		/* I - Table-of-contents */
+        int        level,		/* I - Level (1-N) */
+        const char *anchor,		/* I - Anchor */
+        const char *title)		/* I - Title */
+{
+  toc_entry_t	*temp;			/* New pointer */
+
+
+  if (toc->num_entries >= toc->alloc_entries)
+  {
+    toc->alloc_entries += 100;
+    if (!toc->entries)
+      temp = malloc(sizeof(toc_entry_t) * toc->alloc_entries);
+    else
+      temp = realloc(toc->entries, sizeof(toc_entry_t) * toc->alloc_entries);
+
+    if (!temp)
+      return;
+
+    toc->entries = temp;
+  }
+
+  temp = toc->entries + toc->num_entries;
+  toc->num_entries ++;
+
+  temp->level = level;
+  strlcpy(temp->anchor, anchor, sizeof(temp->anchor));
+  strlcpy(temp->title, title, sizeof(temp->title));
 }
 
 
@@ -723,6 +807,310 @@ add_variable(mxml_node_t *parent,	/* I - Parent node */
 
 
 /*
+ * 'build_toc()' - Build a table-of-contents...
+ */
+
+static toc_t *				/* O - Table of contents */
+build_toc(mxml_node_t *doc,		/* I - Documentation */
+          const char  *introfile)	/* I - Introduction file */
+{
+  toc_t		*toc;			/* Array of headings */
+  FILE		*fp;			/* Intro file */
+  mxml_node_t	*function,		/* Current function */
+		*scut,			/* Struct/class/union/typedef */
+		*arg;			/* Current argument */
+  const char	*name;			/* Name of function/type */
+
+
+ /*
+  * Make an initial allocation of 100 entries...
+  */
+
+  if ((toc = calloc(1, sizeof(toc_t))) == NULL)
+    return (NULL);
+
+ /*
+  * Scan the intro file for headings...
+  */
+
+  if (introfile && (fp = fopen(introfile, "r")) != NULL)
+  {
+    char	line[8192],		/* Line from file */
+		*ptr,			/* Pointer in line */
+		*end,			/* End of line */
+		*anchor,		/* Anchor name */
+                *title,			/* Title */
+		quote;			/* Quote character for value */
+    int		level;			/* New heading level */
+
+
+    while (fgets(line, sizeof(line), fp))
+    {
+     /*
+      * See if this line has a heading...
+      */
+
+      if ((ptr = strstr(line, "<h")) == NULL &&
+          (ptr = strstr(line, "<H")) == NULL)
+	continue;
+
+      if (ptr[2] != '2' && ptr[2] != '3')
+        continue;
+
+      level = ptr[2] - '1';
+
+     /*
+      * Make sure we have the whole heading...
+      */
+
+      while (!strstr(line, "</h") && !strstr(line, "</H"))
+      {
+        end = line + strlen(line);
+
+	if (end == (line + sizeof(line) - 1) ||
+	    !fgets(end, (int)(sizeof(line) - (end - line)), fp))
+	  break;
+      }
+
+     /*
+      * Convert newlines and tabs to spaces...
+      */
+
+      for (ptr = line; *ptr; ptr ++)
+        if (isspace(*ptr & 255))
+	  *ptr = ' ';
+
+     /*
+      * Find the anchor and text...
+      */
+
+      for (ptr = strchr(line, '<'); ptr; ptr = strchr(ptr + 1, '<'))
+      {
+        if (!strncmp(ptr, "<A NAME=", 8) || !strncmp(ptr, "<a name=", 8))
+        {
+          ptr += 8;
+	  break;
+        }
+        else if (!strncmp(ptr, "<A ID=", 6) || !strncmp(ptr, "<a id=", 6))
+        {
+          ptr += 6;
+	  break;
+        }
+      }
+
+      if (!ptr)
+        continue;
+
+      if (*ptr == '\'' || *ptr == '\"')
+      {
+       /*
+        * Quoted anchor...
+	*/
+
+        quote  = *ptr++;
+	anchor = ptr;
+
+	while (*ptr && *ptr != quote)
+	  ptr ++;
+
+        if (!*ptr)
+	  continue;
+
+        *ptr++ = '\0';
+      }
+      else
+      {
+       /*
+        * Non-quoted anchor...
+	*/
+
+        anchor = ptr;
+
+	while (*ptr && *ptr != '>' && !isspace(*ptr & 255))
+	  ptr ++;
+
+        if (!*ptr)
+	  continue;
+
+        while (*ptr && *ptr != '>')
+          *ptr++ = '\0';
+
+        if (*ptr)
+          *ptr++ = '\0';
+      }
+
+      title = ptr;
+      if ((ptr = strstr(title, "</A>")) != NULL)
+        *ptr = '\0';
+      else if ((ptr = strstr(title, "</a>")) != NULL)
+        *ptr = '\0';
+
+      add_toc(toc, level, anchor, title);
+    }
+
+    fclose(fp);
+  }
+
+ /*
+  * Next the classes...
+  */
+
+  if ((scut = find_public(doc, doc, "class")) != NULL)
+  {
+    add_toc(toc, 1, "CLASSES", "Classes");
+
+    while (scut)
+    {
+      name = mxmlElementGetAttr(scut, "name");
+      scut = find_public(scut, doc, "class");
+      add_toc(toc, 2, name, name);
+    }
+  }
+
+ /*
+  * Functions...
+  */
+
+  if ((function = find_public(doc, doc, "function")) != NULL)
+  {
+    add_toc(toc, 1, "FUNCTIONS", "Functions");
+
+    while (function)
+    {
+      name     = mxmlElementGetAttr(function, "name");
+      function = find_public(function, doc, "function");
+      add_toc(toc, 2, name, name);
+    }
+  }
+
+ /*
+  * Data types...
+  */
+
+  if ((scut = find_public(doc, doc, "typedef")) != NULL)
+  {
+    add_toc(toc, 1, "TYPES", "Data Types");
+
+    while (scut)
+    {
+      name = mxmlElementGetAttr(scut, "name");
+      scut = find_public(scut, doc, "typedef");
+      add_toc(toc, 2, name, name);
+    }
+  }
+
+ /*
+  * Structures...
+  */
+
+  if ((scut = find_public(doc, doc, "struct")) != NULL)
+  {
+    add_toc(toc, 1, "STRUCTURES", "Structures");
+
+    while (scut)
+    {
+      name = mxmlElementGetAttr(scut, "name");
+      scut = find_public(scut, doc, "struct");
+      add_toc(toc, 2, name, name);
+    }
+  }
+
+ /*
+  * Unions...
+  */
+
+  if ((scut = find_public(doc, doc, "union")) != NULL)
+  {
+    add_toc(toc, 1, "UNIONS", "Unions");
+
+    while (scut)
+    {
+      name = mxmlElementGetAttr(scut, "name");
+      scut = find_public(scut, doc, "union");
+      add_toc(toc, 2, name, name);
+    }
+  }
+
+ /*
+  * Globals variables...
+  */
+
+  if ((arg = find_public(doc, doc, "variable")) != NULL)
+  {
+    add_toc(toc, 1, "VARIABLES", "Variables");
+
+    while (arg)
+    {
+      name = mxmlElementGetAttr(arg, "name");
+      arg = find_public(arg, doc, "variable");
+      add_toc(toc, 2, name, name);
+    }
+  }
+
+ /*
+  * Enumerations/constants...
+  */
+
+  if ((scut = find_public(doc, doc, "enumeration")) != NULL)
+  {
+    add_toc(toc, 1, "ENUMERATIONS", "Enumerations");
+
+    while (scut)
+    {
+      name = mxmlElementGetAttr(scut, "name");
+      scut = find_public(scut, doc, "enumeration");
+      add_toc(toc, 2, name, name);
+    }
+  }
+
+  return (toc);
+}
+
+
+/*
+ * 'epub_ws_cb()' - Whitespace callback for EPUB.
+ */
+
+static const char *			/* O - Whitespace string or NULL for none */
+epub_ws_cb(mxml_node_t *node,		/* I - Element node */
+           int         where)		/* I - Where value */
+{
+  int	depth;				/* Depth of node */
+  static const char *spaces = "                                        ";
+					/* Whitespace (40 spaces) for indent */
+
+
+  switch (where)
+  {
+    case MXML_WS_BEFORE_CLOSE :
+	for (depth = -4; node; node = node->parent, depth += 2);
+	if (depth > 40)
+	  return (spaces);
+	else if (depth < 2)
+	  return (NULL);
+	else
+	  return (spaces + 40 - depth);
+
+    case MXML_WS_AFTER_CLOSE :
+	return ("\n");
+
+    case MXML_WS_BEFORE_OPEN :
+	for (depth = -4; node; node = node->parent, depth += 2);
+	if (depth > 40)
+	  return (spaces);
+	else if (depth < 2)
+	  return (NULL);
+	else
+	  return (spaces + 40 - depth);
+
+    default :
+    case MXML_WS_AFTER_OPEN :
+        return ("\n");
+  }
+}
+
+
+/*
  * 'find_public()' - Find a public function, type, etc.
  */
 
@@ -785,6 +1173,18 @@ find_public(mxml_node_t *node,		/* I - Current node */
 
 
 /*
+ * 'free_toc()' - Free a table-of-contents.
+ */
+
+static void
+free_toc(toc_t *toc)			/* I - Table of contents */
+{
+  free(toc->entries);
+  free(toc);
+}
+
+
+/*
  * 'get_comment_info()' - Get info from comment.
  */
 
@@ -820,6 +1220,24 @@ get_comment_info(
   }
 
   return ("");
+}
+
+
+/*
+ * 'get_iso_date()' - Get an ISO-formatted date/time string.
+ */
+
+static char *				/* O - ISO date/time string */
+get_iso_date(time_t t)			/* I - Time value */
+{
+  struct tm	*date;			/* UTC date/time */
+  static char	buffer[100];		/* String buffer */
+
+
+  date = gmtime(&t);
+
+  snprintf(buffer, sizeof(buffer), "%04d-%02d-%02dT%02d:%02d:%02dZ", date->tm_year + 1900, date->tm_mon + 1, date->tm_mday, date->tm_hour, date->tm_min, date->tm_sec);
+  return (buffer);
 }
 
 
@@ -2980,6 +3398,9 @@ write_element(FILE        *out,		/* I - Output file */
 static void
 write_epub(const char  *section,	/* I - Section */
            const char  *title,		/* I - Title */
+           const char  *author,		/* I - Author */
+           const char  *copyright,	/* I - Copyright */
+           const char  *docversion,	/* I - Document version */
            const char  *footerfile,	/* I - Footer file */
            const char  *headerfile,	/* I - Header file */
            const char  *introfile,	/* I - Intro file */
@@ -2987,7 +3408,8 @@ write_epub(const char  *section,	/* I - Section */
            const char  *epubfile,	/* I - EPUB file (output) */
            mxml_node_t *doc)		/* I - XML documentation */
 {
-  FILE		*out;			/* Output file */
+  size_t	i;			/* Looping var */
+  FILE		*fp;			/* Output file */
   mxml_node_t	*function,		/* Current function */
 		*scut,			/* Struct/class/union/typedef */
 		*arg,			/* Current argument */
@@ -2995,19 +3417,66 @@ write_epub(const char  *section,	/* I - Section */
 		*type;			/* Type for argument */
   const char	*name,			/* Name of function/type */
 		*defval;		/* Default value */
-//		*basename;		/* Base filename for framed output */
-//  char		filename[1024];		/* Current output filename */
+  char		epubbase[256],		/* Base name of EPUB file (identifier) */
+		*epubptr;		/* Pointer into base name */
+  struct archive *epub;			/* EPUB archive */
+  struct archive_entry *entry;		/* EPUB entry */
+  char		xhtmlfile[1024],	/* XHTML output filename */
+		*xhtmlptr;		/* Pointer into output filename */
+  struct stat	xhtmlinfo;		/* XHTML output file information */
+  mxml_node_t	*content_opf,		/* content.opf file */
+                *package,		/* package node */
+                *metadata,		/* metadata node */
+                *manifest,		/* manifest node */
+                *spine,			/* spine node */
+                *temp;			/* Other (leaf) node */
+  char		identifier[256],	/* dc:identifier string */
+		*content_opf_string;	/* content.opf file as a string */
+  toc_t		*toc;			/* Table of contents */
+  toc_entry_t	*tentry;		/* Current table of contents */
+  mxml_node_t	*toc_ncx,		/* toc.ncx file */
+		*ncx,			/* ncx node */
+                *head,			/* head node */
+                *docTitle,		/* docTitle node */
+                *docAuthor,		/* docAuthor node */
+                *nav,			/* Current parent for nav nodes */
+                *navMap,		/* navMap node */
+                *navPoint,		/* navPoint node */
+                *navLabel;		/* navLabel node */
+  char		*toc_ncx_string;	/* toc.ncx file as a string */
+  char		toc_xhtmlfile[1024];	/* XHTML file for table-of-contents */
+  struct stat	toc_xhtmlinfo;		/* XHTML file info */
+  int		toc_level;		/* Current table-of-contents level */
+  static const char *mimetype =		/* mimetype file as a string */
+		"application/epub+zip\n";
+  static const char *container_xml =	/* container.xml file as a string */
+		"<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
+                "<container xmlns=\"urn:oasis:names:tc:opendocument:xmlns:container\" version=\"1.0\">\n"
+                "  <rootfiles>\n"
+                "    <rootfile full-path=\"OEBPS/content.opf\" media-type=\"application/oebps-package+xml\"/>\n"
+                "  </rootfiles>\n"
+                "</container>\n";
 
 
-  out = fopen(epubfile, "w"); /* TODO: Update to write archive once the XHTML output is good... */
+ /*
+  * Start by writing the XHTML content...
+  */
+
+  strlcpy(xhtmlfile, epubfile, sizeof(xhtmlfile));
+  if ((xhtmlptr = strstr(xhtmlfile, ".epub")) != NULL)
+    strlcpy(xhtmlptr, ".xhtml", sizeof(xhtmlfile) - (size_t)(xhtmlptr - xhtmlfile));
+  else
+    strlcat(xhtmlfile, ".xhtml", sizeof(xhtmlfile));
+
+  fp = fopen(xhtmlfile, "w");
 
  /*
   * Standard header...
   */
 
-  write_html_head(out, 1, section, title, cssfile);
+  write_html_head(fp, 1, section, title, cssfile);
 
-  fputs("<div class=\"body\">\n", out);
+  fputs("<div class=\"body\">\n", fp);
 
  /*
   * Header...
@@ -3019,7 +3488,7 @@ write_epub(const char  *section,	/* I - Section */
     * Use custom header...
     */
 
-    write_file(out, headerfile);
+    write_file(fp, headerfile);
   }
   else
   {
@@ -3027,23 +3496,17 @@ write_epub(const char  *section,	/* I - Section */
     * Use standard header...
     */
 
-    fputs("<h1 class=\"title\">", out);
-    write_string(out, title, OUTPUT_HTML);
-    fputs("</h1>\n", out);
+    fputs("<h1 class=\"title\">", fp);
+    write_string(fp, title, OUTPUT_HTML);
+    fputs("</h1>\n", fp);
   }
-
- /*
-  * Table of contents...
-  */
-
-  write_toc(out, doc, introfile, NULL, 0);
 
  /*
   * Intro...
   */
 
   if (introfile)
-    write_file(out, introfile);
+    write_file(fp, introfile);
 
  /*
   * List of classes...
@@ -3051,11 +3514,11 @@ write_epub(const char  *section,	/* I - Section */
 
   if ((scut = find_public(doc, doc, "class")) != NULL)
   {
-    fputs("<h2 class=\"title\" id=\"CLASSES\">Classes</h2>\n", out);
+    fputs("<h2 class=\"title\" id=\"CLASSES\">Classes</h2>\n", fp);
 
     while (scut)
     {
-      write_scu(out, 1, doc, scut);
+      write_scu(fp, 1, doc, scut);
 
       scut = find_public(scut, doc, "class");
     }
@@ -3067,11 +3530,11 @@ write_epub(const char  *section,	/* I - Section */
 
   if ((function = find_public(doc, doc, "function")) != NULL)
   {
-    fputs("<h2 class=\"title\" id=\"FUNCTIONS\">Functions</h2>\n", out);
+    fputs("<h2 class=\"title\" id=\"FUNCTIONS\">Functions</h2>\n", fp);
 
     while (function)
     {
-      write_function(out, 1, doc, function, 3);
+      write_function(fp, 1, doc, function, 3);
 
       function = find_public(function, doc, "function");
     }
@@ -3083,20 +3546,20 @@ write_epub(const char  *section,	/* I - Section */
 
   if ((scut = find_public(doc, doc, "typedef")) != NULL)
   {
-    fputs("<h2 class=\"title\" id=\"TYPES\">Data Types</h2>\n", out);
+    fputs("<h2 class=\"title\" id=\"TYPES\">Data Types</h2>\n", fp);
 
     while (scut)
     {
       name        = mxmlElementGetAttr(scut, "name");
       description = mxmlFindElement(scut, scut, "description", NULL,
                                     NULL, MXML_DESCEND_FIRST);
-      fprintf(out, "<h3 class=\"typedef\" id=\"%s\">%s%s</h3>\n", name, get_comment_info(description), name);
+      fprintf(fp, "<h3 class=\"typedef\" id=\"%s\">%s%s</h3>\n", name, get_comment_info(description), name);
 
       if (description)
-	write_description(out, description, "p", 1);
+	write_description(fp, description, "p", 1);
 
       fputs("<p class=\"code\">\n"
-	    "typedef ", out);
+	    "typedef ", fp);
 
       type = mxmlFindElement(scut, scut, "type", NULL, NULL,
                              MXML_DESCEND_FIRST);
@@ -3107,7 +3570,7 @@ write_epub(const char  *section,	/* I - Section */
 	else
 	{
 	  if (type->value.text.whitespace)
-	    putc(' ', out);
+	    putc(' ', fp);
 
 	  if (mxmlFindElement(doc, doc, "class", "name",
 	                      type->value.text.string, MXML_DESCEND) ||
@@ -3120,14 +3583,14 @@ write_epub(const char  *section,	/* I - Section */
 	      mxmlFindElement(doc, doc, "union", "name",
 	                      type->value.text.string, MXML_DESCEND))
 	  {
-            fputs("<a href=\"#", out);
-            write_string(out, type->value.text.string, OUTPUT_HTML);
-	    fputs("\">", out);
-            write_string(out, type->value.text.string, OUTPUT_HTML);
-	    fputs("</a>", out);
+            fputs("<a href=\"#", fp);
+            write_string(fp, type->value.text.string, OUTPUT_HTML);
+	    fputs("\">", fp);
+            write_string(fp, type->value.text.string, OUTPUT_HTML);
+	    fputs("</a>", fp);
 	  }
 	  else
-            write_string(out, type->value.text.string, OUTPUT_HTML);
+            write_string(fp, type->value.text.string, OUTPUT_HTML);
         }
 
       if (type)
@@ -3137,14 +3600,14 @@ write_epub(const char  *section,	/* I - Section */
 	*/
 
         if (type->prev && type->prev->value.text.string[0] != '*')
-	  putc(' ', out);
+	  putc(' ', fp);
 
-        fprintf(out, "(*%s", name);
+        fprintf(fp, "(*%s", name);
 
 	for (type = type->next->next; type; type = type->next)
 	{
 	  if (type->value.text.whitespace)
-	    putc(' ', out);
+	    putc(' ', fp);
 
 	  if (mxmlFindElement(doc, doc, "class", "name",
 	                      type->value.text.string, MXML_DESCEND) ||
@@ -3157,29 +3620,29 @@ write_epub(const char  *section,	/* I - Section */
 	      mxmlFindElement(doc, doc, "union", "name",
 	                      type->value.text.string, MXML_DESCEND))
 	  {
-            fputs("<a href=\"#", out);
-            write_string(out, type->value.text.string, OUTPUT_HTML);
-	    fputs("\">", out);
-            write_string(out, type->value.text.string, OUTPUT_HTML);
-	    fputs("</a>", out);
+            fputs("<a href=\"#", fp);
+            write_string(fp, type->value.text.string, OUTPUT_HTML);
+	    fputs("\">", fp);
+            write_string(fp, type->value.text.string, OUTPUT_HTML);
+	    fputs("</a>", fp);
 	  }
 	  else
-            write_string(out, type->value.text.string, OUTPUT_HTML);
+            write_string(fp, type->value.text.string, OUTPUT_HTML);
         }
 
-        fputs(";\n", out);
+        fputs(";\n", fp);
       }
       else
       {
 	type = mxmlFindElement(scut, scut, "type", NULL, NULL,
 			       MXML_DESCEND_FIRST);
         if (type->last_child->value.text.string[0] != '*')
-	  putc(' ', out);
+	  putc(' ', fp);
 
-	fprintf(out, "%s;\n", name);
+	fprintf(fp, "%s;\n", name);
       }
 
-      fputs("</p>\n", out);
+      fputs("</p>\n", fp);
 
       scut = find_public(scut, doc, "typedef");
     }
@@ -3191,12 +3654,11 @@ write_epub(const char  *section,	/* I - Section */
 
   if ((scut = find_public(doc, doc, "struct")) != NULL)
   {
-    fputs("<h2 class=\"title\" id=\"STRUCTURES\">Structures</h2>\n",
-          out);
+    fputs("<h2 class=\"title\" id=\"STRUCTURES\">Structures</h2>\n", fp);
 
     while (scut)
     {
-      write_scu(out, 1, doc, scut);
+      write_scu(fp, 1, doc, scut);
 
       scut = find_public(scut, doc, "struct");
     }
@@ -3208,11 +3670,11 @@ write_epub(const char  *section,	/* I - Section */
 
   if ((scut = find_public(doc, doc, "union")) != NULL)
   {
-    fputs("<h2 class=\"title\" id=\"UNIONS\">Unions</h2>\n", out);
+    fputs("<h2 class=\"title\" id=\"UNIONS\">Unions</h2>\n", fp);
 
     while (scut)
     {
-      write_scu(out, 1, doc, scut);
+      write_scu(fp, 1, doc, scut);
 
       scut = find_public(scut, doc, "union");
     }
@@ -3224,28 +3686,27 @@ write_epub(const char  *section,	/* I - Section */
 
   if ((arg = find_public(doc, doc, "variable")) != NULL)
   {
-    fputs("<h2 class=\"title\" id=\"VARIABLES\">Variables</h2>\n",
-          out);
+    fputs("<h2 class=\"title\" id=\"VARIABLES\">Variables</h2>\n", fp);
 
     while (arg)
     {
       name        = mxmlElementGetAttr(arg, "name");
       description = mxmlFindElement(arg, arg, "description", NULL,
                                     NULL, MXML_DESCEND_FIRST);
-      fprintf(out, "<h3 class=\"variable\" id=\"%s\">%s%s</h3>\n", name, get_comment_info(description), name);
+      fprintf(fp, "<h3 class=\"variable\" id=\"%s\">%s%s</h3>\n", name, get_comment_info(description), name);
 
       if (description)
-	write_description(out, description, "p", 1);
+	write_description(fp, description, "p", 1);
 
-      fputs("<p class=\"code\">", out);
+      fputs("<p class=\"code\">", fp);
 
-      write_element(out, doc, mxmlFindElement(arg, arg, "type", NULL,
+      write_element(fp, doc, mxmlFindElement(arg, arg, "type", NULL,
                                               NULL, MXML_DESCEND_FIRST),
                     OUTPUT_EPUB);
-      fputs(mxmlElementGetAttr(arg, "name"), out);
+      fputs(mxmlElementGetAttr(arg, "name"), fp);
       if ((defval = mxmlElementGetAttr(arg, "default")) != NULL)
-	fprintf(out, " %s", defval);
-      fputs(";</p>\n", out);
+	fprintf(fp, " %s", defval);
+      fputs(";</p>\n", fp);
 
       arg = find_public(arg, doc, "variable");
     }
@@ -3257,20 +3718,20 @@ write_epub(const char  *section,	/* I - Section */
 
   if ((scut = find_public(doc, doc, "enumeration")) != NULL)
   {
-    fputs("<h2 class=\"title\" id=\"ENUMERATIONS\">Constants</h2>\n", out);
+    fputs("<h2 class=\"title\" id=\"ENUMERATIONS\">Constants</h2>\n", fp);
 
     while (scut)
     {
       name        = mxmlElementGetAttr(scut, "name");
       description = mxmlFindElement(scut, scut, "description", NULL,
                                     NULL, MXML_DESCEND_FIRST);
-      fprintf(out, "<h3 class=\"enumeration\" id=\"%s\">%s%s</h3>\n", name, get_comment_info(description), name);
+      fprintf(fp, "<h3 class=\"enumeration\" id=\"%s\">%s%s</h3>\n", name, get_comment_info(description), name);
 
       if (description)
-	write_description(out, description, "p", 1);
+	write_description(fp, description, "p", 1);
 
       fputs("<h4 class=\"constants\">Constants</h4>\n"
-            "<dl>\n", out);
+            "<dl>\n", fp);
 
       for (arg = mxmlFindElement(scut, scut, "constant", NULL, NULL,
                         	 MXML_DESCEND_FIRST);
@@ -3280,14 +3741,14 @@ write_epub(const char  *section,	/* I - Section */
       {
 	description = mxmlFindElement(arg, arg, "description", NULL,
                                       NULL, MXML_DESCEND_FIRST);
-	fprintf(out, "<dt>%s %s</dt>\n",
+	fprintf(fp, "<dt>%s %s</dt>\n",
 	        mxmlElementGetAttr(arg, "name"), get_comment_info(description));
 
-	write_description(out, description, "dd", 1);
-	write_description(out, description, "dd", 0);
+	write_description(fp, description, "dd", 1);
+	write_description(fp, description, "dd", 0);
       }
 
-      fputs("</dl>\n", out);
+      fputs("</dl>\n", fp);
 
       scut = find_public(scut, doc, "enumeration");
     }
@@ -3303,18 +3764,318 @@ write_epub(const char  *section,	/* I - Section */
     * Use custom footer...
     */
 
-    write_file(out, footerfile);
+    write_file(fp, footerfile);
   }
 
   fputs("</div>\n"
         "</body>\n"
-        "</html>\n", out);
+        "</html>\n", fp);
 
  /*
-  * Close output file as needed...
+  * Close XHTML file...
   */
 
-  fclose(out);
+  fclose(fp);
+
+ /*
+  * Now make the content.opf file...
+  */
+
+  if ((epubptr = strrchr(epubfile, '/')) != NULL)
+    strlcpy(epubbase, epubptr + 1, sizeof(epubbase));
+  else
+    strlcpy(epubbase, epubfile, sizeof(epubbase));
+
+  if ((epubptr = strstr(epubbase, ".epub")) != NULL)
+    *epubptr = '\0';
+
+  content_opf = mxmlNewXML("1.0");
+
+  package = mxmlNewElement(content_opf, "package");
+  mxmlElementSetAttr(package, "xmlns", "http://www.idpf.org/2007/opf");
+  mxmlElementSetAttr(package, "unique-identifier", epubbase);
+  mxmlElementSetAttr(package, "version", "3.0");
+
+    metadata = mxmlNewElement(package, "metadata");
+    mxmlElementSetAttr(metadata, "xmlns:dc", "http://purl.org/dc/elements/1.1/");
+    mxmlElementSetAttr(metadata, "xmlns:opf", "http://www.idpf.org/2007/opf");
+
+      temp = mxmlNewElement(metadata, "dc:title");
+      mxmlNewOpaque(temp, title);
+
+      temp = mxmlNewElement(metadata, "dc:creator");
+      mxmlNewOpaque(temp, author);
+
+      temp = mxmlNewElement(metadata, "meta");
+      mxmlElementSetAttr(temp, "property", "dcterms:modified");
+      mxmlNewOpaque(temp, get_iso_date(time(NULL)));
+
+      temp = mxmlNewElement(metadata, "dc:language");
+      mxmlNewOpaque(temp, "en-US"); /* TODO: Make this settable */
+
+      temp = mxmlNewElement(metadata, "dc:rights");
+      mxmlNewOpaque(temp, copyright);
+
+      temp = mxmlNewElement(metadata, "dc:publisher");
+      mxmlNewOpaque(temp, "mxmldoc");
+
+      temp = mxmlNewElement(metadata, "dc:identifier");
+      mxmlElementSetAttr(temp, "id", epubbase);
+      snprintf(identifier, sizeof(identifier), "%s-%s", epubbase, docversion);
+      mxmlNewOpaque(temp, identifier);
+
+    manifest = mxmlNewElement(package, "manifest");
+
+      temp = mxmlNewElement(manifest, "item");
+      mxmlElementSetAttr(temp, "id", "ncx");
+      mxmlElementSetAttr(temp, "href", "toc.ncx");
+      mxmlElementSetAttr(temp, "media-type", "application/x-dtbncx+xml");
+
+      temp = mxmlNewElement(manifest, "item");
+      mxmlElementSetAttr(temp, "id", "toc");
+      mxmlElementSetAttr(temp, "href", "toc.xhtml");
+      mxmlElementSetAttr(temp, "media-type", "application/xhtml+xml");
+      mxmlElementSetAttr(temp, "properties", "nav");
+
+      temp = mxmlNewElement(manifest, "item");
+      mxmlElementSetAttr(temp, "id", "body");
+      mxmlElementSetAttr(temp, "href", "body.xhtml");
+      mxmlElementSetAttr(temp, "media-type", "application/xhtml+xml");
+
+//        <item id="imgl" href="images/sample.png" media-type="image/png" />
+
+    spine = mxmlNewElement(package, "spine");
+    mxmlElementSetAttr(spine, "toc", "ncx");
+
+      temp = mxmlNewElement(spine, "itemref");
+      mxmlElementSetAttr(temp, "idref", "body");
+
+  content_opf_string = mxmlSaveAllocString(content_opf, epub_ws_cb);
+
+ /*
+  * Make the toc.ncx file...
+  */
+
+  toc = build_toc(doc, introfile);
+
+  toc_ncx = mxmlNewXML("1.0");
+
+  ncx = mxmlNewElement(toc_ncx, "ncx");
+  mxmlElementSetAttr(ncx, "xmlns", "http://www.daisy.org/z3986/2005/ncx/");
+  mxmlElementSetAttr(ncx, "version", "2005-1");
+  mxmlElementSetAttr(ncx, "xml:lang", "en-US"); /* TODO: Make this settable */
+
+    head = mxmlNewElement(ncx, "head");
+
+      temp = mxmlNewElement(head, "meta");
+      mxmlElementSetAttr(temp, "content", identifier);
+      mxmlElementSetAttr(temp, "name", "dtb:uid");
+
+    docTitle = mxmlNewElement(ncx, "docTitle");
+
+      temp = mxmlNewElement(docTitle, "text");
+      mxmlNewOpaque(temp, title);
+
+    docAuthor = mxmlNewElement(ncx, "docAuthor");
+
+      temp = mxmlNewElement(docAuthor, "text");
+      mxmlNewOpaque(temp, author);
+
+    navMap = mxmlNewElement(ncx, "navMap");
+
+    for (i = 0, tentry = toc->entries, nav = navMap; i < toc->num_entries; i ++, tentry ++)
+    {
+      if (tentry->level == 1)
+        nav = navMap;
+
+      navPoint = mxmlNewElement(nav, "navPoint");
+      mxmlElementSetAttrf(navPoint, "class", "h%d", tentry->level);
+      mxmlElementSetAttr(navPoint, "id", tentry->anchor);
+      mxmlElementSetAttrf(navPoint, "playOrder", "%d", (int)i + 1);
+
+      if (tentry->level == 1)
+        nav = navPoint;
+
+      navLabel = mxmlNewElement(navPoint, "navLabel");
+      temp     = mxmlNewElement(navLabel, "text");
+      mxmlNewOpaque(temp, tentry->title);
+
+      temp = mxmlNewElement(navPoint, "content");
+      mxmlElementSetAttrf(temp, "src", "body.xhtml#%s", tentry->anchor);
+    }
+
+  toc_ncx_string = mxmlSaveAllocString(toc_ncx, epub_ws_cb);
+
+  strlcpy(toc_xhtmlfile, epubfile, sizeof(toc_xhtmlfile));
+  if ((xhtmlptr = strstr(toc_xhtmlfile, ".epub")) != NULL)
+    strlcpy(xhtmlptr, "-toc.xhtml", sizeof(toc_xhtmlfile) - (size_t)(xhtmlptr - toc_xhtmlfile));
+  else
+    strlcat(toc_xhtmlfile, "-toc.xhtml", sizeof(toc_xhtmlfile));
+
+  fp = fopen(toc_xhtmlfile, "w");
+  write_html_head(fp, 1, section, title, cssfile);
+
+  fputs("<div class=\"body\">\n", fp);
+  fputs("<h1 class=\"title\">", fp);
+  write_string(fp, title, OUTPUT_HTML);
+  fputs("</h1>\n", fp);
+
+  fputs("<p>", fp);
+  write_string(fp, author, OUTPUT_HTML);
+  fputs("</p>\n", fp);
+
+  fputs("<p>", fp);
+  write_string(fp, copyright, OUTPUT_HTML);
+  fputs("</p>\n", fp);
+
+  fputs("<h2 class=\"title\">Contents</h2>\n", fp);
+  fputs("<ul class=\"contents\">\n", fp);
+
+  for (i = 0, tentry = toc->entries, toc_level = 1; i < toc->num_entries; i ++, tentry ++)
+  {
+    if (tentry->level > toc_level)
+    {
+      fputs("  <ul class=\"subcontents\">\n", fp);
+      toc_level = tentry->level;
+    }
+    else if (tentry->level < toc_level)
+    {
+      fputs("  </ul></li>\n", fp);
+      toc_level = tentry->level;
+    }
+
+    fprintf(fp, "  %s<a href=\"body.xhtml#%s\">", toc_level == 1 ? "<li>" : "  <li>", tentry->anchor);
+    write_string(fp, tentry->title, OUTPUT_HTML);
+    if ((i + 1) < toc->num_entries && tentry[1].level > toc_level)
+      fputs("</a>\n", fp);
+    else
+      fputs("</a></li>\n", fp);
+  }
+
+  if (toc_level == 2)
+    fputs("  </ul></li>\n", fp);
+
+  fputs("</ul>\n", fp);
+  fputs("</body>\n", fp);
+  fputs("</html>\n", fp);
+
+  fclose(fp);
+
+  free_toc(toc);
+
+ /*
+  * Make the EPUB archive...
+  */
+
+  epub = archive_write_new();
+
+  archive_write_set_format_zip(epub);
+  archive_write_open_filename(epub, epubfile);
+
+  /* mimetype file */
+  entry = archive_entry_new();
+  archive_entry_set_pathname(entry, "mimetype");
+  archive_entry_set_size(entry, strlen(mimetype));
+  archive_entry_set_filetype(entry, AE_IFREG);
+  archive_entry_set_perm(entry, 0644);
+  archive_write_header(epub, entry);
+  archive_write_data(epub, mimetype, strlen(mimetype));
+  archive_entry_free(entry);
+
+  /* META-INF directory */
+  entry = archive_entry_new();
+  archive_entry_set_pathname(entry, "META-INF");
+  archive_entry_set_size(entry, 0);
+  archive_entry_set_filetype(entry, AE_IFDIR);
+  archive_entry_set_perm(entry, 0755);
+  archive_write_header(epub, entry);
+  archive_entry_free(entry);
+
+  /* META-INF/container.xml file */
+  entry = archive_entry_new();
+  archive_entry_set_pathname(entry, "META-INF/container.xml");
+  archive_entry_set_size(entry, strlen(container_xml));
+  archive_entry_set_filetype(entry, AE_IFREG);
+  archive_entry_set_perm(entry, 0644);
+  archive_write_header(epub, entry);
+  archive_write_data(epub, container_xml, strlen(container_xml));
+  archive_entry_free(entry);
+
+  /* OEBPS directory */
+  entry = archive_entry_new();
+  archive_entry_set_pathname(entry, "OEBPS");
+  archive_entry_set_size(entry, 0);
+  archive_entry_set_filetype(entry, AE_IFDIR);
+  archive_entry_set_perm(entry, 0755);
+  archive_write_header(epub, entry);
+  archive_entry_free(entry);
+
+  /* OEBPS/body.xhtml file */
+  stat(xhtmlfile, &xhtmlinfo);
+
+  entry = archive_entry_new();
+  archive_entry_set_pathname(entry, "OEBPS/body.xhtml");
+  archive_entry_set_size(entry, xhtmlinfo.st_size);
+  archive_entry_set_filetype(entry, AE_IFREG);
+  archive_entry_set_perm(entry, 0644);
+  archive_write_header(epub, entry);
+  if ((fp = fopen(xhtmlfile, "r")) != NULL)
+  {
+    char	buffer[65536];		/* Copy buffer */
+    int		length;			/* Number of bytes */
+
+    while ((length = (int)fread(buffer, 1, sizeof(buffer), fp)) > 0)
+      archive_write_data(epub, buffer, length);
+
+    fclose(fp);
+  }
+//  unlink(xhtmlfile);
+  archive_entry_free(entry);
+
+  /* OEBPS/content.opf file */
+  entry = archive_entry_new();
+  archive_entry_set_pathname(entry, "OEBPS/content.opf");
+  archive_entry_set_size(entry, strlen(content_opf_string));
+  archive_entry_set_filetype(entry, AE_IFREG);
+  archive_entry_set_perm(entry, 0644);
+  archive_write_header(epub, entry);
+  archive_write_data(epub, content_opf_string, strlen(content_opf_string));
+  archive_entry_free(entry);
+
+  /* OEBPS/toc.ncx file */
+  entry = archive_entry_new();
+  archive_entry_set_pathname(entry, "OEBPS/toc.ncx");
+  archive_entry_set_size(entry, strlen(toc_ncx_string));
+  archive_entry_set_filetype(entry, AE_IFREG);
+  archive_entry_set_perm(entry, 0644);
+  archive_write_header(epub, entry);
+  archive_write_data(epub, toc_ncx_string, strlen(toc_ncx_string));
+  archive_entry_free(entry);
+
+  /* OEBPS/toc.xhtml file */
+  stat(toc_xhtmlfile, &toc_xhtmlinfo);
+
+  entry = archive_entry_new();
+  archive_entry_set_pathname(entry, "OEBPS/toc.xhtml");
+  archive_entry_set_size(entry, toc_xhtmlinfo.st_size);
+  archive_entry_set_filetype(entry, AE_IFREG);
+  archive_entry_set_perm(entry, 0644);
+  archive_write_header(epub, entry);
+  if ((fp = fopen(toc_xhtmlfile, "r")) != NULL)
+  {
+    char	buffer[65536];		/* Copy buffer */
+    int		length;			/* Number of bytes */
+
+    while ((length = (int)fread(buffer, 1, sizeof(buffer), fp)) > 0)
+      archive_write_data(epub, buffer, length);
+
+    fclose(fp);
+  }
+//  unlink(toc_xhtmlfile);
+  archive_entry_free(entry);
+
+  archive_write_close(epub);
+  archive_write_finish(epub);
 }
 
 

@@ -188,7 +188,7 @@ static void		write_description(FILE *out, mxml_node_t *description,
 static void		write_element(FILE *out, mxml_node_t *doc,
 			              mxml_node_t *element, int mode);
 static void		write_epub(const char *section, const char *title, const char *author, const char *copyright, const char *docversion, const char *footerfile, const char *headerfile, const char *introfile, const char *cssfile, const char *epubfile, mxml_node_t *doc);
-static void		write_file(FILE *out, const char *file);
+static void		write_file(FILE *out, const char *file, int mode);
 static void		write_function(FILE *out, int xhtml, mxml_node_t *doc, mxml_node_t *function, int level);
 static void		write_html(const char *section, const char *title,
 			           const char *footerfile,
@@ -1206,7 +1206,7 @@ get_comment_info(
   for (ptr = strchr(text, '@'); ptr; ptr = strchr(ptr + 1, '@'))
   {
     if (!strncmp(ptr, "@deprecated@", 12))
-      return ("<span class=\"info\">&nbsp;DEPRECATED&nbsp;</span>");
+      return ("<span class=\"info\">&#160;DEPRECATED&#160;</span>");
     else if (!strncmp(ptr, "@since ", 7))
     {
       strlcpy(since, ptr + 7, sizeof(since));
@@ -1214,7 +1214,7 @@ get_comment_info(
       if ((ptr = strchr(since, '@')) != NULL)
         *ptr = '\0';
 
-      snprintf(info, sizeof(info), "<span class=\"info\">&nbsp;%s&nbsp;</span>", since);
+      snprintf(info, sizeof(info), "<span class=\"info\">&#160;%s&#160;</span>", since);
       return (info);
     }
   }
@@ -3300,7 +3300,7 @@ write_description(
           * Handle non-breaking space as-is...
 	  */
 
-          fputs("&nbsp;", out);
+          fputs("&#160;", out);
         }
         else
           fprintf(out, "&#x%x;", ch);
@@ -3448,7 +3448,7 @@ write_epub(const char  *section,	/* I - Section */
   struct stat	toc_xhtmlinfo;		/* XHTML file info */
   int		toc_level;		/* Current table-of-contents level */
   static const char *mimetype =		/* mimetype file as a string */
-		"application/epub+zip\n";
+		"application/epub+zip";
   static const char *container_xml =	/* container.xml file as a string */
 		"<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
                 "<container xmlns=\"urn:oasis:names:tc:opendocument:xmlns:container\" version=\"1.0\">\n"
@@ -3488,7 +3488,7 @@ write_epub(const char  *section,	/* I - Section */
     * Use custom header...
     */
 
-    write_file(fp, headerfile);
+    write_file(fp, headerfile, OUTPUT_EPUB);
   }
   else
   {
@@ -3497,7 +3497,7 @@ write_epub(const char  *section,	/* I - Section */
     */
 
     fputs("<h1 class=\"title\">", fp);
-    write_string(fp, title, OUTPUT_HTML);
+    write_string(fp, title, OUTPUT_EPUB);
     fputs("</h1>\n", fp);
   }
 
@@ -3506,7 +3506,7 @@ write_epub(const char  *section,	/* I - Section */
   */
 
   if (introfile)
-    write_file(fp, introfile);
+    write_file(fp, introfile, OUTPUT_EPUB);
 
  /*
   * List of classes...
@@ -3584,13 +3584,13 @@ write_epub(const char  *section,	/* I - Section */
 	                      type->value.text.string, MXML_DESCEND))
 	  {
             fputs("<a href=\"#", fp);
-            write_string(fp, type->value.text.string, OUTPUT_HTML);
+            write_string(fp, type->value.text.string, OUTPUT_EPUB);
 	    fputs("\">", fp);
-            write_string(fp, type->value.text.string, OUTPUT_HTML);
+            write_string(fp, type->value.text.string, OUTPUT_EPUB);
 	    fputs("</a>", fp);
 	  }
 	  else
-            write_string(fp, type->value.text.string, OUTPUT_HTML);
+            write_string(fp, type->value.text.string, OUTPUT_EPUB);
         }
 
       if (type)
@@ -3621,13 +3621,13 @@ write_epub(const char  *section,	/* I - Section */
 	                      type->value.text.string, MXML_DESCEND))
 	  {
             fputs("<a href=\"#", fp);
-            write_string(fp, type->value.text.string, OUTPUT_HTML);
+            write_string(fp, type->value.text.string, OUTPUT_EPUB);
 	    fputs("\">", fp);
-            write_string(fp, type->value.text.string, OUTPUT_HTML);
+            write_string(fp, type->value.text.string, OUTPUT_EPUB);
 	    fputs("</a>", fp);
 	  }
 	  else
-            write_string(fp, type->value.text.string, OUTPUT_HTML);
+            write_string(fp, type->value.text.string, OUTPUT_EPUB);
         }
 
         fputs(";\n", fp);
@@ -3764,7 +3764,7 @@ write_epub(const char  *section,	/* I - Section */
     * Use custom footer...
     */
 
-    write_file(fp, footerfile);
+    write_file(fp, footerfile, OUTPUT_EPUB);
   }
 
   fputs("</div>\n"
@@ -3917,15 +3917,15 @@ write_epub(const char  *section,	/* I - Section */
 
   fputs("<div class=\"body\">\n", fp);
   fputs("<h1 class=\"title\">", fp);
-  write_string(fp, title, OUTPUT_HTML);
+  write_string(fp, title, OUTPUT_EPUB);
   fputs("</h1>\n", fp);
 
   fputs("<p>", fp);
-  write_string(fp, author, OUTPUT_HTML);
+  write_string(fp, author, OUTPUT_EPUB);
   fputs("</p>\n", fp);
 
   fputs("<p>", fp);
-  write_string(fp, copyright, OUTPUT_HTML);
+  write_string(fp, copyright, OUTPUT_EPUB);
   fputs("</p>\n", fp);
 
   fputs("<h2 class=\"title\">Contents</h2>\n", fp);
@@ -3945,7 +3945,7 @@ write_epub(const char  *section,	/* I - Section */
     }
 
     fprintf(fp, "  %s<a href=\"body.xhtml#%s\">", toc_level == 1 ? "<li>" : "  <li>", tentry->anchor);
-    write_string(fp, tentry->title, OUTPUT_HTML);
+    write_string(fp, tentry->title, OUTPUT_EPUB);
     if ((i + 1) < toc->num_entries && tentry[1].level > toc_level)
       fputs("</a>\n", fp);
     else
@@ -3955,9 +3955,10 @@ write_epub(const char  *section,	/* I - Section */
   if (toc_level == 2)
     fputs("  </ul></li>\n", fp);
 
-  fputs("</ul>\n", fp);
-  fputs("</body>\n", fp);
-  fputs("</html>\n", fp);
+  fputs("</ul>\n"
+        "</div>\n"
+        "</body>\n"
+        "</html>\n", fp);
 
   fclose(fp);
 
@@ -3970,6 +3971,7 @@ write_epub(const char  *section,	/* I - Section */
   epub = archive_write_new();
 
   archive_write_set_format_zip(epub);
+  archive_write_set_options(epub, "!experimental,!zip64");
   archive_write_open_filename(epub, epubfile);
 
   /* mimetype file */
@@ -3977,7 +3979,7 @@ write_epub(const char  *section,	/* I - Section */
   archive_entry_set_pathname(entry, "mimetype");
   archive_entry_set_size(entry, strlen(mimetype));
   archive_entry_set_filetype(entry, AE_IFREG);
-  archive_entry_set_perm(entry, 0644);
+//  archive_entry_set_perm(entry, 0644);
   archive_write_header(epub, entry);
   archive_write_data(epub, mimetype, strlen(mimetype));
   archive_entry_free(entry);
@@ -3987,7 +3989,7 @@ write_epub(const char  *section,	/* I - Section */
   archive_entry_set_pathname(entry, "META-INF");
   archive_entry_set_size(entry, 0);
   archive_entry_set_filetype(entry, AE_IFDIR);
-  archive_entry_set_perm(entry, 0755);
+//  archive_entry_set_perm(entry, 0755);
   archive_write_header(epub, entry);
   archive_entry_free(entry);
 
@@ -3996,7 +3998,7 @@ write_epub(const char  *section,	/* I - Section */
   archive_entry_set_pathname(entry, "META-INF/container.xml");
   archive_entry_set_size(entry, strlen(container_xml));
   archive_entry_set_filetype(entry, AE_IFREG);
-  archive_entry_set_perm(entry, 0644);
+//  archive_entry_set_perm(entry, 0644);
   archive_write_header(epub, entry);
   archive_write_data(epub, container_xml, strlen(container_xml));
   archive_entry_free(entry);
@@ -4006,7 +4008,7 @@ write_epub(const char  *section,	/* I - Section */
   archive_entry_set_pathname(entry, "OEBPS");
   archive_entry_set_size(entry, 0);
   archive_entry_set_filetype(entry, AE_IFDIR);
-  archive_entry_set_perm(entry, 0755);
+//  archive_entry_set_perm(entry, 0755);
   archive_write_header(epub, entry);
   archive_entry_free(entry);
 
@@ -4017,7 +4019,7 @@ write_epub(const char  *section,	/* I - Section */
   archive_entry_set_pathname(entry, "OEBPS/body.xhtml");
   archive_entry_set_size(entry, xhtmlinfo.st_size);
   archive_entry_set_filetype(entry, AE_IFREG);
-  archive_entry_set_perm(entry, 0644);
+//  archive_entry_set_perm(entry, 0644);
   archive_write_header(epub, entry);
   if ((fp = fopen(xhtmlfile, "r")) != NULL)
   {
@@ -4037,7 +4039,7 @@ write_epub(const char  *section,	/* I - Section */
   archive_entry_set_pathname(entry, "OEBPS/content.opf");
   archive_entry_set_size(entry, strlen(content_opf_string));
   archive_entry_set_filetype(entry, AE_IFREG);
-  archive_entry_set_perm(entry, 0644);
+//  archive_entry_set_perm(entry, 0644);
   archive_write_header(epub, entry);
   archive_write_data(epub, content_opf_string, strlen(content_opf_string));
   archive_entry_free(entry);
@@ -4047,7 +4049,7 @@ write_epub(const char  *section,	/* I - Section */
   archive_entry_set_pathname(entry, "OEBPS/toc.ncx");
   archive_entry_set_size(entry, strlen(toc_ncx_string));
   archive_entry_set_filetype(entry, AE_IFREG);
-  archive_entry_set_perm(entry, 0644);
+//  archive_entry_set_perm(entry, 0644);
   archive_write_header(epub, entry);
   archive_write_data(epub, toc_ncx_string, strlen(toc_ncx_string));
   archive_entry_free(entry);
@@ -4059,7 +4061,7 @@ write_epub(const char  *section,	/* I - Section */
   archive_entry_set_pathname(entry, "OEBPS/toc.xhtml");
   archive_entry_set_size(entry, toc_xhtmlinfo.st_size);
   archive_entry_set_filetype(entry, AE_IFREG);
-  archive_entry_set_perm(entry, 0644);
+//  archive_entry_set_perm(entry, 0644);
   archive_write_header(epub, entry);
   if ((fp = fopen(toc_xhtmlfile, "r")) != NULL)
   {
@@ -4085,7 +4087,8 @@ write_epub(const char  *section,	/* I - Section */
 
 static void
 write_file(FILE       *out,		/* I - Output file */
-           const char *file)		/* I - File to copy */
+           const char *file,		/* I - File to copy */
+           int        mode)		/* I - Output mode */
 {
   FILE		*fp;			/* Copy file */
   char		line[8192];		/* Line from file */
@@ -4098,8 +4101,29 @@ write_file(FILE       *out,		/* I - Output file */
     return;
   }
 
-  while (fgets(line, sizeof(line), fp))
-    fputs(line, out);
+  if (mode == OUTPUT_EPUB)
+  {
+    char	*ptr;			/* Pointer into line */
+
+    while (fgets(line, sizeof(line), fp))
+    {
+      for (ptr = line; *ptr; ptr ++)
+      {
+        if (*ptr == '&' && !strncmp(ptr + 1, "nbsp;", 5))
+        {
+          ptr += 5;
+          fputs("&#160;", out);
+        }
+        else
+          fputc(*ptr, out);
+      }
+    }
+  }
+  else
+  {
+    while (fgets(line, sizeof(line), fp))
+      fputs(line, out);
+  }
 
   fclose(fp);
 }
@@ -4160,7 +4184,7 @@ write_function(FILE        *out,	/* I - Output file */
     type = mxmlFindElement(arg, arg, "type", NULL, NULL,
 			   MXML_DESCEND_FIRST);
 
-    fprintf(out, "%c%s\n&nbsp;&nbsp;&nbsp;&nbsp;", prefix, br);
+    fprintf(out, "%c%s\n&#160;&#160;&#160;&#160;", prefix, br);
     if (type->child)
       write_element(out, doc, type, OUTPUT_HTML);
 
@@ -4568,7 +4592,7 @@ write_html(const char  *section,	/* I - Section */
     * Use custom header...
     */
 
-    write_file(out, headerfile);
+    write_file(out, headerfile, OUTPUT_HTML);
   }
   else
   {
@@ -4593,7 +4617,7 @@ write_html(const char  *section,	/* I - Section */
   */
 
   if (introfile)
-    write_file(out, introfile);
+    write_file(out, introfile, OUTPUT_HTML);
 
  /*
   * List of classes...
@@ -4857,7 +4881,7 @@ write_html(const char  *section,	/* I - Section */
     * Use custom footer...
     */
 
-    write_file(out, footerfile);
+    write_file(out, footerfile, OUTPUT_HTML);
   }
 
   fputs("</div>\n"
@@ -4941,8 +4965,7 @@ write_html_head(FILE       *out,	/* I - Output file */
 {
   if (xhtml)
     fputs("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
-          "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" "
-          "\"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n"
+          "<!DOCTYPE html>\n"
           "<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en\" "
           "lang=\"en\">\n", out);
   else
@@ -4978,7 +5001,7 @@ write_html_head(FILE       *out,	/* I - Output file */
     * Use custom stylesheet file...
     */
 
-    write_file(out, cssfile);
+    write_file(out, cssfile, OUTPUT_HTML);
   }
   else
   {
@@ -5185,7 +5208,7 @@ write_man(const char  *man_name,	/* I - Name of manpage */
     * Use custom header...
     */
 
-    write_file(stdout, headerfile);
+    write_file(stdout, headerfile, OUTPUT_MAN);
   }
   else
   {
@@ -5202,7 +5225,7 @@ write_man(const char  *man_name,	/* I - Name of manpage */
   */
 
   if (introfile)
-    write_file(stdout, introfile);
+    write_file(stdout, introfile, OUTPUT_MAN);
 
  /*
   * List of classes...
@@ -5647,7 +5670,7 @@ write_man(const char  *man_name,	/* I - Name of manpage */
     * Use custom footer...
     */
 
-    write_file(stdout, footerfile);
+    write_file(stdout, footerfile, OUTPUT_MAN);
   }
 }
 
@@ -5719,10 +5742,10 @@ write_scu(FILE        *out,	/* I - Output file */
       if (!inscope)
       {
 	inscope = 1;
-	fprintf(out, "&nbsp;&nbsp;%s:<br>\n", scopes[i]);
+	fprintf(out, "&#160;&#160;%s:<br>\n", scopes[i]);
       }
 
-      fputs("&nbsp;&nbsp;&nbsp;&nbsp;", out);
+      fputs("&#160;&#160;&#160;&#160;", out);
       write_element(out, doc, mxmlFindElement(arg, arg, "type", NULL,
 					      NULL, MXML_DESCEND_FIRST),
 		    OUTPUT_HTML);
@@ -5743,12 +5766,12 @@ write_scu(FILE        *out,	/* I - Output file */
       if (!inscope)
       {
 	inscope = 1;
-        fprintf(out, "&nbsp;&nbsp;%s:%s\n", scopes[i], br);
+        fprintf(out, "&#160;&#160;%s:%s\n", scopes[i], br);
       }
 
       name = mxmlElementGetAttr(function, "name");
 
-      fputs("&nbsp;&nbsp;&nbsp;&nbsp;", out);
+      fputs("&#160;&#160;&#160;&#160;", out);
 
       arg = mxmlFindElement(function, function, "returnvalue", NULL,
 			    NULL, MXML_DESCEND_FIRST);
@@ -5869,13 +5892,13 @@ write_string(FILE       *out,		/* I - Output file */
 	      s += 2;
             }
 
-            if (ch == 0xa0)
+            if (ch == 0xa0 && mode != OUTPUT_EPUB)
             {
              /*
               * Handle non-breaking space as-is...
 	      */
 
-              fputs("&nbsp;", out);
+              fputs("&#160;", out);
             }
             else
               fprintf(out, "&#x%x;", ch);

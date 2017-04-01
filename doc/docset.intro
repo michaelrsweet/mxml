@@ -23,7 +23,7 @@
 #include &lt;mxml.h&gt;
 </pre>
 
-<p>Nodes are defined by the "<a href="#mxml_node_s">mxml_node_t</a>" structure;
+<p>Nodes are defined by the "<a href="#mxml_node_t">mxml_node_t</a>" structure;
 the "type" member defines the node type (element, integer, opaque, real, or
 text) which determines which value you want to look at in the "value" union.
 New nodes can be created using the

@@ -915,7 +915,11 @@ build_toc(mxml_node_t *doc,		/* I - Documentation */
         if (!*ptr)
 	  continue;
 
-        *ptr++ = '\0';
+        while (*ptr && *ptr != '>')
+          *ptr++ = '\0';
+
+        if (*ptr)
+          *ptr++ = '\0';
       }
       else
       {
@@ -3389,6 +3393,7 @@ write_element(FILE        *out,		/* I - Output file */
 }
 
 
+#if defined(HAVE_ARCHIVE_H) || defined(__APPLE__)
 /*
  * 'write_epub()' - Write documentation as an EPUB file.
  */
@@ -3916,7 +3921,6 @@ write_epub(const char  *section,	/* I - Section */
   {
     if (tentry->level > toc_level)
     {
-      fputs("        <ol>\n", fp);
       toc_level = tentry->level;
     }
     else if (tentry->level < toc_level)
@@ -3928,7 +3932,7 @@ write_epub(const char  *section,	/* I - Section */
     fprintf(fp, "        %s<a href=\"body.xhtml#%s\">", toc_level == 1 ? "<li>" : "  <li>", tentry->anchor);
     write_string(fp, tentry->title, OUTPUT_EPUB);
     if ((i + 1) < toc->num_entries && tentry[1].level > toc_level)
-      fputs("</a>\n", fp);
+      fputs("</a><ol>\n", fp);
     else
       fputs("</a></li>\n", fp);
   }
@@ -3960,7 +3964,6 @@ write_epub(const char  *section,	/* I - Section */
   archive_entry_set_pathname(entry, "mimetype");
   archive_entry_set_size(entry, strlen(mimetype));
   archive_entry_set_filetype(entry, AE_IFREG);
-//  archive_entry_set_perm(entry, 0644);
   archive_write_header(epub, entry);
   archive_write_data(epub, mimetype, strlen(mimetype));
   archive_entry_free(entry);
@@ -3970,7 +3973,6 @@ write_epub(const char  *section,	/* I - Section */
   archive_entry_set_pathname(entry, "META-INF");
   archive_entry_set_size(entry, 0);
   archive_entry_set_filetype(entry, AE_IFDIR);
-//  archive_entry_set_perm(entry, 0755);
   archive_write_header(epub, entry);
   archive_entry_free(entry);
 
@@ -3979,7 +3981,6 @@ write_epub(const char  *section,	/* I - Section */
   archive_entry_set_pathname(entry, "META-INF/container.xml");
   archive_entry_set_size(entry, strlen(container_xml));
   archive_entry_set_filetype(entry, AE_IFREG);
-//  archive_entry_set_perm(entry, 0644);
   archive_write_header(epub, entry);
   archive_write_data(epub, container_xml, strlen(container_xml));
   archive_entry_free(entry);
@@ -3989,7 +3990,6 @@ write_epub(const char  *section,	/* I - Section */
   archive_entry_set_pathname(entry, "OEBPS");
   archive_entry_set_size(entry, 0);
   archive_entry_set_filetype(entry, AE_IFDIR);
-//  archive_entry_set_perm(entry, 0755);
   archive_write_header(epub, entry);
   archive_entry_free(entry);
 
@@ -4000,7 +4000,6 @@ write_epub(const char  *section,	/* I - Section */
   archive_entry_set_pathname(entry, "OEBPS/body.xhtml");
   archive_entry_set_size(entry, xhtmlinfo.st_size);
   archive_entry_set_filetype(entry, AE_IFREG);
-//  archive_entry_set_perm(entry, 0644);
   archive_write_header(epub, entry);
   if ((fp = fopen(xhtmlfile, "r")) != NULL)
   {
@@ -4012,7 +4011,7 @@ write_epub(const char  *section,	/* I - Section */
 
     fclose(fp);
   }
-//  unlink(xhtmlfile);
+  unlink(xhtmlfile);
   archive_entry_free(entry);
 
   /* OEBPS/content.opf file */
@@ -4020,7 +4019,6 @@ write_epub(const char  *section,	/* I - Section */
   archive_entry_set_pathname(entry, "OEBPS/content.opf");
   archive_entry_set_size(entry, strlen(content_opf_string));
   archive_entry_set_filetype(entry, AE_IFREG);
-//  archive_entry_set_perm(entry, 0644);
   archive_write_header(epub, entry);
   archive_write_data(epub, content_opf_string, strlen(content_opf_string));
   archive_entry_free(entry);
@@ -4030,7 +4028,6 @@ write_epub(const char  *section,	/* I - Section */
   archive_entry_set_pathname(entry, "OEBPS/toc.ncx");
   archive_entry_set_size(entry, strlen(toc_ncx_string));
   archive_entry_set_filetype(entry, AE_IFREG);
-//  archive_entry_set_perm(entry, 0644);
   archive_write_header(epub, entry);
   archive_write_data(epub, toc_ncx_string, strlen(toc_ncx_string));
   archive_entry_free(entry);
@@ -4042,7 +4039,6 @@ write_epub(const char  *section,	/* I - Section */
   archive_entry_set_pathname(entry, "OEBPS/toc.xhtml");
   archive_entry_set_size(entry, toc_xhtmlinfo.st_size);
   archive_entry_set_filetype(entry, AE_IFREG);
-//  archive_entry_set_perm(entry, 0644);
   archive_write_header(epub, entry);
   if ((fp = fopen(toc_xhtmlfile, "r")) != NULL)
   {
@@ -4054,12 +4050,13 @@ write_epub(const char  *section,	/* I - Section */
 
     fclose(fp);
   }
-//  unlink(toc_xhtmlfile);
+  unlink(toc_xhtmlfile);
   archive_entry_free(entry);
 
   archive_write_close(epub);
   archive_write_finish(epub);
 }
+#endif /* HAVE_ARCHIVE_H || __APPLE__ */
 
 
 /*

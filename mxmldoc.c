@@ -608,7 +608,12 @@ main(int  argc,				/* I - Number of command-line args */
         * Write EPUB (XHTML) documentation...
         */
 
+#if defined(HAVE_ARCHIVE_H) || defined(__APPLE__)
         write_epub(section, title ? title : "Documentation", author ? author : "Unknown", copyright ? copyright : "Unknown", docversion ? docversion : "0.0", footerfile, headerfile, introfile, cssfile, epubfile, mxmldoc);
+#else
+        fputs("mxmldoc: EPUB support not compiled in.\n", stderr);
+        return (1);
+#endif /* HAVE_ARCHIVE_H || __APPLE__ */
         break;
 
     case OUTPUT_HTML :
@@ -616,9 +621,7 @@ main(int  argc,				/* I - Number of command-line args */
         * Write HTML documentation...
         */
 
-        write_html(section, title ? title : "Documentation", footerfile,
-	           headerfile, introfile, cssfile, framefile, docset,
-		   docversion, feedname, feedurl, mxmldoc);
+        write_html(section, title ? title : "Documentation", footerfile, headerfile, introfile, cssfile, framefile, docset, docversion ? docversion : "0.0", feedname, feedurl, mxmldoc);
         break;
 
     case OUTPUT_MAN :

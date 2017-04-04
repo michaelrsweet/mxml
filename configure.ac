@@ -116,11 +116,8 @@ if test $ac_cv_c_long_long = yes; then
 	AC_DEFINE(HAVE_LONG_LONG)
 fi
 
-dnl EPUB support (via libarchive support for writing ZIP files...)
-AC_CHECK_LIB(archive,archive_write_new,[
-	LIBS="-larchive $LIBS"
-	AC_CHECK_HEADER(archive.h, AC_DEFINE(HAVE_ARCHIVE_H))
-])
+dnl EPUB support (via libz and zipc)
+AC_SEARCH_LIBS(gzgets,z,[LIBS="-lz $LIBS"])
 
 dnl Threading support
 AC_ARG_ENABLE(threads, [  --enable-threads        enable multi-threading support])

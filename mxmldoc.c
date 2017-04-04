@@ -20,6 +20,7 @@
 
 #include "config.h"
 #include "mxml.h"
+#include "zipc.h"
 #include <time.h>
 #include <sys/stat.h>
 #ifndef WIN32
@@ -31,14 +32,6 @@
 #  include <sys/wait.h>
 extern char **environ;
 #endif /* __APPLE__ */
-
-#ifdef HAVE_ARCHIVE_H
-#  include <archive.h>
-#  include <archive_entry.h>
-#elif defined(__APPLE__)	/* Use archive 2.8.3 headers for macOS */
-#  include "xcode/archive.h"
-#  include "xcode/archive_entry.h"
-#endif /* HAVE_ARCHIVE_H */
 
 
 /*
@@ -608,12 +601,7 @@ main(int  argc,				/* I - Number of command-line args */
         * Write EPUB (XHTML) documentation...
         */
 
-#if defined(HAVE_ARCHIVE_H) || defined(__APPLE__)
         write_epub(section, title ? title : "Documentation", author ? author : "Unknown", copyright ? copyright : "Unknown", docversion ? docversion : "0.0", footerfile, headerfile, introfile, cssfile, epubfile, mxmldoc);
-#else
-        fputs("mxmldoc: EPUB support not compiled in.\n", stderr);
-        return (1);
-#endif /* HAVE_ARCHIVE_H || __APPLE__ */
         break;
 
     case OUTPUT_HTML :
@@ -1089,6 +1077,9 @@ epub_ws_cb(mxml_node_t *node,		/* I - Element node */
   switch (where)
   {
     case MXML_WS_BEFORE_CLOSE :
+        if (node->child && node->child->type != MXML_ELEMENT)
+          return (NULL);
+
 	for (depth = -4; node; node = node->parent, depth += 2);
 	if (depth > 40)
 	  return (spaces);
@@ -1111,6 +1102,9 @@ epub_ws_cb(mxml_node_t *node,		/* I - Element node */
 
     default :
     case MXML_WS_AFTER_OPEN :
+        if (node->child && node->child->type != MXML_ELEMENT)
+          return (NULL);
+
         return ("\n");
   }
 }
@@ -3396,7 +3390,6 @@ write_element(FILE        *out,		/* I - Output file */
 }
 
 
-#if defined(HAVE_ARCHIVE_H) || defined(__APPLE__)
 /*
  * 'write_epub()' - Write documentation as an EPUB file.
  */
@@ -3425,11 +3418,10 @@ write_epub(const char  *section,	/* I - Section */
 		*defval;		/* Default value */
   char		epubbase[256],		/* Base name of EPUB file (identifier) */
 		*epubptr;		/* Pointer into base name */
-  struct archive *epub;			/* EPUB archive */
-  struct archive_entry *entry;		/* EPUB entry */
+  zipc_t	*epub;			/* EPUB ZIP container */
+  zipc_file_t	*epubf;			/* File in EPUB ZIP container */
   char		xhtmlfile[1024],	/* XHTML output filename */
 		*xhtmlptr;		/* Pointer into output filename */
-  struct stat	xhtmlinfo;		/* XHTML output file information */
   mxml_node_t	*content_opf,		/* content.opf file */
                 *package,		/* package node */
                 *metadata,		/* metadata node */
@@ -3451,7 +3443,6 @@ write_epub(const char  *section,	/* I - Section */
                 *navLabel;		/* navLabel node */
   char		*toc_ncx_string;	/* toc.ncx file as a string */
   char		toc_xhtmlfile[1024];	/* XHTML file for table-of-contents */
-  struct stat	toc_xhtmlinfo;		/* XHTML file info */
   int		toc_level;		/* Current table-of-contents level */
   static const char *mimetype =		/* mimetype file as a string */
 		"application/epub+zip";
@@ -3956,110 +3947,52 @@ write_epub(const char  *section,	/* I - Section */
   * Make the EPUB archive...
   */
 
-  epub = archive_write_new();
-
-  archive_write_set_format_zip(epub);
-  archive_write_set_options(epub, "!experimental,!zip64");
-  archive_write_open_filename(epub, epubfile);
+  epub = zipcOpen(epubfile, "w");
 
   /* mimetype file */
-  entry = archive_entry_new();
-  archive_entry_set_pathname(entry, "mimetype");
-  archive_entry_set_size(entry, strlen(mimetype));
-  archive_entry_set_filetype(entry, AE_IFREG);
-  archive_write_header(epub, entry);
-  archive_write_data(epub, mimetype, strlen(mimetype));
-  archive_entry_free(entry);
-
-  /* META-INF directory */
-  entry = archive_entry_new();
-  archive_entry_set_pathname(entry, "META-INF");
-  archive_entry_set_size(entry, 0);
-  archive_entry_set_filetype(entry, AE_IFDIR);
-  archive_write_header(epub, entry);
-  archive_entry_free(entry);
+  zipcCreateFileWithString(epub, "mimetype", mimetype);
 
   /* META-INF/container.xml file */
-  entry = archive_entry_new();
-  archive_entry_set_pathname(entry, "META-INF/container.xml");
-  archive_entry_set_size(entry, strlen(container_xml));
-  archive_entry_set_filetype(entry, AE_IFREG);
-  archive_write_header(epub, entry);
-  archive_write_data(epub, container_xml, strlen(container_xml));
-  archive_entry_free(entry);
-
-  /* OEBPS directory */
-  entry = archive_entry_new();
-  archive_entry_set_pathname(entry, "OEBPS");
-  archive_entry_set_size(entry, 0);
-  archive_entry_set_filetype(entry, AE_IFDIR);
-  archive_write_header(epub, entry);
-  archive_entry_free(entry);
+  zipcCreateFileWithString(epub, "META-INF/container.xml", container_xml);
 
   /* OEBPS/body.xhtml file */
-  stat(xhtmlfile, &xhtmlinfo);
-
-  entry = archive_entry_new();
-  archive_entry_set_pathname(entry, "OEBPS/body.xhtml");
-  archive_entry_set_size(entry, xhtmlinfo.st_size);
-  archive_entry_set_filetype(entry, AE_IFREG);
-  archive_write_header(epub, entry);
+  epubf = zipcCreateFile(epub, "OEBPS/body.xhtml", 1);
   if ((fp = fopen(xhtmlfile, "r")) != NULL)
   {
     char	buffer[65536];		/* Copy buffer */
     int		length;			/* Number of bytes */
 
     while ((length = (int)fread(buffer, 1, sizeof(buffer), fp)) > 0)
-      archive_write_data(epub, buffer, length);
+      zipcFileWrite(epubf, buffer, length);
 
     fclose(fp);
+    zipcFileFinish(epubf);
   }
   unlink(xhtmlfile);
-  archive_entry_free(entry);
 
   /* OEBPS/content.opf file */
-  entry = archive_entry_new();
-  archive_entry_set_pathname(entry, "OEBPS/content.opf");
-  archive_entry_set_size(entry, strlen(content_opf_string));
-  archive_entry_set_filetype(entry, AE_IFREG);
-  archive_write_header(epub, entry);
-  archive_write_data(epub, content_opf_string, strlen(content_opf_string));
-  archive_entry_free(entry);
+  zipcCreateFileWithString(epub, "OEBPS/content.opf", content_opf_string);
 
   /* OEBPS/toc.ncx file */
-  entry = archive_entry_new();
-  archive_entry_set_pathname(entry, "OEBPS/toc.ncx");
-  archive_entry_set_size(entry, strlen(toc_ncx_string));
-  archive_entry_set_filetype(entry, AE_IFREG);
-  archive_write_header(epub, entry);
-  archive_write_data(epub, toc_ncx_string, strlen(toc_ncx_string));
-  archive_entry_free(entry);
+  zipcCreateFileWithString(epub, "OEBPS/toc.ncx", toc_ncx_string);
 
   /* OEBPS/toc.xhtml file */
-  stat(toc_xhtmlfile, &toc_xhtmlinfo);
-
-  entry = archive_entry_new();
-  archive_entry_set_pathname(entry, "OEBPS/toc.xhtml");
-  archive_entry_set_size(entry, toc_xhtmlinfo.st_size);
-  archive_entry_set_filetype(entry, AE_IFREG);
-  archive_write_header(epub, entry);
+  epubf = zipcCreateFile(epub, "OEBPS/toc.xhtml", 1);
   if ((fp = fopen(toc_xhtmlfile, "r")) != NULL)
   {
     char	buffer[65536];		/* Copy buffer */
     int		length;			/* Number of bytes */
 
     while ((length = (int)fread(buffer, 1, sizeof(buffer), fp)) > 0)
-      archive_write_data(epub, buffer, length);
+      zipcFileWrite(epubf, buffer, length);
 
     fclose(fp);
+    zipcFileFinish(epubf);
   }
   unlink(toc_xhtmlfile);
-  archive_entry_free(entry);
 
-  archive_write_close(epub);
-  archive_write_finish(epub);
+  zipcClose(epub);
 }
-#endif /* HAVE_ARCHIVE_H || __APPLE__ */
 
 
 /*

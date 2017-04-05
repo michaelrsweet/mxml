@@ -83,7 +83,7 @@ PUBLIBOBJS	=	mxml-attr.o mxml-entity.o mxml-file.o mxml-get.o \
 			mxml-index.o mxml-node.o mxml-search.o mxml-set.o
 LIBOBJS		=	$(PUBLIBOBJS) mxml-private.o mxml-string.o
 OBJS		=	mxmldoc.o testmxml.o zipc.o $(LIBOBJS)
-ALLTARGETS	=	$(LIBMXML) mxmldoc testmxml mxml.xml
+ALLTARGETS	=	$(LIBMXML) mxmldoc testmxml mxml.xml @MXML_EPUB@
 CROSSTARGETS	=	$(LIBMXML) mxmldoc
 TARGETS		=	$(@TARGETS@)
 
@@ -101,7 +101,7 @@ all:		$(TARGETS)
 
 clean:
 	echo Cleaning build files...
-	$(RM) $(OBJS) $(TARGETS)
+	$(RM) $(OBJS) $(ALLTARGETS)
 	$(RM) mxmldoc-static libmxml.a libmxml.so.1.5 libmxml.sl.1 libmxml.1.dylib
 
 
@@ -293,13 +293,13 @@ libmxml.1.dylib:	$(LIBOBJS)
 # mxmldoc
 #
 
-mxmldoc:	$(LIBMXML) mxmldoc.o zipc.o
+mxmldoc:	$(LIBMXML) mxmldoc.o @ZIPC@
 	echo Linking $@...
-	$(CC) -L. $(LDFLAGS) -o $@ mxmldoc.o zipc.o -lmxml $(LIBS)
+	$(CC) -L. $(LDFLAGS) -o $@ mxmldoc.o @ZIPC@ -lmxml $(LIBS)
 
-mxmldoc-static:	libmxml.a mxmldoc.o
+mxmldoc-static:	libmxml.a mxmldoc.o @ZIPC@
 	echo Linking $@...
-	$(CC) $(LDFLAGS) -o $@ mxmldoc.o zipc.o libmxml.a $(LIBS)
+	$(CC) $(LDFLAGS) -o $@ mxmldoc.o @ZIPC@ libmxml.a $(LIBS)
 
 mxmldoc.o:	mxml.h zipc.h
 zipc.o:		zipc.h

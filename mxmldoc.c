@@ -20,7 +20,6 @@
 
 #include "config.h"
 #include "mxml.h"
-#include "zipc.h"
 #include <time.h>
 #include <sys/stat.h>
 #ifndef WIN32
@@ -32,6 +31,10 @@
 #  include <sys/wait.h>
 extern char **environ;
 #endif /* __APPLE__ */
+
+#ifdef HAVE_ZLIB_H
+#  include "zipc.h"
+#endif /* HAVE_ZLIB_H */
 
 
 /*
@@ -601,7 +604,11 @@ main(int  argc,				/* I - Number of command-line args */
         * Write EPUB (XHTML) documentation...
         */
 
+#ifdef HAVE_ZLIB_H
         write_epub(section, title ? title : "Documentation", author ? author : "Unknown", copyright ? copyright : "Unknown", docversion ? docversion : "0.0", footerfile, headerfile, introfile, cssfile, epubfile, mxmldoc);
+#else
+        fputs("mxmldoc: Sorry, not compiled with EPUB support.\n", stderr);
+#endif /* HAVE_ZLIB_H */
         break;
 
     case OUTPUT_HTML :
@@ -3390,6 +3397,7 @@ write_element(FILE        *out,		/* I - Output file */
 }
 
 
+#ifdef HAVE_ZLIB_H
 /*
  * 'write_epub()' - Write documentation as an EPUB file.
  */
@@ -3407,6 +3415,7 @@ write_epub(const char  *section,	/* I - Section */
            const char  *epubfile,	/* I - EPUB file (output) */
            mxml_node_t *doc)		/* I - XML documentation */
 {
+  int		status = 0;		/* Write status */
   size_t	i;			/* Looping var */
   FILE		*fp;			/* Output file */
   mxml_node_t	*function,		/* Current function */
@@ -3432,16 +3441,6 @@ write_epub(const char  *section,	/* I - Section */
 		*package_opf_string;	/* package_opf file as a string */
   toc_t		*toc;			/* Table of contents */
   toc_entry_t	*tentry;		/* Current table of contents */
-  mxml_node_t	*toc_ncx,		/* toc.ncx file */
-		*ncx,			/* ncx node */
-                *head,			/* head node */
-                *docTitle,		/* docTitle node */
-                *docAuthor,		/* docAuthor node */
-                *nav,			/* Current parent for nav nodes */
-                *navMap,		/* navMap node */
-                *navPoint,		/* navPoint node */
-                *navLabel;		/* navLabel node */
-  char		*toc_ncx_string;	/* toc.ncx file as a string */
   char		toc_xhtmlfile[1024];	/* XHTML file for table-of-contents */
   int		toc_level;		/* Current table-of-contents level */
   static const char *mimetype =		/* mimetype file as a string */
@@ -3810,11 +3809,6 @@ write_epub(const char  *section,	/* I - Section */
 
     manifest = mxmlNewElement(package, "manifest");
 
-//      temp = mxmlNewElement(manifest, "item");
-//      mxmlElementSetAttr(temp, "id", "ncx");
-//      mxmlElementSetAttr(temp, "href", "toc.ncx");
-//      mxmlElementSetAttr(temp, "media-type", "application/x-dtbncx+xml");
-
       temp = mxmlNewElement(manifest, "item");
       mxmlElementSetAttr(temp, "id", "nav");
       mxmlElementSetAttr(temp, "href", "nav.xhtml");
@@ -3826,10 +3820,7 @@ write_epub(const char  *section,	/* I - Section */
       mxmlElementSetAttr(temp, "href", "body.xhtml");
       mxmlElementSetAttr(temp, "media-type", "application/xhtml+xml");
 
-//        <item id="imgl" href="images/sample.png" media-type="image/png" />
-
     spine = mxmlNewElement(package, "spine");
-//    mxmlElementSetAttr(spine, "toc", "ncx");
 
       temp = mxmlNewElement(spine, "itemref");
       mxmlElementSetAttr(temp, "idref", "body");
@@ -3837,58 +3828,10 @@ write_epub(const char  *section,	/* I - Section */
   package_opf_string = mxmlSaveAllocString(package_opf, epub_ws_cb);
 
  /*
-  * Make the toc.ncx file...
+  * Make the nav.xhtml file...
   */
 
   toc = build_toc(doc, introfile);
-
-  toc_ncx = mxmlNewXML("1.0");
-
-  ncx = mxmlNewElement(toc_ncx, "ncx");
-  mxmlElementSetAttr(ncx, "xmlns", "http://www.daisy.org/z3986/2005/ncx/");
-  mxmlElementSetAttr(ncx, "version", "2005-1");
-  mxmlElementSetAttr(ncx, "xml:lang", "en-US"); /* TODO: Make this settable */
-
-    head = mxmlNewElement(ncx, "head");
-
-      temp = mxmlNewElement(head, "meta");
-      mxmlElementSetAttr(temp, "content", identifier);
-      mxmlElementSetAttr(temp, "name", "dtb:uid");
-
-    docTitle = mxmlNewElement(ncx, "docTitle");
-
-      temp = mxmlNewElement(docTitle, "text");
-      mxmlNewOpaque(temp, title);
-
-    docAuthor = mxmlNewElement(ncx, "docAuthor");
-
-      temp = mxmlNewElement(docAuthor, "text");
-      mxmlNewOpaque(temp, author);
-
-    navMap = mxmlNewElement(ncx, "navMap");
-
-    for (i = 0, tentry = toc->entries, nav = navMap; i < toc->num_entries; i ++, tentry ++)
-    {
-      if (tentry->level == 1)
-        nav = navMap;
-
-      navPoint = mxmlNewElement(nav, "navPoint");
-      mxmlElementSetAttrf(navPoint, "class", "h%d", tentry->level);
-      mxmlElementSetAttr(navPoint, "id", tentry->anchor);
-      mxmlElementSetAttrf(navPoint, "playOrder", "%d", (int)i + 1);
-
-      if (tentry->level == 1)
-        nav = navPoint;
-
-      navLabel = mxmlNewElement(navPoint, "navLabel");
-      temp     = mxmlNewElement(navLabel, "text");
-      mxmlNewOpaque(temp, tentry->title);
-
-      temp = mxmlNewElement(navPoint, "content");
-      mxmlElementSetAttrf(temp, "src", "body.xhtml#%s", tentry->anchor);
-    }
-
-  toc_ncx_string = mxmlSaveAllocString(toc_ncx, epub_ws_cb);
 
   strlcpy(toc_xhtmlfile, epubfile, sizeof(toc_xhtmlfile));
   if ((xhtmlptr = strstr(toc_xhtmlfile, ".epub")) != NULL)
@@ -3947,52 +3890,74 @@ write_epub(const char  *section,	/* I - Section */
   * Make the EPUB archive...
   */
 
-  epub = zipcOpen(epubfile, "w");
+  if ((epub = zipcOpen(epubfile, "w")) == NULL)
+  {
+    fprintf(stderr, "mxmldoc: Unable to create \"%s\": %s\n", epubfile, strerror(errno));
+    unlink(xhtmlfile);
+    return;
+  }
 
   /* mimetype file */
-  zipcCreateFileWithString(epub, "mimetype", mimetype);
+  status |= zipcCreateFileWithString(epub, "mimetype", mimetype);
+
+  /* META-INF/ directory */
+  status |= zipcCreateDirectory(epub, "META-INF/");
 
   /* META-INF/container.xml file */
-  zipcCreateFileWithString(epub, "META-INF/container.xml", container_xml);
+  status |= zipcCreateFileWithString(epub, "META-INF/container.xml", container_xml);
+
+  /* OEBPS/ directory */
+  status |= zipcCreateDirectory(epub, "OEBPS/");
 
   /* OEBPS/body.xhtml file */
-  epubf = zipcCreateFile(epub, "OEBPS/body.xhtml", 1);
-  if ((fp = fopen(xhtmlfile, "r")) != NULL)
+  if ((epubf = zipcCreateFile(epub, "OEBPS/body.xhtml", 1)) != NULL)
   {
-    char	buffer[65536];		/* Copy buffer */
-    int		length;			/* Number of bytes */
+    if ((fp = fopen(xhtmlfile, "r")) != NULL)
+    {
+      char	buffer[65536];		/* Copy buffer */
+      int	length;			/* Number of bytes */
 
-    while ((length = (int)fread(buffer, 1, sizeof(buffer), fp)) > 0)
-      zipcFileWrite(epubf, buffer, length);
+      while ((length = (int)fread(buffer, 1, sizeof(buffer), fp)) > 0)
+        zipcFileWrite(epubf, buffer, length);
 
-    fclose(fp);
-    zipcFileFinish(epubf);
+      fclose(fp);
+      zipcFileFinish(epubf);
+    }
   }
+  else
+    status = -1;
+
   unlink(xhtmlfile);
 
   /* OEBPS/package.opf file */
-  zipcCreateFileWithString(epub, "OEBPS/package.opf", package_opf_string);
-
-  /* OEBPS/toc.ncx file */
-//  zipcCreateFileWithString(epub, "OEBPS/toc.ncx", toc_ncx_string);
+  status |= zipcCreateFileWithString(epub, "OEBPS/package.opf", package_opf_string);
 
   /* OEBPS/nav.xhtml file */
-  epubf = zipcCreateFile(epub, "OEBPS/nav.xhtml", 1);
-  if ((fp = fopen(toc_xhtmlfile, "r")) != NULL)
+  if ((epubf = zipcCreateFile(epub, "OEBPS/nav.xhtml", 1)) != NULL)
   {
-    char	buffer[65536];		/* Copy buffer */
-    int		length;			/* Number of bytes */
+    if ((fp = fopen(toc_xhtmlfile, "r")) != NULL)
+    {
+      char	buffer[65536];		/* Copy buffer */
+      int	length;			/* Number of bytes */
 
-    while ((length = (int)fread(buffer, 1, sizeof(buffer), fp)) > 0)
-      zipcFileWrite(epubf, buffer, length);
+      while ((length = (int)fread(buffer, 1, sizeof(buffer), fp)) > 0)
+        zipcFileWrite(epubf, buffer, length);
 
-    fclose(fp);
-    zipcFileFinish(epubf);
+      fclose(fp);
+      zipcFileFinish(epubf);
+    }
   }
+  else
+    status = -1;
+
   unlink(toc_xhtmlfile);
 
-  zipcClose(epub);
+  if (status)
+    fprintf(stderr, "mxmldoc: Unable to write \"%s\": %s\n", epubfile, zipcError(epub));
+  else if (zipcClose(epub))
+    fprintf(stderr, "mxmldoc: Unable to write \"%s\": %s\n", epubfile, strerror(errno));
 }
+#endif /* HAVE_ZLIB_H */
 
 
 /*

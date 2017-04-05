@@ -635,6 +635,8 @@ PTHREAD_FLAGS
 EGREP
 GREP
 CPP
+ZIPC
+MXML_EPUB
 ARFLAGS
 RM
 MKDIR
@@ -3963,6 +3965,10 @@ if test $ac_cv_c_long_long = yes; then
 
 fi
 
+MXML_EPUB=""
+
+ZIPC=""
+
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing gzgets" >&5
 $as_echo_n "checking for library containing gzgets... " >&6; }
 if ${ac_cv_search_gzgets+:} false; then :
@@ -4016,7 +4022,12 @@ $as_echo "$ac_cv_search_gzgets" >&6; }
 ac_res=$ac_cv_search_gzgets
 if test "$ac_res" != no; then :
   test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
-  LIBS="-lz $LIBS"
+
+	$as_echo "#define HAVE_ZLIB_H 1" >>confdefs.h
+
+	ZIPC="zipc.o"
+	MXML_EPUB="mxml.epub"
+	LIBS="-lz $LIBS"
 fi
 
 

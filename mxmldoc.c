@@ -23,6 +23,7 @@
 #include "zipc.h"
 #include <time.h>
 #include <sys/stat.h>
+#include <limits.h>
 #ifndef WIN32
 #  include <dirent.h>
 #  include <unistd.h>
@@ -5086,6 +5087,7 @@ write_man(const char  *man_name,	/* I - Name of manpage */
   char		prefix;			/* Prefix character */
   time_t	curtime;		/* Current time */
   struct tm	*curdate;		/* Current date */
+  char		*source_date_epoch;     /* ENV string */
   char		buffer[1024];		/* String buffer */
   static const char * const scopes[] =	/* Scope strings */
 		{
@@ -5099,7 +5101,33 @@ write_man(const char  *man_name,	/* I - Name of manpage */
   * Standard man page...
   */
 
-  curtime = time(NULL);
+  source_date_epoch = getenv("SOURCE_DATE_EPOCH");
+  if (source_date_epoch) {
+    char *endptr;
+    unsigned long long epoch;
+    errno = 0;
+    epoch = strtoull(source_date_epoch, &endptr, 10);
+    if ((errno == ERANGE && (epoch == ULLONG_MAX || epoch == 0))
+              || (errno != 0 && epoch == 0)) {
+      fprintf(stderr, "Environment variable $SOURCE_DATE_EPOCH: strtoull: %s\n", strerror(errno));
+      exit(EXIT_FAILURE);
+    }
+    if (endptr == source_date_epoch) {
+      fprintf(stderr, "Environment variable $SOURCE_DATE_EPOCH: No digits were found: %s\n", endptr);
+      exit(EXIT_FAILURE);
+    }
+    if (*endptr != '\0') {
+      fprintf(stderr, "Environment variable $SOURCE_DATE_EPOCH: Trailing garbage: %s\n", endptr);
+      exit(EXIT_FAILURE);
+    }
+    if (epoch > ULONG_MAX) {
+      fprintf(stderr, "Environment variable $SOURCE_DATE_EPOCH: value must be smaller than or equal to %lu but was found to be: %llu \n", ULONG_MAX, epoch);
+      exit(EXIT_FAILURE);
+    }
+    curtime = epoch;
+  } else {
+    curtime = time(NULL);
+  }
   curdate = localtime(&curtime);
   strftime(buffer, sizeof(buffer), "%x", curdate);
 

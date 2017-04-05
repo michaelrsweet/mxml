@@ -117,7 +117,9 @@ if test $ac_cv_c_long_long = yes; then
 fi
 
 dnl EPUB support (via libz and zipc)
-AC_SEARCH_LIBS(gzgets,z,[LIBS="-lz $LIBS"])
+AC_SEARCH_LIBS(gzgets,z,[
+	AC_DEFINE(HAVE_ZLIB_H)
+	LIBS="-lz $LIBS"])
 
 dnl Threading support
 AC_ARG_ENABLE(threads, [  --enable-threads        enable multi-threading support])

@@ -622,7 +622,7 @@ main(int  argc,				/* I - Number of command-line args */
         break;
 
     case OUTPUT_TOKENS :
-	fputs("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+	fputs("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
 	      "<Tokens version=\"1.0\">\n", stdout);
 
 	write_tokens(stdout, mxmldoc, path);
@@ -3274,7 +3274,7 @@ write_description(
       else if (*ptr & 128)
       {
        /*
-        * Convert UTF-8 to Unicode constant...
+        * Convert utf-8 to Unicode constant...
         */
 
         int	ch;			/* Unicode character */
@@ -3422,14 +3422,14 @@ write_epub(const char  *section,	/* I - Section */
   zipc_file_t	*epubf;			/* File in EPUB ZIP container */
   char		xhtmlfile[1024],	/* XHTML output filename */
 		*xhtmlptr;		/* Pointer into output filename */
-  mxml_node_t	*content_opf,		/* content.opf file */
+  mxml_node_t	*package_opf,		/* package_opf file */
                 *package,		/* package node */
                 *metadata,		/* metadata node */
                 *manifest,		/* manifest node */
                 *spine,			/* spine node */
                 *temp;			/* Other (leaf) node */
   char		identifier[256],	/* dc:identifier string */
-		*content_opf_string;	/* content.opf file as a string */
+		*package_opf_string;	/* package_opf file as a string */
   toc_t		*toc;			/* Table of contents */
   toc_entry_t	*tentry;		/* Current table of contents */
   mxml_node_t	*toc_ncx,		/* toc.ncx file */
@@ -3450,7 +3450,7 @@ write_epub(const char  *section,	/* I - Section */
 		"<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
                 "<container xmlns=\"urn:oasis:names:tc:opendocument:xmlns:container\" version=\"1.0\">\n"
                 "  <rootfiles>\n"
-                "    <rootfile full-path=\"OEBPS/content.opf\" media-type=\"application/oebps-package+xml\"/>\n"
+                "    <rootfile full-path=\"OEBPS/package.opf\" media-type=\"application/oebps-package+xml\"/>\n"
                 "  </rootfiles>\n"
                 "</container>\n";
 
@@ -3762,7 +3762,7 @@ write_epub(const char  *section,	/* I - Section */
   fclose(fp);
 
  /*
-  * Now make the content.opf file...
+  * Now make the package_opf file...
   */
 
   if ((epubptr = strrchr(epubfile, '/')) != NULL)
@@ -3773,9 +3773,9 @@ write_epub(const char  *section,	/* I - Section */
   if ((epubptr = strstr(epubbase, ".epub")) != NULL)
     *epubptr = '\0';
 
-  content_opf = mxmlNewXML("1.0");
+  package_opf = mxmlNewXML("1.0");
 
-  package = mxmlNewElement(content_opf, "package");
+  package = mxmlNewElement(package_opf, "package");
   mxmlElementSetAttr(package, "xmlns", "http://www.idpf.org/2007/opf");
   mxmlElementSetAttr(package, "unique-identifier", epubbase);
   mxmlElementSetAttr(package, "version", "3.0");
@@ -3810,14 +3810,14 @@ write_epub(const char  *section,	/* I - Section */
 
     manifest = mxmlNewElement(package, "manifest");
 
-      temp = mxmlNewElement(manifest, "item");
-      mxmlElementSetAttr(temp, "id", "ncx");
-      mxmlElementSetAttr(temp, "href", "toc.ncx");
-      mxmlElementSetAttr(temp, "media-type", "application/x-dtbncx+xml");
+//      temp = mxmlNewElement(manifest, "item");
+//      mxmlElementSetAttr(temp, "id", "ncx");
+//      mxmlElementSetAttr(temp, "href", "toc.ncx");
+//      mxmlElementSetAttr(temp, "media-type", "application/x-dtbncx+xml");
 
       temp = mxmlNewElement(manifest, "item");
-      mxmlElementSetAttr(temp, "id", "toc");
-      mxmlElementSetAttr(temp, "href", "toc.xhtml");
+      mxmlElementSetAttr(temp, "id", "nav");
+      mxmlElementSetAttr(temp, "href", "nav.xhtml");
       mxmlElementSetAttr(temp, "media-type", "application/xhtml+xml");
       mxmlElementSetAttr(temp, "properties", "nav");
 
@@ -3829,12 +3829,12 @@ write_epub(const char  *section,	/* I - Section */
 //        <item id="imgl" href="images/sample.png" media-type="image/png" />
 
     spine = mxmlNewElement(package, "spine");
-    mxmlElementSetAttr(spine, "toc", "ncx");
+//    mxmlElementSetAttr(spine, "toc", "ncx");
 
       temp = mxmlNewElement(spine, "itemref");
       mxmlElementSetAttr(temp, "idref", "body");
 
-  content_opf_string = mxmlSaveAllocString(content_opf, epub_ws_cb);
+  package_opf_string = mxmlSaveAllocString(package_opf, epub_ws_cb);
 
  /*
   * Make the toc.ncx file...
@@ -3970,14 +3970,14 @@ write_epub(const char  *section,	/* I - Section */
   }
   unlink(xhtmlfile);
 
-  /* OEBPS/content.opf file */
-  zipcCreateFileWithString(epub, "OEBPS/content.opf", content_opf_string);
+  /* OEBPS/package.opf file */
+  zipcCreateFileWithString(epub, "OEBPS/package.opf", package_opf_string);
 
   /* OEBPS/toc.ncx file */
-  zipcCreateFileWithString(epub, "OEBPS/toc.ncx", toc_ncx_string);
+//  zipcCreateFileWithString(epub, "OEBPS/toc.ncx", toc_ncx_string);
 
-  /* OEBPS/toc.xhtml file */
-  epubf = zipcCreateFile(epub, "OEBPS/toc.xhtml", 1);
+  /* OEBPS/nav.xhtml file */
+  epubf = zipcCreateFile(epub, "OEBPS/nav.xhtml", 1);
   if ((fp = fopen(toc_xhtmlfile, "r")) != NULL)
   {
     char	buffer[65536];		/* Copy buffer */
@@ -4370,7 +4370,7 @@ write_html(const char  *section,	/* I - Section */
       return;
     }
 
-    fputs("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+    fputs("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
           "<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">\n"
           "<plist version=\"1.0\">\n"
           "<dict>\n"
@@ -4425,7 +4425,7 @@ write_html(const char  *section,	/* I - Section */
       return;
     }
 
-    fputs("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+    fputs("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
           "<DocSetNodes version=\"1.0\">\n"
 	  "<TOC>\n"
 	  "<Node id=\"0\">\n"
@@ -4457,7 +4457,7 @@ write_html(const char  *section,	/* I - Section */
       return;
     }
 
-    fputs("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+    fputs("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
           "<Tokens version=\"1.0\">\n", out);
 
     write_tokens(out, doc, "index.html");
@@ -5781,7 +5781,7 @@ write_string(FILE       *out,		/* I - Output file */
           else if (*s & 128)
           {
            /*
-            * Convert UTF-8 to Unicode constant...
+            * Convert utf-8 to Unicode constant...
             */
 
             int	ch;			/* Unicode character */

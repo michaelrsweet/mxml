@@ -45,10 +45,10 @@
 
 
 /*
- * Do we have libarchive's archive.h header?
+ * Do we have <zlib.h>?
  */
 
-#undef HAVE_ARCHIVE_H
+#undef HAVE_ZLIB_H
 
 
 /*

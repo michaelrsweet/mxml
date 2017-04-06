@@ -1,16 +1,18 @@
-<h1>Mini-XML API Reference</h1>
+      <h1>Mini-XML API Reference</h1>
 
-<div class='summary'><table>
-<thead>
-<tr>
-	<th>Header</th>
-	<th>mxml.h</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-	<th>Library</th>
-	<td>-lmxml</td>
-</tr>
-</tbody>
-</table></div>
+      <div class='summary'>
+        <table>
+          <thead>
+            <tr>
+              <th>Header</th>
+              <th>mxml.h</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th>Library</th>
+              <td>-lmxml</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>

@@ -348,9 +348,10 @@ testmxml.o:	mxml.h
 mxml.xml:	mxmldoc-static mxml.h $(PUBLIBOBJS:.o=.c)
 	echo Generating API documentation...
 	$(RM) mxml.xml
-	./mxmldoc-static --header doc/reference.heading \
+	./mxmldoc-static --header doc/reference.header \
 		--docversion @VERSION@ --author "Michael R Sweet" \
 		--copyright "Copyright 2003-2017, All Rights Reserved." \
+		--title "Mini-XML API Reference" \
 		mxml.xml mxml.h $(PUBLIBOBJS:.o=.c) >doc/reference.html
 	./mxmldoc-static --man mxml --title "Mini-XML API" \
 		--intro doc/intro.man --footer doc/footer.man \

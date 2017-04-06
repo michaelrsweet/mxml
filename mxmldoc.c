@@ -160,8 +160,7 @@ typedef struct
  */
 
 static void		add_toc(toc_t *toc, int level, const char *anchor, const char *title);
-static mxml_node_t	*add_variable(mxml_node_t *parent, const char *name,
-			              mxml_node_t *type);
+static mxml_node_t	*add_variable(mxml_node_t *parent, const char *name, mxml_node_t *type);
 static toc_t		*build_toc(mxml_node_t *doc, const char *introfile);
 static mxml_node_t	*find_public(mxml_node_t *node, mxml_node_t *top, const char *element, const char *name);
 static void		free_toc(toc_t *toc);
@@ -172,39 +171,23 @@ static mxml_type_t	load_cb(mxml_node_t *node);
 static mxml_node_t	*new_documentation(mxml_node_t **mxmldoc);
 static int		remove_directory(const char *path);
 static void		safe_strcpy(char *dst, const char *src);
-static int		scan_file(const char *filename, FILE *fp,
-			          mxml_node_t *doc);
+static int		scan_file(const char *filename, FILE *fp, mxml_node_t *doc);
 static void		sort_node(mxml_node_t *tree, mxml_node_t *func);
-static void		update_comment(mxml_node_t *parent,
-			               mxml_node_t *comment);
+static void		update_comment(mxml_node_t *parent, mxml_node_t *comment);
 static void		usage(const char *option);
-static void		write_description(FILE *out, mxml_node_t *description,
-			                  const char *element, int summary);
-static void		write_element(FILE *out, mxml_node_t *doc,
-			              mxml_node_t *element, int mode);
-static void		write_epub(const char *section, const char *title, const char *author, const char *copyright, const char *docversion, const char *footerfile, const char *headerfile, const char *introfile, const char *cssfile, const char *epubfile, mxml_node_t *doc);
+static void		write_description(FILE *out, mxml_node_t *description, const char *element, int summary);
+static void		write_element(FILE *out, mxml_node_t *doc, mxml_node_t *element, int mode);
+static void		write_epub(const char *epubfile, const char *section, const char *title, const char *author, const char *copyright, const char *docversion, const char *cssfile, const char *headerfile, const char *introfile, mxml_node_t *doc, const char *footerfile);
 static void		write_file(FILE *out, const char *file, int mode);
 static void		write_function(FILE *out, int xhtml, mxml_node_t *doc, mxml_node_t *function, int level);
-static void		write_html(const char *section, const char *title,
-			           const char *footerfile,
-			           const char *headerfile,
-				   const char *introfile, const char *cssfile,
-				   const char *framefile,
-				   const char *docset, const char *docversion,
-				   const char *feedname, const char *feedurl,
-				   mxml_node_t *doc);
-static void		write_html_head(FILE *out, int xhtml, const char *section, const char *title, const char *cssfile);
-static void		write_man(const char *man_name, const char *section,
-			          const char *title, const char *headerfile,
-				  const char *footerfile, const char *introfile,
-				  mxml_node_t *doc);
+static void		write_html(const char *framefile, const char *docset, const char *section, const char *title, const char *author, const char *copyright, const char *docversion, const char *feedname, const char *feedurl, const char *cssfile, const char *headerfile, const char *introfile, mxml_node_t *doc, const char *footerfile);
+static void		write_html_body(FILE *out, int mode, const char *introfile, mxml_node_t *doc);
+static void		write_html_head(FILE *out, int mode, const char *section, const char *title, const char *author, const char *copyright, const char *cssfile);
+static void		write_html_toc(FILE *out, const char *title, toc_t *toc, const char  *filename, const char  *target);
+static void		write_man(const char *man_name, const char *section, const char *title, const char *author, const char *copyright, const char *headerfile, const char *introfile, mxml_node_t *doc, const char *footerfile);
 static void		write_scu(FILE *out, int xhtml, mxml_node_t *doc, mxml_node_t *scut);
 static void		write_string(FILE *out, const char *s, int mode);
-static void		write_toc(FILE *out, mxml_node_t *doc,
-			          const char *introfile, const char *target,
-				  int xml);
-static void		write_tokens(FILE *out, mxml_node_t *doc,
-			             const char *path);
+static void		write_tokens(FILE *out, mxml_node_t *doc, const char *path);
 static const char	*ws_cb(mxml_node_t *node, int where);
 
 
@@ -605,7 +588,7 @@ main(int  argc,				/* I - Number of command-line args */
         */
 
 #ifdef HAVE_ZLIB_H
-        write_epub(section, title ? title : "Documentation", author ? author : "Unknown", copyright ? copyright : "Unknown", docversion ? docversion : "0.0", footerfile, headerfile, introfile, cssfile, epubfile, mxmldoc);
+        write_epub(epubfile, section, title ? title : "Documentation", author ? author : "Unknown", copyright ? copyright : "Unknown", docversion ? docversion : "0.0", cssfile, headerfile, introfile, mxmldoc, footerfile);
 #else
         fputs("mxmldoc: Sorry, not compiled with EPUB support.\n", stderr);
 #endif /* HAVE_ZLIB_H */
@@ -616,7 +599,7 @@ main(int  argc,				/* I - Number of command-line args */
         * Write HTML documentation...
         */
 
-        write_html(section, title ? title : "Documentation", footerfile, headerfile, introfile, cssfile, framefile, docset, docversion ? docversion : "0.0", feedname, feedurl, mxmldoc);
+        write_html(framefile, docset, section, title ? title : "Documentation", author ? author : "Unknown", copyright ? copyright : "Unknown", docversion ? docversion : "0.0", feedname, feedurl, cssfile, headerfile, introfile, mxmldoc, footerfile);
         break;
 
     case OUTPUT_MAN :
@@ -624,8 +607,7 @@ main(int  argc,				/* I - Number of command-line args */
         * Write manpage documentation...
         */
 
-        write_man(name, section, title, footerfile, headerfile, introfile,
-	          mxmldoc);
+        write_man(name, section, title, author ? author : "Unknown", copyright ? copyright : "Unknown", headerfile, introfile, mxmldoc, footerfile);
         break;
 
     case OUTPUT_TOKENS :
@@ -3200,7 +3182,7 @@ write_description(
     ptr += 2;
 
   if (element && *element)
-    fprintf(out, "<%s class=\"%s\">", element,
+    fprintf(out, "        <%s class=\"%s\">", element,
             summary ? "description" : "discussion");
   else if (!summary)
     fputs(".PP\n", out);
@@ -3403,28 +3385,21 @@ write_element(FILE        *out,		/* I - Output file */
  */
 
 static void
-write_epub(const char  *section,	/* I - Section */
+write_epub(const char  *epubfile,	/* I - EPUB file (output) */
+           const char  *section,	/* I - Section */
            const char  *title,		/* I - Title */
            const char  *author,		/* I - Author */
            const char  *copyright,	/* I - Copyright */
            const char  *docversion,	/* I - Document version */
-           const char  *footerfile,	/* I - Footer file */
+           const char  *cssfile,	/* I - Stylesheet file */
            const char  *headerfile,	/* I - Header file */
            const char  *introfile,	/* I - Intro file */
-           const char  *cssfile,	/* I - Stylesheet file */
-           const char  *epubfile,	/* I - EPUB file (output) */
-           mxml_node_t *doc)		/* I - XML documentation */
+           mxml_node_t *doc,		/* I - XML documentation */
+           const char  *footerfile)	/* I - Footer file */
 {
   int		status = 0;		/* Write status */
   size_t	i;			/* Looping var */
   FILE		*fp;			/* Output file */
-  mxml_node_t	*function,		/* Current function */
-		*scut,			/* Struct/class/union/typedef */
-		*arg,			/* Current argument */
-		*description,		/* Description of function/var */
-		*type;			/* Type for argument */
-  const char	*name,			/* Name of function/type */
-		*defval;		/* Default value */
   char		epubbase[256],		/* Base name of EPUB file (identifier) */
 		*epubptr;		/* Pointer into base name */
   zipc_t	*epub;			/* EPUB ZIP container */
@@ -3469,9 +3444,7 @@ write_epub(const char  *section,	/* I - Section */
   * Standard header...
   */
 
-  write_html_head(fp, 1, section, title, cssfile);
-
-  fputs("<div class=\"body\">\n", fp);
+  write_html_head(fp, OUTPUT_EPUB, section, title, author, copyright, cssfile);
 
  /*
   * Header...
@@ -3491,250 +3464,18 @@ write_epub(const char  *section,	/* I - Section */
     * Use standard header...
     */
 
-    fputs("<h1 class=\"title\">", fp);
+    fputs("    <h1 class=\"title\">", fp);
     write_string(fp, title, OUTPUT_EPUB);
     fputs("</h1>\n", fp);
   }
 
  /*
-  * Intro...
+  * Body...
   */
 
-  if (introfile)
-    write_file(fp, introfile, OUTPUT_EPUB);
+  fputs("    <div class=\"body\">\n", fp);
 
- /*
-  * List of classes...
-  */
-
-  if ((scut = find_public(doc, doc, "class", NULL)) != NULL)
-  {
-    fputs("<h2 class=\"title\" id=\"CLASSES\">Classes</h2>\n", fp);
-
-    while (scut)
-    {
-      write_scu(fp, 1, doc, scut);
-
-      scut = find_public(scut, doc, "class", NULL);
-    }
-  }
-
- /*
-  * List of functions...
-  */
-
-  if ((function = find_public(doc, doc, "function", NULL)) != NULL)
-  {
-    fputs("<h2 class=\"title\" id=\"FUNCTIONS\">Functions</h2>\n", fp);
-
-    while (function)
-    {
-      write_function(fp, 1, doc, function, 3);
-
-      function = find_public(function, doc, "function", NULL);
-    }
-  }
-
- /*
-  * List of types...
-  */
-
-  if ((scut = find_public(doc, doc, "typedef", NULL)) != NULL)
-  {
-    fputs("<h2 class=\"title\" id=\"TYPES\">Data Types</h2>\n", fp);
-
-    while (scut)
-    {
-      name        = mxmlElementGetAttr(scut, "name");
-      description = mxmlFindElement(scut, scut, "description", NULL,
-                                    NULL, MXML_DESCEND_FIRST);
-      fprintf(fp, "<h3 class=\"typedef\" id=\"%s\">%s%s</h3>\n", name, get_comment_info(description), name);
-
-      if (description)
-	write_description(fp, description, "p", 1);
-
-      fputs("<p class=\"code\">\n"
-	    "typedef ", fp);
-
-      type = mxmlFindElement(scut, scut, "type", NULL, NULL, MXML_DESCEND_FIRST);
-
-      for (type = type->child; type; type = type->next)
-        if (!strcmp(type->value.text.string, "("))
-	  break;
-	else
-	{
-	  if (type->value.text.whitespace)
-	    putc(' ', fp);
-
-	  if (find_public(doc, doc, "class", type->value.text.string) ||
-	      find_public(doc, doc, "enumeration", type->value.text.string) ||
-	      find_public(doc, doc, "struct", type->value.text.string) ||
-	      find_public(doc, doc, "typedef", type->value.text.string) ||
-	      find_public(doc, doc, "union", type->value.text.string))
-	  {
-            fputs("<a href=\"#", fp);
-            write_string(fp, type->value.text.string, OUTPUT_EPUB);
-	    fputs("\">", fp);
-            write_string(fp, type->value.text.string, OUTPUT_EPUB);
-	    fputs("</a>", fp);
-	  }
-	  else
-            write_string(fp, type->value.text.string, OUTPUT_EPUB);
-        }
-
-      if (type)
-      {
-       /*
-        * Output function type...
-	*/
-
-        if (type->prev && type->prev->value.text.string[0] != '*')
-	  putc(' ', fp);
-
-        fprintf(fp, "(*%s", name);
-
-	for (type = type->next->next; type; type = type->next)
-	{
-	  if (type->value.text.whitespace)
-	    putc(' ', fp);
-
-	  if (find_public(doc, doc, "class", type->value.text.string) ||
-	      find_public(doc, doc, "enumeration", type->value.text.string) ||
-	      find_public(doc, doc, "struct", type->value.text.string) ||
-	      find_public(doc, doc, "typedef", type->value.text.string) ||
-	      find_public(doc, doc, "union", type->value.text.string))
-	  {
-            fputs("<a href=\"#", fp);
-            write_string(fp, type->value.text.string, OUTPUT_EPUB);
-	    fputs("\">", fp);
-            write_string(fp, type->value.text.string, OUTPUT_EPUB);
-	    fputs("</a>", fp);
-	  }
-	  else
-            write_string(fp, type->value.text.string, OUTPUT_EPUB);
-        }
-
-        fputs(";\n", fp);
-      }
-      else
-      {
-	type = mxmlFindElement(scut, scut, "type", NULL, NULL,
-			       MXML_DESCEND_FIRST);
-        if (type->last_child->value.text.string[0] != '*')
-	  putc(' ', fp);
-
-	fprintf(fp, "%s;\n", name);
-      }
-
-      fputs("</p>\n", fp);
-
-      scut = find_public(scut, doc, "typedef", NULL);
-    }
-  }
-
- /*
-  * List of structures...
-  */
-
-  if ((scut = find_public(doc, doc, "struct", NULL)) != NULL)
-  {
-    fputs("<h2 class=\"title\" id=\"STRUCTURES\">Structures</h2>\n", fp);
-
-    while (scut)
-    {
-      write_scu(fp, 1, doc, scut);
-
-      scut = find_public(scut, doc, "struct", NULL);
-    }
-  }
-
- /*
-  * List of unions...
-  */
-
-  if ((scut = find_public(doc, doc, "union", NULL)) != NULL)
-  {
-    fputs("<h2 class=\"title\" id=\"UNIONS\">Unions</h2>\n", fp);
-
-    while (scut)
-    {
-      write_scu(fp, 1, doc, scut);
-
-      scut = find_public(scut, doc, "union", NULL);
-    }
-  }
-
- /*
-  * Variables...
-  */
-
-  if ((arg = find_public(doc, doc, "variable", NULL)) != NULL)
-  {
-    fputs("<h2 class=\"title\" id=\"VARIABLES\">Variables</h2>\n", fp);
-
-    while (arg)
-    {
-      name        = mxmlElementGetAttr(arg, "name");
-      description = mxmlFindElement(arg, arg, "description", NULL,
-                                    NULL, MXML_DESCEND_FIRST);
-      fprintf(fp, "<h3 class=\"variable\" id=\"%s\">%s%s</h3>\n", name, get_comment_info(description), name);
-
-      if (description)
-	write_description(fp, description, "p", 1);
-
-      fputs("<p class=\"code\">", fp);
-
-      write_element(fp, doc, mxmlFindElement(arg, arg, "type", NULL, NULL, MXML_DESCEND_FIRST), OUTPUT_EPUB);
-      fputs(mxmlElementGetAttr(arg, "name"), fp);
-      if ((defval = mxmlElementGetAttr(arg, "default")) != NULL)
-	fprintf(fp, " %s", defval);
-      fputs(";</p>\n", fp);
-
-      arg = find_public(arg, doc, "variable", NULL);
-    }
-  }
-
- /*
-  * List of enumerations...
-  */
-
-  if ((scut = find_public(doc, doc, "enumeration", NULL)) != NULL)
-  {
-    fputs("<h2 class=\"title\" id=\"ENUMERATIONS\">Constants</h2>\n", fp);
-
-    while (scut)
-    {
-      name        = mxmlElementGetAttr(scut, "name");
-      description = mxmlFindElement(scut, scut, "description", NULL,
-                                    NULL, MXML_DESCEND_FIRST);
-      fprintf(fp, "<h3 class=\"enumeration\" id=\"%s\">%s%s</h3>\n", name, get_comment_info(description), name);
-
-      if (description)
-	write_description(fp, description, "p", 1);
-
-      fputs("<h4 class=\"constants\">Constants</h4>\n"
-            "<dl>\n", fp);
-
-      for (arg = mxmlFindElement(scut, scut, "constant", NULL, NULL,
-                        	 MXML_DESCEND_FIRST);
-	   arg;
-	   arg = mxmlFindElement(arg, scut, "constant", NULL, NULL,
-                        	 MXML_NO_DESCEND))
-      {
-	description = mxmlFindElement(arg, arg, "description", NULL,
-                                      NULL, MXML_DESCEND_FIRST);
-	fprintf(fp, "<dt>%s %s</dt>\n",
-	        mxmlElementGetAttr(arg, "name"), get_comment_info(description));
-
-	write_description(fp, description, "dd", 1);
-	write_description(fp, description, "dd", 0);
-      }
-
-      fputs("</dl>\n", fp);
-
-      scut = find_public(scut, doc, "enumeration", NULL);
-    }
-  }
+  write_html_body(fp, OUTPUT_EPUB, introfile, doc);
 
  /*
   * Footer...
@@ -3749,8 +3490,8 @@ write_epub(const char  *section,	/* I - Section */
     write_file(fp, footerfile, OUTPUT_EPUB);
   }
 
-  fputs("</div>\n"
-        "</body>\n"
+  fputs("    </div>\n"
+        "  </body>\n"
         "</html>\n", fp);
 
  /*
@@ -4141,30 +3882,32 @@ write_function(FILE        *out,	/* I - Output file */
  */
 
 static void
-write_html(const char  *section,	/* I - Section */
-	   const char  *title,		/* I - Title */
-	   const char  *footerfile,	/* I - Footer file */
-	   const char  *headerfile,	/* I - Header file */
-	   const char  *introfile,	/* I - Intro file */
-	   const char  *cssfile,	/* I - Stylesheet file */
-	   const char  *framefile,	/* I - Framed HTML basename */
+write_html(const char  *framefile,	/* I - Framed HTML basename */
 	   const char  *docset,		/* I - Documentation set directory */
+	   const char  *section,	/* I - Section */
+	   const char  *title,		/* I - Title */
+           const char  *author,		/* I - Author's name */
+           const char  *copyright,	/* I - Copyright string */
 	   const char  *docversion,	/* I - Documentation set version */
 	   const char  *feedname,	/* I - Feed name for doc set */
 	   const char  *feedurl,	/* I - Feed URL for doc set */
-	   mxml_node_t *doc)		/* I - XML documentation */
+	   const char  *cssfile,	/* I - Stylesheet file */
+	   const char  *headerfile,	/* I - Header file */
+	   const char  *introfile,	/* I - Intro file */
+	   mxml_node_t *doc,		/* I - XML documentation */
+           const char  *footerfile)	/* I - Footer file */
 {
   FILE		*out;			/* Output file */
-  mxml_node_t	*function,		/* Current function */
-		*scut,			/* Struct/class/union/typedef */
-		*arg,			/* Current argument */
-		*description,		/* Description of function/var */
-		*type;			/* Type for argument */
-  const char	*name,			/* Name of function/type */
-		*defval,		/* Default value */
-		*basename;		/* Base filename for framed output */
+  const char	*basename;		/* Base filename for framed output */
   char		filename[1024];		/* Current output filename */
+  toc_t		*toc;			/* Table of contents */
 
+
+ /*
+  * Create the table-of-contents entries...
+  */
+
+  toc = build_toc(doc, introfile);
 
   if (framefile)
   {
@@ -4195,33 +3938,39 @@ write_html(const char  *section,	/* I - Section */
 
     fputs("<!doctype html>\n"
           "<html>\n"
-          "<head>\n"
-	  "\t<title>", out);
+          "  <head>\n"
+	  "    <title>", out);
     write_string(out, title, OUTPUT_HTML);
     fputs("</title>\n", out);
 
     if (section)
-      fprintf(out, "\t<meta name=\"keywords\" content=\"%s\">\n", section);
+      fprintf(out, "    <meta name=\"keywords\" content=\"%s\">\n", section);
 
-    fputs("\t<meta http-equiv=\"Content-Type\" "
+    fputs("    <meta http-equiv=\"Content-Type\" "
           "content=\"text/html;charset=utf-8\">\n"
           "\t<meta name=\"creator\" content=\"" MXML_VERSION "\">\n"
-          "</head>\n", out);
+          "\t<meta name=\"author\" content=\"", out);
+    write_string(out, author, OUTPUT_HTML);
+    fputs("\">\n"
+          "    <meta name=\"copyright\" content=\"", out);
+    write_string(out, copyright, OUTPUT_HTML);
+    fputs("\">\n"
+          "  </head>\n", out);
 
-    fputs("<frameset cols=\"250,*\">\n", out);
-    fprintf(out, "<frame src=\"%s-toc.html\">\n", basename);
-    fprintf(out, "<frame name=\"body\" src=\"%s-body.html\">\n", basename);
-    fputs("</frameset>\n"
-          "<noframes>\n"
-	  "<h1>", out);
+    fputs("  <frameset cols=\"250,*\">\n", out);
+    fprintf(out, "    <frame src=\"%s-toc.html\">\n", basename);
+    fprintf(out, "    <frame name=\"body\" src=\"%s-body.html\">\n", basename);
+    fputs("  </frameset>\n"
+          "  <noframes>\n"
+	  "    <h1>", out);
     write_string(out, title, OUTPUT_HTML);
     fprintf(out,
             "</h1>\n"
-            "<ul>\n"
-	    "\t<li><a href=\"%s-toc.html\">Table of Contents</a></li>\n"
-	    "\t<li><a href=\"%s-body.html\">Body</a></li>\n"
-	    "</ul>\n", basename, basename);
-    fputs("</noframes>\n"
+            "    <ul>\n"
+	    "      <li><a href=\"%s-toc.html\">Table of Contents</a></li>\n"
+	    "      <li><a href=\"%s-body.html\">Body</a></li>\n"
+	    "    </ul>\n", basename, basename);
+    fputs("  </noframes>\n"
           "</html>\n", out);
     fclose(out);
 
@@ -4238,20 +3987,13 @@ write_html(const char  *section,	/* I - Section */
       return;
     }
 
-    write_html_head(out, 0, section, title, cssfile);
+    write_html_head(out, OUTPUT_HTML, section, title, author, copyright, cssfile);
 
     snprintf(filename, sizeof(filename), "%s-body.html", basename);
 
-    fputs("<div class=\"contents\">\n", out);
-    fprintf(out, "<h1 class=\"title\"><a href=\"%s\" target=\"body\">",
-            filename);
-    write_string(out, title, OUTPUT_HTML);
-    fputs("</a></h1>\n", out);
+    write_html_toc(out, title, toc, filename, "body");
 
-    write_toc(out, doc, introfile, filename, 0);
-
-    fputs("</div>\n"
-          "</body>\n"
+    fputs("  </body>\n"
           "</html>\n", out);
     fclose(out);
 
@@ -4277,7 +4019,11 @@ write_html(const char  *section,	/* I - Section */
 
 #ifdef __APPLE__
     const char	*id;			/* Identifier */
-
+    size_t	i;			/* Looping var */
+    toc_entry_t	*tentry;		/* Current table of contents */
+    int		toc_level;		/* Current table-of-contents level */
+    int		xmlid = 1;		/* Current XML node ID */
+    const char	*indent;		/* Indentation */
 
     if (!access(docset, 0) && !remove_directory(docset))
       return;
@@ -4338,41 +4084,41 @@ write_html(const char  *section,	/* I - Section */
     fputs("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
           "<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">\n"
           "<plist version=\"1.0\">\n"
-          "<dict>\n"
-	  "\t<key>CFBundleIdentifier</key>\n"
-	  "\t<string>", out);
+          "  <dict>\n"
+	  "    <key>CFBundleIdentifier</key>\n"
+	  "    <string>", out);
     write_string(out, id, OUTPUT_HTML);
     fputs("</string>\n"
-          "\t<key>CFBundleName</key>\n"
-	  "\t<string>", out);
+          "    <key>CFBundleName</key>\n"
+	  "    <string>", out);
     write_string(out, title, OUTPUT_HTML);
     fputs("</string>\n"
-          "\t<key>CFBundleVersion</key>\n"
-	  "\t<string>", out);
+          "    <key>CFBundleVersion</key>\n"
+	  "    <string>", out);
     write_string(out, docversion ? docversion : "0.0", OUTPUT_HTML);
     fputs("</string>\n"
-          "\t<key>CFBundleShortVersionString</key>\n"
-	  "\t<string>", out);
+          "    <key>CFBundleShortVersionString</key>\n"
+	  "    <string>", out);
     write_string(out, docversion ? docversion : "0.0", OUTPUT_HTML);
     fputs("</string>\n", out);
 
     if (feedname)
     {
-      fputs("\t<key>DocSetFeedName</key>\n"
-	    "\t<string>", out);
+      fputs("    <key>DocSetFeedName</key>\n"
+	    "    <string>", out);
       write_string(out, feedname ? feedname : title, OUTPUT_HTML);
       fputs("</string>\n", out);
     }
 
     if (feedurl)
     {
-      fputs("\t<key>DocSetFeedURL</key>\n"
-	    "\t<string>", out);
+      fputs("    <key>DocSetFeedURL</key>\n"
+	    "    <string>", out);
       write_string(out, feedurl, OUTPUT_HTML);
       fputs("</string>\n", out);
     }
 
-    fputs("</dict>\n"
+    fputs("  </dict>\n"
           "</plist>\n", out);
 
     fclose(out);
@@ -4392,19 +4138,50 @@ write_html(const char  *section,	/* I - Section */
 
     fputs("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
           "<DocSetNodes version=\"1.0\">\n"
-	  "<TOC>\n"
-	  "<Node id=\"0\">\n"
-	  "<Name>", out);
+	  "  <TOC>\n"
+	  "    <Node id=\"0\">\n"
+	  "      <Name>", out);
     write_string(out, title, OUTPUT_HTML);
-    fputs("</Name>\n"
-          "<Path>Documentation/index.html</Path>\n"
-	  "<Subnodes>\n", out);
+    fputs("      </Name>\n"
+          "      <Path>Documentation/index.html</Path>\n"
+	  "      <Subnodes>\n", out);
 
-    write_toc(out, doc, introfile, NULL, 1);
+    for (i = 0, tentry = toc->entries, toc_level = 1; i < toc->num_entries; i ++, tentry ++)
+    {
+      if (tentry->level > toc_level)
+      {
+        toc_level = tentry->level;
+      }
+      else if (tentry->level < toc_level)
+      {
+        fputs("        </Subnodes>\n"
+              "      </Node>\n", out);
+        toc_level = tentry->level;
+      }
 
-    fputs("</Subnodes>\n"
-          "</Node>\n"
-          "</TOC>\n"
+      indent = toc_level == 2 ? "            " : "      ";
+
+      fprintf(out, "%s<Node id=\"%d\">\n"
+                   "%s  <Path>Documentation/index.html</Path>\n"
+                   "%s  <Anchor>%s</Anchor>\n"
+                   "%s  <Name>", indent, xmlid ++, indent, indent, tentry->anchor, indent);
+      write_string(out, tentry->title, OUTPUT_HTML);
+
+      if ((i + 1) < toc->num_entries && tentry[1].level > toc_level)
+        fprintf(out, "</Name>\n"
+                     "%s  <Subnodes>\n", indent);
+      else
+        fprintf(out, "</Name>\n"
+                     "%s</Node>\n", indent);
+    }
+
+    if (toc_level == 2)
+      fputs("        </Subnodes>\n"
+            "      </Node>\n", out);
+
+    fputs("      </Subnodes>\n"
+          "    </Node>\n"
+          "  </TOC>\n"
           "</DocSetNodes>\n", out);
 
     fclose(out);
@@ -4457,9 +4234,7 @@ write_html(const char  *section,	/* I - Section */
   * Standard header...
   */
 
-  write_html_head(out, 0, section, title, cssfile);
-
-  fputs("<div class='body'>\n", out);
+  write_html_head(out, OUTPUT_HTML, section, title, author, copyright, cssfile);
 
  /*
   * Header...
@@ -4479,7 +4254,7 @@ write_html(const char  *section,	/* I - Section */
     * Use standard header...
     */
 
-    fputs("<h1 class=\"title\">", out);
+    fputs("    <h1 class=\"title\">", out);
     write_string(out, title, OUTPUT_HTML);
     fputs("</h1>\n", out);
   }
@@ -4489,260 +4264,17 @@ write_html(const char  *section,	/* I - Section */
   */
 
   if (!framefile)
-    write_toc(out, doc, introfile, NULL, 0);
+    write_html_toc(out, title, toc, NULL, NULL);
+
+  free_toc(toc);
 
  /*
-  * Intro...
+  * Body...
   */
 
-  if (introfile)
-    write_file(out, introfile, OUTPUT_HTML);
+  fputs("    <div class=\"body\">\n", out);
 
- /*
-  * List of classes...
-  */
-
-  if ((scut = find_public(doc, doc, "class", NULL)) != NULL)
-  {
-    fputs("<h2 class=\"title\"><a id=\"CLASSES\">Classes</a></h2>\n", out);
-
-    while (scut)
-    {
-      write_scu(out, 0, doc, scut);
-
-      scut = find_public(scut, doc, "class", NULL);
-    }
-  }
-
- /*
-  * List of functions...
-  */
-
-  if ((function = find_public(doc, doc, "function", NULL)) != NULL)
-  {
-    fputs("<h2 class=\"title\"><a id=\"FUNCTIONS\">Functions</a></h2>\n", out);
-
-    while (function)
-    {
-      write_function(out, 0, doc, function, 3);
-
-      function = find_public(function, doc, "function", NULL);
-    }
-  }
-
- /*
-  * List of types...
-  */
-
-  if ((scut = find_public(doc, doc, "typedef", NULL)) != NULL)
-  {
-    fputs("<h2 class=\"title\"><a id=\"TYPES\">Data Types</a></h2>\n", out);
-
-    while (scut)
-    {
-      name        = mxmlElementGetAttr(scut, "name");
-      description = mxmlFindElement(scut, scut, "description", NULL,
-                                    NULL, MXML_DESCEND_FIRST);
-      fprintf(out, "<h3 class=\"typedef\">%s<a id=\"%s\">%s</a></h3>\n",
-	      get_comment_info(description), name, name);
-
-      if (description)
-	write_description(out, description, "p", 1);
-
-      fputs("<p class=\"code\">\n"
-	    "typedef ", out);
-
-      type = mxmlFindElement(scut, scut, "type", NULL, NULL,
-                             MXML_DESCEND_FIRST);
-
-      for (type = type->child; type; type = type->next)
-      {
-        if (!strcmp(type->value.text.string, "("))
-	{
-          break;
-        }
-	else
-	{
-	  if (type->value.text.whitespace)
-	    putc(' ', out);
-
-	  if (find_public(doc, doc, "class", type->value.text.string) ||
-	      find_public(doc, doc, "enumeration", type->value.text.string) ||
-	      find_public(doc, doc, "struct", type->value.text.string) ||
-	      find_public(doc, doc, "typedef", type->value.text.string) ||
-	      find_public(doc, doc, "union", type->value.text.string))
-	  {
-            fputs("<a href=\"#", out);
-            write_string(out, type->value.text.string, OUTPUT_HTML);
-	    fputs("\">", out);
-            write_string(out, type->value.text.string, OUTPUT_HTML);
-	    fputs("</a>", out);
-	  }
-	  else
-            write_string(out, type->value.text.string, OUTPUT_HTML);
-        }
-      }
-
-      if (type)
-      {
-       /*
-        * Output function type...
-	*/
-
-        if (type->prev && type->prev->value.text.string[0] != '*')
-	  putc(' ', out);
-
-        fprintf(out, "(*%s", name);
-
-	for (type = type->next->next; type; type = type->next)
-	{
-	  if (type->value.text.whitespace)
-	    putc(' ', out);
-
-	  if (find_public(doc, doc, "class", type->value.text.string) ||
-	      find_public(doc, doc, "enumeration", type->value.text.string) ||
-	      find_public(doc, doc, "struct", type->value.text.string) ||
-	      find_public(doc, doc, "typedef", type->value.text.string) ||
-	      find_public(doc, doc, "union", type->value.text.string))
-	  {
-            fputs("<a href=\"#", out);
-            write_string(out, type->value.text.string, OUTPUT_HTML);
-	    fputs("\">", out);
-            write_string(out, type->value.text.string, OUTPUT_HTML);
-	    fputs("</a>", out);
-	  }
-	  else
-            write_string(out, type->value.text.string, OUTPUT_HTML);
-        }
-
-        fputs(";\n", out);
-      }
-      else
-      {
-	type = mxmlFindElement(scut, scut, "type", NULL, NULL,
-			       MXML_DESCEND_FIRST);
-        if (type->last_child->value.text.string[0] != '*')
-	  putc(' ', out);
-
-	fprintf(out, "%s;\n", name);
-      }
-
-      fputs("</p>\n", out);
-
-      scut = find_public(scut, doc, "typedef", NULL);
-    }
-  }
-
- /*
-  * List of structures...
-  */
-
-  if ((scut = find_public(doc, doc, "struct", NULL)) != NULL)
-  {
-    fputs("<h2 class=\"title\"><a id=\"STRUCTURES\">Structures</a></h2>\n",
-          out);
-
-    while (scut)
-    {
-      write_scu(out, 0, doc, scut);
-
-      scut = find_public(scut, doc, "struct", NULL);
-    }
-  }
-
- /*
-  * List of unions...
-  */
-
-  if ((scut = find_public(doc, doc, "union", NULL)) != NULL)
-  {
-    fputs("<h2 class=\"title\"><a id=\"UNIONS\">Unions</a></h2>\n", out);
-
-    while (scut)
-    {
-      write_scu(out, 0, doc, scut);
-
-      scut = find_public(scut, doc, "union", NULL);
-    }
-  }
-
- /*
-  * Variables...
-  */
-
-  if ((arg = find_public(doc, doc, "variable", NULL)) != NULL)
-  {
-    fputs("<h2 class=\"title\"><a id=\"VARIABLES\">Variables</a></h2>\n",
-          out);
-
-    while (arg)
-    {
-      name        = mxmlElementGetAttr(arg, "name");
-      description = mxmlFindElement(arg, arg, "description", NULL,
-                                    NULL, MXML_DESCEND_FIRST);
-      fprintf(out, "<h3 class=\"variable\">%s<a id=\"%s\">%s</a></h3>\n",
-	      get_comment_info(description), name, name);
-
-      if (description)
-	write_description(out, description, "p", 1);
-
-      fputs("<p class=\"code\">", out);
-
-      write_element(out, doc, mxmlFindElement(arg, arg, "type", NULL,
-                                              NULL, MXML_DESCEND_FIRST),
-                    OUTPUT_HTML);
-      fputs(mxmlElementGetAttr(arg, "name"), out);
-      if ((defval = mxmlElementGetAttr(arg, "default")) != NULL)
-	fprintf(out, " %s", defval);
-      fputs(";</p>\n", out);
-
-      arg = find_public(arg, doc, "variable", NULL);
-    }
-  }
-
- /*
-  * List of enumerations...
-  */
-
-  if ((scut = find_public(doc, doc, "enumeration", NULL)) != NULL)
-  {
-    fputs("<h2 class=\"title\"><a id=\"ENUMERATIONS\">Constants</a></h2>\n",
-          out);
-
-    while (scut)
-    {
-      name        = mxmlElementGetAttr(scut, "name");
-      description = mxmlFindElement(scut, scut, "description", NULL,
-                                    NULL, MXML_DESCEND_FIRST);
-      fprintf(out, "<h3 class=\"enumeration\">%s<a id=\"%s\">%s</a></h3>\n",
-              get_comment_info(description), name, name);
-
-      if (description)
-	write_description(out, description, "p", 1);
-
-      fputs("<h4 class=\"constants\">Constants</h4>\n"
-            "<dl>\n", out);
-
-      for (arg = mxmlFindElement(scut, scut, "constant", NULL, NULL,
-                        	 MXML_DESCEND_FIRST);
-	   arg;
-	   arg = mxmlFindElement(arg, scut, "constant", NULL, NULL,
-                        	 MXML_NO_DESCEND))
-      {
-	description = mxmlFindElement(arg, arg, "description", NULL,
-                                      NULL, MXML_DESCEND_FIRST);
-	fprintf(out, "<dt>%s %s</dt>\n",
-	        mxmlElementGetAttr(arg, "name"), get_comment_info(description));
-
-	write_description(out, description, "dd", 1);
-	write_description(out, description, "dd", 0);
-      }
-
-      fputs("</dl>\n", out);
-
-      scut = find_public(scut, doc, "enumeration", NULL);
-    }
-  }
+  write_html_body(out, OUTPUT_HTML, introfile, doc);
 
  /*
   * Footer...
@@ -4757,8 +4289,8 @@ write_html(const char  *section,	/* I - Section */
     write_file(out, footerfile, OUTPUT_HTML);
   }
 
-  fputs("</div>\n"
-        "</body>\n"
+  fputs("    </div>\n"
+        "  </body>\n"
         "</html>\n", out);
 
  /*
@@ -4826,17 +4358,281 @@ write_html(const char  *section,	/* I - Section */
 
 
 /*
+ * 'write_html_body()' - Write a HTML/XHTML body.
+ */
+
+static void
+write_html_body(
+    FILE        *out,			/* I - Output file */
+    int         mode,			/* I - HTML or EPUB/XHTML output */
+    const char  *introfile,		/* I - Intro file */
+    mxml_node_t *doc)			/* I - XML documentation */
+{
+  mxml_node_t	*function,		/* Current function */
+		*scut,			/* Struct/class/union/typedef */
+		*arg,			/* Current argument */
+		*description,		/* Description of function/var */
+		*type;			/* Type for argument */
+  const char	*name,			/* Name of function/type */
+		*defval;		/* Default value */
+
+
+ /*
+  * Intro...
+  */
+
+  if (introfile)
+    write_file(out, introfile, mode);
+
+ /*
+  * List of classes...
+  */
+
+  if ((scut = find_public(doc, doc, "class", NULL)) != NULL)
+  {
+    fputs("      <h2 class=\"title\"><a id=\"CLASSES\">Classes</a></h2>\n", out);
+
+    while (scut)
+    {
+      write_scu(out, 1, doc, scut);
+
+      scut = find_public(scut, doc, "class", NULL);
+    }
+  }
+
+ /*
+  * List of functions...
+  */
+
+  if ((function = find_public(doc, doc, "function", NULL)) != NULL)
+  {
+    fputs("      <h2 class=\"title\"><a id=\"FUNCTIONS\">Functions</a></h2>\n", out);
+
+    while (function)
+    {
+      write_function(out, 1, doc, function, 3);
+
+      function = find_public(function, doc, "function", NULL);
+    }
+  }
+
+ /*
+  * List of types...
+  */
+
+  if ((scut = find_public(doc, doc, "typedef", NULL)) != NULL)
+  {
+    fputs("      <h2 class=\"title\"><a id=\"TYPES\">Data Types</a></h2>\n", out);
+
+    while (scut)
+    {
+      name        = mxmlElementGetAttr(scut, "name");
+      description = mxmlFindElement(scut, scut, "description", NULL,
+                                    NULL, MXML_DESCEND_FIRST);
+      fprintf(out, "      <h3 class=\"typedef\"><a id=\"%s\">%s%s</a></h3>\n", name, get_comment_info(description), name);
+
+      if (description)
+	write_description(out, description, "p", 1);
+
+      fputs("      <p class=\"code\">\n"
+	    "typedef ", out);
+
+      type = mxmlFindElement(scut, scut, "type", NULL, NULL, MXML_DESCEND_FIRST);
+
+      for (type = type->child; type; type = type->next)
+        if (!strcmp(type->value.text.string, "("))
+	  break;
+	else
+	{
+	  if (type->value.text.whitespace)
+	    putc(' ', out);
+
+	  if (find_public(doc, doc, "class", type->value.text.string) ||
+	      find_public(doc, doc, "enumeration", type->value.text.string) ||
+	      find_public(doc, doc, "struct", type->value.text.string) ||
+	      find_public(doc, doc, "typedef", type->value.text.string) ||
+	      find_public(doc, doc, "union", type->value.text.string))
+	  {
+            fputs("<a href=\"#", out);
+            write_string(out, type->value.text.string, OUTPUT_HTML);
+	    fputs("\">", out);
+            write_string(out, type->value.text.string, OUTPUT_HTML);
+	    fputs("</a>", out);
+	  }
+	  else
+            write_string(out, type->value.text.string, OUTPUT_HTML);
+        }
+
+      if (type)
+      {
+       /*
+        * Output function type...
+	*/
+
+        if (type->prev && type->prev->value.text.string[0] != '*')
+	  putc(' ', out);
+
+        fprintf(out, "(*%s", name);
+
+	for (type = type->next->next; type; type = type->next)
+	{
+	  if (type->value.text.whitespace)
+	    putc(' ', out);
+
+	  if (find_public(doc, doc, "class", type->value.text.string) ||
+	      find_public(doc, doc, "enumeration", type->value.text.string) ||
+	      find_public(doc, doc, "struct", type->value.text.string) ||
+	      find_public(doc, doc, "typedef", type->value.text.string) ||
+	      find_public(doc, doc, "union", type->value.text.string))
+	  {
+            fputs("<a href=\"#", out);
+            write_string(out, type->value.text.string, OUTPUT_HTML);
+	    fputs("\">", out);
+            write_string(out, type->value.text.string, OUTPUT_HTML);
+	    fputs("</a>", out);
+	  }
+	  else
+            write_string(out, type->value.text.string, OUTPUT_HTML);
+        }
+
+        fputs(";\n", out);
+      }
+      else
+      {
+	type = mxmlFindElement(scut, scut, "type", NULL, NULL,
+			       MXML_DESCEND_FIRST);
+        if (type->last_child->value.text.string[0] != '*')
+	  putc(' ', out);
+
+	fprintf(out, "%s;\n", name);
+      }
+
+      fputs("</p>\n", out);
+
+      scut = find_public(scut, doc, "typedef", NULL);
+    }
+  }
+
+ /*
+  * List of structures...
+  */
+
+  if ((scut = find_public(doc, doc, "struct", NULL)) != NULL)
+  {
+    fputs("      <h2 class=\"title\"><a id=\"STRUCTURES\">Structures</a></h2>\n", out);
+
+    while (scut)
+    {
+      write_scu(out, 1, doc, scut);
+
+      scut = find_public(scut, doc, "struct", NULL);
+    }
+  }
+
+ /*
+  * List of unions...
+  */
+
+  if ((scut = find_public(doc, doc, "union", NULL)) != NULL)
+  {
+    fputs("      <h2 class=\"title\"><a id=\"UNIONS\">Unions</a></h2>\n", out);
+
+    while (scut)
+    {
+      write_scu(out, 1, doc, scut);
+
+      scut = find_public(scut, doc, "union", NULL);
+    }
+  }
+
+ /*
+  * Variables...
+  */
+
+  if ((arg = find_public(doc, doc, "variable", NULL)) != NULL)
+  {
+    fputs("      <h2 class=\"title\"><a id=\"VARIABLES\">Variables</a></h2>\n", out);
+
+    while (arg)
+    {
+      name        = mxmlElementGetAttr(arg, "name");
+      description = mxmlFindElement(arg, arg, "description", NULL,
+                                    NULL, MXML_DESCEND_FIRST);
+      fprintf(out, "      <h3 class=\"variable\"><a id=\"%s\">%s%s</a></h3>\n", name, get_comment_info(description), name);
+
+      if (description)
+	write_description(out, description, "p", 1);
+
+      fputs("      <p class=\"code\">", out);
+
+      write_element(out, doc, mxmlFindElement(arg, arg, "type", NULL, NULL, MXML_DESCEND_FIRST), OUTPUT_HTML);
+      fputs(mxmlElementGetAttr(arg, "name"), out);
+      if ((defval = mxmlElementGetAttr(arg, "default")) != NULL)
+	fprintf(out, " %s", defval);
+      fputs(";</p>\n", out);
+
+      arg = find_public(arg, doc, "variable", NULL);
+    }
+  }
+
+ /*
+  * List of enumerations...
+  */
+
+  if ((scut = find_public(doc, doc, "enumeration", NULL)) != NULL)
+  {
+    fputs("      <h2 class=\"title\"><a id=\"ENUMERATIONS\">Constants</a></h2>\n", out);
+
+    while (scut)
+    {
+      name        = mxmlElementGetAttr(scut, "name");
+      description = mxmlFindElement(scut, scut, "description", NULL,
+                                    NULL, MXML_DESCEND_FIRST);
+      fprintf(out, "      <h3 class=\"enumeration\"><a id=\"%s\">%s%s</a></h3>\n", name, get_comment_info(description), name);
+
+      if (description)
+	write_description(out, description, "p", 1);
+
+      fputs("      <h4 class=\"constants\">Constants</h4>\n"
+            "      <dl>\n", out);
+
+      for (arg = mxmlFindElement(scut, scut, "constant", NULL, NULL,
+                        	 MXML_DESCEND_FIRST);
+	   arg;
+	   arg = mxmlFindElement(arg, scut, "constant", NULL, NULL,
+                        	 MXML_NO_DESCEND))
+      {
+	description = mxmlFindElement(arg, arg, "description", NULL,
+                                      NULL, MXML_DESCEND_FIRST);
+	fprintf(out, "        <dt>%s %s</dt>\n",
+	        mxmlElementGetAttr(arg, "name"), get_comment_info(description));
+
+	write_description(out, description, "dd", 1);
+	write_description(out, description, "dd", 0);
+      }
+
+      fputs("</dl>\n", out);
+
+      scut = find_public(scut, doc, "enumeration", NULL);
+    }
+  }
+}
+
+
+/*
  * 'write_html_head()' - Write the standard HTML header.
  */
 
 static void
 write_html_head(FILE       *out,	/* I - Output file */
-                int        xhtml,	/* I - XHTML output? */
+                int        mode,	/* I - HTML or EPUB/XHTML */
                 const char *section,	/* I - Section */
                 const char *title,	/* I - Title */
+                const char *author,	/* I - Author's name */
+                const char *copyright,	/* I - Copyright string */
 		const char *cssfile)	/* I - Stylesheet */
 {
-  if (xhtml)
+  if (mode == OUTPUT_EPUB)
     fputs("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
           "<!DOCTYPE html>\n"
           "<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en\" "
@@ -4848,24 +4644,40 @@ write_html_head(FILE       *out,	/* I - Output file */
   if (section)
     fprintf(out, "<!-- SECTION: %s -->\n", section);
 
-  fputs("<head>\n"
-        "\t<title>", out);
-  write_string(out, title, OUTPUT_HTML);
-  fputs("\t</title>\n", out);
+  fputs("  <head>\n"
+        "    <title>", out);
+  write_string(out, title, mode);
+  fputs("</title>\n", out);
 
-  if (xhtml)
+  if (mode == OUTPUT_EPUB)
   {
-    fputs("\t<style type=\"text/css\"><![CDATA[\n", out);
+    if (section)
+      fprintf(out, "    <meta name=\"keywords\" content=\"%s\" />\n", section);
+
+    fputs("    <meta name=\"creator\" content=\"" MXML_VERSION "\" />\n"
+          "    <meta name=\"author\" content=\"", out);
+    write_string(out, author, mode);
+    fputs("\" />\n"
+          "    <meta name=\"copyright\" content=\"", out);
+    write_string(out, copyright, mode);
+    fputs("\" />\n"
+          "    <style type=\"text/css\"><![CDATA[\n", out);
   }
   else
   {
     if (section)
-      fprintf(out, "\t<meta name=\"keywords\" content=\"%s\">\n", section);
+      fprintf(out, "    <meta name=\"keywords\" content=\"%s\">\n", section);
 
-    fputs("\t<meta http-equiv=\"Content-Type\" "
+    fputs("    <meta http-equiv=\"Content-Type\" "
           "content=\"text/html;charset=utf-8\">\n"
-          "\t<meta name=\"creator\" content=\"" MXML_VERSION "\">\n"
-          "<style type=\"text/css\"><!--\n", out);
+          "    <meta name=\"creator\" content=\"" MXML_VERSION "\">\n"
+          "    <meta name=\"author\" content=\"", out);
+    write_string(out, author, mode);
+    fputs("\">\n"
+          "    <meta name=\"copyright\" content=\"", out);
+    write_string(out, copyright, mode);
+    fputs("\">\n"
+          "    <style type=\"text/css\"><!--\n", out);
   }
 
   if (cssfile)
@@ -4874,7 +4686,7 @@ write_html_head(FILE       *out,	/* I - Output file */
     * Use custom stylesheet file...
     */
 
-    write_file(out, cssfile, OUTPUT_HTML);
+    write_file(out, cssfile, mode);
   }
   else
   {
@@ -5014,13 +4826,82 @@ write_html_head(FILE       *out,	/* I - Output file */
 	  "}\n", out);
   }
 
-  if (xhtml)
-    fputs("]]></style>\n", out);
+  if (mode == OUTPUT_EPUB)
+    fputs("]]></style>\n"
+          "  </head>\n"
+          "  <body>\n", out);
   else
-    fputs("--></style>\n", out);
+    fputs("--></style>\n"
+          "  </head>\n"
+          "  <body>\n", out);
+}
 
-  fputs("</head>\n"
-        "<body>\n", out);
+
+/*
+ * 'write_html_toc()' - Write a HTML table-of-contents.
+ */
+
+static void
+write_html_toc(FILE        *out,	/* I - Output file */
+               const char  *title,	/* I - Title */
+               toc_t       *toc,	/* I - Table of contents */
+               const char  *filename,	/* I - Target filename, if any */
+	       const char  *target)	/* I - Target frame name, if any */
+{
+  size_t	i;			/* Looping var */
+  toc_entry_t	*tentry;		/* Current table of contents */
+  int		toc_level;		/* Current table-of-contents level */
+  char		targetattr[1024];	/* Target attribute, if any */
+
+
+ /*
+  * If target is set, it is the frame file that contains the body.
+  * Otherwise, we are creating a single-file...
+  */
+
+  if (target)
+    snprintf(targetattr, sizeof(targetattr), " target=\"%s\"", target);
+  else
+    targetattr[0] = '\0';
+
+  fputs("    <div class=\"contents\">\n", out);
+
+  if (filename)
+  {
+    fprintf(out, "      <h1 class=\"title\"><a href=\"%s\"%s>", filename, targetattr);
+    write_string(out, title, OUTPUT_HTML);
+    fputs("</a></h1>\n", out);
+  }
+
+  fputs("      <h2 class=\"title\">Contents</h2>\n"
+        "      <ul class=\"contents\">\n", out);
+
+  for (i = 0, tentry = toc->entries, toc_level = 1; i < toc->num_entries; i ++, tentry ++)
+  {
+    if (tentry->level > toc_level)
+    {
+      toc_level = tentry->level;
+    }
+    else if (tentry->level < toc_level)
+    {
+      fputs("        </ul></li>\n", out);
+      toc_level = tentry->level;
+    }
+
+    fprintf(out, "        %s<li><a href=\"%s#%s\"%s>", toc_level == 1 ? "" : "  ", filename ? filename : "", tentry->anchor, targetattr);
+    write_string(out, tentry->title, OUTPUT_HTML);
+
+    if ((i + 1) < toc->num_entries && tentry[1].level > toc_level)
+      fputs("</a><ul class=\"subcontents\">\n", out);
+    else
+      fputs("</a></li>\n", out);
+  }
+
+  if (toc_level == 2)
+    fputs("        </ul></li>\n", out);
+
+  fputs("      </ul>\n"
+        "    </div>\n", out);
 }
 
 
@@ -5032,10 +4913,12 @@ static void
 write_man(const char  *man_name,	/* I - Name of manpage */
 	  const char  *section,		/* I - Section */
 	  const char  *title,		/* I - Title */
-	  const char  *footerfile,	/* I - Footer file */
+          const char  *author,		/* I - Author's name */
+          const char  *copyright,	/* I - Copyright string */
 	  const char  *headerfile,	/* I - Header file */
 	  const char  *introfile,	/* I - Intro file */
-	  mxml_node_t *doc)		/* I - XML documentation */
+	  mxml_node_t *doc,		/* I - XML documentation */
+	  const char  *footerfile)	/* I - Footer file */
 {
   int		i;			/* Looping var */
   mxml_node_t	*function,		/* Current function */
@@ -5545,6 +5428,20 @@ write_man(const char  *man_name,	/* I - Name of manpage */
 
     write_file(stdout, footerfile, OUTPUT_MAN);
   }
+  else
+  {
+   /*
+    * Use standard footer...
+    */
+
+    puts(".SH AUTHOR");
+    puts(".PP");
+    puts(author);
+
+    puts(".SH COPYRIGHT");
+    puts(".PP");
+    puts(copyright);
+  }
 }
 
 
@@ -5797,612 +5694,6 @@ write_string(FILE       *out,		/* I - Output file */
 
 
 /*
- * 'write_toc()' - Write a table-of-contents.
- */
-
-static void
-write_toc(FILE        *out,		/* I - Output file */
-          mxml_node_t *doc,		/* I - Document */
-          const char  *introfile,	/* I - Introduction file */
-	  const char  *target,		/* I - Target name */
-	  int         xml)		/* I - Write XML nodes? */
-{
-  FILE		*fp;			/* Intro file */
-  mxml_node_t	*function,		/* Current function */
-		*scut,			/* Struct/class/union/typedef */
-		*arg,			/* Current argument */
-		*description;		/* Description of function/var */
-  const char	*name,			/* Name of function/type */
-		*targetattr;		/* Target attribute, if any */
-  int		xmlid = 1;		/* Current XML node ID */
-
-
- /*
-  * If target is set, it is the frame file that contains the body.
-  * Otherwise, we are creating a single-file...
-  */
-
-  if (target)
-    targetattr = " target=\"body\"";
-  else
-    targetattr = "";
-
- /*
-  * The table-of-contents is a nested unordered list.  Start by
-  * reading any intro file to see if there are any headings there.
-  */
-
-  if (!xml)
-    fputs("<h2 class=\"title\">Contents</h2>\n"
-          "<ul class=\"contents\">\n", out);
-
-  if (introfile && (fp = fopen(introfile, "r")) != NULL)
-  {
-    char	line[8192],		/* Line from file */
-		*ptr,			/* Pointer in line */
-		*end,			/* End of line */
-		*anchor,		/* Anchor name */
-		quote,			/* Quote character for value */
-		level = '2',		/* Current heading level */
-		newlevel;		/* New heading level */
-    int		inelement;		/* In an element? */
-
-
-    while (fgets(line, sizeof(line), fp))
-    {
-     /*
-      * See if this line has a heading...
-      */
-
-      if ((ptr = strstr(line, "<h")) == NULL &&
-          (ptr = strstr(line, "<H")) == NULL)
-	continue;
-
-      if (ptr[2] != '2' && ptr[2] != '3')
-        continue;
-
-      newlevel = ptr[2];
-
-     /*
-      * Make sure we have the whole heading...
-      */
-
-      while (!strstr(line, "</h") && !strstr(line, "</H"))
-      {
-        end = line + strlen(line);
-
-	if (end == (line + sizeof(line) - 1) ||
-	    !fgets(end, (int)(sizeof(line) - (end - line)), fp))
-	  break;
-      }
-
-     /*
-      * Convert newlines and tabs to spaces...
-      */
-
-      for (ptr = line; *ptr; ptr ++)
-        if (isspace(*ptr & 255))
-	  *ptr = ' ';
-
-     /*
-      * Find the anchor and text...
-      */
-
-      for (ptr = strchr(line, '<'); ptr; ptr = strchr(ptr + 1, '<'))
-      {
-        if (!strncmp(ptr, "<A NAME=", 8) || !strncmp(ptr, "<a name=", 8))
-        {
-          ptr += 8;
-	  break;
-        }
-        else if (!strncmp(ptr, "<A ID=", 6) || !strncmp(ptr, "<a id=", 6))
-        {
-          ptr += 6;
-	  break;
-        }
-      }
-
-      if (!ptr)
-        continue;
-
-      inelement = 1;
-
-      if (*ptr == '\'' || *ptr == '\"')
-      {
-       /*
-        * Quoted anchor...
-	*/
-
-        quote  = *ptr++;
-	anchor = ptr;
-
-	while (*ptr && *ptr != quote)
-	  ptr ++;
-
-        if (!*ptr)
-	  continue;
-
-        *ptr++ = '\0';
-      }
-      else
-      {
-       /*
-        * Non-quoted anchor...
-	*/
-
-        anchor = ptr;
-
-	while (*ptr && *ptr != '>' && !isspace(*ptr & 255))
-	  ptr ++;
-
-        if (!*ptr)
-	  continue;
-
-        if (*ptr == '>')
-	  inelement = 0;
-
-	*ptr++ = '\0';
-      }
-
-     /*
-      * Write text until we see "</A>"...
-      */
-
-      if (xml)
-      {
-	if (newlevel < level)
-	  fputs("</Node>\n"
-		"</Subnodes></Node>\n", out);
-	else if (newlevel > level && newlevel == '3')
-	  fputs("<Subnodes>\n", out);
-	else if (xmlid > 1)
-	  fputs("</Node>\n", out);
-
-	level = newlevel;
-
-	fprintf(out, "<Node id=\"%d\">\n"
-                     "<Path>Documentation/index.html</Path>\n"
-	             "<Anchor>%s</Anchor>\n"
-		     "<Name>", xmlid ++, anchor);
-
-	quote = 0;
-
-	while (*ptr)
-	{
-	  if (inelement)
-	  {
-	    if (*ptr == quote)
-	      quote = 0;
-	    else if (*ptr == '>')
-	      inelement = 0;
-	    else if (*ptr == '\'' || *ptr == '\"')
-	      quote = *ptr;
-	  }
-	  else if (*ptr == '<')
-	  {
-	    if (!strncmp(ptr, "</A>", 4) || !strncmp(ptr, "</a>", 4))
-	      break;
-
-	    inelement = 1;
-	  }
-	  else
-	    putc(*ptr, out);
-
-	  ptr ++;
-	}
-
-	fputs("</Name>\n", out);
-      }
-      else
-      {
-	if (newlevel < level)
-	  fputs("</li>\n"
-		"</ul></li>\n", out);
-	else if (newlevel > level)
-	  fputs("<ul class=\"subcontents\">\n", out);
-	else if (xmlid > 1)
-	  fputs("</li>\n", out);
-        fprintf(out, "<!-- xmlid=%d -->", xmlid);
-
-	level = newlevel;
-	xmlid ++;
-
-	fprintf(out, "%s<li><a href=\"%s#%s\"%s>", level > '2' ? "\t" : "",
-	        target ? target : "", anchor, targetattr);
-
-	quote = 0;
-
-	while (*ptr)
-	{
-	  if (inelement)
-	  {
-	    if (*ptr == quote)
-	      quote = 0;
-	    else if (*ptr == '>')
-	      inelement = 0;
-	    else if (*ptr == '\'' || *ptr == '\"')
-	      quote = *ptr;
-	  }
-	  else if (*ptr == '<')
-	  {
-	    if (!strncmp(ptr, "</A>", 4) || !strncmp(ptr, "</a>", 4))
-	      break;
-
-	    inelement = 1;
-	  }
-	  else
-	    putc(*ptr, out);
-
-	  ptr ++;
-	}
-
-	fputs("</a>", out);
-      }
-    }
-
-    if (level > '1')
-    {
-      if (xml)
-      {
-	fputs("</Node>\n", out);
-
-	if (level == '3')
-	  fputs("</Subnodes></Node>\n", out);
-      }
-      else
-      {
-	fputs("</li>\n", out);
-
-	if (level == '3')
-	  fputs("</ul></li>\n", out);
-      }
-    }
-
-    fprintf(out, "<!-- xmlid=%d -->\n", xmlid);
-    fclose(fp);
-  }
-
- /*
-  * Next the classes...
-  */
-
-  if ((scut = find_public(doc, doc, "class", NULL)) != NULL)
-  {
-    if (xml)
-      fprintf(out, "<Node id=\"%d\">\n"
-		   "<Path>Documentation/index.html</Path>\n"
-	           "<Anchor>CLASSES</Anchor>\n"
-		   "<Name>Classes</Name>\n"
-		   "<Subnodes>\n", xmlid ++);
-    else
-      fprintf(out, "<li><a href=\"%s#CLASSES\"%s>Classes</a>"
-		   "<ul class=\"code\">\n",
-	      target ? target : "", targetattr);
-
-    while (scut)
-    {
-      name        = mxmlElementGetAttr(scut, "name");
-      description = mxmlFindElement(scut, scut, "description",
-				    NULL, NULL, MXML_DESCEND_FIRST);
-
-      if (xml)
-      {
-	fprintf(out, "<Node id=\"%d\">\n"
-	             "<Path>Documentation/index.html</Path>\n"
-	             "<Anchor>%s</Anchor>\n"
-		     "<Name>%s</Name>\n"
-		     "</Node>\n", xmlid ++, name, name);
-      }
-      else
-      {
-	fprintf(out, "\t<li><a href=\"%s#%s\"%s title=\"",
-		target ? target : "", name, targetattr);
-	write_description(out, description, "", 1);
-	fprintf(out, "\">%s</a></li>\n", name);
-      }
-
-      scut = find_public(scut, doc, "class", NULL);
-    }
-
-    if (xml)
-      fputs("</Subnodes></Node>\n", out);
-    else
-      fputs("</ul></li>\n", out);
-  }
-
- /*
-  * Functions...
-  */
-
-  if ((function = find_public(doc, doc, "function", NULL)) != NULL)
-  {
-    if (xml)
-      fprintf(out, "<Node id=\"%d\">\n"
-		   "<Path>Documentation/index.html</Path>\n"
-	           "<Anchor>FUNCTIONS</Anchor>\n"
-		   "<Name>Functions</Name>\n"
-		   "<Subnodes>\n", xmlid ++);
-    else
-      fprintf(out, "<li><a href=\"%s#FUNCTIONS\"%s>Functions</a>"
-		   "<ul class=\"code\">\n", target ? target : "", targetattr);
-
-    while (function)
-    {
-      name        = mxmlElementGetAttr(function, "name");
-      description = mxmlFindElement(function, function, "description",
-				    NULL, NULL, MXML_DESCEND_FIRST);
-
-      if (xml)
-      {
-	fprintf(out, "<Node id=\"%d\">\n"
-	             "<Path>Documentation/index.html</Path>\n"
-	             "<Anchor>%s</Anchor>\n"
-		     "<Name>%s</Name>\n"
-		     "</Node>\n", xmlid ++, name, name);
-      }
-      else
-      {
-	fprintf(out, "\t<li><a href=\"%s#%s\"%s title=\"",
-		target ? target : "", name, targetattr);
-	write_description(out, description, "", 1);
-	fprintf(out, "\">%s</a></li>\n", name);
-      }
-
-      function = find_public(function, doc, "function", NULL);
-    }
-
-    if (xml)
-      fputs("</Subnodes></Node>\n", out);
-    else
-      fputs("</ul></li>\n", out);
-  }
-
- /*
-  * Data types...
-  */
-
-  if ((scut = find_public(doc, doc, "typedef", NULL)) != NULL)
-  {
-    if (xml)
-      fprintf(out, "<Node id=\"%d\">\n"
-		   "<Path>Documentation/index.html</Path>\n"
-	           "<Anchor>TYPES</Anchor>\n"
-		   "<Name>Data Types</Name>\n"
-		   "<Subnodes>\n", xmlid ++);
-    else
-      fprintf(out, "<li><a href=\"%s#TYPES\"%s>Data Types</a>"
-		   "<ul class=\"code\">\n", target ? target : "", targetattr);
-
-    while (scut)
-    {
-      name        = mxmlElementGetAttr(scut, "name");
-      description = mxmlFindElement(scut, scut, "description",
-				    NULL, NULL, MXML_DESCEND_FIRST);
-
-      if (xml)
-      {
-	fprintf(out, "<Node id=\"%d\">\n"
-	             "<Path>Documentation/index.html</Path>\n"
-	             "<Anchor>%s</Anchor>\n"
-		     "<Name>%s</Name>\n"
-		     "</Node>\n", xmlid ++, name, name);
-      }
-      else
-      {
-	fprintf(out, "\t<li><a href=\"%s#%s\"%s title=\"",
-		target ? target : "", name, targetattr);
-	write_description(out, description, "", 1);
-	fprintf(out, "\">%s</a></li>\n", name);
-      }
-
-      scut = find_public(scut, doc, "typedef", NULL);
-    }
-
-    if (xml)
-      fputs("</Subnodes></Node>\n", out);
-    else
-      fputs("</ul></li>\n", out);
-  }
-
- /*
-  * Structures...
-  */
-
-  if ((scut = find_public(doc, doc, "struct", NULL)) != NULL)
-  {
-    if (xml)
-      fprintf(out, "<Node id=\"%d\">\n"
-		   "<Path>Documentation/index.html</Path>\n"
-	           "<Anchor>STRUCTURES</Anchor>\n"
-		   "<Name>Structures</Name>\n"
-		   "<Subnodes>\n", xmlid ++);
-    else
-      fprintf(out, "<li><a href=\"%s#STRUCTURES\"%s>Structures</a>"
-		   "<ul class=\"code\">\n", target ? target : "", targetattr);
-
-    while (scut)
-    {
-      name        = mxmlElementGetAttr(scut, "name");
-      description = mxmlFindElement(scut, scut, "description",
-				    NULL, NULL, MXML_DESCEND_FIRST);
-
-      if (xml)
-      {
-	fprintf(out, "<Node id=\"%d\">\n"
-	             "<Path>Documentation/index.html</Path>\n"
-	             "<Anchor>%s</Anchor>\n"
-		     "<Name>%s</Name>\n"
-		     "</Node>\n", xmlid ++, name, name);
-      }
-      else
-      {
-	fprintf(out, "\t<li><a href=\"%s#%s\"%s title=\"",
-		target ? target : "", name, targetattr);
-	write_description(out, description, "", 1);
-	fprintf(out, "\">%s</a></li>\n", name);
-      }
-
-      scut = find_public(scut, doc, "struct", NULL);
-    }
-
-    if (xml)
-      fputs("</Subnodes></Node>\n", out);
-    else
-      fputs("</ul></li>\n", out);
-  }
-
- /*
-  * Unions...
-  */
-
-  if ((scut = find_public(doc, doc, "union", NULL)) != NULL)
-  {
-    if (xml)
-      fprintf(out, "<Node id=\"%d\">\n"
-		   "<Path>Documentation/index.html</Path>\n"
-	           "<Anchor>UNIONS</Anchor>\n"
-		   "<Name>Unions</Name>\n"
-		   "<Subnodes>\n", xmlid ++);
-    else
-      fprintf(out,
-              "<li><a href=\"%s#UNIONS\"%s>Unions</a><ul class=\"code\">\n",
-	      target ? target : "", targetattr);
-
-    while (scut)
-    {
-      name        = mxmlElementGetAttr(scut, "name");
-      description = mxmlFindElement(scut, scut, "description",
-				    NULL, NULL, MXML_DESCEND_FIRST);
-
-      if (xml)
-      {
-	fprintf(out, "<Node id=\"%d\">\n"
-	             "<Path>Documentation/index.html</Path>\n"
-	             "<Anchor>%s</Anchor>\n"
-		     "<Name>%s</Name>\n"
-		     "</Node>\n", xmlid ++, name, name);
-      }
-      else
-      {
-	fprintf(out, "\t<li><a href=\"%s#%s\"%s title=\"",
-		target ? target : "", name, targetattr);
-	write_description(out, description, "", 1);
-	fprintf(out, "\">%s</a></li>\n", name);
-      }
-
-      scut = find_public(scut, doc, "union", NULL);
-    }
-
-    if (xml)
-      fputs("</Subnodes></Node>\n", out);
-    else
-      fputs("</ul></li>\n", out);
-  }
-
- /*
-  * Globals variables...
-  */
-
-  if ((arg = find_public(doc, doc, "variable", NULL)) != NULL)
-  {
-    if (xml)
-      fprintf(out, "<Node id=\"%d\">\n"
-		   "<Path>Documentation/index.html</Path>\n"
-	           "<Anchor>VARIABLES</Anchor>\n"
-		   "<Name>Variables</Name>\n"
-		   "<Subnodes>\n", xmlid ++);
-    else
-      fprintf(out, "<li><a href=\"%s#VARIABLES\"%s>Variables</a>"
-		   "<ul class=\"code\">\n", target ? target : "", targetattr);
-
-    while (arg)
-    {
-      name        = mxmlElementGetAttr(arg, "name");
-      description = mxmlFindElement(arg, arg, "description",
-				    NULL, NULL, MXML_DESCEND_FIRST);
-
-      if (xml)
-      {
-	fprintf(out, "<Node id=\"%d\">\n"
-	             "<Path>Documentation/index.html</Path>\n"
-	             "<Anchor>%s</Anchor>\n"
-		     "<Name>%s</Name>\n"
-		     "</Node>\n", xmlid ++, name, name);
-      }
-      else
-      {
-	fprintf(out, "\t<li><a href=\"%s#%s\"%s title=\"",
-		target ? target : "", name, targetattr);
-	write_description(out, description, "", 1);
-	fprintf(out, "\">%s</a></li>\n", name);
-      }
-
-      arg = find_public(arg, doc, "variable", NULL);
-    }
-
-    if (xml)
-      fputs("</Subnodes></Node>\n", out);
-    else
-      fputs("</ul></li>\n", out);
-  }
-
- /*
-  * Enumerations/constants...
-  */
-
-  if ((scut = find_public(doc, doc, "enumeration", NULL)) != NULL)
-  {
-    if (xml)
-      fprintf(out, "<Node id=\"%d\">\n"
-		   "<Path>Documentation/index.html</Path>\n"
-	           "<Anchor>ENUMERATIONS</Anchor>\n"
-		   "<Name>Constants</Name>\n"
-		   "<Subnodes>\n", xmlid ++);
-    else
-      fprintf(out, "<li><a href=\"%s#ENUMERATIONS\"%s>Constants</a>"
-		   "<ul class=\"code\">\n", target ? target : "", targetattr);
-
-    while (scut)
-    {
-      name        = mxmlElementGetAttr(scut, "name");
-      description = mxmlFindElement(scut, scut, "description",
-				    NULL, NULL, MXML_DESCEND_FIRST);
-
-      if (xml)
-      {
-	fprintf(out, "<Node id=\"%d\">\n"
-	             "<Path>Documentation/index.html</Path>\n"
-	             "<Anchor>%s</Anchor>\n"
-		     "<Name>%s</Name>\n"
-		     "</Node>\n", xmlid ++, name, name);
-      }
-      else
-      {
-	fprintf(out, "\t<li><a href=\"%s#%s\"%s title=\"",
-		target ? target : "", name, targetattr);
-	write_description(out, description, "", 1);
-	fprintf(out, "\">%s</a></li>\n", name);
-      }
-
-      scut = find_public(scut, doc, "enumeration", NULL);
-    }
-
-    if (xml)
-      fputs("</Subnodes></Node>\n", out);
-    else
-      fputs("</ul></li>\n", out);
-  }
-
- /*
-  * Close out the HTML table-of-contents list as needed...
-  */
-
-  if (!xml)
-    fputs("</ul>\n", out);
-}
-
-
-/*
  * 'write_tokens()' - Write <Token> nodes for all APIs.
  */
 
@@ -6435,14 +5726,14 @@ write_tokens(FILE        *out,		/* I - Output file */
       description = mxmlFindElement(scut, scut, "description",
 				    NULL, NULL, MXML_DESCEND_FIRST);
 
-      fprintf(out, "<Token>\n"
-		   "<Path>Documentation/%s</Path>\n"
-		   "<Anchor>%s</Anchor>\n"
-		   "<TokenIdentifier>//apple_ref/cpp/cl/%s</TokenIdentifier>\n"
-		   "<Abstract>", path, cename, cename);
+      fprintf(out, "  <Token>\n"
+		   "    <Path>Documentation/%s</Path>\n"
+		   "    <Anchor>%s</Anchor>\n"
+		   "    <TokenIdentifier>//apple_ref/cpp/cl/%s</TokenIdentifier>\n"
+		   "    <Abstract>", path, cename, cename);
       write_description(out, description, "", 1);
-      fputs("</Abstract>\n"
-            "</Token>\n", out);
+      fputs("    </Abstract>\n"
+            "  </Token>\n", out);
 
       if ((function = find_public(scut, scut, "function", NULL)) != NULL)
       {
@@ -6452,10 +5743,10 @@ write_tokens(FILE        *out,		/* I - Output file */
 	  description = mxmlFindElement(function, function, "description",
 					NULL, NULL, MXML_DESCEND_FIRST);
 
-	  fprintf(out, "<Token>\n"
-		       "<Path>Documentation/%s</Path>\n"
-		       "<Anchor>%s.%s</Anchor>\n"
-		       "<TokenIdentifier>//apple_ref/cpp/clm/%s/%s", path,
+	  fprintf(out, "  <Token>\n"
+		       "    <Path>Documentation/%s</Path>\n"
+		       "    <Anchor>%s.%s</Anchor>\n"
+		       "    <TokenIdentifier>//apple_ref/cpp/clm/%s/%s", path,
 		  cename, name, cename, name);
 
 	  arg = mxmlFindElement(function, function, "returnvalue", NULL,
@@ -6493,10 +5784,10 @@ write_tokens(FILE        *out,		/* I - Output file */
 	    fputs("(void", out);
 
 	  fputs(")</TokenIdentifier>\n"
-	        "<Abstract>", out);
+	        "    <Abstract>", out);
 	  write_description(out, description, "", 1);
-	  fputs("</Abstract>\n"
-		"<Declaration>", out);
+	  fputs("    </Abstract>\n"
+		"    <Declaration>", out);
 
 	  arg = mxmlFindElement(function, function, "returnvalue", NULL,
 				NULL, MXML_DESCEND_FIRST);
@@ -6536,8 +5827,8 @@ write_tokens(FILE        *out,		/* I - Output file */
 	  else
 	    fputs(");", out);
 
-	  fputs("</Declaration>\n"
-		"</Token>\n", out);
+	  fputs("    </Declaration>\n"
+		"  </Token>\n", out);
 
 	  function = find_public(function, doc, "function", NULL);
 	}
@@ -6558,14 +5849,14 @@ write_tokens(FILE        *out,		/* I - Output file */
       description = mxmlFindElement(function, function, "description",
 				    NULL, NULL, MXML_DESCEND_FIRST);
 
-      fprintf(out, "<Token>\n"
-		   "<Path>Documentation/%s</Path>\n"
-		   "<Anchor>%s</Anchor>\n"
-		   "<TokenIdentifier>//apple_ref/c/func/%s</TokenIdentifier>\n"
-		   "<Abstract>", path, name, name);
+      fprintf(out, "  <Token>\n"
+		   "    <Path>Documentation/%s</Path>\n"
+		   "    <Anchor>%s</Anchor>\n"
+		   "    <TokenIdentifier>//apple_ref/c/func/%s</TokenIdentifier>\n"
+		   "    <Abstract>", path, name, name);
       write_description(out, description, "", 1);
-      fputs("</Abstract>\n"
-            "<Declaration>", out);
+      fputs("    </Abstract>\n"
+            "    <Declaration>", out);
 
       arg = mxmlFindElement(function, function, "returnvalue", NULL,
 			    NULL, MXML_DESCEND_FIRST);
@@ -6605,8 +5896,8 @@ write_tokens(FILE        *out,		/* I - Output file */
       else
 	fputs(");", out);
 
-      fputs("</Declaration>\n"
-            "</Token>\n", out);
+      fputs("    </Declaration>\n"
+            "  </Token>\n", out);
 
       function = find_public(function, doc, "function", NULL);
     }
@@ -6624,14 +5915,14 @@ write_tokens(FILE        *out,		/* I - Output file */
       description = mxmlFindElement(scut, scut, "description",
 				    NULL, NULL, MXML_DESCEND_FIRST);
 
-      fprintf(out, "<Token>\n"
-		   "<Path>Documentation/%s</Path>\n"
-		   "<Anchor>%s</Anchor>\n"
-		   "<TokenIdentifier>//apple_ref/c/tdef/%s</TokenIdentifier>\n"
-		   "<Abstract>", path, name, name);
+      fprintf(out, "  <Token>\n"
+		   "    <Path>Documentation/%s</Path>\n"
+		   "    <Anchor>%s</Anchor>\n"
+		   "    <TokenIdentifier>//apple_ref/c/tdef/%s</TokenIdentifier>\n"
+		   "    <Abstract>", path, name, name);
       write_description(out, description, "", 1);
-      fputs("</Abstract>\n"
-            "</Token>\n", out);
+      fputs("    </Abstract>\n"
+            "  </Token>\n", out);
 
       scut = find_public(scut, doc, "typedef", NULL);
     }
@@ -6649,14 +5940,14 @@ write_tokens(FILE        *out,		/* I - Output file */
       description = mxmlFindElement(scut, scut, "description",
 				    NULL, NULL, MXML_DESCEND_FIRST);
 
-      fprintf(out, "<Token>\n"
-		   "<Path>Documentation/%s</Path>\n"
-		   "<Anchor>%s</Anchor>\n"
-		   "<TokenIdentifier>//apple_ref/c/tag/%s</TokenIdentifier>\n"
-		   "<Abstract>", path, name, name);
+      fprintf(out, "  <Token>\n"
+		   "    <Path>Documentation/%s</Path>\n"
+		   "    <Anchor>%s</Anchor>\n"
+		   "    <TokenIdentifier>//apple_ref/c/tag/%s</TokenIdentifier>\n"
+		   "    <Abstract>", path, name, name);
       write_description(out, description, "", 1);
-      fputs("</Abstract>\n"
-            "</Token>\n", out);
+      fputs("    </Abstract>\n"
+            "  </Token>\n", out);
 
       scut = find_public(scut, doc, "struct", NULL);
     }
@@ -6674,14 +5965,14 @@ write_tokens(FILE        *out,		/* I - Output file */
       description = mxmlFindElement(scut, scut, "description",
 				    NULL, NULL, MXML_DESCEND_FIRST);
 
-      fprintf(out, "<Token>\n"
-		   "<Path>Documentation/%s</Path>\n"
-		   "<Anchor>%s</Anchor>\n"
-		   "<TokenIdentifier>//apple_ref/c/tag/%s</TokenIdentifier>\n"
-		   "<Abstract>", path, name, name);
+      fprintf(out, "  <Token>\n"
+		   "    <Path>Documentation/%s</Path>\n"
+		   "    <Anchor>%s</Anchor>\n"
+		   "    <TokenIdentifier>//apple_ref/c/tag/%s</TokenIdentifier>\n"
+		   "    <Abstract>", path, name, name);
       write_description(out, description, "", 1);
-      fputs("</Abstract>\n"
-            "</Token>\n", out);
+      fputs("    </Abstract>\n"
+            "  </Token>\n", out);
 
       scut = find_public(scut, doc, "union", NULL);
     }
@@ -6699,14 +5990,14 @@ write_tokens(FILE        *out,		/* I - Output file */
       description = mxmlFindElement(arg, arg, "description",
 				    NULL, NULL, MXML_DESCEND_FIRST);
 
-      fprintf(out, "<Token>\n"
-		   "<Path>Documentation/%s</Path>\n"
-		   "<Anchor>%s</Anchor>\n"
-		   "<TokenIdentifier>//apple_ref/c/data/%s</TokenIdentifier>\n"
-		   "<Abstract>", path, name, name);
+      fprintf(out, "  <Token>\n"
+		   "    <Path>Documentation/%s</Path>\n"
+		   "    <Anchor>%s</Anchor>\n"
+		   "    <TokenIdentifier>//apple_ref/c/data/%s</TokenIdentifier>\n"
+		   "    <Abstract>", path, name, name);
       write_description(out, description, "", 1);
-      fputs("</Abstract>\n"
-            "</Token>\n", out);
+      fputs("    </Abstract>\n"
+            "  </Token>\n", out);
 
       arg = find_public(arg, doc, "variable", NULL);
     }
@@ -6724,14 +6015,14 @@ write_tokens(FILE        *out,		/* I - Output file */
       description = mxmlFindElement(scut, scut, "description",
 				    NULL, NULL, MXML_DESCEND_FIRST);
 
-      fprintf(out, "<Token>\n"
-		   "<Path>Documentation/%s</Path>\n"
-		   "<Anchor>%s</Anchor>\n"
-		   "<TokenIdentifier>//apple_ref/c/tag/%s</TokenIdentifier>\n"
-		   "<Abstract>", path, cename, cename);
+      fprintf(out, "  <Token>\n"
+		   "    <Path>Documentation/%s</Path>\n"
+		   "    <Anchor>%s</Anchor>\n"
+		   "    <TokenIdentifier>//apple_ref/c/tag/%s</TokenIdentifier>\n"
+		   "    <Abstract>", path, cename, cename);
       write_description(out, description, "", 1);
-      fputs("</Abstract>\n"
-            "</Token>\n", out);
+      fputs("    </Abstract>\n"
+            "  </Token>\n", out);
 
       for (arg = mxmlFindElement(scut, scut, "constant", NULL, NULL,
                         	 MXML_DESCEND_FIRST);
@@ -6742,14 +6033,14 @@ write_tokens(FILE        *out,		/* I - Output file */
         name        = mxmlElementGetAttr(arg, "name");
 	description = mxmlFindElement(arg, arg, "description", NULL,
                                       NULL, MXML_DESCEND_FIRST);
-	fprintf(out, "<Token>\n"
-		     "<Path>Documentation/%s</Path>\n"
-		     "<Anchor>%s</Anchor>\n"
-		     "<TokenIdentifier>//apple_ref/c/econst/%s</TokenIdentifier>\n"
-		     "<Abstract>", path, cename, name);
+	fprintf(out, "  <Token>\n"
+		     "    <Path>Documentation/%s</Path>\n"
+		     "    <Anchor>%s</Anchor>\n"
+		     "    <TokenIdentifier>//apple_ref/c/econst/%s</TokenIdentifier>\n"
+		     "    <Abstract>", path, cename, name);
 	write_description(out, description, "", 1);
-	fputs("</Abstract>\n"
-	      "</Token>\n", out);
+	fputs("    </Abstract>\n"
+	      "  </Token>\n", out);
       }
 
       scut = find_public(scut, doc, "enumeration", NULL);

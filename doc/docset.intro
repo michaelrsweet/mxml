@@ -1,42 +1,33 @@
-<h2 class="title"><a id="INTRODUCTION">Introduction</a></h2>
+      <h2 class="title"><a id="INTRODUCTION">Introduction</a></h2>
 
-<p>Mini-XML is a small XML parsing library that you can use to read XML data files or strings in your application without requiring large non-standard libraries.  Mini-XML provides the following functionality:</p>
+      <p>Mini-XML is a small XML parsing library that you can use to read XML data files or strings in your application without requiring large non-standard libraries.  Mini-XML provides the following functionality:</p>
 
-<ul>
-  <li>Reading of UTF-8 and UTF-16 and writing of UTF-8 encoded XML files and strings.</li>
-  <li>Data is stored in a linked-list tree structure, preserving the XML data hierarchy.</li>
-  <li>SAX (streamed) reading of XML files and strings to minimize memory usage.</li>
-  <li>Supports arbitrary element names, attributes, and attribute values with no preset limits, just available memory.</li>
-  <li>Supports integer, real, opaque ("cdata"), and text data types in "leaf" nodes.</li>
-  <li>Functions for creating and managing trees of data.</li>
-  <li>"Find" and "walk" functions for easily locating and navigating trees of data.</li>
-</ul>
+      <ul>
+        <li>Reading of UTF-8 and UTF-16 and writing of UTF-8 encoded XML files and strings.</li>
+        <li>Data is stored in a linked-list tree structure, preserving the XML data hierarchy.</li>
+        <li>SAX (streamed) reading of XML files and strings to minimize memory usage.</li>
+        <li>Supports arbitrary element names, attributes, and attribute values with no preset limits, just available memory.</li>
+        <li>Supports integer, real, opaque ("cdata"), and text data types in "leaf" nodes.</li>
+        <li>Functions for creating and managing trees of data.</li>
+        <li>"Find" and "walk" functions for easily locating and navigating trees of data.</li>
+      </ul>
 
-<p>Mini-XML doesn't do validation or other types of processing on the data based upon schema files or other sources of definition information.</p>
+      <p>Mini-XML doesn't do validation or other types of processing on the data based upon schema files or other sources of definition information.</p>
 
 
-<h2 class="title"><a id="USING">Using Mini-XML</a></h2>
+      <h2 class="title"><a id="USING">Using Mini-XML</a></h2>
 
-<p>Mini-XML provides a single header file which you include:</p>
+      <p>Mini-XML provides a single header file which you include:</p>
 
-<pre class="example">
+      <pre class="example">
 #include &lt;mxml.h&gt;
 </pre>
 
-<p>Nodes are defined by the "<a href="#mxml_node_t">mxml_node_t</a>" structure;
-the "type" member defines the node type (element, integer, opaque, real, or
-text) which determines which value you want to look at in the "value" union.
-New nodes can be created using the
-"<a href="#mxmlNewElement">mxmlNewElement()</a>",
-"<a href="#mxmlNewInteger">mxmlNewInteger()</a>",
-"<a href="#mxmlNewOpaque">mxmlNewOpaque()</a>",
-"<a href="#mxmlNewReal">mxmlNewReal()</a>", and
-"<a href="#mxmlNewText">mxmlNewText()</a>" functions. Only elements can have
-child nodes, and the top node must be an element, usually "?xml".</p>
+      <p>Nodes are defined by the "<a href="#mxml_node_t">mxml_node_t</a>" structure; the "type" member defines the node type (element, integer, opaque, real, or text) which determines which value you want to look at in the "value" union. New nodes can be created using the "<a href="#mxmlNewElement">mxmlNewElement()</a>", "<a href="#mxmlNewInteger">mxmlNewInteger()</a>", "<a href="#mxmlNewOpaque">mxmlNewOpaque()</a>", "<a href="#mxmlNewReal">mxmlNewReal()</a>", and "<a href="#mxmlNewText">mxmlNewText()</a>" functions. Only elements can have child nodes, and the top node must be an element, usually "?xml".</p>
 
-<p>You load an XML file using the "mxmlLoadFile()" function:</p>
+      <p>You load an XML file using the "mxmlLoadFile()" function:</p>
 
-<pre class="example">
+      <pre class="example">
 FILE *fp;
 mxml_node_t *tree;
 
@@ -45,10 +36,9 @@ tree = mxmlLoadFile(NULL, fp, MXML_NO_CALLBACK);
 fclose(fp);
 </pre>
 
-<p>Similarly, you save an XML file using the
-"<a href="#mxmlSaveFile">mxmlSaveFile()</a>" function:</p>
+      <p>Similarly, you save an XML file using the "<a href="#mxmlSaveFile">mxmlSaveFile()</a>" function:</p>
 
-<pre class="example">
+      <pre class="example">
 FILE *fp;
 mxml_node_t *tree;
 
@@ -57,12 +47,9 @@ mxmlSaveFile(tree, fp, MXML_NO_CALLBACK);
 fclose(fp);
 </pre>
 
-<p>The "<a href="#mxmlLoadString">mxmlLoadString()</a>",
-"<a href="#mxmlSaveAllocString">mxmlSaveAllocString()</a>", and
-"<a href="#mxmlSaveString">mxmlSaveString()</a>" functions load XML node trees
-from and save XML node trees to strings:</p>
+      <p>The "<a href="#mxmlLoadString">mxmlLoadString()</a>", "<a href="#mxmlSaveAllocString">mxmlSaveAllocString()</a>", and "<a href="#mxmlSaveString">mxmlSaveString()</a>" functions load XML node trees from and save XML node trees to strings:</p>
 
-<pre class="example">
+      <pre class="example">
 char buffer[8192];
 char *ptr;
 mxml_node_t *tree;
@@ -78,19 +65,17 @@ mxmlSaveString(tree, buffer, sizeof(buffer),
 ptr = mxmlSaveAllocString(tree, MXML_NO_CALLBACK);
 </pre>
 
-<p>You can find a named element/node using the
-"<a href="#mxmlFindElement">mxmlFindElement()</a>" function:</p>
+      <p>You can find a named element/node using the "<a href="#mxmlFindElement">mxmlFindElement()</a>" function:</p>
 
-<pre class="example">
+      <pre class="example">
 mxml_node_t *node = mxmlFindElement(tree, tree, "name",
 				    "attr", "value",
 				    MXML_DESCEND);
 </pre>
 
-<p>The "name", "attr", and "value" arguments can be passed as
-<code>NULL</code> to act as wildcards, e.g.:</p>
+      <p>The "name", "attr", and "value" arguments can be passed as <code>NULL</code> to act as wildcards, e.g.:</p>
 
-<pre class="example">
+      <pre class="example">
 /* Find the first "a" element */
 node = mxmlFindElement(tree, tree, "a", NULL, NULL,
 		       MXML_DESCEND);
@@ -113,9 +98,9 @@ node = mxmlFindElement(tree, tree, NULL, "src",
 		       "foo.jpg", MXML_DESCEND);
 </pre>
 
-<p>You can also iterate with the same function:</p>
+      <p>You can also iterate with the same function:</p>
 
-<pre class="example">
+      <pre class="example">
 mxml_node_t *node;
 
 for (node = mxmlFindElement(tree, tree, "name", NULL,
@@ -128,17 +113,15 @@ for (node = mxmlFindElement(tree, tree, "name", NULL,
 }
 </pre>
 
-<p>The "mxmlFindPath()" function finds the (first) value node under a specific
-element using a "path":</p>
+      <p>The "mxmlFindPath()" function finds the (first) value node under a specific element using a "path":</p>
 
-<pre class="example">
+      <pre class="example">
 mxml_node_t *value = mxmlFindPath(tree, "path/to/*/foo/bar");
 </pre>
 
-<p>The "mxmlGetInteger()", "mxmlGetOpaque()", "mxmlGetReal()", and
-"mxmlGetText()" functions retrieve the value from a node:</p>
+      <p>The "mxmlGetInteger()", "mxmlGetOpaque()", "mxmlGetReal()", and "mxmlGetText()" functions retrieve the value from a node:</p>
 
-<pre class="example">
+      <pre class="example">
 mxml_node_t *node;
 
 int intvalue = mxmlGetInteger(node);
@@ -151,10 +134,8 @@ int whitespacevalue;
 const char *textvalue = mxmlGetText(node, &amp;whitespacevalue);
 </pre>
 
-<p>Finally, once you are done with the XML data, use the
-"<a href="#mxmlDelete">mxmlDelete()</a>" function to recursively free the
-memory that is used for a particular node or the entire tree:</p>
+      <p>Finally, once you are done with the XML data, use the "<a href="#mxmlDelete">mxmlDelete()</a>" function to recursively free the memory that is used for a particular node or the entire tree:</p>
 
-<pre class="example">
+      <pre class="example">
 mxmlDelete(tree);
 </pre>

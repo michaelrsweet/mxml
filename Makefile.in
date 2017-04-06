@@ -359,19 +359,19 @@ mxml.xml:	mxmldoc-static mxml.h $(PUBLIBOBJS:.o=.c)
 		--copyright "Copyright 2003-2017, All Rights Reserved." \
 		mxml.xml >doc/mxml.man
 	if test "x`uname`" = xDarwin; then \
-		./mxmldoc-static --docset org.minixml.docset \
-			--docversion @VERSION@ --feedname minixml.org \
-			--feedurl http://www.minixml.org/org.minixml.atom \
+		./mxmldoc-static --docset org.msweet.mxml.docset \
+			--docversion @VERSION@ --feedname org.msweet.mxml \
+			--feedurl https://michaelrsweet.github.io/mxml/org.msweet.mxml.atom \
 			--header doc/docset.header --intro doc/docset.intro \
 			--css doc/docset.css --author "Michael R Sweet" \
 			--copyright "Copyright 2003-2017, All Rights Reserved." \
 			--title "Mini-XML API Reference" \
 			mxml.xml || exit 1; \
-		$(RM) org.minixml.atom; \
-		xcrun docsetutil package --output org.minixml.xar \
-			--atom org.minixml.atom \
-			--download-url http://www.minixml.org/org.minixml.xar \
-			org.minixml.docset || exit 1; \
+		$(RM) org.msweet.mxml.atom; \
+		xcrun docsetutil package --output org.msweet.mxml.xar \
+			--atom org.msweet.mxml.atom \
+			--download-url https://michaelrsweet.github.io/mxml/org.msweet.mxml.xar \
+			org.msweet.mxml.docset || exit 1; \
 	fi
 
 

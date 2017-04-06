@@ -3467,6 +3467,20 @@ write_epub(const char  *epubfile,	/* I - EPUB file (output) */
     fputs("    <h1 class=\"title\">", fp);
     write_string(fp, title, OUTPUT_EPUB);
     fputs("</h1>\n", fp);
+
+    if (author)
+    {
+      fputs("    <p>", fp);
+      write_string(fp, author, OUTPUT_EPUB);
+      fputs("</p>\n", fp);
+    }
+
+    if (copyright)
+    {
+      fputs("    <p>", fp);
+      write_string(fp, copyright, OUTPUT_EPUB);
+      fputs("</p>\n", fp);
+    }
   }
 
  /*
@@ -4257,6 +4271,20 @@ write_html(const char  *framefile,	/* I - Framed HTML basename */
     fputs("    <h1 class=\"title\">", out);
     write_string(out, title, OUTPUT_HTML);
     fputs("</h1>\n", out);
+
+    if (author)
+    {
+      fputs("    <p>", out);
+      write_string(out, author, OUTPUT_EPUB);
+      fputs("</p>\n", out);
+    }
+
+    if (copyright)
+    {
+      fputs("    <p>", out);
+      write_string(out, copyright, OUTPUT_EPUB);
+      fputs("</p>\n", out);
+    }
   }
 
  /*

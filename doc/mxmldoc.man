@@ -1,21 +1,17 @@
 .\"
-.\" "$Id$"
-.\"
 .\" mxmldoc man page for mini-XML, a small XML-like file parsing library.
 .\"
-.\" Copyright 2003-2009 by Michael Sweet.
+.\" Copyright 2003-2017 by Michael R Sweet.
 .\"
-.\" This program is free software; you can redistribute it and/or
-.\" modify it under the terms of the GNU Library General Public
-.\" License as published by the Free Software Foundation; either
-.\" version 2, or (at your option) any later version.
+.\" These coded instructions, statements, and computer programs are the
+.\" property of Michael R Sweet and are protected by Federal copyright
+.\" law.  Distribution and use rights are outlined in the file "COPYING"
+.\" which should have been included with this file.  If this file is
+.\" missing or damaged, see the license at:
 .\"
-.\" This program is distributed in the hope that it will be useful,
-.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\" GNU General Public License for more details.
+.\"     https://michaelrsweet.github.io/mxml
 .\"
-.TH mxmldoc 1 "Mini-XML" "4 May 2009" "Michael Sweet"
+.TH mxmldoc 1 "Mini-XML" "6 April 2017" "Michael Sweet"
 .SH NAME
 mxmldoc \- mini-xml documentation generator
 .SH SYNOPSIS
@@ -27,7 +23,11 @@ mxmldoc \- mini-xml documentation generator
 ]
 .br
 .B mxmldoc
-[ \-\-footer
+[ \-\-author
+.I author
+] [ \-\-copyright
+.I copyright
+] [ \-\-footer
 .I footerfile
 ] [ \-\-header
 .I headerfile
@@ -47,7 +47,11 @@ mxmldoc \- mini-xml documentation generator
 .B mxmldoc
 \-\-docset
 .I directory.docset
-[ \-\-docversion
+[ \-\-author
+.I author
+] [ \-\-copyright
+.I copyright
+] [ \-\-docversion
 .I version
 ] [ \-\-feedname
 .I name
@@ -81,7 +85,11 @@ mxmldoc \- mini-xml documentation generator
 .B mxmldoc
 \-\-framed
 .I basename
-[ \-\-footer
+[ \-\-author
+.I author
+] [ \-\-copyright
+.I copyright
+] [ \-\-footer
 .I footerfile
 ] [ \-\-header
 .I headerfile
@@ -98,7 +106,11 @@ mxmldoc \- mini-xml documentation generator
 ]
 .br
 .B mxmldoc
-[ \-\-footer
+[ \-\-author
+.I author
+] [ \-\-copyright
+.I copyright
+] [ \-\-footer
 .I footerfile
 ] [ \-\-header
 .I headerfile
@@ -116,6 +128,35 @@ mxmldoc \- mini-xml documentation generator
 .I source file(s)
 ] >
 .I filename.man
+.br
+.B mxmldoc
+\-\-epub
+.I filename.epub
+[ \-\-author
+.I author
+] [ \-\-copyright
+.I copyright
+] [ \-\-docversion
+.I version
+] [ \-\-feedname
+.I name
+] [ \-\-feedurl
+.I url
+] [ \-\-footer
+.I footerfile
+] [ \-\-header
+.I headerfile
+] [ \-\-intro
+.I introfile
+] [ \-\-section
+.I section
+] [ \-\-title
+.I title
+] [
+.I filename.xml
+] [
+.I source file(s)
+]
 .SH DESCRIPTION
 \fImxmldoc\fR scans the specified C and C++ source files to produce
 an XML representation of globally accessible classes, constants,
@@ -132,8 +173,16 @@ converted to the standard output.
 In general, any C or C++ source code is handled by \fImxmldoc\fR,
 however it was specifically written to handle code with
 documentation that is formatted according to the CUPS Developer
-Guide which is available at "http://www.cups.org/documentation.php".
+Guide which is available at "http://www.cups.org/doc/spec-cmp.html".
 .SH OPTIONS
+.TP 5
+\-\-author "author name"
+.br
+Specifies the name of the documentation author.
+.TP 5
+\-\-copyright "copyright text"
+.br
+Specifies the copyright text to use.
 .TP 5
 \-\-docset directory.docset
 .br
@@ -142,6 +191,10 @@ Creates an Xcode documentation set in the specified directory.
 \-\-docversion version
 .br
 Specifies the version number for the Xcode documentation set.
+.TP 5
+\-\-epub filename.epub
+.br
+Creates an EPUB book with the specified filename.
 .TP 5
 \-\-feedname name
 .br
@@ -190,9 +243,6 @@ Sets the title of the output documentation.
 .br
 Generates a Tokens.xml file for use with the Xcode documentation tools.
 .SH SEE ALSO
-mxml(3), Mini-XML Programmers Manual, http://www.minixml.org/
+mxml(3), Mini-XML Programmers Manual, https://michaelrsweet.github.io/mxml
 .SH COPYRIGHT
-Copyright 2003-2009 by Michael Sweet.
-.\"
-.\" End of "$Id$".
-.\"
+Copyright \[co] 2003-2017 by Michael R Sweet.

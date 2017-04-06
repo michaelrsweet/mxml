@@ -3441,7 +3441,6 @@ write_epub(const char  *section,	/* I - Section */
 		*package_opf_string;	/* package_opf file as a string */
   toc_t		*toc;			/* Table of contents */
   toc_entry_t	*tentry;		/* Current table of contents */
-  char		toc_xhtmlfile[1024];	/* XHTML file for table-of-contents */
   int		toc_level;		/* Current table-of-contents level */
   static const char *mimetype =		/* mimetype file as a string */
 		"application/epub+zip";
@@ -3761,7 +3760,71 @@ write_epub(const char  *section,	/* I - Section */
   fclose(fp);
 
  /*
-  * Now make the package_opf file...
+  * Make the EPUB archive...
+  */
+
+  if ((epub = zipcOpen(epubfile, "w")) == NULL)
+  {
+    fprintf(stderr, "mxmldoc: Unable to create \"%s\": %s\n", epubfile, strerror(errno));
+    unlink(xhtmlfile);
+    return;
+  }
+
+ /*
+  * Add the mimetype file...
+  */
+
+  status |= zipcCreateFileWithString(epub, "mimetype", mimetype);
+
+ /*
+  * The META-INF/ directory...
+  */
+
+  status |= zipcCreateDirectory(epub, "META-INF/");
+
+ /*
+  * The META-INF/container.xml file...
+  */
+
+  if ((epubf = zipcCreateFile(epub, "META-INF/container.xml", 1)) != NULL)
+  {
+    status |= zipcFilePuts(epubf, container_xml);
+    status |= zipcFileFinish(epubf);
+  }
+  else
+    status = -1;
+
+ /*
+  * The OEBPS/ directory...
+  */
+
+  status |= zipcCreateDirectory(epub, "OEBPS/");
+
+ /*
+  * Copy the OEBPS/body.xhtml file...
+  */
+
+  if ((epubf = zipcCreateFile(epub, "OEBPS/body.xhtml", 1)) != NULL)
+  {
+    if ((fp = fopen(xhtmlfile, "r")) != NULL)
+    {
+      char	buffer[65536];		/* Copy buffer */
+      int	length;			/* Number of bytes */
+
+      while ((length = (int)fread(buffer, 1, sizeof(buffer), fp)) > 0)
+        zipcFileWrite(epubf, buffer, length);
+
+      fclose(fp);
+      zipcFileFinish(epubf);
+    }
+  }
+  else
+    status = -1;
+
+  unlink(xhtmlfile);
+
+ /*
+  * Now the OEBPS/package.opf file...
   */
 
   if ((epubptr = strrchr(epubfile, '/')) != NULL)
@@ -3827,130 +3890,67 @@ write_epub(const char  *section,	/* I - Section */
 
   package_opf_string = mxmlSaveAllocString(package_opf, epub_ws_cb);
 
- /*
-  * Make the nav.xhtml file...
-  */
-
-  toc = build_toc(doc, introfile);
-
-  strlcpy(toc_xhtmlfile, epubfile, sizeof(toc_xhtmlfile));
-  if ((xhtmlptr = strstr(toc_xhtmlfile, ".epub")) != NULL)
-    strlcpy(xhtmlptr, "-toc.xhtml", sizeof(toc_xhtmlfile) - (size_t)(xhtmlptr - toc_xhtmlfile));
-  else
-    strlcat(toc_xhtmlfile, "-toc.xhtml", sizeof(toc_xhtmlfile));
-
-  fp = fopen(toc_xhtmlfile, "w");
-
-  fputs("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
-        "<!DOCTYPE html>\n"
-        "<html xmlns=\"http://www.w3.org/1999/xhtml\" xmlns:epub=\"http://www.idpf.org/2007/ops\">\n"
-        "  <head>\n"
-        "    <title>", fp);
-  write_string(fp, title, OUTPUT_EPUB);
-  fputs("</title>\n"
-        "    <style>ol { list-style-type: none; }</style>\n"
-        "  </head>\n"
-        "  <body>\n"
-        "    <nav epub:type=\"toc\">\n"
-        "      <ol>\n", fp);
-
-  for (i = 0, tentry = toc->entries, toc_level = 1; i < toc->num_entries; i ++, tentry ++)
+  if ((epubf = zipcCreateFile(epub, "OEBPS/package.opf", 1)) != NULL)
   {
-    if (tentry->level > toc_level)
-    {
-      toc_level = tentry->level;
-    }
-    else if (tentry->level < toc_level)
-    {
-      fputs("        </ol></li>\n", fp);
-      toc_level = tentry->level;
-    }
-
-    fprintf(fp, "        %s<a href=\"body.xhtml#%s\">", toc_level == 1 ? "<li>" : "  <li>", tentry->anchor);
-    write_string(fp, tentry->title, OUTPUT_EPUB);
-    if ((i + 1) < toc->num_entries && tentry[1].level > toc_level)
-      fputs("</a><ol>\n", fp);
-    else
-      fputs("</a></li>\n", fp);
-  }
-
-  if (toc_level == 2)
-    fputs("        </ol></li>\n", fp);
-
-  fputs("      </ol>\n"
-        "    </nav>\n"
-        "  </body>\n"
-        "</html>\n", fp);
-
-  fclose(fp);
-
-  free_toc(toc);
-
- /*
-  * Make the EPUB archive...
-  */
-
-  if ((epub = zipcOpen(epubfile, "w")) == NULL)
-  {
-    fprintf(stderr, "mxmldoc: Unable to create \"%s\": %s\n", epubfile, strerror(errno));
-    unlink(xhtmlfile);
-    return;
-  }
-
-  /* mimetype file */
-  status |= zipcCreateFileWithString(epub, "mimetype", mimetype);
-
-  /* META-INF/ directory */
-  status |= zipcCreateDirectory(epub, "META-INF/");
-
-  /* META-INF/container.xml file */
-  status |= zipcCreateFileWithString(epub, "META-INF/container.xml", container_xml);
-
-  /* OEBPS/ directory */
-  status |= zipcCreateDirectory(epub, "OEBPS/");
-
-  /* OEBPS/body.xhtml file */
-  if ((epubf = zipcCreateFile(epub, "OEBPS/body.xhtml", 1)) != NULL)
-  {
-    if ((fp = fopen(xhtmlfile, "r")) != NULL)
-    {
-      char	buffer[65536];		/* Copy buffer */
-      int	length;			/* Number of bytes */
-
-      while ((length = (int)fread(buffer, 1, sizeof(buffer), fp)) > 0)
-        zipcFileWrite(epubf, buffer, length);
-
-      fclose(fp);
-      zipcFileFinish(epubf);
-    }
+    status |= zipcFilePuts(epubf, package_opf_string);
+    status |= zipcFileFinish(epubf);
   }
   else
     status = -1;
 
-  unlink(xhtmlfile);
+  free(package_opf_string);
 
-  /* OEBPS/package.opf file */
-  status |= zipcCreateFileWithString(epub, "OEBPS/package.opf", package_opf_string);
+ /*
+  * Then the OEBPS/nav.xhtml file...
+  */
 
-  /* OEBPS/nav.xhtml file */
   if ((epubf = zipcCreateFile(epub, "OEBPS/nav.xhtml", 1)) != NULL)
   {
-    if ((fp = fopen(toc_xhtmlfile, "r")) != NULL)
+    toc = build_toc(doc, introfile);
+
+    zipcFilePrintf(epubf, "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
+                          "<!DOCTYPE html>\n"
+                          "<html xmlns=\"http://www.w3.org/1999/xhtml\" xmlns:epub=\"http://www.idpf.org/2007/ops\">\n"
+                          "  <head>\n"
+                          "    <title>%s</title>\n"
+                          "    <style>ol { list-style-type: none; }</style>\n"
+                          "  </head>\n"
+                          "  <body>\n"
+                          "    <nav epub:type=\"toc\">\n"
+                          "      <ol>\n", title);
+
+    for (i = 0, tentry = toc->entries, toc_level = 1; i < toc->num_entries; i ++, tentry ++)
     {
-      char	buffer[65536];		/* Copy buffer */
-      int	length;			/* Number of bytes */
+      if (tentry->level > toc_level)
+      {
+        toc_level = tentry->level;
+      }
+      else if (tentry->level < toc_level)
+      {
+        zipcFilePuts(epubf, "        </ol></li>\n");
+        toc_level = tentry->level;
+      }
 
-      while ((length = (int)fread(buffer, 1, sizeof(buffer), fp)) > 0)
-        zipcFileWrite(epubf, buffer, length);
-
-      fclose(fp);
-      zipcFileFinish(epubf);
+      zipcFilePrintf(epubf, "        %s<li><a href=\"body.xhtml#%s\">%s</a>", toc_level == 1 ? "" : "  ", tentry->anchor, tentry->title);
+      if ((i + 1) < toc->num_entries && tentry[1].level > toc_level)
+        zipcFilePuts(epubf, "<ol>\n");
+      else
+        zipcFilePuts(epubf, "</li>\n");
     }
+
+    if (toc_level == 2)
+      zipcFilePuts(epubf, "        </ol></li>\n");
+
+    zipcFilePuts(epubf, "      </ol>\n"
+                        "    </nav>\n"
+                        "  </body>\n"
+                        "</html>\n");
+
+    zipcFileFinish(epubf);
+    free_toc(toc);
   }
   else
     status = -1;
-
-  unlink(toc_xhtmlfile);
 
   if (status)
     fprintf(stderr, "mxmldoc: Unable to write \"%s\": %s\n", epubfile, zipcError(epub));

@@ -615,7 +615,7 @@ zipcOpen(const char *filename,		/* I - Filename of container */
     * Open the container file...
     */
 
-    if ((zc->fp = fopen(filename, "wb")) == NULL)
+    if ((zc->fp = fopen(filename, "w+b")) == NULL)
     {
       free(zc);
       return (NULL);
@@ -776,16 +776,12 @@ zipc_write_local_header(
     zipc_file_t *zf)			/* I - ZIP container file */
 {
   int		status = 0;		/* Return status */
-  unsigned	flags = zf->flags;	/* General purpose flags */
   size_t	filenamelen = strlen(zf->filename);
 					/* Length of filename */
 
-  if (zf->uncompressed_size == 0 && zf->external_attrs != ZIPC_EXTERNAL_DIR)
-    flags |= ZIPC_FLAG_DATA;
-
   status |= zipc_write_u32(zc, ZIPC_LOCAL_HEADER);
   status |= zipc_write_u16(zc, zf->external_attrs == ZIPC_EXTERNAL_DIR ? ZIPC_DIR_VERSION : ZIPC_FILE_VERSION);
-  status |= zipc_write_u16(zc, flags);
+  status |= zipc_write_u16(zc, zf->flags);
   status |= zipc_write_u16(zc, zf->method);
   status |= zipc_write_u32(zc, zc->modtime);
   status |= zipc_write_u32(zc, zf->uncompressed_size == 0 ? 0 : zf->crc32);
@@ -809,11 +805,24 @@ zipc_write_local_trailer(
     zipc_file_t *zf)			/* I - ZIP container file */
 {
   int	status = 0;			/* Return status */
+  long	pos = ftell(zc->fp);		/* Position in file */
 
+
+ /*
+  * Update the CRC-32, compressed size, and uncompressed size fields...
+  */
+
+  fseek(zc->fp, zf->offset + 14, SEEK_SET);
 
   status |= zipc_write_u32(zc, zf->crc32);
   status |= zipc_write_u32(zc, (unsigned)zf->compressed_size);
   status |= zipc_write_u32(zc, (unsigned)zf->uncompressed_size);
+
+ /*
+  * Go back to the end of the file...
+  */
+
+  fseek(zc->fp, pos, SEEK_SET);
 
   return (status);
 }

@@ -55,7 +55,8 @@
 #define ZIPC_FILE_VERSION  0x0014	/* Version needed: 2.0 */
 
 #define ZIPC_FLAG_CMAX     0x0002	/* Maximum compression */
-#define ZIPC_FLAG_DATA     0x0008	/* Length and CRC-32 fields follow data */
+#define ZIPC_FLAG_MASK     0x7fff       /* Mask for "standard" flags we want to write */
+#define ZIPC_FLAG_STREAMED 0x8000       /* Internal bit used to flag when we need to update the CRC and length fields */
 
 #define ZIPC_COMP_STORE    0		/* No compression */
 #define ZIPC_COMP_DEFLATE  8		/* Deflate compression */
@@ -219,6 +220,7 @@ zipcCreateFile(
   zipc_file_t	*zf = zipc_add_file(zc, filename, compressed);
 					/* ZIP container file */
 
+  zf->flags |= ZIPC_FLAG_STREAMED;
   zf->external_attrs = ZIPC_EXTERNAL_FILE;
 
   if (zipc_write_local_header(zc, zf))
@@ -781,7 +783,7 @@ zipc_write_local_header(
 
   status |= zipc_write_u32(zc, ZIPC_LOCAL_HEADER);
   status |= zipc_write_u16(zc, zf->external_attrs == ZIPC_EXTERNAL_DIR ? ZIPC_DIR_VERSION : ZIPC_FILE_VERSION);
-  status |= zipc_write_u16(zc, zf->flags);
+  status |= zipc_write_u16(zc, zf->flags & ZIPC_FLAG_MASK);
   status |= zipc_write_u16(zc, zf->method);
   status |= zipc_write_u32(zc, zc->modtime);
   status |= zipc_write_u32(zc, zf->uncompressed_size == 0 ? 0 : zf->crc32);
@@ -805,24 +807,24 @@ zipc_write_local_trailer(
     zipc_file_t *zf)			/* I - ZIP container file */
 {
   int	status = 0;			/* Return status */
-  long	pos = ftell(zc->fp);		/* Position in file */
 
 
- /*
-  * Update the CRC-32, compressed size, and uncompressed size fields...
-  */
+  if (zf->flags & ZIPC_FLAG_STREAMED)
+  {
+   /*
+    * Update the CRC-32, compressed size, and uncompressed size fields...
+    */
 
-  fseek(zc->fp, zf->offset + 14, SEEK_SET);
+    fseek(zc->fp, zf->offset + 14, SEEK_SET);
 
-  status |= zipc_write_u32(zc, zf->crc32);
-  status |= zipc_write_u32(zc, (unsigned)zf->compressed_size);
-  status |= zipc_write_u32(zc, (unsigned)zf->uncompressed_size);
+    status |= zipc_write_u32(zc, zf->crc32);
+    status |= zipc_write_u32(zc, (unsigned)zf->compressed_size);
+    status |= zipc_write_u32(zc, (unsigned)zf->uncompressed_size);
 
- /*
-  * Go back to the end of the file...
-  */
+    fseek(zc->fp, 0, SEEK_END);
 
-  fseek(zc->fp, pos, SEEK_SET);
+    zf->flags &= ZIPC_FLAG_MASK;
+  }
 
   return (status);
 }

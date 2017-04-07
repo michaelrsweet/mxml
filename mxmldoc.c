@@ -134,6 +134,7 @@ extern char **environ;
 #define OUTPUT_MAN		3	/* Output nroff/man */
 #define OUTPUT_TOKENS		4	/* Output docset Tokens.xml file */
 #define OUTPUT_EPUB		5	/* Output EPUB (XHTML) */
+#define OUTPUT_DOCSET		6	/* Output Xcode documentation set (HTML) */
 
 
 /*
@@ -176,13 +177,18 @@ static void		sort_node(mxml_node_t *tree, mxml_node_t *func);
 static void		update_comment(mxml_node_t *parent, mxml_node_t *comment);
 static void		usage(const char *option);
 static void		write_description(FILE *out, mxml_node_t *description, const char *element, int summary);
+#ifdef __APPLE__
+static void		write_docset(const char *docset, const char *section, const char *title, const char *author, const char *copyright, const char *docversion, const char *feedname, const char *feedurl, const char *cssfile, const char *headerfile, const char *introfile, mxml_node_t *doc, const char *footerfile);
+#endif /* __APPLE__ */
 static void		write_element(FILE *out, mxml_node_t *doc, mxml_node_t *element, int mode);
+#ifdef HAVE_ZLIB_H
 static void		write_epub(const char *epubfile, const char *section, const char *title, const char *author, const char *copyright, const char *docversion, const char *cssfile, const char *headerfile, const char *introfile, mxml_node_t *doc, const char *footerfile);
+#endif /* HAVE_ZLIB_H */
 static void		write_file(FILE *out, const char *file, int mode);
 static void		write_function(FILE *out, int mode, mxml_node_t *doc, mxml_node_t *function, int level);
-static void		write_html(const char *framefile, const char *docset, const char *section, const char *title, const char *author, const char *copyright, const char *docversion, const char *feedname, const char *feedurl, const char *cssfile, const char *headerfile, const char *introfile, mxml_node_t *doc, const char *footerfile);
+static void		write_html(const char *framefile, const char *section, const char *title, const char *author, const char *copyright, const char *docversion, const char *cssfile, const char *headerfile, const char *introfile, mxml_node_t *doc, const char *footerfile);
 static void		write_html_body(FILE *out, int mode, const char *introfile, mxml_node_t *doc);
-static void		write_html_head(FILE *out, int mode, const char *section, const char *title, const char *author, const char *copyright, const char *cssfile);
+static void		write_html_head(FILE *out, int mode, const char *section, const char *title, const char *author, const char *copyright, const char *docversion, const char *cssfile);
 static void		write_html_toc(FILE *out, const char *title, toc_t *toc, const char  *filename, const char  *target);
 static void		write_man(const char *man_name, const char *section, const char *title, const char *author, const char *copyright, const char *headerfile, const char *introfile, mxml_node_t *doc, const char *footerfile);
 static void		write_scu(FILE *out, int mode, mxml_node_t *doc, mxml_node_t *scut);
@@ -288,6 +294,8 @@ main(int  argc,				/* I - Number of command-line args */
      /*
       * Set documentation set directory...
       */
+
+      mode = OUTPUT_DOCSET;
 
       i ++;
       if (i < argc)
@@ -582,6 +590,18 @@ main(int  argc,				/* I - Number of command-line args */
 
   switch (mode)
   {
+    case OUTPUT_DOCSET :
+       /*
+        * Write Xcode documentation set...
+        */
+
+#ifdef __APPLE__
+        write_docset(docset, section, title ? title : "Documentation", author ? author : "Unknown", copyright ? copyright : "Unknown", docversion ? docversion : "0.0", feedname, feedurl, cssfile, headerfile, introfile, mxmldoc, footerfile);
+#else
+        fputs("mxmldoc: Sorry, Xcode documentation sets can only be created on macOS.\n", stderr);
+#endif /* __APPLE__ */
+        break;
+
     case OUTPUT_EPUB :
        /*
         * Write EPUB (XHTML) documentation...
@@ -599,7 +619,7 @@ main(int  argc,				/* I - Number of command-line args */
         * Write HTML documentation...
         */
 
-        write_html(framefile, docset, section, title ? title : "Documentation", author ? author : "Unknown", copyright ? copyright : "Unknown", docversion ? docversion : "0.0", feedname, feedurl, cssfile, headerfile, introfile, mxmldoc, footerfile);
+        write_html(framefile, section, title ? title : "Documentation", author ? author : "Unknown", copyright ? copyright : "Unknown", docversion ? docversion : "0.0", cssfile, headerfile, introfile, mxmldoc, footerfile);
         break;
 
     case OUTPUT_MAN :
@@ -3327,6 +3347,380 @@ write_description(
 }
 
 
+#ifdef __APPLE__
+/*
+ * 'write_docset()' - Write Xcode documentation.
+ */
+
+static void
+write_docset(const char  *docset,	/* I - Documentation set directory */
+             const char  *section,	/* I - Section */
+             const char  *title,	/* I - Title */
+             const char  *author,	/* I - Author's name */
+             const char  *copyright,	/* I - Copyright string */
+             const char  *docversion,	/* I - Documentation set version */
+             const char  *feedname,	/* I - Feed name for doc set */
+             const char  *feedurl,	/* I - Feed URL for doc set */
+             const char  *cssfile,	/* I - Stylesheet file */
+             const char  *headerfile,	/* I - Header file */
+             const char  *introfile,	/* I - Intro file */
+             mxml_node_t *doc,		/* I - XML documentation */
+             const char  *footerfile)	/* I - Footer file */
+{
+  FILE	*out;				/* Output file */
+  char	filename[1024];			/* Current output filename */
+  toc_t	*toc;				/* Table of contents */
+
+
+ /*
+  * Create the table-of-contents entries...
+  */
+
+  toc = build_toc(doc, introfile);
+
+ /*
+  * Create an Xcode documentation set - start by removing any existing
+  * output directory...
+  */
+
+  const char	*id;			/* Identifier */
+  size_t	i;			/* Looping var */
+  toc_entry_t	*tentry;		/* Current table of contents */
+  int		toc_level;		/* Current table-of-contents level */
+  int		xmlid = 1;		/* Current XML node ID */
+  const char	*indent;		/* Indentation */
+
+  if (!access(docset, 0) && !remove_directory(docset))
+    return;
+
+ /*
+  * Then make the Apple standard bundle directory structure...
+  */
+
+  if (mkdir(docset, 0755))
+  {
+    fprintf(stderr, "mxmldoc: Unable to create \"%s\": %s\n", docset,
+            strerror(errno));
+    return;
+  }
+
+  snprintf(filename, sizeof(filename), "%s/Contents", docset);
+  if (mkdir(filename, 0755))
+  {
+    fprintf(stderr, "mxmldoc: Unable to create \"%s\": %s\n", filename,
+            strerror(errno));
+    return;
+  }
+
+  snprintf(filename, sizeof(filename), "%s/Contents/Resources", docset);
+  if (mkdir(filename, 0755))
+  {
+    fprintf(stderr, "mxmldoc: Unable to create \"%s\": %s\n", filename,
+            strerror(errno));
+    return;
+  }
+
+  snprintf(filename, sizeof(filename), "%s/Contents/Resources/Documentation",
+           docset);
+  if (mkdir(filename, 0755))
+  {
+    fprintf(stderr, "mxmldoc: Unable to create \"%s\": %s\n", filename,
+            strerror(errno));
+    return;
+  }
+
+ /*
+  * The Info.plist file, which describes the documentation set...
+  */
+
+  if ((id = strrchr(docset, '/')) != NULL)
+    id ++;
+  else
+    id = docset;
+
+  snprintf(filename, sizeof(filename), "%s/Contents/Info.plist", docset);
+  if ((out = fopen(filename, "w")) == NULL)
+  {
+    fprintf(stderr, "mxmldoc: Unable to create \"%s\": %s\n", filename,
+            strerror(errno));
+    return;
+  }
+
+  fputs("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
+        "<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">\n"
+        "<plist version=\"1.0\">\n"
+        "  <dict>\n"
+        "    <key>CFBundleIdentifier</key>\n"
+        "    <string>", out);
+  write_string(out, id, OUTPUT_HTML);
+  fputs("</string>\n"
+        "    <key>CFBundleName</key>\n"
+        "    <string>", out);
+  write_string(out, title, OUTPUT_HTML);
+  fputs("</string>\n"
+        "    <key>CFBundleVersion</key>\n"
+        "    <string>", out);
+  write_string(out, docversion ? docversion : "0.0", OUTPUT_HTML);
+  fputs("</string>\n"
+        "    <key>CFBundleShortVersionString</key>\n"
+        "    <string>", out);
+  write_string(out, docversion ? docversion : "0.0", OUTPUT_HTML);
+  fputs("</string>\n", out);
+
+  if (feedname)
+  {
+    fputs("    <key>DocSetFeedName</key>\n"
+          "    <string>", out);
+    write_string(out, feedname ? feedname : title, OUTPUT_HTML);
+    fputs("</string>\n", out);
+  }
+
+  if (feedurl)
+  {
+    fputs("    <key>DocSetFeedURL</key>\n"
+          "    <string>", out);
+    write_string(out, feedurl, OUTPUT_HTML);
+    fputs("</string>\n", out);
+  }
+
+  fputs("  </dict>\n"
+        "</plist>\n", out);
+
+  fclose(out);
+
+ /*
+  * Next the Nodes.xml file...
+  */
+
+  snprintf(filename, sizeof(filename), "%s/Contents/Resources/Nodes.xml",
+           docset);
+  if ((out = fopen(filename, "w")) == NULL)
+  {
+    fprintf(stderr, "mxmldoc: Unable to create \"%s\": %s\n", filename,
+            strerror(errno));
+    return;
+  }
+
+  fputs("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
+        "<DocSetNodes version=\"1.0\">\n"
+        "  <TOC>\n"
+        "    <Node id=\"0\">\n"
+        "      <Name>", out);
+  write_string(out, title, OUTPUT_HTML);
+  fputs("      </Name>\n"
+        "      <Path>Documentation/index.html</Path>\n"
+        "      <Subnodes>\n", out);
+
+  for (i = 0, tentry = toc->entries, toc_level = 1; i < toc->num_entries; i ++, tentry ++)
+  {
+    if (tentry->level > toc_level)
+    {
+      toc_level = tentry->level;
+    }
+    else if (tentry->level < toc_level)
+    {
+      fputs("        </Subnodes>\n"
+            "      </Node>\n", out);
+      toc_level = tentry->level;
+    }
+
+    indent = toc_level == 2 ? "            " : "      ";
+
+    fprintf(out, "%s<Node id=\"%d\">\n"
+                 "%s  <Path>Documentation/index.html</Path>\n"
+                 "%s  <Anchor>%s</Anchor>\n"
+                 "%s  <Name>", indent, xmlid ++, indent, indent, tentry->anchor, indent);
+    write_string(out, tentry->title, OUTPUT_HTML);
+
+    if ((i + 1) < toc->num_entries && tentry[1].level > toc_level)
+      fprintf(out, "</Name>\n"
+                   "%s  <Subnodes>\n", indent);
+    else
+      fprintf(out, "</Name>\n"
+                   "%s</Node>\n", indent);
+  }
+
+  if (toc_level == 2)
+    fputs("        </Subnodes>\n"
+          "      </Node>\n", out);
+
+  fputs("      </Subnodes>\n"
+        "    </Node>\n"
+        "  </TOC>\n"
+        "</DocSetNodes>\n", out);
+
+  fclose(out);
+
+ /*
+  * Then the Tokens.xml file...
+  */
+
+  snprintf(filename, sizeof(filename), "%s/Contents/Resources/Tokens.xml",
+           docset);
+  if ((out = fopen(filename, "w")) == NULL)
+  {
+    fprintf(stderr, "mxmldoc: Unable to create \"%s\": %s\n", filename,
+            strerror(errno));
+    return;
+  }
+
+  fputs("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
+        "<Tokens version=\"1.0\">\n", out);
+
+  write_tokens(out, doc, "index.html");
+
+  fputs("</Tokens>\n", out);
+
+  fclose(out);
+
+ /*
+  * Finally the HTML file...
+  */
+
+  snprintf(filename, sizeof(filename),
+           "%s/Contents/Resources/Documentation/index.html",
+           docset);
+  if ((out = fopen(filename, "w")) == NULL)
+  {
+    fprintf(stderr, "mxmldoc: Unable to create \"%s\": %s\n", filename,
+            strerror(errno));
+    return;
+  }
+
+ /*
+  * Standard header...
+  */
+
+  write_html_head(out, OUTPUT_HTML, section, title, author, copyright, docversion, cssfile);
+
+ /*
+  * Header...
+  */
+
+  if (headerfile)
+  {
+   /*
+    * Use custom header...
+    */
+
+    write_file(out, headerfile, OUTPUT_HTML);
+  }
+  else
+  {
+   /*
+    * Use standard header...
+    */
+
+    fputs("    <h1 class=\"title\">", out);
+    write_string(out, title, OUTPUT_HTML);
+    fputs("</h1>\n", out);
+
+    if (author)
+    {
+      fputs("    <p>", out);
+      write_string(out, author, OUTPUT_HTML);
+      fputs("</p>\n", out);
+    }
+
+    if (copyright)
+    {
+      fputs("    <p>", out);
+      write_string(out, copyright, OUTPUT_HTML);
+      fputs("</p>\n", out);
+    }
+  }
+
+ /*
+  * Table of contents...
+  */
+
+  write_html_toc(out, title, toc, NULL, NULL);
+
+  free_toc(toc);
+
+ /*
+  * Body...
+  */
+
+  fputs("    <div class=\"body\">\n", out);
+
+  write_html_body(out, OUTPUT_HTML, introfile, doc);
+
+ /*
+  * Footer...
+  */
+
+  if (footerfile)
+  {
+   /*
+    * Use custom footer...
+    */
+
+    write_file(out, footerfile, OUTPUT_HTML);
+  }
+
+  fputs("    </div>\n"
+        "  </body>\n"
+        "</html>\n", out);
+
+  fclose(out);
+
+ /*
+  * When generating document sets, run the docsetutil program to index it...
+  */
+
+  if (docset)
+  {
+    int		argc = 0;		/* Argument count */
+    const char	*args[5];		/* Argument array */
+    pid_t	pid;			/* Process ID */
+    int		status;			/* Exit status */
+
+
+    args[argc++] = "/usr/bin/xcrun";
+    args[argc++] = "docsetutil";
+    args[argc++] = "index";
+    args[argc++] = docset;
+    args[argc  ] = NULL;
+
+    if (posix_spawn(&pid, args[0], NULL, NULL, (char **)args, environ))
+    {
+      fprintf(stderr, "mxmldoc: Unable to index documentation set \"%s\": %s\n",
+              docset, strerror(errno));
+    }
+    else
+    {
+      while (wait(&status) != pid);
+
+      if (status)
+      {
+        if (WIFEXITED(status))
+	  fprintf(stderr, "mxmldoc: docsetutil exited with status %d\n",
+		  WEXITSTATUS(status));
+        else
+	  fprintf(stderr, "mxmldoc: docsetutil crashed with signal %d\n",
+		  WTERMSIG(status));
+      }
+      else
+      {
+       /*
+        * Remove unneeded temporary XML files...
+	*/
+
+	snprintf(filename, sizeof(filename), "%s/Contents/Resources/Nodes.xml",
+		 docset);
+        unlink(filename);
+
+	snprintf(filename, sizeof(filename), "%s/Contents/Resources/Tokens.xml",
+		 docset);
+        unlink(filename);
+      }
+    }
+  }
+#endif /* __APPLE__ */
+}
+
+
 /*
  * 'write_element()' - Write an element's text nodes.
  */
@@ -3351,7 +3745,7 @@ write_element(FILE        *out,		/* I - Output file */
       if (node->value.text.whitespace)
 	putc(' ', out);
 
-      if ((mode == OUTPUT_HTML || mode == OUTPUT_EPUB) &&
+      if ((mode == OUTPUT_HTML || mode == OUTPUT_EPUB || mode == OUTPUT_DOCSET) &&
           (mxmlFindElement(doc, doc, "class", "name", node->value.text.string,
                            MXML_DESCEND) ||
 	   mxmlFindElement(doc, doc, "enumeration", "name",
@@ -3444,7 +3838,7 @@ write_epub(const char  *epubfile,	/* I - EPUB file (output) */
   * Standard header...
   */
 
-  write_html_head(fp, OUTPUT_EPUB, section, title, author, copyright, cssfile);
+  write_html_head(fp, OUTPUT_EPUB, section, title, author, copyright, docversion, cssfile);
 
  /*
   * Header...
@@ -3912,14 +4306,11 @@ write_function(FILE        *out,	/* I - Output file */
 
 static void
 write_html(const char  *framefile,	/* I - Framed HTML basename */
-	   const char  *docset,		/* I - Documentation set directory */
 	   const char  *section,	/* I - Section */
 	   const char  *title,		/* I - Title */
            const char  *author,		/* I - Author's name */
            const char  *copyright,	/* I - Copyright string */
 	   const char  *docversion,	/* I - Documentation set version */
-	   const char  *feedname,	/* I - Feed name for doc set */
-	   const char  *feedurl,	/* I - Feed URL for doc set */
 	   const char  *cssfile,	/* I - Stylesheet file */
 	   const char  *headerfile,	/* I - Header file */
 	   const char  *introfile,	/* I - Intro file */
@@ -3984,6 +4375,9 @@ write_html(const char  *framefile,	/* I - Framed HTML basename */
           "    <meta name=\"copyright\" content=\"", out);
     write_string(out, copyright, OUTPUT_HTML);
     fputs("\">\n"
+          "    <meta name=\"version\" content=\"", out);
+    write_string(out, docversion, OUTPUT_HTML);
+    fputs("\">\n"
           "  </head>\n", out);
 
     fputs("  <frameset cols=\"250,*\">\n", out);
@@ -4016,7 +4410,7 @@ write_html(const char  *framefile,	/* I - Framed HTML basename */
       return;
     }
 
-    write_html_head(out, OUTPUT_HTML, section, title, author, copyright, cssfile);
+    write_html_head(out, OUTPUT_HTML, section, title, author, copyright, docversion, cssfile);
 
     snprintf(filename, sizeof(filename), "%s-body.html", basename);
 
@@ -4039,223 +4433,6 @@ write_html(const char  *framefile,	/* I - Framed HTML basename */
       return;
     }
   }
-  else if (docset)
-  {
-   /*
-    * Create an Xcode documentation set - start by removing any existing
-    * output directory...
-    */
-
-#ifdef __APPLE__
-    const char	*id;			/* Identifier */
-    size_t	i;			/* Looping var */
-    toc_entry_t	*tentry;		/* Current table of contents */
-    int		toc_level;		/* Current table-of-contents level */
-    int		xmlid = 1;		/* Current XML node ID */
-    const char	*indent;		/* Indentation */
-
-    if (!access(docset, 0) && !remove_directory(docset))
-      return;
-
-   /*
-    * Then make the Apple standard bundle directory structure...
-    */
-
-    if (mkdir(docset, 0755))
-    {
-      fprintf(stderr, "mxmldoc: Unable to create \"%s\": %s\n", docset,
-              strerror(errno));
-      return;
-    }
-
-    snprintf(filename, sizeof(filename), "%s/Contents", docset);
-    if (mkdir(filename, 0755))
-    {
-      fprintf(stderr, "mxmldoc: Unable to create \"%s\": %s\n", filename,
-              strerror(errno));
-      return;
-    }
-
-    snprintf(filename, sizeof(filename), "%s/Contents/Resources", docset);
-    if (mkdir(filename, 0755))
-    {
-      fprintf(stderr, "mxmldoc: Unable to create \"%s\": %s\n", filename,
-              strerror(errno));
-      return;
-    }
-
-    snprintf(filename, sizeof(filename), "%s/Contents/Resources/Documentation",
-             docset);
-    if (mkdir(filename, 0755))
-    {
-      fprintf(stderr, "mxmldoc: Unable to create \"%s\": %s\n", filename,
-              strerror(errno));
-      return;
-    }
-
-   /*
-    * The Info.plist file, which describes the documentation set...
-    */
-
-    if ((id = strrchr(docset, '/')) != NULL)
-      id ++;
-    else
-      id = docset;
-
-    snprintf(filename, sizeof(filename), "%s/Contents/Info.plist", docset);
-    if ((out = fopen(filename, "w")) == NULL)
-    {
-      fprintf(stderr, "mxmldoc: Unable to create \"%s\": %s\n", filename,
-              strerror(errno));
-      return;
-    }
-
-    fputs("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
-          "<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">\n"
-          "<plist version=\"1.0\">\n"
-          "  <dict>\n"
-	  "    <key>CFBundleIdentifier</key>\n"
-	  "    <string>", out);
-    write_string(out, id, OUTPUT_HTML);
-    fputs("</string>\n"
-          "    <key>CFBundleName</key>\n"
-	  "    <string>", out);
-    write_string(out, title, OUTPUT_HTML);
-    fputs("</string>\n"
-          "    <key>CFBundleVersion</key>\n"
-	  "    <string>", out);
-    write_string(out, docversion ? docversion : "0.0", OUTPUT_HTML);
-    fputs("</string>\n"
-          "    <key>CFBundleShortVersionString</key>\n"
-	  "    <string>", out);
-    write_string(out, docversion ? docversion : "0.0", OUTPUT_HTML);
-    fputs("</string>\n", out);
-
-    if (feedname)
-    {
-      fputs("    <key>DocSetFeedName</key>\n"
-	    "    <string>", out);
-      write_string(out, feedname ? feedname : title, OUTPUT_HTML);
-      fputs("</string>\n", out);
-    }
-
-    if (feedurl)
-    {
-      fputs("    <key>DocSetFeedURL</key>\n"
-	    "    <string>", out);
-      write_string(out, feedurl, OUTPUT_HTML);
-      fputs("</string>\n", out);
-    }
-
-    fputs("  </dict>\n"
-          "</plist>\n", out);
-
-    fclose(out);
-
-   /*
-    * Next the Nodes.xml file...
-    */
-
-    snprintf(filename, sizeof(filename), "%s/Contents/Resources/Nodes.xml",
-             docset);
-    if ((out = fopen(filename, "w")) == NULL)
-    {
-      fprintf(stderr, "mxmldoc: Unable to create \"%s\": %s\n", filename,
-              strerror(errno));
-      return;
-    }
-
-    fputs("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
-          "<DocSetNodes version=\"1.0\">\n"
-	  "  <TOC>\n"
-	  "    <Node id=\"0\">\n"
-	  "      <Name>", out);
-    write_string(out, title, OUTPUT_HTML);
-    fputs("      </Name>\n"
-          "      <Path>Documentation/index.html</Path>\n"
-	  "      <Subnodes>\n", out);
-
-    for (i = 0, tentry = toc->entries, toc_level = 1; i < toc->num_entries; i ++, tentry ++)
-    {
-      if (tentry->level > toc_level)
-      {
-        toc_level = tentry->level;
-      }
-      else if (tentry->level < toc_level)
-      {
-        fputs("        </Subnodes>\n"
-              "      </Node>\n", out);
-        toc_level = tentry->level;
-      }
-
-      indent = toc_level == 2 ? "            " : "      ";
-
-      fprintf(out, "%s<Node id=\"%d\">\n"
-                   "%s  <Path>Documentation/index.html</Path>\n"
-                   "%s  <Anchor>%s</Anchor>\n"
-                   "%s  <Name>", indent, xmlid ++, indent, indent, tentry->anchor, indent);
-      write_string(out, tentry->title, OUTPUT_HTML);
-
-      if ((i + 1) < toc->num_entries && tentry[1].level > toc_level)
-        fprintf(out, "</Name>\n"
-                     "%s  <Subnodes>\n", indent);
-      else
-        fprintf(out, "</Name>\n"
-                     "%s</Node>\n", indent);
-    }
-
-    if (toc_level == 2)
-      fputs("        </Subnodes>\n"
-            "      </Node>\n", out);
-
-    fputs("      </Subnodes>\n"
-          "    </Node>\n"
-          "  </TOC>\n"
-          "</DocSetNodes>\n", out);
-
-    fclose(out);
-
-   /*
-    * Then the Tokens.xml file...
-    */
-
-    snprintf(filename, sizeof(filename), "%s/Contents/Resources/Tokens.xml",
-             docset);
-    if ((out = fopen(filename, "w")) == NULL)
-    {
-      fprintf(stderr, "mxmldoc: Unable to create \"%s\": %s\n", filename,
-              strerror(errno));
-      return;
-    }
-
-    fputs("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
-          "<Tokens version=\"1.0\">\n", out);
-
-    write_tokens(out, doc, "index.html");
-
-    fputs("</Tokens>\n", out);
-
-    fclose(out);
-
-   /*
-    * Finally the HTML file...
-    */
-
-    snprintf(filename, sizeof(filename),
-             "%s/Contents/Resources/Documentation/index.html",
-             docset);
-    if ((out = fopen(filename, "w")) == NULL)
-    {
-      fprintf(stderr, "mxmldoc: Unable to create \"%s\": %s\n", filename,
-              strerror(errno));
-      return;
-    }
-
-#else
-    fputs("mxmldoc: Xcode documentation sets can only be created on macOS.\n", stderr);
-    return;
-#endif /* __APPLE__ */
-  }
   else
     out = stdout;
 
@@ -4263,7 +4440,7 @@ write_html(const char  *framefile,	/* I - Framed HTML basename */
   * Standard header...
   */
 
-  write_html_head(out, OUTPUT_HTML, section, title, author, copyright, cssfile);
+  write_html_head(out, OUTPUT_HTML, section, title, author, copyright, docversion, cssfile);
 
  /*
   * Header...
@@ -4290,14 +4467,14 @@ write_html(const char  *framefile,	/* I - Framed HTML basename */
     if (author)
     {
       fputs("    <p>", out);
-      write_string(out, author, OUTPUT_EPUB);
+      write_string(out, author, OUTPUT_HTML);
       fputs("</p>\n", out);
     }
 
     if (copyright)
     {
       fputs("    <p>", out);
-      write_string(out, copyright, OUTPUT_EPUB);
+      write_string(out, copyright, OUTPUT_HTML);
       fputs("</p>\n", out);
     }
   }
@@ -4342,61 +4519,6 @@ write_html(const char  *framefile,	/* I - Framed HTML basename */
 
   if (out != stdout)
     fclose(out);
-
-#ifdef __APPLE__
- /*
-  * When generating document sets, run the docsetutil program to index it...
-  */
-
-  if (docset)
-  {
-    int		argc = 0;		/* Argument count */
-    const char	*args[5];		/* Argument array */
-    pid_t	pid;			/* Process ID */
-    int		status;			/* Exit status */
-
-
-    args[argc++] = "/usr/bin/xcrun";
-    args[argc++] = "docsetutil";
-    args[argc++] = "index";
-    args[argc++] = docset;
-    args[argc  ] = NULL;
-
-    if (posix_spawn(&pid, args[0], NULL, NULL, (char **)args, environ))
-    {
-      fprintf(stderr, "mxmldoc: Unable to index documentation set \"%s\": %s\n",
-              docset, strerror(errno));
-    }
-    else
-    {
-      while (wait(&status) != pid);
-
-      if (status)
-      {
-        if (WIFEXITED(status))
-	  fprintf(stderr, "mxmldoc: docsetutil exited with status %d\n",
-		  WEXITSTATUS(status));
-        else
-	  fprintf(stderr, "mxmldoc: docsetutil crashed with signal %d\n",
-		  WTERMSIG(status));
-      }
-      else
-      {
-       /*
-        * Remove unneeded temporary XML files...
-	*/
-
-	snprintf(filename, sizeof(filename), "%s/Contents/Resources/Nodes.xml",
-		 docset);
-        unlink(filename);
-
-	snprintf(filename, sizeof(filename), "%s/Contents/Resources/Tokens.xml",
-		 docset);
-        unlink(filename);
-      }
-    }
-  }
-#endif /* __APPLE__ */
 }
 
 
@@ -4673,6 +4795,7 @@ write_html_head(FILE       *out,	/* I - Output file */
                 const char *title,	/* I - Title */
                 const char *author,	/* I - Author's name */
                 const char *copyright,	/* I - Copyright string */
+                const char *docversion,	/* I - Document version string */
 		const char *cssfile)	/* I - Stylesheet */
 {
   if (mode == OUTPUT_EPUB)
@@ -4704,6 +4827,9 @@ write_html_head(FILE       *out,	/* I - Output file */
           "    <meta name=\"copyright\" content=\"", out);
     write_string(out, copyright, mode);
     fputs("\" />\n"
+          "    <meta name=\"version\" content=\"", out);
+    write_string(out, docversion, mode);
+    fputs("\" />\n"
           "    <style type=\"text/css\"><![CDATA[\n", out);
   }
   else
@@ -4719,6 +4845,9 @@ write_html_head(FILE       *out,	/* I - Output file */
     fputs("\">\n"
           "    <meta name=\"copyright\" content=\"", out);
     write_string(out, copyright, mode);
+    fputs("\">\n"
+          "    <meta name=\"version\" content=\"", out);
+    write_string(out, docversion, mode);
     fputs("\">\n"
           "    <style type=\"text/css\"><!--\n", out);
   }
@@ -5670,6 +5799,7 @@ write_string(FILE       *out,		/* I - Output file */
 {
   switch (mode)
   {
+    case OUTPUT_DOCSET :
     case OUTPUT_EPUB :
     case OUTPUT_HTML :
     case OUTPUT_XML :

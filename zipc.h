@@ -50,6 +50,7 @@ typedef struct _zipc_file_s zipc_file_t;/* File/directory in ZIP container */
  */
 
 extern int		zipcClose(zipc_t *zc);
+extern int              zipcCopyFile(zipc_t *zc, const char *dstname, const char *srcname, int text, int compressed);
 extern int		zipcCreateDirectory(zipc_t *zc, const char *filename);
 extern zipc_file_t	*zipcCreateFile(zipc_t *zc, const char *filename, int compressed);
 extern int		zipcCreateFileWithString(zipc_t *zc, const char *filename, const char *contents);

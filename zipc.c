@@ -162,6 +162,80 @@ zipcClose(zipc_t *zc)			/* I - ZIP container */
 
 
 /*
+ * 'zipcCopyFile()' - Copy a file into a ZIP container.
+ *
+ * The file referenced by "srcname" will be efficiently copied into the ZIP
+ * container with the name "dstname".
+ *
+ * The "compressed" value determines whether the file is compressed within the
+ * container.
+ */
+
+int                                     /* O - 0 on success, -1 on error */
+zipcCopyFile(zipc_t *zc,                /* I - ZIP container */
+             const char *dstname,       /* I - Destination file (in ZIP container) */
+             const char *srcname,       /* I - Source file (on disk) */
+             int        text,           /* I - 0 for binary, 1 for text */
+             int        compressed)     /* I - 0 for uncompressed, 1 for compressed */
+{
+  zipc_file_t   *dstfile;               /* Destination file */
+  FILE          *srcfile;               /* Source file */
+  char          buffer[65536];          /* Copy buffer */
+  size_t        length;                 /* Number of bytes read */
+
+
+  if ((srcfile = fopen(srcname, text ? "r" : "rb")) == NULL)
+  {
+    zc->error = strerror(errno);
+    return (-1);
+  }
+
+  if ((dstfile = zipcCreateFile(zc, dstname, compressed)) == NULL)
+  {
+    fclose(srcfile);
+    return (-1);
+  }
+
+  if (text)
+  {
+   /*
+    * Copy as text...
+    */
+
+    while (fgets(buffer, sizeof(buffer), srcfile))
+    {
+      if (zipcFilePuts(dstfile, buffer))
+      {
+        fclose(srcfile);
+        zipcFileFinish(dstfile);
+        return (-1);
+      }
+    }
+  }
+  else
+  {
+   /*
+    * Copy as binary...
+    */
+
+    while ((length = fread(buffer, 1, sizeof(buffer), srcfile)) > 0)
+    {
+      if (zipcFileWrite(dstfile, buffer, length))
+      {
+        fclose(srcfile);
+        zipcFileFinish(dstfile);
+        return (-1);
+      }
+    }
+  }
+
+  fclose(srcfile);
+
+  return (zipcFileFinish(dstfile));
+}
+
+
+/*
  * 'zipcCreateDirectory()' - Create a directory in a ZIP container.
  *
  * The "filename" value is the path within the ZIP container.  Directories are

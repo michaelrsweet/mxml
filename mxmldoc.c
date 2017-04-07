@@ -182,11 +182,11 @@ static void		write_docset(const char *docset, const char *section, const char *t
 #endif /* __APPLE__ */
 static void		write_element(FILE *out, mxml_node_t *doc, mxml_node_t *element, int mode);
 #ifdef HAVE_ZLIB_H
-static void		write_epub(const char *epubfile, const char *section, const char *title, const char *author, const char *copyright, const char *docversion, const char *cssfile, const char *headerfile, const char *introfile, mxml_node_t *doc, const char *footerfile);
+static void		write_epub(const char *epubfile, const char *section, const char *title, const char *author, const char *copyright, const char *docversion, const char *cssfile, const char *coverimage, const char *headerfile, const char *introfile, mxml_node_t *doc, const char *footerfile);
 #endif /* HAVE_ZLIB_H */
 static void		write_file(FILE *out, const char *file, int mode);
 static void		write_function(FILE *out, int mode, mxml_node_t *doc, mxml_node_t *function, int level);
-static void		write_html(const char *framefile, const char *section, const char *title, const char *author, const char *copyright, const char *docversion, const char *cssfile, const char *headerfile, const char *introfile, mxml_node_t *doc, const char *footerfile);
+static void		write_html(const char *framefile, const char *section, const char *title, const char *author, const char *copyright, const char *docversion, const char *cssfile, const char *coverimage, const char *headerfile, const char *introfile, mxml_node_t *doc, const char *footerfile);
 static void		write_html_body(FILE *out, int mode, const char *introfile, mxml_node_t *doc);
 static void		write_html_head(FILE *out, int mode, const char *section, const char *title, const char *author, const char *copyright, const char *docversion, const char *cssfile);
 static void		write_html_toc(FILE *out, const char *title, toc_t *toc, const char  *filename, const char  *target);
@@ -222,6 +222,7 @@ main(int  argc,				/* I - Number of command-line args */
 		*framefile = NULL,	/* Framed HTML basename */
 		*headerfile = NULL,	/* Header file */
 		*introfile = NULL,	/* Introduction file */
+                *coverimage = NULL,	/* Cover image file */
 		*name = NULL,		/* Name of manpage */
 		*path = NULL,		/* Path to help file for tokens */
 		*section = NULL,	/* Section/keywords of documentation */
@@ -274,6 +275,18 @@ main(int  argc,				/* I - Number of command-line args */
       i ++;
       if (i < argc)
         copyright = argv[i];
+      else
+        usage(NULL);
+    }
+    else if (!strcmp(argv[i], "--coverimage") && !coverimage)
+    {
+     /*
+      * Set cover image file...
+      */
+
+      i ++;
+      if (i < argc)
+        coverimage = argv[i];
       else
         usage(NULL);
     }
@@ -608,7 +621,7 @@ main(int  argc,				/* I - Number of command-line args */
         */
 
 #ifdef HAVE_ZLIB_H
-        write_epub(epubfile, section, title ? title : "Documentation", author ? author : "Unknown", copyright ? copyright : "Unknown", docversion ? docversion : "0.0", cssfile, headerfile, introfile, mxmldoc, footerfile);
+        write_epub(epubfile, section, title ? title : "Documentation", author ? author : "Unknown", copyright ? copyright : "Unknown", docversion ? docversion : "0.0", cssfile, coverimage, headerfile, introfile, mxmldoc, footerfile);
 #else
         fputs("mxmldoc: Sorry, not compiled with EPUB support.\n", stderr);
 #endif /* HAVE_ZLIB_H */
@@ -619,7 +632,7 @@ main(int  argc,				/* I - Number of command-line args */
         * Write HTML documentation...
         */
 
-        write_html(framefile, section, title ? title : "Documentation", author ? author : "Unknown", copyright ? copyright : "Unknown", docversion ? docversion : "0.0", cssfile, headerfile, introfile, mxmldoc, footerfile);
+        write_html(framefile, section, title ? title : "Documentation", author ? author : "Unknown", copyright ? copyright : "Unknown", docversion ? docversion : "0.0", cssfile, coverimage, headerfile, introfile, mxmldoc, footerfile);
         break;
 
     case OUTPUT_MAN :
@@ -3786,6 +3799,7 @@ write_epub(const char  *epubfile,	/* I - EPUB file (output) */
            const char  *copyright,	/* I - Copyright */
            const char  *docversion,	/* I - Document version */
            const char  *cssfile,	/* I - Stylesheet file */
+           const char  *coverimage,	/* I - Cover image file */
            const char  *headerfile,	/* I - Header file */
            const char  *introfile,	/* I - Intro file */
            mxml_node_t *doc,		/* I - XML documentation */
@@ -3839,6 +3853,9 @@ write_epub(const char  *epubfile,	/* I - EPUB file (output) */
   */
 
   write_html_head(fp, OUTPUT_EPUB, section, title, author, copyright, docversion, cssfile);
+
+  if (coverimage)
+    fputs("<p><img src=\"cover.png\" width=\"100%\" /></p>", fp);
 
  /*
   * Header...
@@ -3926,6 +3943,13 @@ write_epub(const char  *epubfile,	/* I - EPUB file (output) */
   status |= zipcCreateFileWithString(epub, "mimetype", mimetype);
 
  /*
+  * Add the cover image, if specified...
+  */
+
+  if (coverimage)
+    status |= zipcCopyFile(epub, "iTunesArtwork.png", coverimage, 0, 0);
+
+ /*
   * The META-INF/ directory...
   */
 
@@ -3953,24 +3977,16 @@ write_epub(const char  *epubfile,	/* I - EPUB file (output) */
   * Copy the OEBPS/body.xhtml file...
   */
 
-  if ((epubf = zipcCreateFile(epub, "OEBPS/body.xhtml", 1)) != NULL)
-  {
-    if ((fp = fopen(xhtmlfile, "r")) != NULL)
-    {
-      char	buffer[65536];		/* Copy buffer */
-      int	length;			/* Number of bytes */
-
-      while ((length = (int)fread(buffer, 1, sizeof(buffer), fp)) > 0)
-        zipcFileWrite(epubf, buffer, length);
-
-      fclose(fp);
-      zipcFileFinish(epubf);
-    }
-  }
-  else
-    status = -1;
+  status |= zipcCopyFile(epub, "OEBPS/body.xhtml", xhtmlfile, 1, 1);
 
   unlink(xhtmlfile);
+
+ /*
+  * Add the cover image again, if specified...
+  */
+
+  if (coverimage)
+    status |= zipcCopyFile(epub, "OEBPS/cover.png", coverimage, 0, 0);
 
  /*
   * Now the OEBPS/package.opf file...
@@ -4312,6 +4328,7 @@ write_html(const char  *framefile,	/* I - Framed HTML basename */
            const char  *copyright,	/* I - Copyright string */
 	   const char  *docversion,	/* I - Documentation set version */
 	   const char  *cssfile,	/* I - Stylesheet file */
+           const char  *coverimage,	/* I - Cover image file */
 	   const char  *headerfile,	/* I - Header file */
 	   const char  *introfile,	/* I - Intro file */
 	   mxml_node_t *doc,		/* I - XML documentation */
@@ -4412,6 +4429,13 @@ write_html(const char  *framefile,	/* I - Framed HTML basename */
 
     write_html_head(out, OUTPUT_HTML, section, title, author, copyright, docversion, cssfile);
 
+    if (coverimage)
+    {
+      fputs("<p><img src=\"", out);
+      write_string(out, coverimage, OUTPUT_HTML);
+      fputs("\" width=\"100%\"></p>\n", out);
+    }
+
     snprintf(filename, sizeof(filename), "%s-body.html", basename);
 
     write_html_toc(out, title, toc, filename, "body");
@@ -4441,6 +4465,13 @@ write_html(const char  *framefile,	/* I - Framed HTML basename */
   */
 
   write_html_head(out, OUTPUT_HTML, section, title, author, copyright, docversion, cssfile);
+
+  if (!framefile && coverimage)
+  {
+    fputs("<p><img src=\"", out);
+    write_string(out, coverimage, OUTPUT_HTML);
+    fputs("\" width=\"100%\"></p>\n", out);
+  }
 
  /*
   * Header...

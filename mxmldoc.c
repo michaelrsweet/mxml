@@ -179,13 +179,13 @@ static void		write_description(FILE *out, mxml_node_t *description, const char *
 static void		write_element(FILE *out, mxml_node_t *doc, mxml_node_t *element, int mode);
 static void		write_epub(const char *epubfile, const char *section, const char *title, const char *author, const char *copyright, const char *docversion, const char *cssfile, const char *headerfile, const char *introfile, mxml_node_t *doc, const char *footerfile);
 static void		write_file(FILE *out, const char *file, int mode);
-static void		write_function(FILE *out, int xhtml, mxml_node_t *doc, mxml_node_t *function, int level);
+static void		write_function(FILE *out, int mode, mxml_node_t *doc, mxml_node_t *function, int level);
 static void		write_html(const char *framefile, const char *docset, const char *section, const char *title, const char *author, const char *copyright, const char *docversion, const char *feedname, const char *feedurl, const char *cssfile, const char *headerfile, const char *introfile, mxml_node_t *doc, const char *footerfile);
 static void		write_html_body(FILE *out, int mode, const char *introfile, mxml_node_t *doc);
 static void		write_html_head(FILE *out, int mode, const char *section, const char *title, const char *author, const char *copyright, const char *cssfile);
 static void		write_html_toc(FILE *out, const char *title, toc_t *toc, const char  *filename, const char  *target);
 static void		write_man(const char *man_name, const char *section, const char *title, const char *author, const char *copyright, const char *headerfile, const char *introfile, mxml_node_t *doc, const char *footerfile);
-static void		write_scu(FILE *out, int xhtml, mxml_node_t *doc, mxml_node_t *scut);
+static void		write_scu(FILE *out, int mode, mxml_node_t *doc, mxml_node_t *scut);
 static void		write_string(FILE *out, const char *s, int mode);
 static void		write_tokens(FILE *out, mxml_node_t *doc, const char *path);
 static const char	*ws_cb(mxml_node_t *node, int where);
@@ -3743,10 +3743,25 @@ write_file(FILE       *out,		/* I - Output file */
     {
       for (ptr = line; *ptr; ptr ++)
       {
-        if (*ptr == '&' && !strncmp(ptr + 1, "nbsp;", 5))
+        if (!strncmp(ptr, "&nbsp;", 6))
         {
           ptr += 5;
           fputs("&#160;", out);
+        }
+        else if (!strncmp(ptr, "&copy;", 6))
+        {
+          ptr += 5;
+          fputs("&#169;", out);
+        }
+        else if (!strncmp(ptr, "&reg;", 5))
+        {
+          ptr += 4;
+          fputs("&#174;", out);
+        }
+        else if (!strncmp(ptr, "&trade;", 7))
+        {
+          ptr += 6;
+          fputs("&#8482;", out);
         }
         else
           fputc(*ptr, out);
@@ -3769,7 +3784,7 @@ write_file(FILE       *out,		/* I - Output file */
 
 static void
 write_function(FILE        *out,	/* I - Output file */
-               int         xhtml,	/* I - XHTML output? */
+               int         mode,	/* I - Output mode */
                mxml_node_t *doc,	/* I - Document */
                mxml_node_t *function,	/* I - Function */
 	       int         level)	/* I - Base heading level */
@@ -3783,7 +3798,7 @@ write_function(FILE        *out,	/* I - Output file */
 		*defval;		/* Default value */
   char		prefix;			/* Prefix character */
   char		*sep;			/* Newline separator */
-  const char	*br = xhtml ? "<br />" : "<br>";
+  const char	*br = mode == OUTPUT_EPUB ? "<br />" : "<br>";
 					/* Break sequence */
 
 
@@ -4422,7 +4437,7 @@ write_html_body(
 
     while (scut)
     {
-      write_scu(out, 1, doc, scut);
+      write_scu(out, mode, doc, scut);
 
       scut = find_public(scut, doc, "class", NULL);
     }
@@ -4438,7 +4453,7 @@ write_html_body(
 
     while (function)
     {
-      write_function(out, 1, doc, function, 3);
+      write_function(out, mode, doc, function, 3);
 
       function = find_public(function, doc, "function", NULL);
     }
@@ -4551,7 +4566,7 @@ write_html_body(
 
     while (scut)
     {
-      write_scu(out, 1, doc, scut);
+      write_scu(out, mode, doc, scut);
 
       scut = find_public(scut, doc, "struct", NULL);
     }
@@ -4567,7 +4582,7 @@ write_html_body(
 
     while (scut)
     {
-      write_scu(out, 1, doc, scut);
+      write_scu(out, mode, doc, scut);
 
       scut = find_public(scut, doc, "union", NULL);
     }
@@ -5479,7 +5494,7 @@ write_man(const char  *man_name,	/* I - Name of manpage */
 
 static void
 write_scu(FILE        *out,	/* I - Output file */
-          int         xhtml,	/* I - XHTML output? */
+          int         mode,	/* I - Output mode */
           mxml_node_t *doc,	/* I - Document */
           mxml_node_t *scut)	/* I - Structure, class, or union */
 {
@@ -5496,7 +5511,7 @@ write_scu(FILE        *out,	/* I - Output file */
   int		inscope,		/* Variable/method scope */
 		maxscope;		/* Maximum scope */
   char		prefix;			/* Prefix character */
-  const char	*br = xhtml ? "<br />" : "<br>";
+  const char	*br = mode == OUTPUT_EPUB ? "<br />" : "<br>";
 					/* Break sequence */
   static const char * const scopes[] =	/* Scope strings */
 		{
@@ -5639,7 +5654,7 @@ write_scu(FILE        *out,	/* I - Output file */
        function = mxmlFindElement(function, scut, "function", NULL, NULL,
 				  MXML_NO_DESCEND))
   {
-    write_function(out, xhtml, doc, function, 4);
+    write_function(out, mode, doc, function, 4);
   }
 }
 

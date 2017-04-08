@@ -385,7 +385,9 @@ mxml.epub:	mxml.xml
 		--intro doc/docset.intro --css doc/docset.css \
 		--docversion @VERSION@ --author "Michael R Sweet" \
 		--copyright "Copyright 2003-2017, All Rights Reserved." \
-		--title "Mini-XML API Reference" --epub mxml.epub mxml.xml
+		--title "Mini-XML API Reference" \
+		--coverimage doc/mxml-cover.png \
+		--epub mxml.epub mxml.xml
 
 
 #

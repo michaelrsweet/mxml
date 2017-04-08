@@ -3947,7 +3947,7 @@ write_epub(const char  *epubfile,	/* I - EPUB file (output) */
   */
 
   if (coverimage)
-    status |= zipcCopyFile(epub, "iTunesArtwork.png", coverimage, 0, 0);
+    status |= zipcCopyFile(epub, "iTunesArtwork", coverimage, 0, 0);
 
  /*
   * The META-INF/ directory...
@@ -4047,6 +4047,14 @@ write_epub(const char  *epubfile,	/* I - EPUB file (output) */
       mxmlElementSetAttr(temp, "id", "body");
       mxmlElementSetAttr(temp, "href", "body.xhtml");
       mxmlElementSetAttr(temp, "media-type", "application/xhtml+xml");
+
+      if (coverimage)
+      {
+        temp = mxmlNewElement(manifest, "item");
+        mxmlElementSetAttr(temp, "id", "cover");
+        mxmlElementSetAttr(temp, "href", "cover.png");
+        mxmlElementSetAttr(temp, "media-type", "image/png");
+      }
 
     spine = mxmlNewElement(package, "spine");
 

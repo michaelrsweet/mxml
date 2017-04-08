@@ -3943,13 +3943,6 @@ write_epub(const char  *epubfile,	/* I - EPUB file (output) */
   status |= zipcCreateFileWithString(epub, "mimetype", mimetype);
 
  /*
-  * Add the cover image, if specified...
-  */
-
-  if (coverimage)
-    status |= zipcCopyFile(epub, "iTunesArtwork", coverimage, 0, 0);
-
- /*
   * The META-INF/ directory...
   */
 
@@ -3982,7 +3975,7 @@ write_epub(const char  *epubfile,	/* I - EPUB file (output) */
   unlink(xhtmlfile);
 
  /*
-  * Add the cover image again, if specified...
+  * Add the cover image, if specified...
   */
 
   if (coverimage)
@@ -4035,6 +4028,13 @@ write_epub(const char  *epubfile,	/* I - EPUB file (output) */
       snprintf(identifier, sizeof(identifier), "%s-%s", epubbase, docversion);
       mxmlNewOpaque(temp, identifier);
 
+      if (coverimage)
+      {
+        temp = mxmlNewElement(metadata, "meta");
+        mxmlElementSetAttr(temp, "name", "cover");
+        mxmlElementSetAttr(temp, "content", "cover-image");
+      }
+
     manifest = mxmlNewElement(package, "manifest");
 
       temp = mxmlNewElement(manifest, "item");
@@ -4051,7 +4051,7 @@ write_epub(const char  *epubfile,	/* I - EPUB file (output) */
       if (coverimage)
       {
         temp = mxmlNewElement(manifest, "item");
-        mxmlElementSetAttr(temp, "id", "cover");
+        mxmlElementSetAttr(temp, "id", "cover-image");
         mxmlElementSetAttr(temp, "href", "cover.png");
         mxmlElementSetAttr(temp, "media-type", "image/png");
       }

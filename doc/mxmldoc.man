@@ -11,7 +11,7 @@
 .\"
 .\"     https://michaelrsweet.github.io/mxml
 .\"
-.TH mxmldoc 1 "Mini-XML" "6 April 2017" "Michael Sweet"
+.TH mxmldoc 1 "Mini-XML" "11 April 2017" "Michael R Sweet"
 .SH NAME
 mxmldoc \- mini-xml documentation generator
 .SH SYNOPSIS
@@ -25,14 +25,14 @@ mxmldoc \- mini-xml documentation generator
 .B mxmldoc
 [ \-\-author
 .I author
+] [ \-\-body
+.I bodyfile
 ] [ \-\-copyright
 .I copyright
 ] [ \-\-footer
 .I footerfile
 ] [ \-\-header
 .I headerfile
-] [ \-\-intro
-.I introfile
 ] [ \-\-section
 .I section
 ] [ \-\-title
@@ -49,6 +49,8 @@ mxmldoc \- mini-xml documentation generator
 .I directory.docset
 [ \-\-author
 .I author
+] [ \-\-body
+.I bodyfile
 ] [ \-\-copyright
 .I copyright
 ] [ \-\-docversion
@@ -61,8 +63,6 @@ mxmldoc \- mini-xml documentation generator
 .I footerfile
 ] [ \-\-header
 .I headerfile
-] [ \-\-intro
-.I introfile
 ] [ \-\-section
 .I section
 ] [ \-\-title
@@ -87,14 +87,14 @@ mxmldoc \- mini-xml documentation generator
 .I basename
 [ \-\-author
 .I author
+] [ \-\-body
+.I bodyfile
 ] [ \-\-copyright
 .I copyright
 ] [ \-\-footer
 .I footerfile
 ] [ \-\-header
 .I headerfile
-] [ \-\-intro
-.I introfile
 ] [ \-\-section
 .I section
 ] [ \-\-title
@@ -108,14 +108,14 @@ mxmldoc \- mini-xml documentation generator
 .B mxmldoc
 [ \-\-author
 .I author
+] [ \-\-body
+.I bodyfile
 ] [ \-\-copyright
 .I copyright
 ] [ \-\-footer
 .I footerfile
 ] [ \-\-header
 .I headerfile
-] [ \-\-intro
-.I introfile
 ] \-\-man
 .I manpage
 [ \-\-section
@@ -134,6 +134,8 @@ mxmldoc \- mini-xml documentation generator
 .I filename.epub
 [ \-\-author
 .I author
+] [ \-\-body
+.I bodyfile
 ] [ \-\-copyright
 .I copyright
 ] [ \-\-docversion
@@ -146,8 +148,6 @@ mxmldoc \- mini-xml documentation generator
 .I footerfile
 ] [ \-\-header
 .I headerfile
-] [ \-\-intro
-.I introfile
 ] [ \-\-section
 .I section
 ] [ \-\-title
@@ -179,6 +179,10 @@ Guide which is available at "http://www.cups.org/doc/spec-cmp.html".
 \-\-author "author name"
 .br
 Specifies the name of the documentation author.
+.TP 5
+\-\-body bodyfile
+.br
+Inserts the specified file between the table of contents and references.
 .TP 5
 \-\-copyright "copyright text"
 .br
@@ -218,10 +222,6 @@ one for the body.
 \-\-header headerfile
 .br
 Inserts the specified file at the top of the output documentation.
-.TP 5
-\-\-intro introfile
-.br
-Inserts the specified file before the table of contents.
 .TP 5
 \-\-man manpage
 .br

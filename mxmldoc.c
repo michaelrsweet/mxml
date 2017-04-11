@@ -20,6 +20,7 @@
 
 #include "config.h"
 #include "mxml.h"
+#include "mmd.h"
 #include <time.h>
 #include <sys/stat.h>
 #ifndef WIN32
@@ -162,13 +163,17 @@ typedef struct
 
 static void		add_toc(toc_t *toc, int level, const char *anchor, const char *title);
 static mxml_node_t	*add_variable(mxml_node_t *parent, const char *name, mxml_node_t *type);
-static toc_t		*build_toc(mxml_node_t *doc, const char *introfile);
+static toc_t		*build_toc(mxml_node_t *doc, const char *bodyfile, mmd_t *body);
 static mxml_node_t	*find_public(mxml_node_t *node, mxml_node_t *top, const char *element, const char *name);
 static void		free_toc(toc_t *toc);
 static char		*get_comment_info(mxml_node_t *description);
 static char		*get_iso_date(time_t t);
 static char		*get_text(mxml_node_t *node, char *buffer, int buflen);
+static int		is_markdown(const char *filename);
 static mxml_type_t	load_cb(mxml_node_t *node);
+static const char	*markdown_anchor(const char *text);
+static void		markdown_write_block(FILE *out, mmd_t *parent, int mode);
+static void		markdown_write_inline(FILE *out, mmd_t *node, int mode);
 static mxml_node_t	*new_documentation(mxml_node_t **mxmldoc);
 static int		remove_directory(const char *path);
 static void		safe_strcpy(char *dst, const char *src);
@@ -178,19 +183,19 @@ static void		update_comment(mxml_node_t *parent, mxml_node_t *comment);
 static void		usage(const char *option);
 static void		write_description(FILE *out, mxml_node_t *description, const char *element, int summary);
 #ifdef __APPLE__
-static void		write_docset(const char *docset, const char *section, const char *title, const char *author, const char *copyright, const char *docversion, const char *feedname, const char *feedurl, const char *cssfile, const char *headerfile, const char *introfile, mxml_node_t *doc, const char *footerfile);
+static void		write_docset(const char *docset, const char *section, const char *title, const char *author, const char *copyright, const char *docversion, const char *feedname, const char *feedurl, const char *cssfile, const char *headerfile, const char *bodyfile, mmd_t *body, mxml_node_t *doc, const char *footerfile);
 #endif /* __APPLE__ */
 static void		write_element(FILE *out, mxml_node_t *doc, mxml_node_t *element, int mode);
 #ifdef HAVE_ZLIB_H
-static void		write_epub(const char *epubfile, const char *section, const char *title, const char *author, const char *copyright, const char *docversion, const char *cssfile, const char *coverimage, const char *headerfile, const char *introfile, mxml_node_t *doc, const char *footerfile);
+static void		write_epub(const char *epubfile, const char *section, const char *title, const char *author, const char *copyright, const char *docversion, const char *cssfile, const char *coverimage, const char *headerfile, const char *bodyfile, mmd_t *body, mxml_node_t *doc, const char *footerfile);
 #endif /* HAVE_ZLIB_H */
 static void		write_file(FILE *out, const char *file, int mode);
 static void		write_function(FILE *out, int mode, mxml_node_t *doc, mxml_node_t *function, int level);
-static void		write_html(const char *framefile, const char *section, const char *title, const char *author, const char *copyright, const char *docversion, const char *cssfile, const char *coverimage, const char *headerfile, const char *introfile, mxml_node_t *doc, const char *footerfile);
-static void		write_html_body(FILE *out, int mode, const char *introfile, mxml_node_t *doc);
+static void		write_html(const char *framefile, const char *section, const char *title, const char *author, const char *copyright, const char *docversion, const char *cssfile, const char *coverimage, const char *headerfile, const char *bodyfile, mmd_t *body, mxml_node_t *doc, const char *footerfile);
+static void		write_html_body(FILE *out, int mode, const char *bodyfile, mmd_t *body, mxml_node_t *doc);
 static void		write_html_head(FILE *out, int mode, const char *section, const char *title, const char *author, const char *copyright, const char *docversion, const char *cssfile);
 static void		write_html_toc(FILE *out, const char *title, toc_t *toc, const char  *filename, const char  *target);
-static void		write_man(const char *man_name, const char *section, const char *title, const char *author, const char *copyright, const char *headerfile, const char *introfile, mxml_node_t *doc, const char *footerfile);
+static void		write_man(const char *man_name, const char *section, const char *title, const char *author, const char *copyright, const char *headerfile, const char *bodyfile, mmd_t *body, mxml_node_t *doc, const char *footerfile);
 static void		write_scu(FILE *out, int mode, mxml_node_t *doc, mxml_node_t *scut);
 static void		write_string(FILE *out, const char *s, int mode);
 static void		write_tokens(FILE *out, mxml_node_t *doc, const char *path);
@@ -221,13 +226,14 @@ main(int  argc,				/* I - Number of command-line args */
 		*footerfile = NULL,	/* Footer file */
 		*framefile = NULL,	/* Framed HTML basename */
 		*headerfile = NULL,	/* Header file */
-		*introfile = NULL,	/* Introduction file */
+		*bodyfile = NULL,	/* Body file */
                 *coverimage = NULL,	/* Cover image file */
 		*name = NULL,		/* Name of manpage */
 		*path = NULL,		/* Path to help file for tokens */
 		*section = NULL,	/* Section/keywords of documentation */
 		*title = NULL,		/* Title of documentation */
 		*xmlfile = NULL;	/* XML file */
+  mmd_t		*body;			/* Body markdown file, if any */
   int		mode = OUTPUT_HTML,	/* Output mode */
 		update = 0;		/* Updated XML file */
 
@@ -402,15 +408,15 @@ main(int  argc,				/* I - Number of command-line args */
       else
         usage(NULL);
     }
-    else if (!strcmp(argv[i], "--intro") && !introfile)
+    else if ((!strcmp(argv[i], "--body") || !strcmp(argv[i], "--intro")) && !bodyfile)
     {
      /*
-      * Set intro file...
+      * Set body file...
       */
 
       i ++;
       if (i < argc)
-        introfile = argv[i];
+        bodyfile = argv[i];
       else
         usage(NULL);
     }
@@ -601,6 +607,39 @@ main(int  argc,				/* I - Number of command-line args */
     }
   }
 
+ /*
+  * Load the body file and collect the default metadata values, if present.
+  */
+
+  if (is_markdown(bodyfile))
+    body = mmdLoad(bodyfile);
+  else
+    body = NULL;
+
+  if (!title)
+    title = mmdGetMetadata(body, "title");
+  if (!title)
+    title = "Documentation";
+
+  if (!author)
+    author = mmdGetMetadata(body, "author");
+  if (!author)
+    author = "Unknown";
+
+  if (!copyright)
+    copyright = mmdGetMetadata(body, "copyright");
+  if (!copyright)
+    copyright = "Unknown";
+
+  if (!docversion)
+    docversion = mmdGetMetadata(body, "version");
+  if (!docversion)
+    docversion = "0.0";
+
+ /*
+  * Write output...
+  */
+
   switch (mode)
   {
     case OUTPUT_DOCSET :
@@ -609,7 +648,7 @@ main(int  argc,				/* I - Number of command-line args */
         */
 
 #ifdef __APPLE__
-        write_docset(docset, section, title ? title : "Documentation", author ? author : "Unknown", copyright ? copyright : "Unknown", docversion ? docversion : "0.0", feedname, feedurl, cssfile, headerfile, introfile, mxmldoc, footerfile);
+        write_docset(docset, section, title, author, copyright, docversion, feedname, feedurl, cssfile, headerfile, bodyfile, body, mxmldoc, footerfile);
 #else
         fputs("mxmldoc: Sorry, Xcode documentation sets can only be created on macOS.\n", stderr);
 #endif /* __APPLE__ */
@@ -621,7 +660,7 @@ main(int  argc,				/* I - Number of command-line args */
         */
 
 #ifdef HAVE_ZLIB_H
-        write_epub(epubfile, section, title ? title : "Documentation", author ? author : "Unknown", copyright ? copyright : "Unknown", docversion ? docversion : "0.0", cssfile, coverimage, headerfile, introfile, mxmldoc, footerfile);
+        write_epub(epubfile, section, title, author, copyright, docversion, cssfile, coverimage, headerfile, bodyfile, body, mxmldoc, footerfile);
 #else
         fputs("mxmldoc: Sorry, not compiled with EPUB support.\n", stderr);
 #endif /* HAVE_ZLIB_H */
@@ -632,7 +671,7 @@ main(int  argc,				/* I - Number of command-line args */
         * Write HTML documentation...
         */
 
-        write_html(framefile, section, title ? title : "Documentation", author ? author : "Unknown", copyright ? copyright : "Unknown", docversion ? docversion : "0.0", cssfile, coverimage, headerfile, introfile, mxmldoc, footerfile);
+        write_html(framefile, section, title, author, copyright, docversion, cssfile, coverimage, headerfile, bodyfile, body, mxmldoc, footerfile);
         break;
 
     case OUTPUT_MAN :
@@ -640,7 +679,7 @@ main(int  argc,				/* I - Number of command-line args */
         * Write manpage documentation...
         */
 
-        write_man(name, section, title, author ? author : "Unknown", copyright ? copyright : "Unknown", headerfile, introfile, mxmldoc, footerfile);
+        write_man(name, section, title, author, copyright, headerfile, bodyfile, body, mxmldoc, footerfile);
         break;
 
     case OUTPUT_TOKENS :
@@ -652,6 +691,9 @@ main(int  argc,				/* I - Number of command-line args */
 	fputs("</Tokens>\n", stdout);
         break;
   }
+
+  if (body)
+    mmdFree(body);
 
  /*
   * Delete the tree and return...
@@ -824,10 +866,11 @@ add_variable(mxml_node_t *parent,	/* I - Parent node */
 
 static toc_t *				/* O - Table of contents */
 build_toc(mxml_node_t *doc,		/* I - Documentation */
-          const char  *introfile)	/* I - Introduction file */
+          const char  *bodyfile,	/* I - Body file */
+          mmd_t       *body)		/* I - Markdown body */
 {
   toc_t		*toc;			/* Array of headings */
-  FILE		*fp;			/* Intro file */
+  FILE		*fp;			/* Body file */
   mxml_node_t	*function,		/* Current function */
 		*scut,			/* Struct/class/union/typedef */
 		*arg;			/* Current argument */
@@ -835,17 +878,60 @@ build_toc(mxml_node_t *doc,		/* I - Documentation */
 
 
  /*
-  * Make an initial allocation of 100 entries...
+  * Make a new table-of-contents...
   */
 
   if ((toc = calloc(1, sizeof(toc_t))) == NULL)
     return (NULL);
 
  /*
-  * Scan the intro file for headings...
+  * Scan the body file for headings...
   */
 
-  if (introfile && (fp = fopen(introfile, "r")) != NULL)
+  if (body)
+  {
+    mmd_t	*node,			/* Current node */
+		*tnode,			/* Title node */
+		*next;			/* Next node */
+    mmd_type_t	type;			/* Node type */
+    char	title[1024],		/* Heading title */
+		*ptr;			/* Pointer into title */
+
+    for (node = mmdGetFirstChild(body); node; node = next)
+    {
+      type = mmdGetType(node);
+
+      if (type == MMD_TYPE_HEADING_1 || type == MMD_TYPE_HEADING_2)
+      {
+        title[sizeof(title) - 1] = '\0';
+
+        for (tnode = mmdGetFirstChild(node), ptr = title; tnode; tnode = mmdGetNextSibling(tnode))
+        {
+          if (mmdGetWhitespace(tnode) && ptr < (title + sizeof(title) - 1))
+            *ptr++ = ' ';
+
+          strncpy(ptr, mmdGetText(tnode), sizeof(title) - (ptr - title) - 1);
+          ptr += strlen(ptr);
+        }
+
+        add_toc(toc, type - MMD_TYPE_HEADING_1 + 1, markdown_anchor(title), title);
+        next = NULL;
+      }
+      else
+        next = mmdGetFirstChild(node);
+
+      if ((next = mmdGetNextSibling(node)) == NULL)
+      {
+        next = mmdGetParent(node);
+
+        while (next && mmdGetNextSibling(next) == NULL)
+          next = mmdGetParent(next);
+
+        next = mmdGetNextSibling(next);
+      }
+    }
+  }
+  else if (bodyfile && (fp = fopen(bodyfile, "r")) != NULL)
   {
     char	line[8192],		/* Line from file */
 		*ptr,			/* Pointer in line */
@@ -1312,6 +1398,20 @@ get_text(mxml_node_t *node,		/* I - Node to get */
 
 
 /*
+ * 'is_markdown()' - Determine whether a file is markdown text.
+ */
+
+static int				/* O - 1 if markdown, 0 otherwise */
+is_markdown(const char *filename)	/* I - File to check */
+{
+  const char	*ext = filename ? strstr(filename, ".md") : NULL;
+					/* Pointer to extension */
+
+  return (ext && !ext[3]);
+}
+
+
+/*
  * 'load_cb()' - Set the type of child nodes.
  */
 
@@ -1322,6 +1422,252 @@ load_cb(mxml_node_t *node)		/* I - Node */
     return (MXML_OPAQUE);
   else
     return (MXML_TEXT);
+}
+
+
+/*
+ * 'markdown_anchor()' - Return the HTML anchor for a given title.
+ */
+
+static const char *			/* O - HTML anchor */
+markdown_anchor(const char *text)	/* I - Title text */
+{
+  char          *bufptr;                /* Pointer into buffer */
+  static char   buffer[1024];           /* Buffer for anchor string */
+
+
+  for (bufptr = buffer; *text && bufptr < (buffer + sizeof(buffer) - 1); text ++)
+  {
+    if ((*text >= '0' && *text <= '9') || (*text >= 'a' && *text <= 'z') || (*text >= 'A' && *text <= 'Z') || *text == '.' || *text == '-')
+      *bufptr++ = *text;
+  }
+
+  *bufptr = '\0';
+
+  return (buffer);
+}
+
+
+/*
+ * 'markdown_write_block()' - Write a markdown block.
+ */
+
+static void
+markdown_write_block(FILE  *out,	/* I - Output file */
+                     mmd_t *parent,	/* I - Parent node */
+                     int   mode)	/* I - Output mode */
+{
+  mmd_t		*node;			/* Current child node */
+  mmd_type_t	type;			/* Node type */
+
+
+  type = mmdGetType(parent);
+
+  if (mode == OUTPUT_MAN)
+  {
+  }
+  else
+  {
+    const char	*element;		/* Enclosing element, if any */
+
+    switch (type)
+    {
+      case MMD_TYPE_BLOCK_QUOTE :
+          element = "blockquote";
+          break;
+
+      case MMD_TYPE_ORDERED_LIST :
+          element = "ol";
+          break;
+
+      case MMD_TYPE_UNORDERED_LIST :
+          element = "ul";
+          break;
+
+      case MMD_TYPE_LIST_ITEM :
+          element = "li";
+          break;
+
+      case MMD_TYPE_HEADING_1 :
+          element = "h2"; /* Offset since title is H1 for mxmldoc output */
+          break;
+
+      case MMD_TYPE_HEADING_2 :
+          element = "h3"; /* Offset since title is H1 for mxmldoc output */
+          break;
+
+      case MMD_TYPE_HEADING_3 :
+          element = "h4"; /* Offset since title is H1 for mxmldoc output */
+          break;
+
+      case MMD_TYPE_HEADING_4 :
+          element = "h5"; /* Offset since title is H1 for mxmldoc output */
+          break;
+
+      case MMD_TYPE_HEADING_5 :
+          element = "h6"; /* Offset since title is H1 for mxmldoc output */
+          break;
+
+      case MMD_TYPE_HEADING_6 :
+          element = "h6";
+          break;
+
+      case MMD_TYPE_PARAGRAPH :
+          element = "p";
+          break;
+
+      case MMD_TYPE_CODE_BLOCK :
+          fputs("    <pre><code>", out);
+          for (node = mmdGetFirstChild(parent); node; node = mmdGetNextSibling(node))
+            write_string(out, mmdGetText(node), mode);
+          fputs("</code></pre>\n", out);
+          return;
+
+      case MMD_TYPE_THEMATIC_BREAK :
+          if (mode == OUTPUT_EPUB)
+            fputs("    <hr />\n", out);
+          else
+            fputs("    <hr>\n", out);
+          return;
+
+      default :
+          element = NULL;
+          break;
+    }
+
+    if (type >= MMD_TYPE_HEADING_1 && type <= MMD_TYPE_HEADING_6)
+    {
+     /*
+      * Add an anchor...
+      */
+
+      fprintf(out, "    <%s><a id=\"", element);
+      for (node = mmdGetFirstChild(parent); node; node = mmdGetNextSibling(node))
+        fputs(markdown_anchor(mmdGetText(node)), out);
+      fputs("\">", out);
+    }
+    else if (element)
+      fprintf(out, "    <%s>%s", element, type <= MMD_TYPE_UNORDERED_LIST ? "\n" : "");
+
+    for (node = mmdGetFirstChild(parent); node; node = mmdGetNextSibling(node))
+    {
+      if (mmdIsBlock(node))
+        markdown_write_block(out, node, mode);
+      else
+        markdown_write_inline(out, node, mode);
+    }
+
+    if (type >= MMD_TYPE_HEADING_1 && type <= MMD_TYPE_HEADING_6)
+      fprintf(out, "</a></%s>\n", element);
+    else if (element)
+      fprintf(out, "</%s>\n", element);
+  }
+}
+
+
+/*
+ * 'markdown_write_inline()' - Write an inline markdown node.
+ */
+
+static void
+markdown_write_inline(FILE  *out,	/* I - Output file */
+                      mmd_t *node,	/* I - Node to write */
+                      int   mode)	/* I - Output mode */
+{
+  const char    *text,                  /* Text to write */
+                *url;                   /* URL to write */
+
+
+  if (mmdGetWhitespace(node))
+    fputc(' ', out);
+
+  text = mmdGetText(node);
+  url  = mmdGetURL(node);
+
+  if (mode == OUTPUT_MAN)
+  {
+  }
+  else
+  {
+    const char	*element;		/* Encoding element, if any */
+
+    switch (mmdGetType(node))
+    {
+      case MMD_TYPE_EMPHASIZED_TEXT :
+          element = "em";
+          break;
+
+      case MMD_TYPE_STRONG_TEXT :
+          element = "strong";
+          break;
+
+      case MMD_TYPE_STRUCK_TEXT :
+          element = "del";
+          break;
+
+      case MMD_TYPE_LINKED_TEXT :
+          element = "a";
+          break;
+
+      case MMD_TYPE_CODE_TEXT :
+          element = "code";
+          break;
+
+      case MMD_TYPE_IMAGE :
+          fputs("<img src=\"", out);
+          write_string(out, url, mode);
+          fputs("\" alt=\"", out);
+          write_string(out, text, mode);
+          if (mode == OUTPUT_EPUB)
+            fputs("\" />", out);
+          else
+            fputs("\">", out);
+          return;
+
+      case MMD_TYPE_HARD_BREAK :
+          if (mode == OUTPUT_EPUB)
+            fputs("<br />\n", out);
+          else
+            fputs("<br>\n", out);
+          return;
+
+      case MMD_TYPE_SOFT_BREAK :
+          if (mode == OUTPUT_EPUB)
+            fputs("<wbr />", out);
+          else
+            fputs("<wbr>", out);
+          return;
+
+      case MMD_TYPE_METADATA_TEXT :
+          return;
+
+      default :
+          element = NULL;
+          break;
+    }
+
+    if (url)
+    {
+      if (!strcmp(url, "@"))
+        fprintf(out, "<a href=\"#%s\">", markdown_anchor(text));
+      else
+        fprintf(out, "<a href=\"%s\">", url);
+    }
+    else if (element)
+      fprintf(out, "<%s>", element);
+
+    if (!strcmp(text, "(c)"))
+      fputs("&#160;", out);
+    else if (!strcmp(text, "(r)"))
+      fputs("&#174;", out);
+    else if (!strcmp(text, "(tm)"))
+      fputs("&#8482;", out);
+    else
+      write_string(out, text, mode);
+
+    if (element)
+      fprintf(out, "</%s>", element);
+  }
 }
 
 
@@ -3157,6 +3503,9 @@ usage(const char *option)		/* I - Unknown option */
 
   puts("Usage: mxmldoc [options] [filename.xml] [source files] >filename.html");
   puts("Options:");
+  puts("    --author name              Set author name");
+  puts("    --body bodyfile            Set body file (markdown supported)");
+  puts("    --copyright text           Set copyright text");
   puts("    --css filename.css         Set CSS stylesheet file");
   puts("    --docset bundleid.docset   Generate documentation set");
   puts("    --docversion version       Set documentation version");
@@ -3166,7 +3515,6 @@ usage(const char *option)		/* I - Unknown option */
   puts("    --footer footerfile        Set footer file");
   puts("    --framed basename          Generate framed HTML to basename*.html");
   puts("    --header headerfile        Set header file");
-  puts("    --intro introfile          Set introduction file");
   puts("    --man name                 Generate man page");
   puts("    --no-output                Do no generate documentation file");
   puts("    --section section          Set section name");
@@ -3376,7 +3724,8 @@ write_docset(const char  *docset,	/* I - Documentation set directory */
              const char  *feedurl,	/* I - Feed URL for doc set */
              const char  *cssfile,	/* I - Stylesheet file */
              const char  *headerfile,	/* I - Header file */
-             const char  *introfile,	/* I - Intro file */
+             const char  *bodyfile,	/* I - Body file */
+             mmd_t       *body,		/* I - Markdown body */
              mxml_node_t *doc,		/* I - XML documentation */
              const char  *footerfile)	/* I - Footer file */
 {
@@ -3389,7 +3738,7 @@ write_docset(const char  *docset,	/* I - Documentation set directory */
   * Create the table-of-contents entries...
   */
 
-  toc = build_toc(doc, introfile);
+  toc = build_toc(doc, bodyfile, body);
 
  /*
   * Create an Xcode documentation set - start by removing any existing
@@ -3657,7 +4006,7 @@ write_docset(const char  *docset,	/* I - Documentation set directory */
 
   fputs("    <div class=\"body\">\n", out);
 
-  write_html_body(out, OUTPUT_HTML, introfile, doc);
+  write_html_body(out, OUTPUT_HTML, bodyfile, body, doc);
 
  /*
   * Footer...
@@ -3801,7 +4150,8 @@ write_epub(const char  *epubfile,	/* I - EPUB file (output) */
            const char  *cssfile,	/* I - Stylesheet file */
            const char  *coverimage,	/* I - Cover image file */
            const char  *headerfile,	/* I - Header file */
-           const char  *introfile,	/* I - Intro file */
+           const char  *bodyfile,	/* I - Body file */
+           mmd_t       *body,		/* I - Markdown body */
            mxml_node_t *doc,		/* I - XML documentation */
            const char  *footerfile)	/* I - Footer file */
 {
@@ -3900,7 +4250,7 @@ write_epub(const char  *epubfile,	/* I - EPUB file (output) */
 
   fputs("    <div class=\"body\">\n", fp);
 
-  write_html_body(fp, OUTPUT_EPUB, introfile, doc);
+  write_html_body(fp, OUTPUT_EPUB, bodyfile, body, doc);
 
  /*
   * Footer...
@@ -4079,7 +4429,7 @@ write_epub(const char  *epubfile,	/* I - EPUB file (output) */
 
   if ((epubf = zipcCreateFile(epub, "OEBPS/nav.xhtml", 1)) != NULL)
   {
-    toc = build_toc(doc, introfile);
+    toc = build_toc(doc, bodyfile, body);
 
     zipcFilePrintf(epubf, "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
                           "<!DOCTYPE html>\n"
@@ -4142,8 +4492,8 @@ write_file(FILE       *out,		/* I - Output file */
            const char *file,		/* I - File to copy */
            int        mode)		/* I - Output mode */
 {
-  FILE		*fp;			/* Copy file */
-  char		line[8192];		/* Line from file */
+  FILE	*fp;				/* Copy file */
+  char	line[8192];			/* Line from file */
 
 
   if ((fp = fopen(file, "r")) == NULL)
@@ -4338,7 +4688,8 @@ write_html(const char  *framefile,	/* I - Framed HTML basename */
 	   const char  *cssfile,	/* I - Stylesheet file */
            const char  *coverimage,	/* I - Cover image file */
 	   const char  *headerfile,	/* I - Header file */
-	   const char  *introfile,	/* I - Intro file */
+	   const char  *bodyfile,	/* I - Body file */
+           mmd_t       *body,		/* I - Markdown body */
 	   mxml_node_t *doc,		/* I - XML documentation */
            const char  *footerfile)	/* I - Footer file */
 {
@@ -4352,7 +4703,7 @@ write_html(const char  *framefile,	/* I - Framed HTML basename */
   * Create the table-of-contents entries...
   */
 
-  toc = build_toc(doc, introfile);
+  toc = build_toc(doc, bodyfile, body);
 
   if (framefile)
   {
@@ -4533,7 +4884,7 @@ write_html(const char  *framefile,	/* I - Framed HTML basename */
 
   fputs("    <div class=\"body\">\n", out);
 
-  write_html_body(out, OUTPUT_HTML, introfile, doc);
+  write_html_body(out, OUTPUT_HTML, bodyfile, body, doc);
 
  /*
   * Footer...
@@ -4569,7 +4920,8 @@ static void
 write_html_body(
     FILE        *out,			/* I - Output file */
     int         mode,			/* I - HTML or EPUB/XHTML output */
-    const char  *introfile,		/* I - Intro file */
+    const char  *bodyfile,		/* I - Body file */
+    mmd_t       *body,			/* I - Markdown body */
     mxml_node_t *doc)			/* I - XML documentation */
 {
   mxml_node_t	*function,		/* Current function */
@@ -4582,11 +4934,13 @@ write_html_body(
 
 
  /*
-  * Intro...
+  * Body...
   */
 
-  if (introfile)
-    write_file(out, introfile, mode);
+  if (body)
+    markdown_write_block(out, body, mode);
+  else if (bodyfile)
+    write_file(out, bodyfile, mode);
 
  /*
   * List of classes...
@@ -4906,8 +5260,7 @@ write_html_head(FILE       *out,	/* I - Output file */
     */
 
     fputs("body, p, h1, h2, h3, h4 {\n"
-	  "  font-family: \"lucida grande\", geneva, helvetica, arial, "
-	  "sans-serif;\n"
+	  "  font-family: sans-serif;\n"
 	  "}\n"
 	  "div.body h1 {\n"
 	  "  font-size: 250%;\n"
@@ -4983,9 +5336,17 @@ write_html_head(FILE       *out,	/* I - Output file */
 	  "}\n"
 	  ".variable {\n"
 	  "}\n"
-	  "code, p.code, pre, ul.code li {\n"
-	  "  font-family: monaco, courier, monospace;\n"
+	  "p code, li code, p.code, pre, ul.code li {\n"
+          "  background: rgba(127,127,127,0.1);\n"
+          "  border: thin dotted gray;\n"
+	  "  font-family: monospace;\n"
 	  "  font-size: 90%;\n"
+	  "}\n"
+	  "p.code, pre, ul.code li {\n"
+          "  padding: 10px;\n"
+	  "}\n"
+	  "p code, li code {\n"
+          "  padding: 2px 5px;\n"
 	  "}\n"
 	  "a:link, a:visited {\n"
 	  "  text-decoration: none;\n"
@@ -5127,7 +5488,8 @@ write_man(const char  *man_name,	/* I - Name of manpage */
           const char  *author,		/* I - Author's name */
           const char  *copyright,	/* I - Copyright string */
 	  const char  *headerfile,	/* I - Header file */
-	  const char  *introfile,	/* I - Intro file */
+	  const char  *bodyfile,	/* I - Body file */
+          mmd_t       *body,		/* I - Markdown body */
 	  mxml_node_t *doc,		/* I - XML documentation */
 	  const char  *footerfile)	/* I - Footer file */
 {
@@ -5191,8 +5553,10 @@ write_man(const char  *man_name,	/* I - Name of manpage */
   * Intro...
   */
 
-  if (introfile)
-    write_file(stdout, introfile, OUTPUT_MAN);
+  if (body)
+    markdown_write_block(stdout, body, OUTPUT_MAN);
+  else if (bodyfile)
+    write_file(stdout, bodyfile, OUTPUT_MAN);
 
  /*
   * List of classes...

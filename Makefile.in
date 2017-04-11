@@ -82,7 +82,7 @@ DOCFILES	=	doc/mxml.html doc/mxmldoc.xsd README.md COPYING CHANGES.md
 PUBLIBOBJS	=	mxml-attr.o mxml-entity.o mxml-file.o mxml-get.o \
 			mxml-index.o mxml-node.o mxml-search.o mxml-set.o
 LIBOBJS		=	$(PUBLIBOBJS) mxml-private.o mxml-string.o
-OBJS		=	mxmldoc.o testmxml.o zipc.o $(LIBOBJS)
+OBJS		=	mmd.o mxmldoc.o testmxml.o zipc.o $(LIBOBJS)
 ALLTARGETS	=	$(LIBMXML) mxmldoc testmxml mxml.xml @MXML_EPUB@
 CROSSTARGETS	=	$(LIBMXML) mxmldoc
 TARGETS		=	$(@TARGETS@)
@@ -293,16 +293,17 @@ libmxml.1.dylib:	$(LIBOBJS)
 # mxmldoc
 #
 
-mxmldoc:	$(LIBMXML) mxmldoc.o @ZIPC@
+mxmldoc:	$(LIBMXML) mxmldoc.o mmd.o @ZIPC@
 	echo Linking $@...
-	$(CC) -L. $(LDFLAGS) -o $@ mxmldoc.o @ZIPC@ -lmxml $(LIBS)
+	$(CC) -L. $(LDFLAGS) -o $@ mxmldoc.o mmd.o @ZIPC@ -lmxml $(LIBS)
 
-mxmldoc-static:	libmxml.a mxmldoc.o @ZIPC@
+mxmldoc-static:	libmxml.a mxmldoc.o mmd.o @ZIPC@
 	echo Linking $@...
-	$(CC) $(LDFLAGS) -o $@ mxmldoc.o @ZIPC@ libmxml.a $(LIBS)
+	$(CC) $(LDFLAGS) -o $@ mxmldoc.o mmd.o @ZIPC@ libmxml.a $(LIBS)
 
-mxmldoc.o:	mxml.h zipc.h
+mxmldoc.o:	mxml.h zipc.h mmd.h
 zipc.o:		zipc.h
+mmd.o:		mmd.h
 
 
 #
@@ -354,18 +355,14 @@ mxml.xml:	mxmldoc-static mxml.h $(PUBLIBOBJS:.o=.c)
 		--title "Mini-XML API Reference" \
 		mxml.xml mxml.h $(PUBLIBOBJS:.o=.c) >doc/reference.html
 	./mxmldoc-static --man mxml --title "Mini-XML API" \
-		--intro doc/intro.man --footer doc/footer.man \
-		--author "Michael R Sweet" \
-		--copyright "Copyright 2003-2017, All Rights Reserved." \
+		--body doc/body.man --footer doc/footer.man \
 		mxml.xml >doc/mxml.man
 	if test "x`uname`" = xDarwin; then \
 		./mxmldoc-static --docset org.msweet.mxml.docset \
 			--docversion @VERSION@ --feedname org.msweet.mxml \
 			--feedurl https://michaelrsweet.github.io/mxml/org.msweet.mxml.atom \
-			--header doc/docset.header --intro doc/docset.intro \
-			--css doc/docset.css --author "Michael R Sweet" \
-			--copyright "Copyright 2003-2017, All Rights Reserved." \
-			--title "Mini-XML API Reference" \
+			--header doc/docset.header --body doc/body.md \
+			--css doc/docset.css \
 			mxml.xml || exit 1; \
 		$(RM) org.msweet.mxml.atom; \
 		xcrun docsetutil package --output org.msweet.mxml.xar \
@@ -382,7 +379,7 @@ mxml.xml:	mxmldoc-static mxml.h $(PUBLIBOBJS:.o=.c)
 mxml.epub:	mxml.xml
 	echo Generating EPUB API documentation...
 	./mxmldoc-static --header doc/docset.header \
-		--intro doc/docset.intro --css doc/docset.css \
+		--body doc/body.md \
 		--docversion @VERSION@ --author "Michael R Sweet" \
 		--copyright "Copyright 2003-2017, All Rights Reserved." \
 		--title "Mini-XML API Reference" \

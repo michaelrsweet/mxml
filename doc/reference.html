@@ -9,7 +9,7 @@
     <meta name="version" content="2.11">
     <style type="text/css"><!--
 body, p, h1, h2, h3, h4 {
-  font-family: "lucida grande", geneva, helvetica, arial, sans-serif;
+  font-family: sans-serif;
 }
 div.body h1 {
   font-size: 250%;
@@ -85,9 +85,17 @@ div.contents ul.contents {
 }
 .variable {
 }
-code, p.code, pre, ul.code li {
-  font-family: monaco, courier, monospace;
+p code, li code, p.code, pre, ul.code li {
+  background: rgba(127,127,127,0.1);
+  border: thin dotted gray;
+  font-family: monospace;
   font-size: 90%;
+}
+p.code, pre, ul.code li {
+  padding: 10px;
+}
+p code, li code {
+  padding: 2px 5px;
 }
 a:link, a:visited {
   text-decoration: none;

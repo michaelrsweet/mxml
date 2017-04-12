@@ -1465,6 +1465,63 @@ markdown_write_block(FILE  *out,	/* I - Output file */
 
   if (mode == OUTPUT_MAN)
   {
+    switch (type)
+    {
+      case MMD_TYPE_BLOCK_QUOTE :
+          break;
+
+      case MMD_TYPE_ORDERED_LIST :
+          break;
+
+      case MMD_TYPE_UNORDERED_LIST :
+          break;
+
+      case MMD_TYPE_LIST_ITEM :
+          fputs(".IP \\(bu 5\n", out);
+          break;
+
+      case MMD_TYPE_HEADING_1 :
+          fputs(".SH ", out);
+          break;
+
+      case MMD_TYPE_HEADING_2 :
+          fputs(".SS ", out);
+          break;
+
+      case MMD_TYPE_HEADING_3 :
+      case MMD_TYPE_HEADING_4 :
+      case MMD_TYPE_HEADING_5 :
+      case MMD_TYPE_HEADING_6 :
+      case MMD_TYPE_PARAGRAPH :
+          fputs(".PP\n", out);
+          break;
+
+      case MMD_TYPE_CODE_BLOCK :
+          fputs(".nf\n\n", out);
+          for (node = mmdGetFirstChild(parent); node; node = mmdGetNextSibling(node))
+          {
+            fputs("    ", out);
+            write_string(out, mmdGetText(node), mode);
+          }
+          fputs(".fi\n", out);
+          return;
+
+      case MMD_TYPE_METADATA :
+          return;
+
+      default :
+          break;
+    }
+
+    for (node = mmdGetFirstChild(parent); node; node = mmdGetNextSibling(node))
+    {
+      if (mmdIsBlock(node))
+        markdown_write_block(out, node, mode);
+      else
+        markdown_write_inline(out, node, mode);
+    }
+
+    fputs("\n", out);
   }
   else
   {
@@ -1578,18 +1635,59 @@ markdown_write_inline(FILE  *out,	/* I - Output file */
                 *url;                   /* URL to write */
 
 
-  if (mmdGetWhitespace(node))
-    fputc(' ', out);
-
   text = mmdGetText(node);
   url  = mmdGetURL(node);
 
   if (mode == OUTPUT_MAN)
   {
+    const char *suffix = NULL;		/* Trailing string */
+
+    switch (mmdGetType(node))
+    {
+      case MMD_TYPE_EMPHASIZED_TEXT :
+          if (mmdGetWhitespace(node))
+            fputc('\n', out);
+
+          fputs(".I ", out);
+          suffix = "\n";
+          break;
+
+      case MMD_TYPE_STRONG_TEXT :
+          if (mmdGetWhitespace(node))
+            fputc('\n', out);
+
+          fputs(".B ", out);
+          suffix = "\n";
+          break;
+
+      case MMD_TYPE_HARD_BREAK :
+          if (mmdGetWhitespace(node))
+            fputc('\n', out);
+
+          fputs(".PP\n", out);
+          return;
+
+      case MMD_TYPE_SOFT_BREAK :
+      case MMD_TYPE_METADATA_TEXT :
+          return;
+
+      default :
+          if (mmdGetWhitespace(node))
+            fputc(' ', out);
+          break;
+    }
+
+    write_string(out, text, mode);
+
+    if (suffix)
+      fputs(suffix, out);
   }
   else
   {
     const char	*element;		/* Encoding element, if any */
+
+    if (mmdGetWhitespace(node))
+      fputc(' ', out);
 
     switch (mmdGetType(node))
     {
@@ -5550,7 +5648,7 @@ write_man(const char  *man_name,	/* I - Name of manpage */
   }
 
  /*
-  * Intro...
+  * Body...
   */
 
   if (body)

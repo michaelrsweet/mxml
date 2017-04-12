@@ -5,7 +5,8 @@
 - mxmlElementSetAttrf did not work with some versions of Visual Studio
   (Issue #184)
 - The configure script now properly supports cross-compilation (Issue #188)
-- The mxmldoc utility now supports generation of EPUB files.
+- The mxmldoc utility now supports generation of EPUB files (Issue #189)
+- The mxmldoc utility now supports Markdown (Issue #194)
 
 
 # Changes in Mini-XML 2.10

@@ -296,6 +296,12 @@ mmdLoad(const char *filename)           /* I - File to load */
 
   doc = current = mmd_add(NULL, MMD_TYPE_DOCUMENT, 0, NULL, NULL);
 
+  if (!doc)
+  {
+    fclose(fp);
+    return (NULL);
+  }
+
  /*
   * Read lines until end-of-file...
   */
@@ -718,7 +724,17 @@ mmd_parse_inline(mmd_t *parent,         /* I - Parent node */
 
         lineptr = mmd_parse_link(lineptr, &text, &url);
 
-        if (text)
+        if (text && *text == '`')
+        {
+          char *end = text + strlen(text) - 1;
+
+          text ++;
+          if (end > text && *end == '`')
+            *end = '\0';
+
+          mmd_add(parent, MMD_TYPE_CODE_TEXT, whitespace, text, url);
+        }
+        else if (text)
           mmd_add(parent, MMD_TYPE_LINKED_TEXT, whitespace, text, url);
 
         if (!*lineptr)
@@ -816,9 +832,9 @@ mmd_parse_inline(mmd_t *parent,         /* I - Parent node */
  */
 
 static char *                           /* O - End of link text */
-mmd_parse_link(char *lineptr,           /* I - Pointer into line */
-               char **text,             /* O - Text */
-               char **url)              /* O - URL */
+mmd_parse_link(char       *lineptr,     /* I - Pointer into line */
+               char       **text,       /* O - Text */
+               char       **url)        /* O - URL */
 {
   lineptr ++; /* skip "[" */
 

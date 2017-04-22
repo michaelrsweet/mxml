@@ -23,6 +23,7 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		271227FF1EAADBE200167F24 /* mmd.c in Sources */ = {isa = PBXBuildFile; fileRef = 271227FD1EAADBE200167F24 /* mmd.c */; };
 		272C00191E8C66C8007EBCAC /* mxml-attr.c in Sources */ = {isa = PBXBuildFile; fileRef = 272C000D1E8C66C8007EBCAC /* mxml-attr.c */; };
 		272C001A1E8C66C8007EBCAC /* mxml-entity.c in Sources */ = {isa = PBXBuildFile; fileRef = 272C000E1E8C66C8007EBCAC /* mxml-entity.c */; };
 		272C001B1E8C66C8007EBCAC /* mxml-file.c in Sources */ = {isa = PBXBuildFile; fileRef = 272C000F1E8C66C8007EBCAC /* mxml-file.c */; };
@@ -104,6 +105,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		271227FD1EAADBE200167F24 /* mmd.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = mmd.c; path = ../mmd.c; sourceTree = "<group>"; };
+		271227FE1EAADBE200167F24 /* mmd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = mmd.h; path = ../mmd.h; sourceTree = "<group>"; };
 		272C00051E8C6664007EBCAC /* libmxml.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libmxml.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		272C000D1E8C66C8007EBCAC /* mxml-attr.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "mxml-attr.c"; path = "../mxml-attr.c"; sourceTree = "<group>"; };
 		272C000E1E8C66C8007EBCAC /* mxml-entity.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "mxml-entity.c"; path = "../mxml-entity.c"; sourceTree = "<group>"; };
@@ -189,6 +192,8 @@
 		272C00321E8C6ABB007EBCAC /* tools */ = {
 			isa = PBXGroup;
 			children = (
+				271227FD1EAADBE200167F24 /* mmd.c */,
+				271227FE1EAADBE200167F24 /* mmd.h */,
 				272C00331E8C6ADE007EBCAC /* mxmldoc.c */,
 				272C00401E8C6B1B007EBCAC /* testmxml.c */,
 				272C00571E943266007EBCAC /* zipc.c */,
@@ -358,6 +363,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				271227FF1EAADBE200167F24 /* mmd.c in Sources */,
 				272C00431E8C6B34007EBCAC /* mxmldoc.c in Sources */,
 				272C00591E943266007EBCAC /* zipc.c in Sources */,
 			);
@@ -601,6 +607,7 @@
 				272C00301E8C6A94007EBCAC /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		272C003D1E8C6AEB007EBCAC /* Build configuration list for PBXNativeTarget "testmxml" */ = {
 			isa = XCConfigurationList;
@@ -609,6 +616,7 @@
 				272C003F1E8C6AEB007EBCAC /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		272C00451E8C6B5A007EBCAC /* Build configuration list for PBXAggregateTarget "All" */ = {
 			isa = XCConfigurationList;
@@ -617,6 +625,7 @@
 				272C00471E8C6B5A007EBCAC /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

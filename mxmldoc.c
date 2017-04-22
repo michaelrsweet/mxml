@@ -173,7 +173,7 @@ static int		is_markdown(const char *filename);
 static mxml_type_t	load_cb(mxml_node_t *node);
 static const char	*markdown_anchor(const char *text);
 static void		markdown_write_block(FILE *out, mmd_t *parent, int mode);
-static void		markdown_write_inline(FILE *out, mmd_t *node, int mode);
+static void		markdown_write_leaf(FILE *out, mmd_t *node, int mode);
 static mxml_node_t	*new_documentation(mxml_node_t **mxmldoc);
 static int		remove_directory(const char *path);
 static void		safe_strcpy(char *dst, const char *src);
@@ -915,10 +915,7 @@ build_toc(mxml_node_t *doc,		/* I - Documentation */
         }
 
         add_toc(toc, type - MMD_TYPE_HEADING_1 + 1, markdown_anchor(title), title);
-        next = NULL;
       }
-      else
-        next = mmdGetFirstChild(node);
 
       if ((next = mmdGetNextSibling(node)) == NULL)
       {
@@ -1518,7 +1515,7 @@ markdown_write_block(FILE  *out,	/* I - Output file */
       if (mmdIsBlock(node))
         markdown_write_block(out, node, mode);
       else
-        markdown_write_inline(out, node, mode);
+        markdown_write_leaf(out, node, mode);
     }
 
     fputs("\n", out);
@@ -1611,7 +1608,7 @@ markdown_write_block(FILE  *out,	/* I - Output file */
       if (mmdIsBlock(node))
         markdown_write_block(out, node, mode);
       else
-        markdown_write_inline(out, node, mode);
+        markdown_write_leaf(out, node, mode);
     }
 
     if (type >= MMD_TYPE_HEADING_1 && type <= MMD_TYPE_HEADING_6)
@@ -1623,13 +1620,13 @@ markdown_write_block(FILE  *out,	/* I - Output file */
 
 
 /*
- * 'markdown_write_inline()' - Write an inline markdown node.
+ * 'markdown_write_leaf()' - Write an leaf markdown node.
  */
 
 static void
-markdown_write_inline(FILE  *out,	/* I - Output file */
-                      mmd_t *node,	/* I - Node to write */
-                      int   mode)	/* I - Output mode */
+markdown_write_leaf(FILE  *out,		/* I - Output file */
+                    mmd_t *node,	/* I - Node to write */
+                    int   mode)		/* I - Output mode */
 {
   const char    *text,                  /* Text to write */
                 *url;                   /* URL to write */
@@ -1704,7 +1701,7 @@ markdown_write_inline(FILE  *out,	/* I - Output file */
           break;
 
       case MMD_TYPE_LINKED_TEXT :
-          element = "a";
+          element = NULL;
           break;
 
       case MMD_TYPE_CODE_TEXT :
@@ -1751,7 +1748,8 @@ markdown_write_inline(FILE  *out,	/* I - Output file */
       else
         fprintf(out, "<a href=\"%s\">", url);
     }
-    else if (element)
+
+    if (element)
       fprintf(out, "<%s>", element);
 
     if (!strcmp(text, "(c)"))
@@ -1765,6 +1763,9 @@ markdown_write_inline(FILE  *out,	/* I - Output file */
 
     if (element)
       fprintf(out, "</%s>", element);
+
+    if (url)
+      fputs("</a>", out);
   }
 }
 

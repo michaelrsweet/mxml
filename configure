@@ -4511,7 +4511,7 @@ $as_echo_n "checking for shared library support... " >&6; }
 		sunos | unix_s)
 			{ $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 $as_echo "yes" >&6; }
-			LIBMXML="libmxml.so.1.5"
+			LIBMXML="libmxml.so.1.6"
 			DSO="\$(CC)"
 			DSOFLAGS="$DSOFLAGS -Wl,-h,libmxml.so.1 -G -R\$(libdir) \$(OPTIM)"
 			LDFLAGS="$LDFLAGS -R\$(libdir)"
@@ -4529,7 +4529,7 @@ $as_echo "yes" >&6; }
 		irix)
 			{ $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 $as_echo "yes" >&6; }
-			LIBMXML="libmxml.so.1.5"
+			LIBMXML="libmxml.so.1.6"
 			DSO="\$(CC)"
 			DSOFLAGS="$DSOFLAGS -Wl,-rpath,\$(libdir),-set_version,sgi1.0,-soname,libmxml.so.1 -shared \$(OPTIM)"
 			;;
@@ -4537,7 +4537,7 @@ $as_echo "yes" >&6; }
 		osf | linux* | gnu)
 			{ $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 $as_echo "yes" >&6; }
-			LIBMXML="libmxml.so.1.5"
+			LIBMXML="libmxml.so.1.6"
 			DSO="\$(CC)"
 			DSOFLAGS="$DSOFLAGS -Wl,-soname,libmxml.so.1,-rpath,\$(libdir) -shared \$(OPTIM)"
                         LDFLAGS="$LDFLAGS -Wl,-rpath,\$(libdir)"
@@ -4546,7 +4546,7 @@ $as_echo "yes" >&6; }
 		*bsd)
 			{ $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 $as_echo "yes" >&6; }
-			LIBMXML="libmxml.so.1.5"
+			LIBMXML="libmxml.so.1.6"
 			DSO="\$(CC)"
 			DSOFLAGS="$DSOFLAGS -Wl,-soname,libmxml.so.1,-R\$(libdir) -shared \$(OPTIM)"
 			LDFLAGS="$LDFLAGS -Wl,-R\$(libdir)"
@@ -4563,7 +4563,7 @@ $as_echo "yes" >&6; }
                 mingw)
                         { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 $as_echo "yes" >&6; }
-                        LIBMXML="libmxml1.dll"
+                        LIBMXML="mxml1.dll"
                         DSO="\$(CC)"
                         DSOFLAGS="$DSOFLAGS -shared -Wl,--out-implib,libmxml1.a,--no-undefined,--enable-runtime-pseudo-reloc"
                         ;;

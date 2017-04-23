@@ -2,8 +2,10 @@
 
 - CDATA nodes now omit the trailing "]]" for convenience (Issue #170)
 - Fixed a memory leak in mxmlDelete (Issue #183)
-- mxmlElementSetAttrf did not work with some versions of Visual Studio
+- `mxmlElementSetAttrf` did not work with some versions of Visual Studio
   (Issue #184)
+- Added `mxmlElementGetAttrByIndex` and `mxmlELementGetAttrCount` functions
+  (Issue #185)
 - The configure script now properly supports cross-compilation (Issue #188)
 - The mxmldoc utility now supports generation of EPUB files (Issue #189)
 - The mxmldoc utility now supports the `SOURCE_DATE_EPOCH` environment

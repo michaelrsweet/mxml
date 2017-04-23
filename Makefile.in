@@ -102,7 +102,12 @@ all:		$(TARGETS)
 clean:
 	echo Cleaning build files...
 	$(RM) $(OBJS) $(ALLTARGETS)
-	$(RM) mxmldoc-static libmxml.a libmxml.so.1.5 libmxml.sl.1 libmxml.1.dylib
+	$(RM) mxmldoc-static
+	$(RM) mxml1.dll
+	$(RM) libmxml.a
+	$(RM) libmxml.so.1.6
+	$(RM) libmxml.sl.1
+	$(RM) libmxml.1.dylib
 
 
 #
@@ -163,14 +168,14 @@ install-libmxml.a:
 	$(INSTALL_LIB) libmxml.a $(BUILDROOT)$(libdir)
 	$(RANLIB) $(BUILDROOT)$(libdir)/libmxml.a
 
-install-libmxml.so.1.5:
+install-libmxml.so.1.6:
 	echo Installing libmxml.so to $(BUILDROOT)$(libdir)...
 	$(INSTALL_DIR) $(BUILDROOT)$(libdir)
-	$(INSTALL_LIB) libmxml.so.1.5 $(BUILDROOT)$(libdir)
+	$(INSTALL_LIB) libmxml.so.1.6 $(BUILDROOT)$(libdir)
 	$(RM) $(BUILDROOT)$(libdir)/libmxml.so
-	$(LN) libmxml.so.1.5 $(BUILDROOT)$(libdir)/libmxml.so
+	$(LN) libmxml.so.1.6 $(BUILDROOT)$(libdir)/libmxml.so
 	$(RM) $(BUILDROOT)$(libdir)/libmxml.so.1
-	$(LN) libmxml.so.1.5 $(BUILDROOT)$(libdir)/libmxml.so.1
+	$(LN) libmxml.so.1.6 $(BUILDROOT)$(libdir)/libmxml.so.1
 
 install-libmxml.sl.1:
 	echo Installing libmxml.sl to $(BUILDROOT)$(libdir)...
@@ -208,7 +213,7 @@ uninstall-libmxml.a:
 	echo Uninstalling libmxml.a from $(BUILDROOT)$(libdir)...
 	$(RM) $(BUILDROOT)$(libdir)/libmxml.a
 
-uninstall-libmxml.so.1.5:
+uninstall-libmxml.so.1.6:
 	echo Uninstalling libmxml.so from $(BUILDROOT)$(libdir)...
 	$(RM) $(BUILDROOT)$(libdir)/libmxml.so
 	$(RM) $(BUILDROOT)$(libdir)/libmxml.so.1
@@ -252,24 +257,24 @@ mxml-entity.o mxml-file.o mxml-private.o: mxml-private.h
 
 
 #
-# libmxml1.dll
+# mxml1.dll
 #
 
-libmxml1.dll:	$(LIBOBJS)
+mxml1.dll:	$(LIBOBJS)
 	echo Creating $@...
 	$(DSO) $(DSOFLAGS) -o $@ $(LIBOBJS)
 
 
 #
-# libmxml.so.1.5
+# libmxml.so.1.6
 #
 
-libmxml.so.1.5:	$(LIBOBJS)
+libmxml.so.1.6:	$(LIBOBJS)
 	echo Creating $@...
-	$(DSO) $(DSOFLAGS) -o libmxml.so.1.5 $(LIBOBJS)
+	$(DSO) $(DSOFLAGS) -o libmxml.so.1.6 $(LIBOBJS)
 	$(RM) libmxml.so libmxml.so.1
-	$(LN) libmxml.so.1.5 libmxml.so
-	$(LN) libmxml.so.1.5 libmxml.so.1
+	$(LN) libmxml.so.1.6 libmxml.so
+	$(LN) libmxml.so.1.6 libmxml.so.1
 
 
 #
@@ -291,7 +296,7 @@ libmxml.1.dylib:	$(LIBOBJS)
 	echo Creating $@...
 	$(DSO) $(DSOFLAGS) -o libmxml.1.dylib \
 		-install_name $(libdir)/libmxml.dylib \
-		-current_version 1.5.0 \
+		-current_version 1.6.0 \
 		-compatibility_version 1.0.0 \
 		$(LIBOBJS)
 	$(RM) libmxml.dylib

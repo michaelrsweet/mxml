@@ -182,7 +182,7 @@ if test x$enable_shared != xno; then
 	case "$host_os_name" in
 		sunos | unix_s)
 			AC_MSG_RESULT(yes)
-			LIBMXML="libmxml.so.1.5"
+			LIBMXML="libmxml.so.1.6"
 			DSO="\$(CC)"
 			DSOFLAGS="$DSOFLAGS -Wl,-h,libmxml.so.1 -G -R\$(libdir) \$(OPTIM)"
 			LDFLAGS="$LDFLAGS -R\$(libdir)"
@@ -198,14 +198,14 @@ if test x$enable_shared != xno; then
 
 		irix)
 			AC_MSG_RESULT(yes)
-			LIBMXML="libmxml.so.1.5"
+			LIBMXML="libmxml.so.1.6"
 			DSO="\$(CC)"
 			DSOFLAGS="$DSOFLAGS -Wl,-rpath,\$(libdir),-set_version,sgi1.0,-soname,libmxml.so.1 -shared \$(OPTIM)"
 			;;
 
 		osf | linux* | gnu)
 			AC_MSG_RESULT(yes)
-			LIBMXML="libmxml.so.1.5"
+			LIBMXML="libmxml.so.1.6"
 			DSO="\$(CC)"
 			DSOFLAGS="$DSOFLAGS -Wl,-soname,libmxml.so.1,-rpath,\$(libdir) -shared \$(OPTIM)"
                         LDFLAGS="$LDFLAGS -Wl,-rpath,\$(libdir)"
@@ -213,7 +213,7 @@ if test x$enable_shared != xno; then
 
 		*bsd)
 			AC_MSG_RESULT(yes)
-			LIBMXML="libmxml.so.1.5"
+			LIBMXML="libmxml.so.1.6"
 			DSO="\$(CC)"
 			DSOFLAGS="$DSOFLAGS -Wl,-soname,libmxml.so.1,-R\$(libdir) -shared \$(OPTIM)"
 			LDFLAGS="$LDFLAGS -Wl,-R\$(libdir)"
@@ -228,7 +228,7 @@ if test x$enable_shared != xno; then
 
                 mingw)
                         AC_MSG_RESULT(yes)
-                        LIBMXML="libmxml1.dll"
+                        LIBMXML="mxml1.dll"
                         DSO="\$(CC)"
                         DSOFLAGS="$DSOFLAGS -shared -Wl,--out-implib,libmxml1.a,--no-undefined,--enable-runtime-pseudo-reloc"
                         ;;

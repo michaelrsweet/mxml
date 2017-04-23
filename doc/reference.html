@@ -157,6 +157,8 @@ h3.title {
           <li><a href="#mxmlDelete">mxmlDelete</a></li>
           <li><a href="#mxmlElementDeleteAttr">mxmlElementDeleteAttr</a></li>
           <li><a href="#mxmlElementGetAttr">mxmlElementGetAttr</a></li>
+          <li><a href="#mxmlElementGetAttrByIndex">mxmlElementGetAttrByIndex</a></li>
+          <li><a href="#mxmlElementGetAttrCount">mxmlElementGetAttrCount</a></li>
           <li><a href="#mxmlElementSetAttr">mxmlElementSetAttr</a></li>
           <li><a href="#mxmlElementSetAttrf">mxmlElementSetAttrf</a></li>
           <li><a href="#mxmlEntityAddCallback">mxmlEntityAddCallback</a></li>
@@ -319,6 +321,43 @@ const char *mxmlElementGetAttr (<br>
 <h4 class="discussion">Discussion</h4>
         <p class="discussion">This function returns NULL if the node is not an element or the
 named attribute does not exist.</p>
+<h3 class="function"><span class="info">&#160;Mini-XML 2.11&#160;</span><a id="mxmlElementGetAttrByIndex">mxmlElementGetAttrByIndex</a></h3>
+        <p class="description">Get an element attribute by index.</p>
+<p class="code">
+const char *mxmlElementGetAttrByIndex (<br>
+&#160;&#160;&#160;&#160;<a href="#mxml_node_t">mxml_node_t</a> *node,<br>
+&#160;&#160;&#160;&#160;int idx,<br>
+&#160;&#160;&#160;&#160;const char **name<br>
+);</p>
+<h4 class="parameters">Parameters</h4>
+<dl>
+<dt>node</dt>
+        <dd class="description">Node</dd>
+<dt>idx</dt>
+        <dd class="description">Attribute index, starting at 0</dd>
+<dt>name</dt>
+        <dd class="description">Attribute name</dd>
+</dl>
+<h4 class="returnvalue">Return Value</h4>
+        <p class="description">Attribute value</p>
+<h4 class="discussion">Discussion</h4>
+        <p class="discussion">The index (&quot;idx&quot;) is 0-based.  <code>NULL</code> is returned if the specified index
+is out of range.
+
+</p>
+<h3 class="function"><span class="info">&#160;Mini-XML 2.11&#160;</span><a id="mxmlElementGetAttrCount">mxmlElementGetAttrCount</a></h3>
+        <p class="description">Get the number of element attributes.</p>
+<p class="code">
+int mxmlElementGetAttrCount (<br>
+&#160;&#160;&#160;&#160;<a href="#mxml_node_t">mxml_node_t</a> *node<br>
+);</p>
+<h4 class="parameters">Parameters</h4>
+<dl>
+<dt>node</dt>
+        <dd class="description">Node</dd>
+</dl>
+<h4 class="returnvalue">Return Value</h4>
+        <p class="description">Number of attributes</p>
 <h3 class="function"><a id="mxmlElementSetAttr">mxmlElementSetAttr</a></h3>
         <p class="description">Set an attribute.</p>
 <p class="code">

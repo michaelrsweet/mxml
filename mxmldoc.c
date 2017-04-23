@@ -5604,6 +5604,7 @@ write_man(const char  *man_name,	/* I - Name of manpage */
 		*parent;		/* Parent class */
   int		inscope;		/* Variable/method scope */
   char		prefix;			/* Prefix character */
+  const char	*source_date_epoch;	/* SOURCE_DATE_EPOCH environment variable */
   time_t	curtime;		/* Current time */
   struct tm	*curdate;		/* Current date */
   char		buffer[1024];		/* String buffer */
@@ -5617,9 +5618,15 @@ write_man(const char  *man_name,	/* I - Name of manpage */
 
  /*
   * Standard man page...
+  *
+  * Get the current date, using the SOURCE_DATE_EPOCH environment variable, if
+  * present, for the number of seconds since the epoch - this enables
+  * reproducible builds (Issue #193).
   */
 
-  curtime = time(NULL);
+  if ((source_date_epoch = getenv("SOURCE_DATE_EPOCH")) == NULL || (curtime = (time_t)strtol(source_date_epoch, NULL, 10)) <= 0)
+    curtime = time(NULL);
+
   curdate = localtime(&curtime);
   strftime(buffer, sizeof(buffer), "%x", curdate);
 

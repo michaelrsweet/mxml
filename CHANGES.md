@@ -6,6 +6,8 @@
   (Issue #184)
 - The configure script now properly supports cross-compilation (Issue #188)
 - The mxmldoc utility now supports generation of EPUB files (Issue #189)
+- The mxmldoc utility now supports the `SOURCE_DATE_EPOCH` environment
+  variable for reproducible builds (Issue #193)
 - The mxmldoc utility now supports Markdown (Issue #194)
 
 

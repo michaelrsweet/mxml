@@ -252,6 +252,15 @@ mxml-entity.o mxml-file.o mxml-private.o: mxml-private.h
 
 
 #
+# libmxml1.dll
+#
+
+libmxml1.dll:	$(LIBOBJS)
+	echo Creating $@...
+	$(DSO) $(DSOFLAGS) -o $@ $(LIBOBJS)
+
+
+#
 # libmxml.so.1.5
 #
 

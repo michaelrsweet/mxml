@@ -226,6 +226,13 @@ if test x$enable_shared != xno; then
 			DSOFLAGS="$DSOFLAGS \$(RC_CFLAGS) -dynamiclib -lc"
 			;;
 
+                mingw)
+                        AC_MSG_RESULT(yes)
+                        LIBMXML="libmxml1.dll"
+                        DSO="\$(CC)"
+                        DSOFLAGS="$DSOFLAGS -shared -Wl,--out-implib,libmxml1.a,--no-undefined,--enable-runtime-pseudo-reloc"
+                        ;;
+
 		*)
 			AC_MSG_RESULT(no)
 			AC_MSG_WARN(shared libraries not supported on this platform.)

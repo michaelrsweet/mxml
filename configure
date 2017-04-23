@@ -4560,6 +4560,14 @@ $as_echo "yes" >&6; }
 			DSOFLAGS="$DSOFLAGS \$(RC_CFLAGS) -dynamiclib -lc"
 			;;
 
+                mingw)
+                        { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+                        LIBMXML="libmxml1.dll"
+                        DSO="\$(CC)"
+                        DSOFLAGS="$DSOFLAGS -shared -Wl,--out-implib,libmxml1.a,--no-undefined,--enable-runtime-pseudo-reloc"
+                        ;;
+
 		*)
 			{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }

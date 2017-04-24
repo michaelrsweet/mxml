@@ -360,7 +360,10 @@ testmxml.o:	mxml.h
 # mxml.xml
 #
 
-mxml.xml:	mxmldoc-static mxml.h $(PUBLIBOBJS:.o=.c)
+mxml.xml:	mxmldoc-static mxml.h $(PUBLIBOBJS:.o=.c) \
+		doc/body.man doc/body.md \
+		doc/docset.css doc/docset.header \
+		doc/reference.header
 	echo Generating API documentation...
 	$(RM) mxml.xml
 	./mxmldoc-static --header doc/reference.header \
@@ -390,13 +393,9 @@ mxml.xml:	mxmldoc-static mxml.h $(PUBLIBOBJS:.o=.c)
 # mxml.epub
 #
 
-mxml.epub:	mxml.xml
+mxml.epub:	mxml.xml doc/body.md doc/mxml-cover.png
 	echo Generating EPUB API documentation...
-	./mxmldoc-static --header doc/docset.header \
-		--body doc/body.md \
-		--docversion @VERSION@ --author "Michael R Sweet" \
-		--copyright "Copyright 2003-2017, All Rights Reserved." \
-		--title "Mini-XML API Reference" \
+	./mxmldoc-static --body doc/body.md \
 		--coverimage doc/mxml-cover.png \
 		--epub mxml.epub mxml.xml
 

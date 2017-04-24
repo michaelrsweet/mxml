@@ -211,7 +211,7 @@ extern const char	*mxmlEntityGetName(int val);
 extern int		mxmlEntityGetValue(const char *name);
 extern void		mxmlEntityRemoveCallback(mxml_entity_cb_t cb);
 extern mxml_node_t	*mxmlFindElement(mxml_node_t *node, mxml_node_t *top,
-			                 const char *name, const char *attr,
+			                 const char *element, const char *attr,
 					 const char *value, int descend);
 extern mxml_node_t	*mxmlFindPath(mxml_node_t *node, const char *path);
 extern const char	*mxmlGetCDATA(mxml_node_t *node);
@@ -250,11 +250,14 @@ extern mxml_node_t	*mxmlNewCustom(mxml_node_t *parent, void *data,
 extern mxml_node_t	*mxmlNewElement(mxml_node_t *parent, const char *name);
 extern mxml_node_t	*mxmlNewInteger(mxml_node_t *parent, int integer);
 extern mxml_node_t	*mxmlNewOpaque(mxml_node_t *parent, const char *opaque);
+extern mxml_node_t	*mxmlNewOpaquef(mxml_node_t *parent, const char *format, ...)
+#    ifdef __GNUC__
+__attribute__ ((__format__ (__printf__, 2, 3)))
+#    endif /* __GNUC__ */
+;
 extern mxml_node_t	*mxmlNewReal(mxml_node_t *parent, double real);
-extern mxml_node_t	*mxmlNewText(mxml_node_t *parent, int whitespace,
-			             const char *string);
-extern mxml_node_t	*mxmlNewTextf(mxml_node_t *parent, int whitespace,
-			              const char *format, ...)
+extern mxml_node_t	*mxmlNewText(mxml_node_t *parent, int whitespace, const char *string);
+extern mxml_node_t	*mxmlNewTextf(mxml_node_t *parent, int whitespace, const char *format, ...)
 #    ifdef __GNUC__
 __attribute__ ((__format__ (__printf__, 3, 4)))
 #    endif /* __GNUC__ */
@@ -289,6 +292,11 @@ extern int		mxmlSetElement(mxml_node_t *node, const char *name);
 extern void		mxmlSetErrorCallback(mxml_error_cb_t cb);
 extern int		mxmlSetInteger(mxml_node_t *node, int integer);
 extern int		mxmlSetOpaque(mxml_node_t *node, const char *opaque);
+extern int		mxmlSetOpaquef(mxml_node_t *node, const char *format, ...)
+#    ifdef __GNUC__
+__attribute__ ((__format__ (__printf__, 2, 3)))
+#    endif /* __GNUC__ */
+;
 extern int		mxmlSetReal(mxml_node_t *node, double real);
 extern int		mxmlSetText(mxml_node_t *node, int whitespace,
 			            const char *string);

@@ -28,7 +28,7 @@
  * @since Mini-XML 2.7@
  */
 
-const char *				/* O - CDATA value or NULL */
+const char *				/* O - CDATA value or @code NULL@ */
 mxmlGetCDATA(mxml_node_t *node)		/* I - Node to get */
 {
  /*
@@ -56,7 +56,7 @@ mxmlGetCDATA(mxml_node_t *node)		/* I - Node to get */
  * @since Mini-XML 2.7@
  */
 
-const void *				/* O - Custom value or NULL */
+const void *				/* O - Custom value or @code NULL@ */
 mxmlGetCustom(mxml_node_t *node)	/* I - Node to get */
 {
  /*
@@ -89,7 +89,7 @@ mxmlGetCustom(mxml_node_t *node)	/* I - Node to get */
  * @since Mini-XML 2.7@
  */
 
-const char *				/* O - Element name or NULL */
+const char *				/* O - Element name or @code NULL@ */
 mxmlGetElement(mxml_node_t *node)	/* I - Node to get */
 {
  /*
@@ -116,7 +116,7 @@ mxmlGetElement(mxml_node_t *node)	/* I - Node to get */
  * @since Mini-XML 2.7@
  */
 
-mxml_node_t *				/* O - First child or NULL */
+mxml_node_t *				/* O - First child or @code NULL@ */
 mxmlGetFirstChild(mxml_node_t *node)	/* I - Node to get */
 {
  /*
@@ -177,7 +177,7 @@ mxmlGetInteger(mxml_node_t *node)	/* I - Node to get */
  * @since Mini-XML 2.7@
  */
 
-mxml_node_t *				/* O - Last child or NULL */
+mxml_node_t *				/* O - Last child or @code NULL@ */
 mxmlGetLastChild(mxml_node_t *node)	/* I - Node to get */
 {
  /*
@@ -230,7 +230,7 @@ mxmlGetNextSibling(mxml_node_t *node)	/* I - Node to get */
  * @since Mini-XML 2.7@
  */
 
-const char *				/* O - Opaque string or NULL */
+const char *				/* O - Opaque string or @code NULL@ */
 mxmlGetOpaque(mxml_node_t *node)	/* I - Node to get */
 {
  /*
@@ -263,7 +263,7 @@ mxmlGetOpaque(mxml_node_t *node)	/* I - Node to get */
  * @since Mini-XML 2.7@
  */
 
-mxml_node_t *				/* O - Parent node or NULL */
+mxml_node_t *				/* O - Parent node or @code NULL@ */
 mxmlGetParent(mxml_node_t *node)	/* I - Node to get */
 {
  /*
@@ -289,7 +289,7 @@ mxmlGetParent(mxml_node_t *node)	/* I - Node to get */
  * @since Mini-XML 2.7@
  */
 
-mxml_node_t *				/* O - Previous node or NULL */
+mxml_node_t *				/* O - Previous node or @code NULL@ */
 mxmlGetPrevSibling(mxml_node_t *node)	/* I - Node to get */
 {
  /*
@@ -344,12 +344,12 @@ mxmlGetReal(mxml_node_t *node)		/* I - Node to get */
  * 'mxmlGetText()' - Get the text value for a node or its first child.
  *
  * @code NULL@ is returned if the node (or its first child) is not a text node.
- * The "whitespace" argument can be NULL.
+ * The "whitespace" argument can be @code NULL@.
  *
  * @since Mini-XML 2.7@
  */
 
-const char *				/* O - Text string or NULL */
+const char *				/* O - Text string or @code NULL@ */
 mxmlGetText(mxml_node_t *node,		/* I - Node to get */
             int         *whitespace)	/* O - 1 if string is preceded by whitespace, 0 otherwise */
 {

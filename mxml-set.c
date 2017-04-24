@@ -194,6 +194,50 @@ mxmlSetOpaque(mxml_node_t *node,	/* I - Node to set */
 
 
 /*
+ * 'mxmlSetOpaquef()' - Set the value of an opaque string node to a formatted string.
+ *
+ * The node is not changed if it (or its first child) is not an opaque node.
+ *
+ * @since Mini-XML 2.11@
+ */
+
+int					/* O - 0 on success, -1 on failure */
+mxmlSetOpaquef(mxml_node_t *node,	/* I - Node to set */
+               const char  *format,	/* I - Printf-style format string */
+	       ...)			/* I - Additional arguments as needed */
+{
+  va_list	ap;			/* Pointer to arguments */
+
+
+ /*
+  * Range check input...
+  */
+
+  if (node && node->type == MXML_ELEMENT &&
+      node->child && node->child->type == MXML_OPAQUE)
+    node = node->child;
+
+  if (!node || node->type != MXML_OPAQUE || !format)
+    return (-1);
+
+ /*
+  * Free any old string value and set the new value...
+  */
+
+  if (node->value.opaque)
+    free(node->value.opaque);
+
+  va_start(ap, format);
+
+  node->value.opaque = _mxml_strdupf(format, ap);
+
+  va_end(ap);
+
+  return (0);
+}
+
+
+/*
  * 'mxmlSetReal()' - Set the value of a real number node.
  *
  * The node is not changed if it (or its first child) is not a real number node.

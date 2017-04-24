@@ -181,7 +181,7 @@ static int		scan_file(const char *filename, FILE *fp, mxml_node_t *doc);
 static void		sort_node(mxml_node_t *tree, mxml_node_t *func);
 static void		update_comment(mxml_node_t *parent, mxml_node_t *comment);
 static void		usage(const char *option);
-static void		write_description(FILE *out, mxml_node_t *description, const char *element, int summary);
+static void		write_description(FILE *out, int mode, mxml_node_t *description, const char *element, int summary);
 #ifdef __APPLE__
 static void		write_docset(const char *docset, const char *section, const char *title, const char *author, const char *copyright, const char *docversion, const char *feedname, const char *feedurl, const char *cssfile, const char *headerfile, const char *bodyfile, mmd_t *body, mxml_node_t *doc, const char *footerfile);
 #endif /* __APPLE__ */
@@ -3632,6 +3632,7 @@ usage(const char *option)		/* I - Unknown option */
 static void
 write_description(
     FILE        *out,			/* I - Output file */
+    int         mode,                   /* I - Output mode */
     mxml_node_t *description,		/* I - Description node */
     const char  *element,		/* I - HTML element, if any */
     int         summary)		/* I - Show summary */
@@ -3775,7 +3776,10 @@ write_description(
       }
       else if (*ptr == '\n' && ptr[1] == '\n' && ptr[2] && ptr[2] != '@')
       {
-        fputs("<br>\n<br>\n", out);
+        if (mode == OUTPUT_EPUB)
+          fputs("<br />\n<br />\n", out);
+        else
+          fputs("<br>\n<br>\n", out);
         ptr ++;
       }
       else
@@ -4676,7 +4680,7 @@ write_function(FILE        *out,	/* I - Output file */
   fprintf(out, "<h%d class=\"%s\">%s<a id=\"%s\">%s</a></h%d>\n", level, level == 3 ? "function" : "method", get_comment_info(description), name, name, level);
 
   if (description)
-    write_description(out, description, "p", 1);
+    write_description(out, mode, description, "p", 1);
 
   fputs("<p class=\"code\">\n", out);
 
@@ -4702,7 +4706,7 @@ write_function(FILE        *out,	/* I - Output file */
 
     fprintf(out, "%c%s\n&#160;&#160;&#160;&#160;", prefix, br);
     if (type->child)
-      write_element(out, doc, type, OUTPUT_HTML);
+      write_element(out, doc, type, mode);
 
     fputs(mxmlElementGetAttr(arg, "name"), out);
     if ((defval = mxmlElementGetAttr(arg, "default")) != NULL)
@@ -4729,8 +4733,8 @@ write_function(FILE        *out,	/* I - Output file */
       adesc = mxmlFindElement(arg, arg, "description", NULL, NULL,
 			      MXML_DESCEND_FIRST);
 
-      write_description(out, adesc, "dd", 1);
-      write_description(out, adesc, "dd", 0);
+      write_description(out, mode, adesc, "dd", 1);
+      write_description(out, mode, adesc, "dd", 0);
     }
 
     fputs("</dl>\n", out);
@@ -4747,15 +4751,15 @@ write_function(FILE        *out,	/* I - Output file */
     adesc = mxmlFindElement(arg, arg, "description", NULL, NULL,
 			    MXML_DESCEND_FIRST);
 
-    write_description(out, adesc, "p", 1);
-    write_description(out, adesc, "p", 0);
+    write_description(out, mode, adesc, "p", 1);
+    write_description(out, mode, adesc, "p", 0);
   }
 
   if (description)
   {
     for (node = description->child; node; node = node->next)
-      if (node->value.text.string &&
-	  (sep = strstr(node->value.text.string, "\n\n")) != NULL)
+      if (node->value.opaque &&
+	  (sep = strstr(node->value.opaque, "\n\n")) != NULL)
       {
 	sep += 2;
 	if (*sep && strncmp(sep, "@since ", 7) &&
@@ -4767,7 +4771,7 @@ write_function(FILE        *out,	/* I - Output file */
     {
       fprintf(out, "<h%d class=\"discussion\">Discussion</h%d>\n", level + 1,
 	      level + 1);
-      write_description(out, description, "p", 0);
+      write_description(out, mode, description, "p", 0);
     }
   }
 }
@@ -5089,7 +5093,7 @@ write_html_body(
       fprintf(out, "      <h3 class=\"typedef\"><a id=\"%s\">%s%s</a></h3>\n", name, get_comment_info(description), name);
 
       if (description)
-	write_description(out, description, "p", 1);
+	write_description(out, mode, description, "p", 1);
 
       fputs("      <p class=\"code\">\n"
 	    "typedef ", out);
@@ -5218,7 +5222,7 @@ write_html_body(
       fprintf(out, "      <h3 class=\"variable\"><a id=\"%s\">%s%s</a></h3>\n", name, get_comment_info(description), name);
 
       if (description)
-	write_description(out, description, "p", 1);
+	write_description(out, mode, description, "p", 1);
 
       fputs("      <p class=\"code\">", out);
 
@@ -5248,7 +5252,7 @@ write_html_body(
       fprintf(out, "      <h3 class=\"enumeration\"><a id=\"%s\">%s%s</a></h3>\n", name, get_comment_info(description), name);
 
       if (description)
-	write_description(out, description, "p", 1);
+	write_description(out, mode, description, "p", 1);
 
       fputs("      <h4 class=\"constants\">Constants</h4>\n"
             "      <dl>\n", out);
@@ -5264,8 +5268,8 @@ write_html_body(
 	fprintf(out, "        <dt>%s %s</dt>\n",
 	        mxmlElementGetAttr(arg, "name"), get_comment_info(description));
 
-	write_description(out, description, "dd", 1);
-	write_description(out, description, "dd", 0);
+	write_description(out, mode, description, "dd", 1);
+	write_description(out, mode, description, "dd", 0);
       }
 
       fputs("</dl>\n", out);
@@ -5435,11 +5439,20 @@ write_html_head(FILE       *out,	/* I - Output file */
 	  "}\n"
 	  ".variable {\n"
 	  "}\n"
+	  "blockquote {\n"
+	  "  border: solid thin gray;\n"
+	  "  box-shadow: 3px 3px 5px rgba(0,0,0,0.5);\n"
+	  "  padding: 0px 10px;\n"
+	  "  page-break-inside: avoid;\n"
+          "}\n"
 	  "p code, li code, p.code, pre, ul.code li {\n"
           "  background: rgba(127,127,127,0.1);\n"
           "  border: thin dotted gray;\n"
 	  "  font-family: monospace;\n"
 	  "  font-size: 90%;\n"
+	  "  hyphens: manual;\n"
+	  "  -webkit-hyphens: manual;\n"
+	  "  page-break-inside: avoid;\n"
 	  "}\n"
 	  "p.code, pre, ul.code li {\n"
           "  padding: 10px;\n"
@@ -5681,7 +5694,7 @@ write_man(const char  *man_name,	/* I - Name of manpage */
                                     NULL, MXML_DESCEND_FIRST);
       printf(".SS %s\n", cname);
 
-      write_description(stdout, description, NULL, 1);
+      write_description(stdout, OUTPUT_MAN, description, NULL, 1);
 
       printf(".PP\n"
              ".nf\n"
@@ -5771,7 +5784,7 @@ write_man(const char  *man_name,	/* I - Name of manpage */
       puts("};\n"
            ".fi");
 
-      write_description(stdout, description, NULL, 0);
+      write_description(stdout, OUTPUT_MAN, description, NULL, 0);
     }
   }
 
@@ -5792,8 +5805,8 @@ write_man(const char  *man_name,	/* I - Name of manpage */
                                     NULL, MXML_DESCEND_FIRST);
       printf(".SS %s\n", name);
 
-      write_description(stdout, description, NULL, 1);
-      write_description(stdout, description, NULL, 0);
+      write_description(stdout, OUTPUT_MAN, description, NULL, 1);
+      write_description(stdout, OUTPUT_MAN, description, NULL, 0);
 
       for (arg = mxmlFindElement(scut, scut, "constant", NULL, NULL,
                         	 MXML_DESCEND_FIRST);
@@ -5804,7 +5817,7 @@ write_man(const char  *man_name,	/* I - Name of manpage */
 	description = mxmlFindElement(arg, arg, "description", NULL,
                                       NULL, MXML_DESCEND_FIRST);
 	printf(".TP 5\n%s\n.br\n", mxmlElementGetAttr(arg, "name"));
-	write_description(stdout, description, NULL, 1);
+	write_description(stdout, OUTPUT_MAN, description, NULL, 1);
       }
     }
   }
@@ -5826,7 +5839,7 @@ write_man(const char  *man_name,	/* I - Name of manpage */
                                     NULL, MXML_DESCEND_FIRST);
       printf(".SS %s\n", name);
 
-      write_description(stdout, description, NULL, 1);
+      write_description(stdout, OUTPUT_MAN, description, NULL, 1);
 
       puts(".PP\n"
            ".nf");
@@ -5866,7 +5879,7 @@ write_man(const char  *man_name,	/* I - Name of manpage */
 
       puts(".fi");
 
-      write_description(stdout, description, NULL, 0);
+      write_description(stdout, OUTPUT_MAN, description, NULL, 0);
     }
   }
 
@@ -5887,7 +5900,7 @@ write_man(const char  *man_name,	/* I - Name of manpage */
                                     NULL, MXML_DESCEND_FIRST);
       printf(".SS %s\n", cname);
 
-      write_description(stdout, description, NULL, 1);
+      write_description(stdout, OUTPUT_MAN, description, NULL, 1);
 
       printf(".PP\n"
              ".nf\n"
@@ -5956,7 +5969,7 @@ write_man(const char  *man_name,	/* I - Name of manpage */
       puts("};\n"
            ".fi");
 
-      write_description(stdout, description, NULL, 0);
+      write_description(stdout, OUTPUT_MAN, description, NULL, 0);
     }
   }
 
@@ -5977,7 +5990,7 @@ write_man(const char  *man_name,	/* I - Name of manpage */
                                     NULL, MXML_DESCEND_FIRST);
       printf(".SS %s\n", name);
 
-      write_description(stdout, description, NULL, 1);
+      write_description(stdout, OUTPUT_MAN, description, NULL, 1);
 
       fputs(".PP\n"
             ".nf\n"
@@ -6020,7 +6033,7 @@ write_man(const char  *man_name,	/* I - Name of manpage */
 
       puts(".fi");
 
-      write_description(stdout, description, NULL, 0);
+      write_description(stdout, OUTPUT_MAN, description, NULL, 0);
     }
   }
 
@@ -6041,7 +6054,7 @@ write_man(const char  *man_name,	/* I - Name of manpage */
                                     NULL, MXML_DESCEND_FIRST);
       printf(".SS %s\n", name);
 
-      write_description(stdout, description, NULL, 1);
+      write_description(stdout, OUTPUT_MAN, description, NULL, 1);
 
       printf(".PP\n"
              ".nf\n"
@@ -6062,7 +6075,7 @@ write_man(const char  *man_name,	/* I - Name of manpage */
       puts("};\n"
            ".fi");
 
-      write_description(stdout, description, NULL, 0);
+      write_description(stdout, OUTPUT_MAN, description, NULL, 0);
     }
   }
 
@@ -6083,7 +6096,7 @@ write_man(const char  *man_name,	/* I - Name of manpage */
                                     NULL, MXML_DESCEND_FIRST);
       printf(".SS %s\n", name);
 
-      write_description(stdout, description, NULL, 1);
+      write_description(stdout, OUTPUT_MAN, description, NULL, 1);
 
       puts(".PP\n"
            ".nf");
@@ -6097,7 +6110,7 @@ write_man(const char  *man_name,	/* I - Name of manpage */
       puts(";\n"
            ".fi");
 
-      write_description(stdout, description, NULL, 0);
+      write_description(stdout, OUTPUT_MAN, description, NULL, 0);
     }
   }
 
@@ -6166,7 +6179,7 @@ write_scu(FILE        *out,	/* I - Output file */
   fprintf(out, "<h3 class=\"%s\">%s<a id=\"%s\">%s</a></h3>\n", scut->value.element.name, get_comment_info(description), cname, cname);
 
   if (description)
-    write_description(out, description, "p", 1);
+    write_description(out, mode, description, "p", 1);
 
   fprintf(out, "<p class=\"code\">%s %s", scut->value.element.name, cname);
   if ((parent = mxmlElementGetAttr(scut, "parent")) != NULL)
@@ -6280,8 +6293,8 @@ write_scu(FILE        *out,	/* I - Output file */
     fprintf(out, "<dt>%s %s</dt>\n",
 	    mxmlElementGetAttr(arg, "name"), get_comment_info(description));
 
-    write_description(out, description, "dd", 1);
-    write_description(out, description, "dd", 0);
+    write_description(out, mode, description, "dd", 1);
+    write_description(out, mode, description, "dd", 0);
   }
 
   fputs("</dl>\n", out);
@@ -6306,6 +6319,9 @@ write_string(FILE       *out,		/* I - Output file */
              const char *s,		/* I - String to write */
              int        mode)		/* I - Output mode */
 {
+  if (!s)
+    return;
+
   switch (mode)
   {
     case OUTPUT_DOCSET :
@@ -6413,7 +6429,7 @@ write_tokens(FILE        *out,		/* I - Output file */
 		   "    <Anchor>%s</Anchor>\n"
 		   "    <TokenIdentifier>//apple_ref/cpp/cl/%s</TokenIdentifier>\n"
 		   "    <Abstract>", path, cename, cename);
-      write_description(out, description, "", 1);
+      write_description(out, OUTPUT_TOKENS, description, "", 1);
       fputs("    </Abstract>\n"
             "  </Token>\n", out);
 
@@ -6467,7 +6483,7 @@ write_tokens(FILE        *out,		/* I - Output file */
 
 	  fputs(")</TokenIdentifier>\n"
 	        "    <Abstract>", out);
-	  write_description(out, description, "", 1);
+	  write_description(out, OUTPUT_TOKENS, description, "", 1);
 	  fputs("    </Abstract>\n"
 		"    <Declaration>", out);
 
@@ -6536,7 +6552,7 @@ write_tokens(FILE        *out,		/* I - Output file */
 		   "    <Anchor>%s</Anchor>\n"
 		   "    <TokenIdentifier>//apple_ref/c/func/%s</TokenIdentifier>\n"
 		   "    <Abstract>", path, name, name);
-      write_description(out, description, "", 1);
+      write_description(out, OUTPUT_TOKENS, description, "", 1);
       fputs("    </Abstract>\n"
             "    <Declaration>", out);
 
@@ -6602,7 +6618,7 @@ write_tokens(FILE        *out,		/* I - Output file */
 		   "    <Anchor>%s</Anchor>\n"
 		   "    <TokenIdentifier>//apple_ref/c/tdef/%s</TokenIdentifier>\n"
 		   "    <Abstract>", path, name, name);
-      write_description(out, description, "", 1);
+      write_description(out, OUTPUT_TOKENS, description, "", 1);
       fputs("    </Abstract>\n"
             "  </Token>\n", out);
 
@@ -6627,7 +6643,7 @@ write_tokens(FILE        *out,		/* I - Output file */
 		   "    <Anchor>%s</Anchor>\n"
 		   "    <TokenIdentifier>//apple_ref/c/tag/%s</TokenIdentifier>\n"
 		   "    <Abstract>", path, name, name);
-      write_description(out, description, "", 1);
+      write_description(out, OUTPUT_TOKENS, description, "", 1);
       fputs("    </Abstract>\n"
             "  </Token>\n", out);
 
@@ -6652,7 +6668,7 @@ write_tokens(FILE        *out,		/* I - Output file */
 		   "    <Anchor>%s</Anchor>\n"
 		   "    <TokenIdentifier>//apple_ref/c/tag/%s</TokenIdentifier>\n"
 		   "    <Abstract>", path, name, name);
-      write_description(out, description, "", 1);
+      write_description(out, OUTPUT_TOKENS, description, "", 1);
       fputs("    </Abstract>\n"
             "  </Token>\n", out);
 
@@ -6677,7 +6693,7 @@ write_tokens(FILE        *out,		/* I - Output file */
 		   "    <Anchor>%s</Anchor>\n"
 		   "    <TokenIdentifier>//apple_ref/c/data/%s</TokenIdentifier>\n"
 		   "    <Abstract>", path, name, name);
-      write_description(out, description, "", 1);
+      write_description(out, OUTPUT_TOKENS, description, "", 1);
       fputs("    </Abstract>\n"
             "  </Token>\n", out);
 
@@ -6702,7 +6718,7 @@ write_tokens(FILE        *out,		/* I - Output file */
 		   "    <Anchor>%s</Anchor>\n"
 		   "    <TokenIdentifier>//apple_ref/c/tag/%s</TokenIdentifier>\n"
 		   "    <Abstract>", path, cename, cename);
-      write_description(out, description, "", 1);
+      write_description(out, OUTPUT_TOKENS, description, "", 1);
       fputs("    </Abstract>\n"
             "  </Token>\n", out);
 
@@ -6720,7 +6736,7 @@ write_tokens(FILE        *out,		/* I - Output file */
 		     "    <Anchor>%s</Anchor>\n"
 		     "    <TokenIdentifier>//apple_ref/c/econst/%s</TokenIdentifier>\n"
 		     "    <Abstract>", path, cename, name);
-	write_description(out, description, "", 1);
+	write_description(out, OUTPUT_TOKENS, description, "", 1);
 	fputs("    </Abstract>\n"
 	      "  </Token>\n", out);
       }

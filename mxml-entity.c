@@ -50,10 +50,10 @@ mxmlEntityAddCallback(
 /*
  * 'mxmlEntityGetName()' - Get the name that corresponds to the character value.
  *
- * If val does not need to be represented by a named entity, NULL is returned.
+ * If val does not need to be represented by a named entity, @code NULL@ is returned.
  */
 
-const char *				/* O - Entity name or NULL */
+const char *				/* O - Entity name or @code NULL@ */
 mxmlEntityGetName(int val)		/* I - Character value */
 {
   switch (val)

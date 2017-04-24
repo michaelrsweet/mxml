@@ -92,11 +92,11 @@ mxmlElementDeleteAttr(mxml_node_t *node,/* I - Element */
 /*
  * 'mxmlElementGetAttr()' - Get an attribute.
  *
- * This function returns NULL if the node is not an element or the
+ * This function returns @code NULL@ if the node is not an element or the
  * named attribute does not exist.
  */
 
-const char *				/* O - Attribute value or NULL */
+const char *				/* O - Attribute value or @code NULL@ */
 mxmlElementGetAttr(mxml_node_t *node,	/* I - Element node */
                    const char  *name)	/* I - Name of attribute */
 {

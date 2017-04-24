@@ -2134,8 +2134,7 @@ scan_file(const char  *filename,	/* I - Filename */
 		    * Copy comment for typedef as well as class/struct/union...
 		    */
 
-		    mxmlNewText(comment, 0,
-		                comment->last_child->value.text.string);
+		    mxmlNewOpaque(comment, comment->last_child->value.opaque);
 		    description = mxmlNewElement(typedefnode, "description");
 #ifdef DEBUG
 		    fprintf(stderr,
@@ -2219,8 +2218,7 @@ scan_file(const char  *filename,	/* I - Filename */
 		    * Copy comment for typedef as well as class/struct/union...
 		    */
 
-		    mxmlNewText(comment, 0,
-		                comment->last_child->value.text.string);
+		    mxmlNewOpaque(comment, comment->last_child->value.opaque);
 		    description = mxmlNewElement(typedefnode, "description");
 #ifdef DEBUG
 		    fprintf(stderr,
@@ -2576,9 +2574,8 @@ scan_file(const char  *filename,	/* I - Filename */
 			          "    adding comment %p/%p to variable...\n",
 			          comment->last_child, comment->child);
 #endif /* DEBUG */
-			  mxmlNewText(comment, 0, buffer);
-			  update_comment(variable,
-					 mxmlNewText(description, 0, buffer));
+			  mxmlNewOpaque(comment, buffer);
+			  update_comment(variable, mxmlNewOpaque(description, buffer));
                         }
 
 			variable = NULL;
@@ -2601,9 +2598,8 @@ scan_file(const char  *filename,	/* I - Filename */
 			          "    adding comment %p/%p to constant...\n",
 				  comment->last_child, comment->child);
 #endif /* DEBUG */
-			  mxmlNewText(comment, 0, buffer);
-			  update_comment(constant,
-					 mxmlNewText(description, 0, buffer));
+			  mxmlNewOpaque(comment, buffer);
+			  update_comment(constant, mxmlNewOpaque(description, buffer));
 			}
 
 			constant = NULL;
@@ -2639,21 +2635,20 @@ scan_file(const char  *filename,	/* I - Filename */
 				  comment->last_child, comment->child,
 				  mxmlElementGetAttr(typedefnode, "name"));
 #endif /* DEBUG */
-			  mxmlNewText(comment, 0, buffer);
-			  update_comment(typedefnode,
-					 mxmlNewText(description, 0, buffer));
+			  mxmlNewOpaque(comment, buffer);
+			  update_comment(typedefnode, mxmlNewOpaque(description, buffer));
 
 			  if (structclass)
 			  {
 			    description = mxmlNewElement(structclass, "description");
 			    update_comment(structclass,
-					   mxmlNewText(description, 0, buffer));
+					   mxmlNewOpaque(description, buffer));
 			  }
 			  else if (enumeration)
 			  {
 			    description = mxmlNewElement(enumeration, "description");
 			    update_comment(enumeration,
-					   mxmlNewText(description, 0, buffer));
+					   mxmlNewOpaque(description, buffer));
 			  }
 			}
 
@@ -2668,9 +2663,8 @@ scan_file(const char  *filename,	/* I - Filename */
 			fprintf(stderr, "    adding comment %p/%p to parent...\n",
 			        comment->last_child, comment->child);
 #endif /* DEBUG */
-        		mxmlNewText(comment, 0, buffer);
-			update_comment(tree,
-			               mxmlNewText(description, 0, buffer));
+        		mxmlNewOpaque(comment, buffer);
+			update_comment(tree, mxmlNewOpaque(description, buffer));
 		      }
 		      else
 		      {
@@ -2678,7 +2672,7 @@ scan_file(const char  *filename,	/* I - Filename */
 		        fprintf(stderr, "    before adding comment, child=%p, last_child=%p\n",
 			        comment->child, comment->last_child);
 #endif /* DEBUG */
-        		mxmlNewText(comment, 0, buffer);
+        		mxmlNewOpaque(comment, buffer);
 #ifdef DEBUG
 		        fprintf(stderr, "    after adding comment, child=%p, last_child=%p\n",
 			        comment->child, comment->last_child);
@@ -2756,9 +2750,8 @@ scan_file(const char  *filename,	/* I - Filename */
 		      fprintf(stderr, "    adding comment %p/%p to variable...\n",
 		              comment->last_child, comment->child);
 #endif /* DEBUG */
-		      mxmlNewText(comment, 0, buffer);
-		      update_comment(variable,
-				     mxmlNewText(description, 0, buffer));
+		      mxmlNewOpaque(comment, buffer);
+		      update_comment(variable, mxmlNewOpaque(description, buffer));
                     }
 
 		    variable = NULL;
@@ -2780,9 +2773,8 @@ scan_file(const char  *filename,	/* I - Filename */
 		      fprintf(stderr, "    adding comment %p/%p to constant...\n",
 		              comment->last_child, comment->child);
 #endif /* DEBUG */
-		      mxmlNewText(comment, 0, buffer);
-		      update_comment(constant,
-				     mxmlNewText(description, 0, buffer));
+		      mxmlNewOpaque(comment, buffer);
+		      update_comment(constant, mxmlNewOpaque(description, buffer));
 		    }
 
 		    constant = NULL;
@@ -2818,21 +2810,18 @@ scan_file(const char  *filename,	/* I - Filename */
 			      comment->last_child, comment->child,
 			      mxmlElementGetAttr(typedefnode, "name"));
 #endif /* DEBUG */
-		      mxmlNewText(comment, 0, buffer);
-		      update_comment(typedefnode,
-				     mxmlNewText(description, 0, buffer));
+		      mxmlNewOpaque(comment, buffer);
+		      update_comment(typedefnode, mxmlNewOpaque(description, buffer));
 
 		      if (structclass)
 		      {
 			description = mxmlNewElement(structclass, "description");
-			update_comment(structclass,
-				       mxmlNewText(description, 0, buffer));
+			update_comment(structclass, mxmlNewOpaque(description, buffer));
 		      }
 		      else if (enumeration)
 		      {
 			description = mxmlNewElement(enumeration, "description");
-			update_comment(enumeration,
-				       mxmlNewText(description, 0, buffer));
+			update_comment(enumeration, mxmlNewOpaque(description, buffer));
 		      }
 		    }
 
@@ -2847,12 +2836,11 @@ scan_file(const char  *filename,	/* I - Filename */
 		    fprintf(stderr, "    adding comment %p/%p to parent...\n",
 		            comment->last_child, comment->child);
 #endif /* DEBUG */
-		    mxmlNewText(comment, 0, buffer);
-		    update_comment(tree,
-			           mxmlNewText(description, 0, buffer));
+		    mxmlNewOpaque(comment, buffer);
+		    update_comment(tree, mxmlNewOpaque(description, buffer));
 		  }
 		  else
-        	    mxmlNewText(comment, 0, buffer);
+        	    mxmlNewOpaque(comment, buffer);
 
 #ifdef DEBUG
 		  fprintf(stderr, "C comment: <<<< %s >>>\n", buffer);
@@ -2911,9 +2899,8 @@ scan_file(const char  *filename,	/* I - Filename */
 		fprintf(stderr, "    adding comment %p/%p to variable...\n",
 		        comment->last_child, comment->child);
 #endif /* DEBUG */
-		mxmlNewText(comment, 0, buffer);
-		update_comment(variable,
-			       mxmlNewText(description, 0, buffer));
+		mxmlNewOpaque(comment, buffer);
+		update_comment(variable, mxmlNewOpaque(description, buffer));
               }
 
 	      variable = NULL;
@@ -2935,9 +2922,8 @@ scan_file(const char  *filename,	/* I - Filename */
 		fprintf(stderr, "    adding comment %p/%p to constant...\n",
 		        comment->last_child, comment->child);
 #endif /* DEBUG */
-		mxmlNewText(comment, 0, buffer);
-		update_comment(constant,
-			       mxmlNewText(description, 0, buffer));
+		mxmlNewOpaque(comment, buffer);
+		update_comment(constant, mxmlNewOpaque(description, buffer));
               }
 
 	      constant = NULL;
@@ -2973,21 +2959,18 @@ scan_file(const char  *filename,	/* I - Filename */
 			comment->last_child, comment->child,
 			mxmlElementGetAttr(typedefnode, "name"));
 #endif /* DEBUG */
-		mxmlNewText(comment, 0, buffer);
-		update_comment(typedefnode,
-			       mxmlNewText(description, 0, buffer));
+		mxmlNewOpaque(comment, buffer);
+		update_comment(typedefnode, mxmlNewOpaque(description, buffer));
 
 		if (structclass)
 		{
 		  description = mxmlNewElement(structclass, "description");
-		  update_comment(structclass,
-				 mxmlNewText(description, 0, buffer));
+		  update_comment(structclass, mxmlNewOpaque(description, buffer));
 		}
 		else if (enumeration)
 		{
 		  description = mxmlNewElement(enumeration, "description");
-		  update_comment(enumeration,
-				 mxmlNewText(description, 0, buffer));
+		  update_comment(enumeration, mxmlNewOpaque(description, buffer));
 		}
               }
 	    }
@@ -3000,12 +2983,11 @@ scan_file(const char  *filename,	/* I - Filename */
 	      fprintf(stderr, "    adding comment %p/%p to parent...\n",
 	              comment->last_child, comment->child);
 #endif /* DEBUG */
-	      mxmlNewText(comment, 0, buffer);
-	      update_comment(tree,
-			     mxmlNewText(description, 0, buffer));
+	      mxmlNewOpaque(comment, buffer);
+	      update_comment(tree, mxmlNewOpaque(description, buffer));
 	    }
 	    else
-              mxmlNewText(comment, 0, buffer);
+              mxmlNewOpaque(comment, buffer);
 
 #ifdef DEBUG
 	    fprintf(stderr, "C++ comment: <<<< %s >>>\n", buffer);
@@ -3508,7 +3490,7 @@ update_comment(mxml_node_t *parent,	/* I - Parent node */
   * Convert "\/" to "/"...
   */
 
-  for (ptr = strstr(comment->value.text.string, "\\/");
+  for (ptr = strstr(comment->value.opaque, "\\/");
        ptr;
        ptr = strstr(ptr, "\\/"))
     safe_strcpy(ptr, ptr + 1);
@@ -3517,7 +3499,7 @@ update_comment(mxml_node_t *parent,	/* I - Parent node */
   * Update the comment...
   */
 
-  ptr = comment->value.text.string;
+  ptr = comment->value.opaque;
 
   if (*ptr == '\'')
   {
@@ -3539,7 +3521,7 @@ update_comment(mxml_node_t *parent,	/* I - Parent node */
       while (isspace(*ptr & 255))
         ptr ++;
 
-      safe_strcpy(comment->value.text.string, ptr);
+      safe_strcpy(comment->value.opaque, ptr);
     }
   }
   else if (!strncmp(ptr, "I ", 2) || !strncmp(ptr, "O ", 2) ||
@@ -3554,7 +3536,7 @@ update_comment(mxml_node_t *parent,	/* I - Parent node */
     *ptr++ = '\0';
 
     if (!strcmp(parent->value.element.name, "argument"))
-      mxmlElementSetAttr(parent, "direction", comment->value.text.string);
+      mxmlElementSetAttr(parent, "direction", comment->value.opaque);
 
     while (isspace(*ptr & 255))
       ptr ++;
@@ -3565,27 +3547,27 @@ update_comment(mxml_node_t *parent,	/* I - Parent node */
     while (isspace(*ptr & 255))
       ptr ++;
 
-    safe_strcpy(comment->value.text.string, ptr);
+    safe_strcpy(comment->value.opaque, ptr);
   }
 
  /*
   * Eliminate leading and trailing *'s...
   */
 
-  for (ptr = comment->value.text.string; *ptr == '*'; ptr ++);
+  for (ptr = comment->value.opaque; *ptr == '*'; ptr ++);
   for (; isspace(*ptr & 255); ptr ++);
-  if (ptr > comment->value.text.string)
-    safe_strcpy(comment->value.text.string, ptr);
+  if (ptr > comment->value.opaque)
+    safe_strcpy(comment->value.opaque, ptr);
 
-  for (ptr = comment->value.text.string + strlen(comment->value.text.string) - 1;
-       ptr > comment->value.text.string && *ptr == '*';
+  for (ptr = comment->value.opaque + strlen(comment->value.opaque) - 1;
+       ptr > comment->value.opaque && *ptr == '*';
        ptr --)
     *ptr = '\0';
-  for (; ptr > comment->value.text.string && isspace(*ptr & 255); ptr --)
+  for (; ptr > comment->value.opaque && isspace(*ptr & 255); ptr --)
     *ptr = '\0';
 
 #ifdef DEBUG
-  fprintf(stderr, "    updated comment = %s\n", comment->value.text.string);
+  fprintf(stderr, "    updated comment = %s\n", comment->value.opaque);
 #endif /* DEBUG */
 }
 

@@ -13,6 +13,9 @@
 - The mxmldoc utility now supports Markdown (Issue #194)
 - Added `mxmlNewOpaquef` and `mxmlSetOpaquef` functions to add and set formatted
   opaque string values.
+- The mxmldoc utility scanned and loaded descriptive text differently, causing
+  the detailed descriptions ("discussion") to be lost in generated
+  documentation.
 
 
 # Changes in Mini-XML 2.10

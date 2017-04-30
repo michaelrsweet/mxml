@@ -3661,7 +3661,7 @@ write_description(
         ptr ++;
 
       if (!*ptr)
-        return;
+        ptr --;
     }
     else if (!strncmp(ptr, "@code ", 6))
     {

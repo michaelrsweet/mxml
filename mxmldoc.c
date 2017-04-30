@@ -3587,6 +3587,7 @@ usage(const char *option)		/* I - Unknown option */
   puts("    --author name              Set author name");
   puts("    --body bodyfile            Set body file (markdown supported)");
   puts("    --copyright text           Set copyright text");
+  puts("    --coverimage image.png     Set cover image (EPUB)");
   puts("    --css filename.css         Set CSS stylesheet file");
   puts("    --docset bundleid.docset   Generate documentation set");
   puts("    --docversion version       Set documentation version");

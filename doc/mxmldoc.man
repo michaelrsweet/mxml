@@ -11,7 +11,7 @@
 .\"
 .\"     https://michaelrsweet.github.io/mxml
 .\"
-.TH mxmldoc 1 "Mini-XML" "11 April 2017" "Michael R Sweet"
+.TH mxmldoc 1 "Mini-XML" "30 April 2017" "Michael R Sweet"
 .SH NAME
 mxmldoc \- mini-xml documentation generator
 .SH SYNOPSIS
@@ -138,6 +138,8 @@ mxmldoc \- mini-xml documentation generator
 .I bodyfile
 ] [ \-\-copyright
 .I copyright
+] [ \-\-coverimage
+.I image.png
 ] [ \-\-docversion
 .I version
 ] [ \-\-feedname

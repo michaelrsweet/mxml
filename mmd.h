@@ -34,6 +34,7 @@
  * Include necessary headers...
  */
 
+#  include <stdio.h>
 
 
 /*
@@ -82,6 +83,10 @@ typedef struct _mmd_s mmd_t;
  * Functions...
  */
 
+#  ifdef __cplusplus
+extern "C" {
+#  endif /* __cplusplus */
+
 extern void       mmdFree(mmd_t *node);
 extern mmd_t      *mmdGetFirstChild(mmd_t *node);
 extern mmd_t      *mmdGetLastChild(mmd_t *node);
@@ -95,5 +100,10 @@ extern const char *mmdGetURL(mmd_t *node);
 extern int        mmdGetWhitespace(mmd_t *node);
 extern int        mmdIsBlock(mmd_t *node);
 extern mmd_t      *mmdLoad(const char *filename);
+extern mmd_t      *mmdLoadFile(FILE *fp);
+
+#  ifdef __cplusplus
+}
+#  endif /* __cplusplus */
 
 #endif /* !MMD_H */

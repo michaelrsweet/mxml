@@ -32,7 +32,6 @@
  */
 
 #include "mmd.h"
-#include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
@@ -277,6 +276,31 @@ mmd_t *                                 /* O - First node in markdown */
 mmdLoad(const char *filename)           /* I - File to load */
 {
   FILE          *fp;                    /* File */
+  mmd_t         *doc;                   /* Document */
+
+
+ /*
+  * Open the file and create an empty document...
+  */
+
+  if ((fp = fopen(filename, "r")) == NULL)
+    return (NULL);
+
+  doc = mmdLoadFile(fp);
+
+  fclose(fp);
+
+  return (doc);
+}
+
+
+/*
+ * 'mmdLoadFile()' - Load a markdown file into nodes from a stdio file.
+ */
+
+mmd_t *                                 /* O - First node in markdown */
+mmdLoadFile(FILE *fp)                   /* I - File to load */
+{
   mmd_t         *doc,                   /* Document */
                 *current,               /* Current parent block */
                 *block = NULL;          /* Current block */
@@ -288,11 +312,8 @@ mmdLoad(const char *filename)           /* I - File to load */
 
 
  /*
-  * Open the file and create an empty document...
+  * Create an empty document...
   */
-
-  if ((fp = fopen(filename, "r")) == NULL)
-    return (NULL);
 
   doc = current = mmd_add(NULL, MMD_TYPE_DOCUMENT, 0, NULL, NULL);
 
@@ -580,8 +601,6 @@ mmdLoad(const char *filename)           /* I - File to load */
     mmd_parse_inline(block, lineptr);
   }
 
-  fclose(fp);
-
   return (doc);
 }
 
@@ -782,8 +801,6 @@ mmd_parse_inline(mmd_t *parent,         /* I - Parent node */
         else
           type = MMD_TYPE_NORMAL_TEXT;
       }
-      else
-        type = MMD_TYPE_NORMAL_TEXT;
 
       if (!*lineptr)
         break;
@@ -803,6 +820,7 @@ mmd_parse_inline(mmd_t *parent,         /* I - Parent node */
 
       text       = NULL;
       whitespace = 0;
+      type       = MMD_TYPE_NORMAL_TEXT;
     }
     else if (*lineptr == '`' && type == MMD_TYPE_CODE_TEXT)
     {
@@ -811,6 +829,7 @@ mmd_parse_inline(mmd_t *parent,         /* I - Parent node */
 
       text       = NULL;
       whitespace = 0;
+      type       = MMD_TYPE_NORMAL_TEXT;
     }
     else if (*lineptr == '\\' && lineptr[1])
     {

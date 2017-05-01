@@ -695,7 +695,7 @@ mmd_parse_inline(mmd_t *parent,         /* I - Parent node */
 
   for (lineptr = line, text = NULL, type = MMD_TYPE_NORMAL_TEXT; *lineptr; lineptr ++)
   {
-    if (isspace(*lineptr & 255))
+    if (isspace(*lineptr & 255) && type != MMD_TYPE_CODE_TEXT)
     {
       if (text)
       {
@@ -706,6 +706,149 @@ mmd_parse_inline(mmd_t *parent,         /* I - Parent node */
 
       whitespace = 1;
     }
+    else if (*lineptr == '!' && lineptr[1] == '[')
+    {
+     /*
+      * Image...
+      */
+
+      if (text)
+      {
+        mmd_add(parent, type, whitespace, text, NULL);
+
+        text       = NULL;
+        whitespace = 0;
+      }
+
+      lineptr = mmd_parse_link(lineptr + 1, &text, &url);
+
+      if (url)
+        mmd_add(parent, MMD_TYPE_IMAGE, whitespace, text, url);
+
+      if (!*lineptr)
+        return;
+
+      text = url = NULL;
+      whitespace = 0;
+      lineptr --;
+    }
+    else if (*lineptr == '[')
+    {
+     /*
+      * Link...
+      */
+
+      if (text)
+      {
+        mmd_add(parent, type, whitespace, text, NULL);
+
+        text       = NULL;
+        whitespace = 0;
+      }
+
+      lineptr = mmd_parse_link(lineptr, &text, &url);
+
+      if (text && *text == '`')
+      {
+        char *end = text + strlen(text) - 1;
+
+        text ++;
+        if (end > text && *end == '`')
+          *end = '\0';
+
+        mmd_add(parent, MMD_TYPE_CODE_TEXT, whitespace, text, url);
+      }
+      else if (text)
+        mmd_add(parent, MMD_TYPE_LINKED_TEXT, whitespace, text, url);
+
+      if (!*lineptr)
+        return;
+
+      text = url = NULL;
+      whitespace = 0;
+      lineptr --;
+    }
+    else if (*lineptr == '<' && strchr(lineptr + 1, '>'))
+    {
+     /*
+      * Autolink...
+      */
+
+      if (text)
+      {
+        mmd_add(parent, type, whitespace, text, NULL);
+
+        text       = NULL;
+        whitespace = 0;
+      }
+
+      url     = lineptr + 1;
+      lineptr = strchr(lineptr + 1, '>');
+
+      *lineptr++ = '\0';
+
+      mmd_add(parent, MMD_TYPE_LINKED_TEXT, whitespace, url, url);
+
+      text = url = NULL;
+      whitespace = 0;
+      lineptr --;
+    }
+    else if (*lineptr == '*' && type != MMD_TYPE_CODE_TEXT)
+    {
+      if (text)
+      {
+        *lineptr = '\0';
+
+        mmd_add(parent, type, whitespace, text, NULL);
+
+        *lineptr   = '*';
+        text       = NULL;
+        whitespace = 0;
+      }
+
+      if (type == MMD_TYPE_NORMAL_TEXT)
+      {
+        if (lineptr[1] == '*' && !isspace(lineptr[2] & 255))
+        {
+          type = MMD_TYPE_STRONG_TEXT;
+          lineptr ++;
+        }
+        else if (!isspace(lineptr[1] & 255))
+        {
+          type = MMD_TYPE_EMPHASIZED_TEXT;
+        }
+
+        text = lineptr + 1;
+      }
+      else
+      {
+        if (lineptr[1] == '*')
+          lineptr ++;
+
+        type = MMD_TYPE_NORMAL_TEXT;
+      }
+    }
+    else if (*lineptr == '`')
+    {
+      if (text)
+      {
+        *lineptr = '\0';
+        mmd_add(parent, type, whitespace, text, NULL);
+
+        text       = NULL;
+        whitespace = 0;
+      }
+
+      if (type == MMD_TYPE_CODE_TEXT)
+      {
+        type = MMD_TYPE_NORMAL_TEXT;
+      }
+      else
+      {
+        type = MMD_TYPE_CODE_TEXT;
+        text = lineptr + 1;
+      }
+    }
     else if (!text)
     {
       if (*lineptr == '\\' && lineptr[1])
@@ -715,121 +858,9 @@ mmd_parse_inline(mmd_t *parent,         /* I - Parent node */
         */
 
         lineptr ++;
-        text = lineptr;
       }
-      else if (*lineptr == '!' && lineptr[1] == '[')
-      {
-       /*
-        * Image...
-        */
-
-        lineptr = mmd_parse_link(lineptr + 1, &text, &url);
-
-        if (url)
-          mmd_add(parent, MMD_TYPE_IMAGE, whitespace, text, url);
-
-        if (!*lineptr)
-          return;
-
-        text = url = NULL;
-        whitespace = 0;
-        lineptr --;
-      }
-      else if (*lineptr == '[')
-      {
-       /*
-        * Link...
-        */
-
-        lineptr = mmd_parse_link(lineptr, &text, &url);
-
-        if (text && *text == '`')
-        {
-          char *end = text + strlen(text) - 1;
-
-          text ++;
-          if (end > text && *end == '`')
-            *end = '\0';
-
-          mmd_add(parent, MMD_TYPE_CODE_TEXT, whitespace, text, url);
-        }
-        else if (text)
-          mmd_add(parent, MMD_TYPE_LINKED_TEXT, whitespace, text, url);
-
-        if (!*lineptr)
-          return;
-
-        text = url = NULL;
-        whitespace = 0;
-        lineptr --;
-      }
-      else if (*lineptr == '<' && strchr(lineptr + 1, '>'))
-      {
-       /*
-        * Autolink...
-        */
-
-        url     = lineptr + 1;
-        lineptr = strchr(lineptr + 1, '>');
-
-        *lineptr++ = '\0';
-
-        mmd_add(parent, MMD_TYPE_LINKED_TEXT, whitespace, url, url);
-
-        text = url = NULL;
-        whitespace = 0;
-        lineptr --;
-      }
-      else if (*lineptr == '`')
-      {
-        type = MMD_TYPE_CODE_TEXT;
-        text = lineptr + 1;
-        lineptr ++;
-      }
-      else if (*lineptr == '*')
-      {
-        if (lineptr[1] == '*' && !isspace(lineptr[2] & 255))
-        {
-          type    = MMD_TYPE_STRONG_TEXT;
-          lineptr += 2;
-        }
-        else if (!isspace(lineptr[1] & 255))
-        {
-          type = MMD_TYPE_EMPHASIZED_TEXT;
-          lineptr ++;
-        }
-        else
-          type = MMD_TYPE_NORMAL_TEXT;
-      }
-
-      if (!*lineptr)
-        break;
 
       text = lineptr;
-    }
-    else if (*lineptr == '*' && type != MMD_TYPE_NORMAL_TEXT)
-    {
-      *lineptr = '\0';
-      if (lineptr[1] == '*')
-      {
-        lineptr ++;
-        *lineptr = '\0';
-      }
-
-      mmd_add(parent, type, whitespace, text, NULL);
-
-      text       = NULL;
-      whitespace = 0;
-      type       = MMD_TYPE_NORMAL_TEXT;
-    }
-    else if (*lineptr == '`' && type == MMD_TYPE_CODE_TEXT)
-    {
-      *lineptr = '\0';
-      mmd_add(parent, type, whitespace, text, NULL);
-
-      text       = NULL;
-      whitespace = 0;
-      type       = MMD_TYPE_NORMAL_TEXT;
     }
     else if (*lineptr == '\\' && lineptr[1])
     {

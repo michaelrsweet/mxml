@@ -1436,7 +1436,9 @@ markdown_anchor(const char *text)	/* I - Title text */
   for (bufptr = buffer; *text && bufptr < (buffer + sizeof(buffer) - 1); text ++)
   {
     if ((*text >= '0' && *text <= '9') || (*text >= 'a' && *text <= 'z') || (*text >= 'A' && *text <= 'Z') || *text == '.' || *text == '-')
-      *bufptr++ = *text;
+      *bufptr++ = (char)tolower(*text);
+    else if (*text == ' ')
+      *bufptr++ = '-';
   }
 
   *bufptr = '\0';
@@ -1597,7 +1599,12 @@ markdown_write_block(FILE  *out,	/* I - Output file */
 
       fprintf(out, "    <%s><a id=\"", element);
       for (node = mmdGetFirstChild(parent); node; node = mmdGetNextSibling(node))
+      {
+        if (mmdGetWhitespace(node))
+          fputc('-', out);
+
         fputs(markdown_anchor(mmdGetText(node)), out);
+      }
       fputs("\">", out);
     }
     else if (element)

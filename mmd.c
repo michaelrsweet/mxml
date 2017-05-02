@@ -706,7 +706,7 @@ mmd_parse_inline(mmd_t *parent,         /* I - Parent node */
 
       whitespace = 1;
     }
-    else if (*lineptr == '!' && lineptr[1] == '[')
+    else if (*lineptr == '!' && lineptr[1] == '[' && type != MMD_TYPE_CODE_TEXT)
     {
      /*
       * Image...
@@ -732,7 +732,7 @@ mmd_parse_inline(mmd_t *parent,         /* I - Parent node */
       whitespace = 0;
       lineptr --;
     }
-    else if (*lineptr == '[')
+    else if (*lineptr == '[' && type != MMD_TYPE_CODE_TEXT)
     {
      /*
       * Link...
@@ -768,7 +768,7 @@ mmd_parse_inline(mmd_t *parent,         /* I - Parent node */
       whitespace = 0;
       lineptr --;
     }
-    else if (*lineptr == '<' && strchr(lineptr + 1, '>'))
+    else if (*lineptr == '<' && type != MMD_TYPE_CODE_TEXT && strchr(lineptr + 1, '>'))
     {
      /*
       * Autolink...

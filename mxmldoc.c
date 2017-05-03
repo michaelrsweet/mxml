@@ -4172,8 +4172,8 @@ write_docset(const char  *docset,	/* I - Documentation set directory */
       }
     }
   }
-#endif /* __APPLE__ */
 }
+#endif /* __APPLE__ */
 
 
 /*

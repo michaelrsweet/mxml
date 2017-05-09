@@ -1,4 +1,4 @@
-.TH mxml 3 "Mini-XML API" "05/02/17" "Mini-XML API"
+.TH mxml 3 "Mini-XML API" "05/09/17" "Mini-XML API"
 .SH NAME
 mxml \- Mini-XML API
 .SH INCLUDE FILE

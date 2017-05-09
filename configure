@@ -2291,8 +2291,7 @@ case $host_os in *\ *) host_os=`echo "$host_os" | sed 's/ /-/g'`;; esac
 
 
 host_os_name=`echo $host_os | sed -e '1,$s/[0-9.]*$//g'`
-host_os_version=`echo $host_os | sed -e '1,$s/^[^0-9.]*//g' | awk -F. '{print $1*100+$2}'`
-echo "host_os_version=$host_os_version"
+host_os_version=`echo $host_os | sed -e '1,$s/^[^0-9.]*//g'`
 
 ac_config_headers="$ac_config_headers config.h"
 

@@ -33,12 +33,10 @@
 
 #include "zipc.h"
 #include <stdio.h>
-#include <stdlib.h>
 #include <stdarg.h>
 #include <string.h>
 #include <errno.h>
 #include <time.h>
-#include <sys/time.h>
 #include <zlib.h>
 
 
@@ -889,7 +887,7 @@ zipc_write_local_trailer(
     * Update the CRC-32, compressed size, and uncompressed size fields...
     */
 
-    fseek(zc->fp, zf->offset + 14, SEEK_SET);
+    fseek(zc->fp, (long)(zf->offset + 14), SEEK_SET);
 
     status |= zipc_write_u32(zc, zf->crc32);
     status |= zipc_write_u32(zc, (unsigned)zf->compressed_size);

@@ -34,6 +34,7 @@
  * Include necessary headers...
  */
 
+#  include <stdlib.h>
 #  include <sys/types.h>
 
 
@@ -49,6 +50,10 @@ typedef struct _zipc_file_s zipc_file_t;/* File/directory in ZIP container */
  * Functions...
  */
 
+#  ifdef __cplusplus
+extern "C" {
+#  endif /* __cplusplus */
+
 extern int		zipcClose(zipc_t *zc);
 extern int              zipcCopyFile(zipc_t *zc, const char *dstname, const char *srcname, int text, int compressed);
 extern int		zipcCreateDirectory(zipc_t *zc, const char *filename);
@@ -57,17 +62,21 @@ extern int		zipcCreateFileWithString(zipc_t *zc, const char *filename, const cha
 extern const char	*zipcError(zipc_t *zc);
 extern int		zipcFileFinish(zipc_file_t *zf);
 extern int		zipcFilePrintf(zipc_file_t *zf, const char *format, ...)
-#    ifdef __GNUC__
+#  ifdef __GNUC__
 __attribute__ ((__format__ (__printf__, 2, 3)))
-#    endif /* __GNUC__ */
+#  endif /* __GNUC__ */
 ;
 extern int		zipcFilePuts(zipc_file_t *zf, const char *s);
 extern int		zipcFileWrite(zipc_file_t *zf, const void *data, size_t bytes);
 extern int		zipcFileXMLPrintf(zipc_file_t *zf, const char *format, ...)
-#    ifdef __GNUC__
+#  ifdef __GNUC__
 __attribute__ ((__format__ (__printf__, 2, 3)))
-#    endif /* __GNUC__ */
+#  endif /* __GNUC__ */
 ;
 extern zipc_t		*zipcOpen(const char *filename, const char *mode);
+
+#  ifdef __cplusplus
+}
+#  endif /* __cplusplus */
 
 #endif /* !ZIPC_H */

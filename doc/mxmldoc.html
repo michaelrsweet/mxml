@@ -65,6 +65,16 @@ create a man page instead of HTML documentation, for example:</p>
         &gt;filename.man ENTER</kbd>
 </pre>
 
+<h3>Creating EPUB Books</h3>
+
+<p>The <tt>--epub filename.epub</tt> option tells <tt>mxmldoc</tt> to
+create an EPUB book containing the HTML documentation, for example:</p>
+
+<pre>
+    <kbd>mxmldoc --epub foo.epub *.h *.c foo.xml ENTER</kbd>
+</pre>
+
+
 <h3>Creating Xcode Documentation Sets</h3>
 
 <p>The <tt>--docset directory.docset</tt> option tells <tt>mxmldoc</tt> to
@@ -75,7 +85,7 @@ example:</p>
     <kbd>mxmldoc --docset foo.docset *.h *.c foo.xml ENTER</kbd>
 </pre>
 
-<p>Xcode documentation sets can only be built on Mac OS X with Xcode 3.0 or
+<p>Xcode documentation sets can only be built on macOS with Xcode 3.0 or
 higher installed.</p>
 
 
@@ -147,6 +157,11 @@ following special <tt>@name ...@</tt> directive strings:</p>
 
 	<li><tt>@deprecated@</tt> - flags the item as deprecated to
 	discourage its use</li>
+
+	<li><tt>@exclude format[,...,format]@</tt> - excludes the item from the
+	documentation in the specified formats: "all" for all formats, "docset"
+	for Xcode documentation sets, "epub" for EPUB books, "html" for HTML
+	output, and "man" for man page output</li>
 
 	<li><tt>@private@</tt> - flags the item as private so it
 	will not be included in the documentation</li>

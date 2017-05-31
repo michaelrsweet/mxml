@@ -16,6 +16,10 @@
 - The mxmldoc utility scanned and loaded descriptive text differently, causing
   the detailed descriptions ("discussion") to be lost in generated
   documentation.
+- The mxmldoc utility now supports `@exclude format@` comments to exclude
+  documentation based on the output format.  The format string can be `all` to
+  exclude documentation for all formats or a comma-delimited list such as
+  `@exclude man,html@`.
 
 
 # Changes in Mini-XML 2.10

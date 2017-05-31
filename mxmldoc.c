@@ -163,8 +163,8 @@ typedef struct
 
 static void		add_toc(toc_t *toc, int level, const char *anchor, const char *title);
 static mxml_node_t	*add_variable(mxml_node_t *parent, const char *name, mxml_node_t *type);
-static toc_t		*build_toc(mxml_node_t *doc, const char *bodyfile, mmd_t *body);
-static mxml_node_t	*find_public(mxml_node_t *node, mxml_node_t *top, const char *element, const char *name);
+static toc_t		*build_toc(mxml_node_t *doc, const char *bodyfile, mmd_t *body, int mode);
+static mxml_node_t	*find_public(mxml_node_t *node, mxml_node_t *top, const char *element, const char *name, int mode);
 static void		free_toc(toc_t *toc);
 static char		*get_comment_info(mxml_node_t *description);
 static char		*get_iso_date(time_t t);
@@ -867,7 +867,8 @@ add_variable(mxml_node_t *parent,	/* I - Parent node */
 static toc_t *				/* O - Table of contents */
 build_toc(mxml_node_t *doc,		/* I - Documentation */
           const char  *bodyfile,	/* I - Body file */
-          mmd_t       *body)		/* I - Markdown body */
+          mmd_t       *body,		/* I - Markdown body */
+          int         mode)             /* I - Output mode */
 {
   toc_t		*toc;			/* Array of headings */
   FILE		*fp;			/* Body file */
@@ -1054,14 +1055,14 @@ build_toc(mxml_node_t *doc,		/* I - Documentation */
   * Next the classes...
   */
 
-  if ((scut = find_public(doc, doc, "class", NULL)) != NULL)
+  if ((scut = find_public(doc, doc, "class", NULL, mode)) != NULL)
   {
     add_toc(toc, 1, "CLASSES", "Classes");
 
     while (scut)
     {
       name = mxmlElementGetAttr(scut, "name");
-      scut = find_public(scut, doc, "class", NULL);
+      scut = find_public(scut, doc, "class", NULL, mode);
       add_toc(toc, 2, name, name);
     }
   }
@@ -1070,14 +1071,14 @@ build_toc(mxml_node_t *doc,		/* I - Documentation */
   * Functions...
   */
 
-  if ((function = find_public(doc, doc, "function", NULL)) != NULL)
+  if ((function = find_public(doc, doc, "function", NULL, mode)) != NULL)
   {
     add_toc(toc, 1, "FUNCTIONS", "Functions");
 
     while (function)
     {
       name     = mxmlElementGetAttr(function, "name");
-      function = find_public(function, doc, "function", NULL);
+      function = find_public(function, doc, "function", NULL, mode);
       add_toc(toc, 2, name, name);
     }
   }
@@ -1086,14 +1087,14 @@ build_toc(mxml_node_t *doc,		/* I - Documentation */
   * Data types...
   */
 
-  if ((scut = find_public(doc, doc, "typedef", NULL)) != NULL)
+  if ((scut = find_public(doc, doc, "typedef", NULL, mode)) != NULL)
   {
     add_toc(toc, 1, "TYPES", "Data Types");
 
     while (scut)
     {
       name = mxmlElementGetAttr(scut, "name");
-      scut = find_public(scut, doc, "typedef", NULL);
+      scut = find_public(scut, doc, "typedef", NULL, mode);
       add_toc(toc, 2, name, name);
     }
   }
@@ -1102,14 +1103,14 @@ build_toc(mxml_node_t *doc,		/* I - Documentation */
   * Structures...
   */
 
-  if ((scut = find_public(doc, doc, "struct", NULL)) != NULL)
+  if ((scut = find_public(doc, doc, "struct", NULL, mode)) != NULL)
   {
     add_toc(toc, 1, "STRUCTURES", "Structures");
 
     while (scut)
     {
       name = mxmlElementGetAttr(scut, "name");
-      scut = find_public(scut, doc, "struct", NULL);
+      scut = find_public(scut, doc, "struct", NULL, mode);
       add_toc(toc, 2, name, name);
     }
   }
@@ -1118,14 +1119,14 @@ build_toc(mxml_node_t *doc,		/* I - Documentation */
   * Unions...
   */
 
-  if ((scut = find_public(doc, doc, "union", NULL)) != NULL)
+  if ((scut = find_public(doc, doc, "union", NULL, mode)) != NULL)
   {
     add_toc(toc, 1, "UNIONS", "Unions");
 
     while (scut)
     {
       name = mxmlElementGetAttr(scut, "name");
-      scut = find_public(scut, doc, "union", NULL);
+      scut = find_public(scut, doc, "union", NULL, mode);
       add_toc(toc, 2, name, name);
     }
   }
@@ -1134,14 +1135,14 @@ build_toc(mxml_node_t *doc,		/* I - Documentation */
   * Globals variables...
   */
 
-  if ((arg = find_public(doc, doc, "variable", NULL)) != NULL)
+  if ((arg = find_public(doc, doc, "variable", NULL, mode)) != NULL)
   {
     add_toc(toc, 1, "VARIABLES", "Variables");
 
     while (arg)
     {
       name = mxmlElementGetAttr(arg, "name");
-      arg = find_public(arg, doc, "variable", NULL);
+      arg = find_public(arg, doc, "variable", NULL, mode);
       add_toc(toc, 2, name, name);
     }
   }
@@ -1150,14 +1151,14 @@ build_toc(mxml_node_t *doc,		/* I - Documentation */
   * Enumerations/constants...
   */
 
-  if ((scut = find_public(doc, doc, "enumeration", NULL)) != NULL)
+  if ((scut = find_public(doc, doc, "enumeration", NULL, mode)) != NULL)
   {
     add_toc(toc, 1, "ENUMERATIONS", "Enumerations");
 
     while (scut)
     {
       name = mxmlElementGetAttr(scut, "name");
-      scut = find_public(scut, doc, "enumeration", NULL);
+      scut = find_public(scut, doc, "enumeration", NULL, mode);
       add_toc(toc, 2, name, name);
     }
   }
@@ -1223,7 +1224,8 @@ static mxml_node_t *			/* I - Found node or NULL */
 find_public(mxml_node_t *node,		/* I - Current node */
             mxml_node_t *top,		/* I - Top node */
             const char  *element,	/* I - Element */
-            const char  *name)		/* I - Name */
+            const char  *name,		/* I - Name */
+            int         mode)           /* I - Output mode */
 {
   mxml_node_t	*description,		/* Description node */
 		*comment;		/* Comment node */
@@ -1248,15 +1250,87 @@ find_public(mxml_node_t *node,		/* I - Current node */
       continue;
 
    /*
-    * Look for @private@ in the comment text...
+    * Look for @private@ or @exclude format@ in the comment text...
     */
 
     for (comment = description->child; comment; comment = comment->next)
-      if ((comment->type == MXML_TEXT &&
-           strstr(comment->value.text.string, "@private@")) ||
-          (comment->type == MXML_OPAQUE &&
-           strstr(comment->value.opaque, "@private@")))
+    {
+      const char *s = comment->type == MXML_TEXT ? comment->value.text.string : comment->value.opaque;
+      const char *exclude;
+
+     /*
+      * Skip anything marked private...
+      */
+
+      if (strstr(s, "@private@"))
         break;
+
+     /*
+      * Skip items excluded for certain formats...
+      */
+
+      if ((exclude = strstr(s, "@exclude ")) != NULL)
+      {
+        exclude += 9;
+
+        if (!strncmp(exclude, "all@", 4))
+        {
+          break;
+        }
+        else
+        {
+          while (*exclude != '@')
+          {
+            if (!strncmp(exclude, "docset", 6))
+            {
+              if (mode == OUTPUT_DOCSET)
+                break;
+              exclude += 6;
+            }
+            else if (!strncmp(exclude, "epub", 4))
+            {
+              if (mode == OUTPUT_EPUB)
+                break;
+              exclude += 4;
+            }
+            else if (!strncmp(exclude, "html", 4))
+            {
+              if (mode == OUTPUT_HTML)
+                break;
+              exclude += 4;
+            }
+            else if (!strncmp(exclude, "man", 3))
+            {
+              if (mode == OUTPUT_MAN)
+                break;
+              exclude += 3;
+            }
+            else if (!strncmp(exclude, "tokens", 6))
+            {
+              if (mode == OUTPUT_TOKENS)
+                break;
+              exclude += 6;
+            }
+            else if (!strncmp(exclude, "xml", 3))
+            {
+              if (mode == OUTPUT_XML)
+                break;
+              exclude += 3;
+            }
+            else
+              break;
+
+            if (*exclude == ',')
+              exclude ++;
+            else if (*exclude != '@')
+              break;
+          }
+
+          if (*exclude != '@')
+            break;
+        }
+      }
+    }
 
     if (!comment)
     {
@@ -3831,7 +3905,7 @@ write_docset(const char  *docset,	/* I - Documentation set directory */
   * Create the table-of-contents entries...
   */
 
-  toc = build_toc(doc, bodyfile, body);
+  toc = build_toc(doc, bodyfile, body, OUTPUT_DOCSET);
 
  /*
   * Create an Xcode documentation set - start by removing any existing
@@ -4522,7 +4596,7 @@ write_epub(const char  *epubfile,	/* I - EPUB file (output) */
 
   if ((epubf = zipcCreateFile(epub, "OEBPS/nav.xhtml", 1)) != NULL)
   {
-    toc = build_toc(doc, bodyfile, body);
+    toc = build_toc(doc, bodyfile, body, OUTPUT_EPUB);
 
     zipcFilePrintf(epubf, "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
                           "<!DOCTYPE html>\n"
@@ -4796,7 +4870,7 @@ write_html(const char  *framefile,	/* I - Framed HTML basename */
   * Create the table-of-contents entries...
   */
 
-  toc = build_toc(doc, bodyfile, body);
+  toc = build_toc(doc, bodyfile, body, OUTPUT_HTML);
 
   if (framefile)
   {
@@ -5039,7 +5113,7 @@ write_html_body(
   * List of classes...
   */
 
-  if ((scut = find_public(doc, doc, "class", NULL)) != NULL)
+  if ((scut = find_public(doc, doc, "class", NULL, mode)) != NULL)
   {
     fputs("      <h2 class=\"title\"><a id=\"CLASSES\">Classes</a></h2>\n", out);
 
@@ -5047,7 +5121,7 @@ write_html_body(
     {
       write_scu(out, mode, doc, scut);
 
-      scut = find_public(scut, doc, "class", NULL);
+      scut = find_public(scut, doc, "class", NULL, mode);
     }
   }
 
@@ -5055,7 +5129,7 @@ write_html_body(
   * List of functions...
   */
 
-  if ((function = find_public(doc, doc, "function", NULL)) != NULL)
+  if ((function = find_public(doc, doc, "function", NULL, mode)) != NULL)
   {
     fputs("      <h2 class=\"title\"><a id=\"FUNCTIONS\">Functions</a></h2>\n", out);
 
@@ -5063,7 +5137,7 @@ write_html_body(
     {
       write_function(out, mode, doc, function, 3);
 
-      function = find_public(function, doc, "function", NULL);
+      function = find_public(function, doc, "function", NULL, mode);
     }
   }
 
@@ -5071,7 +5145,7 @@ write_html_body(
   * List of types...
   */
 
-  if ((scut = find_public(doc, doc, "typedef", NULL)) != NULL)
+  if ((scut = find_public(doc, doc, "typedef", NULL, mode)) != NULL)
   {
     fputs("      <h2 class=\"title\"><a id=\"TYPES\">Data Types</a></h2>\n", out);
 
@@ -5098,11 +5172,11 @@ write_html_body(
 	  if (type->value.text.whitespace)
 	    putc(' ', out);
 
-	  if (find_public(doc, doc, "class", type->value.text.string) ||
-	      find_public(doc, doc, "enumeration", type->value.text.string) ||
-	      find_public(doc, doc, "struct", type->value.text.string) ||
-	      find_public(doc, doc, "typedef", type->value.text.string) ||
-	      find_public(doc, doc, "union", type->value.text.string))
+	  if (find_public(doc, doc, "class", type->value.text.string, mode) ||
+	      find_public(doc, doc, "enumeration", type->value.text.string, mode) ||
+	      find_public(doc, doc, "struct", type->value.text.string, mode) ||
+	      find_public(doc, doc, "typedef", type->value.text.string, mode) ||
+	      find_public(doc, doc, "union", type->value.text.string, mode))
 	  {
             fputs("<a href=\"#", out);
             write_string(out, type->value.text.string, OUTPUT_HTML);
@@ -5130,11 +5204,11 @@ write_html_body(
 	  if (type->value.text.whitespace)
 	    putc(' ', out);
 
-	  if (find_public(doc, doc, "class", type->value.text.string) ||
-	      find_public(doc, doc, "enumeration", type->value.text.string) ||
-	      find_public(doc, doc, "struct", type->value.text.string) ||
-	      find_public(doc, doc, "typedef", type->value.text.string) ||
-	      find_public(doc, doc, "union", type->value.text.string))
+	  if (find_public(doc, doc, "class", type->value.text.string, mode) ||
+	      find_public(doc, doc, "enumeration", type->value.text.string, mode) ||
+	      find_public(doc, doc, "struct", type->value.text.string, mode) ||
+	      find_public(doc, doc, "typedef", type->value.text.string, mode) ||
+	      find_public(doc, doc, "union", type->value.text.string, mode))
 	  {
             fputs("<a href=\"#", out);
             write_string(out, type->value.text.string, OUTPUT_HTML);
@@ -5160,7 +5234,7 @@ write_html_body(
 
       fputs("</p>\n", out);
 
-      scut = find_public(scut, doc, "typedef", NULL);
+      scut = find_public(scut, doc, "typedef", NULL, mode);
     }
   }
 
@@ -5168,7 +5242,7 @@ write_html_body(
   * List of structures...
   */
 
-  if ((scut = find_public(doc, doc, "struct", NULL)) != NULL)
+  if ((scut = find_public(doc, doc, "struct", NULL, mode)) != NULL)
   {
     fputs("      <h2 class=\"title\"><a id=\"STRUCTURES\">Structures</a></h2>\n", out);
 
@@ -5176,7 +5250,7 @@ write_html_body(
     {
       write_scu(out, mode, doc, scut);
 
-      scut = find_public(scut, doc, "struct", NULL);
+      scut = find_public(scut, doc, "struct", NULL, mode);
     }
   }
 
@@ -5184,7 +5258,7 @@ write_html_body(
   * List of unions...
   */
 
-  if ((scut = find_public(doc, doc, "union", NULL)) != NULL)
+  if ((scut = find_public(doc, doc, "union", NULL, mode)) != NULL)
   {
     fputs("      <h2 class=\"title\"><a id=\"UNIONS\">Unions</a></h2>\n", out);
 
@@ -5192,7 +5266,7 @@ write_html_body(
     {
       write_scu(out, mode, doc, scut);
 
-      scut = find_public(scut, doc, "union", NULL);
+      scut = find_public(scut, doc, "union", NULL, mode);
     }
   }
 
@@ -5200,7 +5274,7 @@ write_html_body(
   * Variables...
   */
 
-  if ((arg = find_public(doc, doc, "variable", NULL)) != NULL)
+  if ((arg = find_public(doc, doc, "variable", NULL, mode)) != NULL)
   {
     fputs("      <h2 class=\"title\"><a id=\"VARIABLES\">Variables</a></h2>\n", out);
 
@@ -5222,7 +5296,7 @@ write_html_body(
 	fprintf(out, " %s", defval);
       fputs(";</p>\n", out);
 
-      arg = find_public(arg, doc, "variable", NULL);
+      arg = find_public(arg, doc, "variable", NULL, mode);
     }
   }
 
@@ -5230,7 +5304,7 @@ write_html_body(
   * List of enumerations...
   */
 
-  if ((scut = find_public(doc, doc, "enumeration", NULL)) != NULL)
+  if ((scut = find_public(doc, doc, "enumeration", NULL, mode)) != NULL)
   {
     fputs("      <h2 class=\"title\"><a id=\"ENUMERATIONS\">Constants</a></h2>\n", out);
 
@@ -5264,7 +5338,7 @@ write_html_body(
 
       fputs("</dl>\n", out);
 
-      scut = find_public(scut, doc, "enumeration", NULL);
+      scut = find_public(scut, doc, "enumeration", NULL, mode);
     }
   }
 }
@@ -5674,13 +5748,13 @@ write_man(const char  *man_name,	/* I - Name of manpage */
   * List of classes...
   */
 
-  if (find_public(doc, doc, "class", NULL))
+  if (find_public(doc, doc, "class", NULL, OUTPUT_MAN))
   {
     puts(".SH CLASSES");
 
-    for (scut = find_public(doc, doc, "class", NULL);
+    for (scut = find_public(doc, doc, "class", NULL, OUTPUT_MAN);
 	 scut;
-	 scut = find_public(scut, doc, "class", NULL))
+	 scut = find_public(scut, doc, "class", NULL, OUTPUT_MAN))
     {
       cname       = mxmlElementGetAttr(scut, "name");
       description = mxmlFindElement(scut, scut, "description", NULL,
@@ -5785,13 +5859,13 @@ write_man(const char  *man_name,	/* I - Name of manpage */
   * List of enumerations...
   */
 
-  if (find_public(doc, doc, "enumeration", NULL))
+  if (find_public(doc, doc, "enumeration", NULL, OUTPUT_MAN))
   {
     puts(".SH ENUMERATIONS");
 
-    for (scut = find_public(doc, doc, "enumeration", NULL);
+    for (scut = find_public(doc, doc, "enumeration", NULL, OUTPUT_MAN);
 	 scut;
-	 scut = find_public(scut, doc, "enumeration", NULL))
+	 scut = find_public(scut, doc, "enumeration", NULL, OUTPUT_MAN))
     {
       name        = mxmlElementGetAttr(scut, "name");
       description = mxmlFindElement(scut, scut, "description", NULL,
@@ -5819,13 +5893,13 @@ write_man(const char  *man_name,	/* I - Name of manpage */
   * List of functions...
   */
 
-  if (find_public(doc, doc, "function", NULL))
+  if (find_public(doc, doc, "function", NULL, OUTPUT_MAN))
   {
     puts(".SH FUNCTIONS");
 
-    for (function = find_public(doc, doc, "function", NULL);
+    for (function = find_public(doc, doc, "function", NULL, OUTPUT_MAN);
 	 function;
-	 function = find_public(function, doc, "function", NULL))
+	 function = find_public(function, doc, "function", NULL, OUTPUT_MAN))
     {
       name        = mxmlElementGetAttr(function, "name");
       description = mxmlFindElement(function, function, "description", NULL,
@@ -5880,13 +5954,13 @@ write_man(const char  *man_name,	/* I - Name of manpage */
   * List of structures...
   */
 
-  if (find_public(doc, doc, "struct", NULL))
+  if (find_public(doc, doc, "struct", NULL, OUTPUT_MAN))
   {
     puts(".SH STRUCTURES");
 
-    for (scut = find_public(doc, doc, "struct", NULL);
+    for (scut = find_public(doc, doc, "struct", NULL, OUTPUT_MAN);
 	 scut;
-	 scut = find_public(scut, doc, "struct", NULL))
+	 scut = find_public(scut, doc, "struct", NULL, OUTPUT_MAN))
     {
       cname       = mxmlElementGetAttr(scut, "name");
       description = mxmlFindElement(scut, scut, "description", NULL,
@@ -5970,13 +6044,13 @@ write_man(const char  *man_name,	/* I - Name of manpage */
   * List of types...
   */
 
-  if (find_public(doc, doc, "typedef", NULL))
+  if (find_public(doc, doc, "typedef", NULL, OUTPUT_MAN))
   {
     puts(".SH TYPES");
 
-    for (scut = find_public(doc, doc, "typedef", NULL);
+    for (scut = find_public(doc, doc, "typedef", NULL, OUTPUT_MAN);
 	 scut;
-	 scut = find_public(scut, doc, "typedef", NULL))
+	 scut = find_public(scut, doc, "typedef", NULL, OUTPUT_MAN))
     {
       name        = mxmlElementGetAttr(scut, "name");
       description = mxmlFindElement(scut, scut, "description", NULL,
@@ -6034,13 +6108,13 @@ write_man(const char  *man_name,	/* I - Name of manpage */
   * List of unions...
   */
 
-  if (find_public(doc, doc, "union", NULL))
+  if (find_public(doc, doc, "union", NULL, OUTPUT_MAN))
   {
     puts(".SH UNIONS");
 
-    for (scut = find_public(doc, doc, "union", NULL);
+    for (scut = find_public(doc, doc, "union", NULL, OUTPUT_MAN);
 	 scut;
-	 scut = find_public(scut, doc, "union", NULL))
+	 scut = find_public(scut, doc, "union", NULL, OUTPUT_MAN))
     {
       name        = mxmlElementGetAttr(scut, "name");
       description = mxmlFindElement(scut, scut, "description", NULL,
@@ -6076,13 +6150,13 @@ write_man(const char  *man_name,	/* I - Name of manpage */
   * Variables...
   */
 
-  if (find_public(doc, doc, "variable", NULL))
+  if (find_public(doc, doc, "variable", NULL, OUTPUT_MAN))
   {
     puts(".SH VARIABLES");
 
-    for (arg = find_public(doc, doc, "variable", NULL);
+    for (arg = find_public(doc, doc, "variable", NULL, OUTPUT_MAN);
 	 arg;
-	 arg = find_public(arg, doc, "variable", NULL))
+	 arg = find_public(arg, doc, "variable", NULL, OUTPUT_MAN))
     {
       name        = mxmlElementGetAttr(arg, "name");
       description = mxmlFindElement(arg, arg, "description", NULL,
@@ -6409,7 +6483,7 @@ write_tokens(FILE        *out,		/* I - Output file */
   * Classes...
   */
 
-  if ((scut = find_public(doc, doc, "class", NULL)) != NULL)
+  if ((scut = find_public(doc, doc, "class", NULL, OUTPUT_TOKENS)) != NULL)
   {
     while (scut)
     {
@@ -6426,7 +6500,7 @@ write_tokens(FILE        *out,		/* I - Output file */
       fputs("    </Abstract>\n"
             "  </Token>\n", out);
 
-      if ((function = find_public(scut, scut, "function", NULL)) != NULL)
+      if ((function = find_public(scut, scut, "function", NULL, OUTPUT_TOKENS)) != NULL)
       {
 	while (function)
 	{
@@ -6521,10 +6595,10 @@ write_tokens(FILE        *out,		/* I - Output file */
 	  fputs("    </Declaration>\n"
 		"  </Token>\n", out);
 
-	  function = find_public(function, doc, "function", NULL);
+	  function = find_public(function, doc, "function", NULL, OUTPUT_TOKENS);
 	}
       }
-      scut = find_public(scut, doc, "class", NULL);
+      scut = find_public(scut, doc, "class", NULL, OUTPUT_TOKENS);
     }
   }
 
@@ -6532,7 +6606,7 @@ write_tokens(FILE        *out,		/* I - Output file */
   * Functions...
   */
 
-  if ((function = find_public(doc, doc, "function", NULL)) != NULL)
+  if ((function = find_public(doc, doc, "function", NULL, OUTPUT_TOKENS)) != NULL)
   {
     while (function)
     {
@@ -6590,7 +6664,7 @@ write_tokens(FILE        *out,		/* I - Output file */
       fputs("    </Declaration>\n"
             "  </Token>\n", out);
 
-      function = find_public(function, doc, "function", NULL);
+      function = find_public(function, doc, "function", NULL, OUTPUT_TOKENS);
     }
   }
 
@@ -6598,7 +6672,7 @@ write_tokens(FILE        *out,		/* I - Output file */
   * Data types...
   */
 
-  if ((scut = find_public(doc, doc, "typedef", NULL)) != NULL)
+  if ((scut = find_public(doc, doc, "typedef", NULL, OUTPUT_TOKENS)) != NULL)
   {
     while (scut)
     {
@@ -6615,7 +6689,7 @@ write_tokens(FILE        *out,		/* I - Output file */
       fputs("    </Abstract>\n"
             "  </Token>\n", out);
 
-      scut = find_public(scut, doc, "typedef", NULL);
+      scut = find_public(scut, doc, "typedef", NULL, OUTPUT_TOKENS);
     }
   }
 
@@ -6623,7 +6697,7 @@ write_tokens(FILE        *out,		/* I - Output file */
   * Structures...
   */
 
-  if ((scut = find_public(doc, doc, "struct", NULL)) != NULL)
+  if ((scut = find_public(doc, doc, "struct", NULL, OUTPUT_TOKENS)) != NULL)
   {
     while (scut)
     {
@@ -6640,7 +6714,7 @@ write_tokens(FILE        *out,		/* I - Output file */
       fputs("    </Abstract>\n"
             "  </Token>\n", out);
 
-      scut = find_public(scut, doc, "struct", NULL);
+      scut = find_public(scut, doc, "struct", NULL, OUTPUT_TOKENS);
     }
   }
 
@@ -6648,7 +6722,7 @@ write_tokens(FILE        *out,		/* I - Output file */
   * Unions...
   */
 
-  if ((scut = find_public(doc, doc, "union", NULL)) != NULL)
+  if ((scut = find_public(doc, doc, "union", NULL, OUTPUT_TOKENS)) != NULL)
   {
     while (scut)
     {
@@ -6665,7 +6739,7 @@ write_tokens(FILE        *out,		/* I - Output file */
       fputs("    </Abstract>\n"
             "  </Token>\n", out);
 
-      scut = find_public(scut, doc, "union", NULL);
+      scut = find_public(scut, doc, "union", NULL, OUTPUT_TOKENS);
     }
   }
 
@@ -6673,7 +6747,7 @@ write_tokens(FILE        *out,		/* I - Output file */
   * Globals variables...
   */
 
-  if ((arg = find_public(doc, doc, "variable", NULL)) != NULL)
+  if ((arg = find_public(doc, doc, "variable", NULL, OUTPUT_TOKENS)) != NULL)
   {
     while (arg)
     {
@@ -6690,7 +6764,7 @@ write_tokens(FILE        *out,		/* I - Output file */
       fputs("    </Abstract>\n"
             "  </Token>\n", out);
 
-      arg = find_public(arg, doc, "variable", NULL);
+      arg = find_public(arg, doc, "variable", NULL, OUTPUT_TOKENS);
     }
   }
 
@@ -6698,7 +6772,7 @@ write_tokens(FILE        *out,		/* I - Output file */
   * Enumerations/constants...
   */
 
-  if ((scut = find_public(doc, doc, "enumeration", NULL)) != NULL)
+  if ((scut = find_public(doc, doc, "enumeration", NULL, OUTPUT_TOKENS)) != NULL)
   {
     while (scut)
     {
@@ -6734,7 +6808,7 @@ write_tokens(FILE        *out,		/* I - Output file */
 	      "  </Token>\n", out);
       }
 
-      scut = find_public(scut, doc, "enumeration", NULL);
+      scut = find_public(scut, doc, "enumeration", NULL, OUTPUT_TOKENS);
     }
   }
 }

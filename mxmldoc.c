@@ -3736,6 +3736,7 @@ write_description(
   {
     if (*ptr == '@' &&
         (!strncmp(ptr + 1, "deprecated@", 11) ||
+         !strncmp(ptr + 1, "exclude ", 8) ||
          !strncmp(ptr + 1, "since ", 6)))
     {
       ptr ++;
@@ -3827,16 +3828,7 @@ write_description(
 	  ptr += 2;
         }
 
-        if (ch == 0xa0)
-        {
-         /*
-          * Handle non-breaking space as-is...
-	  */
-
-          fputs("&#160;", out);
-        }
-        else
-          fprintf(out, "&#x%x;", ch);
+        fprintf(out, "&#%d;", ch);
       }
       else if (*ptr == '\n' && ptr[1] == '\n' && ptr[2] && ptr[2] != '@')
       {

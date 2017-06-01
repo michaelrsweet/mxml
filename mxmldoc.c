@@ -2118,7 +2118,26 @@ scan_file(const char  *filename,	/* I - Filename */
 
 	        if (function)
 		{
-		  if (fstructclass)
+                  mxml_node_t *temptype = mxmlFindElement(returnvalue, returnvalue, "type", NULL, NULL, MXML_DESCEND);
+
+#ifdef DEBUG
+                    fprintf(stderr, "    returnvalue type=%p(%s)\n", temptype, temptype ? temptype->child->value.text.string : "null");
+#endif /* DEBUG */
+
+		  if (temptype && temptype->child &&
+                      !strcmp(temptype->child->value.text.string, "static") &&
+                      !strcmp(tree->value.element.name, "mxmldoc"))
+                  {
+                   /*
+                    * Remove static functions...
+                    */
+
+#ifdef DEBUG
+                    fputs("    DELETING STATIC FUNCTION\n", stderr);
+#endif /* DEBUG */
+                    mxmlDelete(function);
+                  }
+                  else if (fstructclass)
 		  {
 		    sort_node(fstructclass, function);
 		    fstructclass = NULL;
@@ -2126,7 +2145,8 @@ scan_file(const char  *filename,	/* I - Filename */
 		  else
 		    sort_node(tree, function);
 
-		  function = NULL;
+		  function    = NULL;
+		  returnvalue = NULL;
 		}
 		else if (type && type->child &&
 		         ((!strcmp(type->child->value.text.string, "typedef") &&
@@ -2411,7 +2431,27 @@ scan_file(const char  *filename,	/* I - Filename */
 
 		if (function)
 		{
-		  if (!strcmp(tree->value.element.name, "class"))
+                  mxml_node_t *temptype = mxmlFindElement(returnvalue, returnvalue, "type", NULL, NULL, MXML_DESCEND);
+
+#ifdef DEBUG
+                    fprintf(stderr, "    returnvalue type=%p(%s)\n", temptype, temptype ? temptype->child->value.text.string : "null");
+#endif /* DEBUG */
+
+		  if (temptype && temptype->child &&
+                      !strcmp(temptype->child->value.text.string, "static") &&
+                      !strcmp(tree->value.element.name, "mxmldoc"))
+                  {
+                   /*
+                    * Remove static functions...
+                    */
+
+#ifdef DEBUG
+                    fputs("    DELETING STATIC FUNCTION\n", stderr);
+#endif /* DEBUG */
+
+                    mxmlDelete(function);
+                  }
+                  else if (!strcmp(tree->value.element.name, "class"))
 		  {
 #ifdef DEBUG
 		    fputs("    ADDING FUNCTION TO CLASS\n", stderr);
@@ -2421,8 +2461,9 @@ scan_file(const char  *filename,	/* I - Filename */
 		  else
 		    mxmlDelete(function);
 
-		  function = NULL;
-		  variable = NULL;
+		  function    = NULL;
+		  variable    = NULL;
+		  returnvalue = NULL;
 		}
 
 		if (type)
@@ -3191,19 +3232,6 @@ scan_file(const char  *filename,	/* I - Filename */
 		  break;
 		}
 
-	        if (type->child &&
-		    !strcmp(type->child->value.text.string, "static") &&
-		    !strcmp(tree->value.element.name, "mxmldoc"))
-		{
-		 /*
-		  * Remove static functions...
-		  */
-
-		  mxmlDelete(type);
-		  type = NULL;
-		  break;
-		}
-
 	        function = mxmlNewElement(MXML_NO_PARENT, "function");
 		if ((bufptr = strchr(buffer, ':')) != NULL && bufptr[1] == ':')
 		{
@@ -3239,8 +3267,7 @@ scan_file(const char  *filename,	/* I - Filename */
 			    comment->last_child->value.text.string : "(null)");
 #endif /* DEBUG */
 
-                if (type->last_child &&
-		    strcmp(type->last_child->value.text.string, "void"))
+                if (type->last_child)
 		{
                   returnvalue = mxmlNewElement(function, "returnvalue");
 

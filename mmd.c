@@ -579,6 +579,9 @@ mmdLoadFile(FILE *fp)                   /* I - File to load */
 
         type = MMD_TYPE_PARAGRAPH;
       }
+
+      if (current->type != MMD_TYPE_BLOCK_QUOTE)
+        current = doc;
     }
     else if (!block)
     {

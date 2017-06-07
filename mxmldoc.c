@@ -5340,11 +5340,17 @@ write_html_body(
       fputs("      <h4 class=\"constants\">Constants</h4>\n"
             "      <dl>\n", out);
 
+#if 0
       for (arg = mxmlFindElement(scut, scut, "constant", NULL, NULL,
                         	 MXML_DESCEND_FIRST);
 	   arg;
 	   arg = mxmlFindElement(arg, scut, "constant", NULL, NULL,
                         	 MXML_NO_DESCEND))
+#else
+      for (arg = find_public(scut, scut, "constant", NULL, mode);
+	   arg;
+	   arg = find_public(arg, scut, "constant", NULL, mode))
+#endif // 0
       {
 	description = mxmlFindElement(arg, arg, "description", NULL,
                                       NULL, MXML_DESCEND_FIRST);

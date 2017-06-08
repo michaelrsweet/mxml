@@ -2093,6 +2093,8 @@ scan_file(const char  *filename,	/* I - Filename */
 	        fputs("    #preprocessor...\n", stderr);
 #endif /* DEBUG */
 	        state = STATE_PREPROCESSOR;
+	        while (comment->child)
+	          mxmlDelete(comment->child);
 		break;
 
             case '\'' :			/* Character constant */
@@ -3726,7 +3728,7 @@ write_description(
     int         mode,                   /* I - Output mode */
     mxml_node_t *description,		/* I - Description node */
     const char  *element,		/* I - HTML element, if any */
-    int         summary)		/* I - Show summary */
+    int         summary)		/* I - Show summary (-1 for all) */
 {
   char	text[10240],			/* Text for description */
         *start,				/* Start of code/link */
@@ -3748,9 +3750,9 @@ write_description(
 
     ptr = text;
   }
-  else if (!ptr || !ptr[2])
+  else if (summary >= 0 && (!ptr || !ptr[2]))
     return;
-  else
+  else if (summary >= 0)
     ptr += 2;
 
   if (element && *element)
@@ -3888,7 +3890,12 @@ write_description(
   }
 
   if (element && *element)
-    fprintf(out, "</%s>\n", element);
+  {
+    if (summary < 0)
+      fprintf(out, "</%s>", element);
+    else
+      fprintf(out, "</%s>\n", element);
+  }
   else if (!element)
     putc('\n', out);
 }
@@ -4750,10 +4757,8 @@ write_function(FILE        *out,	/* I - Output file */
 		*node;			/* Node in description */
   const char	*name,			/* Name of function/type */
 		*defval;		/* Default value */
-  char		prefix;			/* Prefix character */
+  const char	*prefix;		/* Prefix string */
   char		*sep;			/* Newline separator */
-  const char	*br = mode == OUTPUT_EPUB ? "<br />" : "<br>";
-					/* Break sequence */
 
 
   name        = mxmlElementGetAttr(function, "name");
@@ -4777,17 +4782,17 @@ write_function(FILE        *out,	/* I - Output file */
   else
     fputs("void ", out);
 
-  fprintf(out, "%s ", name);
+  fputs(name, out);
   for (arg = mxmlFindElement(function, function, "argument", NULL, NULL,
-			     MXML_DESCEND_FIRST), prefix = '(';
+			     MXML_DESCEND_FIRST), prefix = "(";
        arg;
        arg = mxmlFindElement(arg, function, "argument", NULL, NULL,
-			     MXML_NO_DESCEND), prefix = ',')
+			     MXML_NO_DESCEND), prefix = ", ")
   {
     type = mxmlFindElement(arg, arg, "type", NULL, NULL,
 			   MXML_DESCEND_FIRST);
 
-    fprintf(out, "%c%s\n&#160;&#160;&#160;&#160;", prefix, br);
+    fputs(prefix, out);
     if (type->child)
       write_element(out, doc, type, mode);
 
@@ -4796,14 +4801,14 @@ write_function(FILE        *out,	/* I - Output file */
       fprintf(out, " %s", defval);
   }
 
-  if (prefix == '(')
+  if (!strcmp(prefix, "("))
     fputs("(void);</p>\n", out);
   else
   {
     fprintf(out,
-            "%s\n);</p>\n"
+            ");</p>\n"
 	    "<h%d class=\"parameters\">Parameters</h%d>\n"
-	    "<dl>\n", br, level + 1, level + 1);
+	    "<table class=\"list\"><tbody>\n", level + 1, level + 1);
 
     for (arg = mxmlFindElement(function, function, "argument", NULL, NULL,
 			       MXML_DESCEND_FIRST);
@@ -4811,16 +4816,16 @@ write_function(FILE        *out,	/* I - Output file */
 	 arg = mxmlFindElement(arg, function, "argument", NULL, NULL,
 			       MXML_NO_DESCEND))
     {
-      fprintf(out, "<dt>%s</dt>\n", mxmlElementGetAttr(arg, "name"));
+      fprintf(out, "<tr><th>%s</th>\n", mxmlElementGetAttr(arg, "name"));
 
       adesc = mxmlFindElement(arg, arg, "description", NULL, NULL,
 			      MXML_DESCEND_FIRST);
 
-      write_description(out, mode, adesc, "dd", 1);
-      write_description(out, mode, adesc, "dd", 0);
+      write_description(out, mode, adesc, "td", -1);
+      fputs("</tr>\n", out);
     }
 
-    fputs("</dl>\n", out);
+    fputs("</tbody></table>\n", out);
   }
 
   arg = mxmlFindElement(function, function, "returnvalue", NULL,
@@ -5338,30 +5343,22 @@ write_html_body(
 	write_description(out, mode, description, "p", 1);
 
       fputs("      <h4 class=\"constants\">Constants</h4>\n"
-            "      <dl>\n", out);
+            "      <table class=\"list\"><tbody>\n", out);
 
-#if 0
-      for (arg = mxmlFindElement(scut, scut, "constant", NULL, NULL,
-                        	 MXML_DESCEND_FIRST);
-	   arg;
-	   arg = mxmlFindElement(arg, scut, "constant", NULL, NULL,
-                        	 MXML_NO_DESCEND))
-#else
       for (arg = find_public(scut, scut, "constant", NULL, mode);
 	   arg;
 	   arg = find_public(arg, scut, "constant", NULL, mode))
-#endif // 0
       {
 	description = mxmlFindElement(arg, arg, "description", NULL,
                                       NULL, MXML_DESCEND_FIRST);
-	fprintf(out, "        <dt>%s %s</dt>\n",
+	fprintf(out, "        <tr><th>%s %s</th>",
 	        mxmlElementGetAttr(arg, "name"), get_comment_info(description));
 
-	write_description(out, mode, description, "dd", 1);
-	write_description(out, mode, description, "dd", 0);
+	write_description(out, mode, description, "td", -1);
+        fputs("</tr>\n", out);
       }
 
-      fputs("</dl>\n", out);
+      fputs("</tbody></table>\n", out);
 
       scut = find_public(scut, doc, "enumeration", NULL, mode);
     }
@@ -5565,8 +5562,10 @@ write_html_head(FILE       *out,	/* I - Output file */
 	  "  white-space: nowrap;\n"
 	  "}\n"
 	  "h3 span.info, h4 span.info {\n"
+	  "  border-top-left-radius: 10px;\n"
+	  "  border-top-right-radius: 10px;\n"
 	  "  float: right;\n"
-	  "  font-size: 100%;\n"
+	  "  padding: 3px 6px;\n"
 	  "}\n"
 	  "ul.code, ul.contents, ul.subcontents {\n"
 	  "  list-style-type: none;\n"
@@ -5582,15 +5581,25 @@ write_html_head(FILE       *out,	/* I - Output file */
 	  "ul.contents li ul.code, ul.contents li ul.subcontents {\n"
 	  "  padding-left: 2em;\n"
 	  "}\n"
-	  "div.body dl {\n"
-	  "  margin-top: 0;\n"
+	  "table.list {\n"
+	  "  border-collapse: collapse;\n"
+	  "  width: 100%;\n"
 	  "}\n"
-	  "div.body dt {\n"
-	  "  font-style: italic;\n"
-	  "  margin-top: 0;\n"
+	  "table.list tr:nth-child(even) {\n"
+	  "  background: rgba(127,127,127,0.1);]n"
 	  "}\n"
-	  "div.body dd {\n"
-	  "  margin-bottom: 0.5em;\n"
+	  "table.list th {\n"
+	  "  border-right: 2px solid gray;\n"
+	  "  font-family: monospace;\n"
+	  "  padding: 5px 10px 5px 2px;\n"
+	  "  text-align: right;\n"
+	  "  vertical-align: top;\n"
+	  "}\n"
+	  "table.list td {\n"
+	  "  padding: 5px 2px 5px 10px;\n"
+	  "  text-align: left;\n"
+	  "  vertical-align: top;\n"
+	  "  width: 100%;\n"
 	  "}\n"
 	  "h1.title {\n"
 	  "}\n"
@@ -6371,7 +6380,7 @@ write_scu(FILE        *out,	/* I - Output file */
 
   fputs("};</p>\n"
 	"<h4 class=\"members\">Members</h4>\n"
-	"<dl>\n", out);
+	"<table class=\"list\"><tbody>\n", out);
 
   for (arg = mxmlFindElement(scut, scut, "variable", NULL, NULL,
 			     MXML_DESCEND_FIRST);
@@ -6382,14 +6391,14 @@ write_scu(FILE        *out,	/* I - Output file */
     description = mxmlFindElement(arg, arg, "description", NULL,
 				  NULL, MXML_DESCEND_FIRST);
 
-    fprintf(out, "<dt>%s %s</dt>\n",
+    fprintf(out, "<tr><th>%s %s</th>\n",
 	    mxmlElementGetAttr(arg, "name"), get_comment_info(description));
 
-    write_description(out, mode, description, "dd", 1);
-    write_description(out, mode, description, "dd", 0);
+    write_description(out, mode, description, "td", -1);
+    fputs("</tr>\n", out);
   }
 
-  fputs("</dl>\n", out);
+  fputs("</tbody></table>\n", out);
 
   for (function = mxmlFindElement(scut, scut, "function", NULL, NULL,
 				  MXML_DESCEND_FIRST);

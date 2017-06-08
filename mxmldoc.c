@@ -2377,7 +2377,14 @@ scan_file(const char  *filename,	/* I - Filename */
 		structclass = NULL;
 
 	        if (braces > 0)
+	        {
 		  braces --;
+		  if (braces == 0)
+		  {
+		    while (comment->child)
+		      mxmlDelete(comment->child);
+		  }
+		}
 		else
 		{
 		  mxmlDelete(comment);
@@ -3269,7 +3276,7 @@ scan_file(const char  *filename,	/* I - Filename */
 			    comment->last_child->value.text.string : "(null)");
 #endif /* DEBUG */
 
-                if (type->last_child)
+                if (type->last_child && strcmp(type->last_child->value.text.string, "void"))
 		{
                   returnvalue = mxmlNewElement(function, "returnvalue");
 
@@ -5599,7 +5606,7 @@ write_html_head(FILE       *out,	/* I - Output file */
 	  "  padding: 5px 2px 5px 10px;\n"
 	  "  text-align: left;\n"
 	  "  vertical-align: top;\n"
-	  "  width: 100%;\n"
+	  "  width: 80%;\n"
 	  "}\n"
 	  "h1.title {\n"
 	  "}\n"

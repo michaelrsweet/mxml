@@ -3276,7 +3276,7 @@ scan_file(const char  *filename,	/* I - Filename */
 			    comment->last_child->value.text.string : "(null)");
 #endif /* DEBUG */
 
-                if (type->last_child && strcmp(type->last_child->value.text.string, "void"))
+                if (type->last_child && (strcmp(type->last_child->value.text.string, "void") || !strcmp(type->child->value.text.string, "static")))
 		{
                   returnvalue = mxmlNewElement(function, "returnvalue");
 

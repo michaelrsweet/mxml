@@ -176,7 +176,6 @@ h3.title {
       <h2 class="title">Contents</h2>
       <ul class="contents">
         <li><a href="#FUNCTIONS">Functions</a><ul class="subcontents">
-          <li><a href="#index_sort">index_sort</a></li>
           <li><a href="#mxmlAdd">mxmlAdd</a></li>
           <li><a href="#mxmlDelete">mxmlDelete</a></li>
           <li><a href="#mxmlElementDeleteAttr">mxmlElementDeleteAttr</a></li>
@@ -250,7 +249,6 @@ h3.title {
           <li><a href="#mxmlSetWrapMargin">mxmlSetWrapMargin</a></li>
           <li><a href="#mxmlWalkNext">mxmlWalkNext</a></li>
           <li><a href="#mxmlWalkPrev">mxmlWalkPrev</a></li>
-          <li><a href="#mxml_free">mxml_free</a></li>
         </ul></li>
         <li><a href="#TYPES">Data Types</a><ul class="subcontents">
           <li><a href="#mxml_custom_destroy_cb_t">mxml_custom_destroy_cb_t</a></li>
@@ -274,21 +272,6 @@ h3.title {
     </div>
     <div class="body">
       <h2 class="title"><a id="FUNCTIONS">Functions</a></h2>
-<h3 class="function"><a id="index_sort">index_sort</a></h3>
-        <p class="description">Sort the nodes in the index...</p>
-<p class="code">
-void index_sort(<a href="#mxml_index_t">mxml_index_t</a> *ind, int left, int right);</p>
-<h4 class="parameters">Parameters</h4>
-<table class="list"><tbody>
-<tr><th>ind</th>
-        <td class="description">Index to sort</td></tr>
-<tr><th>left</th>
-        <td class="description">Left node in partition</td></tr>
-<tr><th>right</th>
-        <td class="description">Right node in partition</td></tr>
-</tbody></table>
-<h4 class="discussion">Discussion</h4>
-        <p class="discussion">This function implements the classic quicksort algorithm...</p>
 <h3 class="function"><a id="mxmlAdd">mxmlAdd</a></h3>
         <p class="description">Add a node to a tree.</p>
 <p class="code">
@@ -1578,17 +1561,6 @@ the node's children.</p>
         <p class="discussion">The descend argument controls whether the previous node's last child
 is considered to be the previous node.  The top node argument constrains
 the walk to the node's children.</p>
-<h3 class="function"><a id="mxml_free">mxml_free</a></h3>
-        <p class="description">Free the memory used by a node.</p>
-<p class="code">
-void mxml_free(<a href="#mxml_node_t">mxml_node_t</a> *node);</p>
-<h4 class="parameters">Parameters</h4>
-<table class="list"><tbody>
-<tr><th>node</th>
-        <td class="description">Node</td></tr>
-</tbody></table>
-<h4 class="discussion">Discussion</h4>
-        <p class="discussion">Note: Does not free child nodes, does not remove from parent.</p>
       <h2 class="title"><a id="TYPES">Data Types</a></h2>
       <h3 class="typedef"><a id="mxml_custom_destroy_cb_t">mxml_custom_destroy_cb_t</a></h3>
         <p class="description">Custom data destructor</p>

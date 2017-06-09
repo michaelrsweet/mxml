@@ -5606,7 +5606,6 @@ write_html_head(FILE       *out,	/* I - Output file */
 	  "  padding: 5px 2px 5px 10px;\n"
 	  "  text-align: left;\n"
 	  "  vertical-align: top;\n"
-	  "  width: 80%;\n"
 	  "}\n"
 	  "h1.title {\n"
 	  "}\n"

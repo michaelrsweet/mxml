@@ -175,7 +175,9 @@ static const char	*markdown_anchor(const char *text);
 static void		markdown_write_block(FILE *out, mmd_t *parent, int mode);
 static void		markdown_write_leaf(FILE *out, mmd_t *node, int mode);
 static mxml_node_t	*new_documentation(mxml_node_t **mxmldoc);
+#ifdef __APPLE__
 static int		remove_directory(const char *path);
+#endif /* __APPLE__ */
 static void		safe_strcpy(char *dst, const char *src);
 static int		scan_file(const char *filename, FILE *fp, mxml_node_t *doc);
 static void		sort_node(mxml_node_t *tree, mxml_node_t *func);
@@ -1879,6 +1881,7 @@ new_documentation(mxml_node_t **mxmldoc)/* O - mxmldoc node */
 }
 
 
+#ifdef __APPLE__
 /*
  * 'remove_directory()' - Remove a directory.
  */
@@ -1886,10 +1889,6 @@ new_documentation(mxml_node_t **mxmldoc)/* O - mxmldoc node */
 static int				/* O - 1 on success, 0 on failure */
 remove_directory(const char *path)	/* I - Directory to remove */
 {
-#ifdef WIN32
-  /* TODO: Add Windows directory removal code */
-
-#else
   DIR		*dir;			/* Directory */
   struct dirent	*dent;			/* Current directory entry */
   char		filename[1024];		/* Current filename */
@@ -1951,10 +1950,10 @@ remove_directory(const char *path)	/* I - Directory to remove */
             strerror(errno));
     return (0);
   }
-#endif /* WIN32 */
 
   return (1);
 }
+#endif /* __APPLE__ */
 
 
 /*
@@ -3929,9 +3928,16 @@ write_docset(const char  *docset,	/* I - Documentation set directory */
              mxml_node_t *doc,		/* I - XML documentation */
              const char  *footerfile)	/* I - Footer file */
 {
-  FILE	*out;				/* Output file */
-  char	filename[1024];			/* Current output filename */
-  toc_t	*toc;				/* Table of contents */
+  FILE  	*out;			/* Output file */
+  char	        filename[1024];		/* Current output filename */
+  toc_t	        *toc;			/* Table of contents */
+  const char	*id;			/* Identifier */
+  size_t	i;			/* Looping var */
+  toc_entry_t	*tentry;		/* Current table of contents */
+  int		toc_level;		/* Current table-of-contents level */
+  int		xmlid = 1;		/* Current XML node ID */
+  const char	*indent;		/* Indentation */
+
 
 
  /*
@@ -3944,13 +3950,6 @@ write_docset(const char  *docset,	/* I - Documentation set directory */
   * Create an Xcode documentation set - start by removing any existing
   * output directory...
   */
-
-  const char	*id;			/* Identifier */
-  size_t	i;			/* Looping var */
-  toc_entry_t	*tentry;		/* Current table of contents */
-  int		toc_level;		/* Current table-of-contents level */
-  int		xmlid = 1;		/* Current XML node ID */
-  const char	*indent;		/* Indentation */
 
   if (!access(docset, 0) && !remove_directory(docset))
     return;

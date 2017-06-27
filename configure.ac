@@ -95,7 +95,7 @@ AC_C_INLINE
 
 dnl Checks for string functions.
 if test "x$use_ansi" != xyes; then
-	AC_CHECK_FUNCS(strdup strlcpy)
+	AC_CHECK_FUNCS(strdup strlcat strlcpy)
 fi
 
 if test "x$use_vsnprintf" != xyes; then
@@ -252,7 +252,7 @@ AC_SUBST(PICFLAG)
 
 dnl Add -Wall for GCC...
 if test -n "$GCC"; then
-	CFLAGS="-Wall $CFLAGS"
+	CFLAGS="-Wall -D_GNU_SOURCE $CFLAGS"
 
 	if test "x$OPTIM" = x; then
 		OPTIM="-Os -g"

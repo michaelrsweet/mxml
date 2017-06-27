@@ -479,6 +479,8 @@ mmdLoadFile(FILE *fp)                   /* I - File to load */
         block = NULL;
         continue;
       }
+
+      type = MMD_TYPE_PARAGRAPH;
     }
     else if ((*lineptr == '-' || *lineptr == '+' || *lineptr == '*') && isspace(lineptr[1] & 255))
     {

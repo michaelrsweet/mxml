@@ -98,7 +98,8 @@ _mxml_strdupf(const char *format,	/* I - Printf-style format string */
 
   va_start(ap, format);
 #ifdef HAVE_VASPRINTF
-  vasprintf(&s, format, ap);
+  if (vasprintf(&s, format, ap) < 0)
+    s = NULL;
 #else
   s = _mxml_vstrdupf(format, ap);
 #endif /* HAVE_VASPRINTF */
@@ -106,6 +107,52 @@ _mxml_strdupf(const char *format,	/* I - Printf-style format string */
 
   return (s);
 }
+
+
+#ifndef HAVE_STRLCAT
+/*
+ * '_mxml_strlcat()' - Safely concatenate a string.
+ */
+
+size_t					/* O - Number of bytes copied */
+_mxml_strlcat(char       *dst,		/* I - Destination buffer */
+              const char *src,		/* I - Source string */
+              size_t     dstsize)	/* I - Size of destinatipon buffer */
+{
+  size_t	srclen;			/* Length of source string */
+  size_t	dstlen;			/* Length of destination string */
+
+
+ /*
+  * Figure out how much room is left...
+  */
+
+  dstlen = strlen(dst);
+
+  if (dstsize <= (dstlen + 1))
+    return (dstlen);		        /* No room, return immediately... */
+
+  dstsize -= dstlen + 1;
+
+ /*
+  * Figure out how much room is needed...
+  */
+
+  srclen = strlen(src);
+
+ /*
+  * Copy the appropriate amount...
+  */
+
+  if (srclen > dstsize)
+    srclen = dstsize;
+
+  memmove(dst + dstlen, src, srclen);
+  dst[dstlen + srclen] = '\0';
+
+  return (dstlen + srclen);
+}
+#endif /* !HAVE_STRLCAT */
 
 
 #ifndef HAVE_STRLCPY
@@ -466,7 +513,8 @@ _mxml_vstrdupf(const char *format,	/* I - Printf-style format string */
 #ifdef HAVE_VASPRINTF
   char		*s;			/* String */
 
-  vasprintf(&s, format, ap);
+  if (vasprintf(&s, format, ap) < 0)
+    s = NULL;
 
   return (s);
 

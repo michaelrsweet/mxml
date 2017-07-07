@@ -65,6 +65,7 @@
  */
 
 #undef HAVE_STRDUP
+#undef HAVE_STRLCAT
 #undef HAVE_STRLCPY
 
 

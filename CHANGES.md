@@ -11,6 +11,7 @@
 - The mxmldoc utility now supports the `SOURCE_DATE_EPOCH` environment
   variable for reproducible builds (Issue #193)
 - The mxmldoc utility now supports Markdown (Issue #194)
+- Fixed writing of custom data values (Issue #201)
 - Added `mxmlNewOpaquef` and `mxmlSetOpaquef` functions to add and set formatted
   opaque string values.
 - The mxmldoc utility scanned and loaded descriptive text differently, causing

@@ -2929,7 +2929,7 @@ mxml_write_node(mxml_node_t     *node,	/* I - Node to write */
 	    const char	*newline;	/* Last newline in string */
 
 
-	    if ((data = (*global->custom_save_cb)(node)) == NULL)
+	    if ((data = (*global->custom_save_cb)(current)) == NULL)
 	      return (-1);
 
 	    if (mxml_write_string(data, p, putc_cb) < 0)

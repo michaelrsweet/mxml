@@ -5,6 +5,7 @@ config.h
 config.log
 config.status
 doc/mxml.d
+doc/mxml-160.png
 libmxml.1.dylib
 libmxml.a
 libmxml.dylib

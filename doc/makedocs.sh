@@ -2,7 +2,7 @@
 #
 # Script to make documentation...
 #
-# Copyright 2003-2010 by Michael R Sweet.
+# Copyright 2003-2017 by Michael R Sweet.
 #
 # These coded instructions, statements, and computer programs are the
 # property of Michael R Sweet and are protected by Federal copyright
@@ -16,6 +16,8 @@
 htmldoc --verbose --path "hires;." --batch mxml.book -f mxml.pdf
 
 htmldoc --verbose --batch mxml.book --no-title -f mxml.html
+
+htmldoc --verbose --batch mxml.book --titleimage mxml-cover.png -f mxml.epub
 
 rm -rf mxml.d
 mkdir mxml.d

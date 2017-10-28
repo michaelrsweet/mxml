@@ -1,0 +1,3 @@
+.git* export-ignore
+makesrcdist export-ignore
+mvalidate.c export-ignore

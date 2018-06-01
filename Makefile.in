@@ -271,7 +271,7 @@ mxml1.dll:	$(LIBOBJS)
 
 libmxml.so.1.6:	$(LIBOBJS)
 	echo Creating $@...
-	$(DSO) $(DSOFLAGS) -o libmxml.so.1.6 $(LIBOBJS)
+	$(DSO) $(DSOFLAGS) -o libmxml.so.1.6 $(LIBOBJS) $(LIBS)
 	$(RM) libmxml.so libmxml.so.1
 	$(LN) libmxml.so.1.6 libmxml.so
 	$(LN) libmxml.so.1.6 libmxml.so.1

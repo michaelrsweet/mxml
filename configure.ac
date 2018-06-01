@@ -184,8 +184,7 @@ if test x$enable_shared != xno; then
 			AC_MSG_RESULT(yes)
 			LIBMXML="libmxml.so.1.6"
 			DSO="\$(CC)"
-			DSOFLAGS="$DSOFLAGS -Wl,-h,libmxml.so.1 -G -R\$(libdir) \$(OPTIM)"
-			LDFLAGS="$LDFLAGS -R\$(libdir)"
+			DSOFLAGS="$DSOFLAGS -Wl,-h,libmxml.so.1 -G \$(OPTIM)"
                 	;;
 
 		hp-ux)
@@ -200,23 +199,21 @@ if test x$enable_shared != xno; then
 			AC_MSG_RESULT(yes)
 			LIBMXML="libmxml.so.1.6"
 			DSO="\$(CC)"
-			DSOFLAGS="$DSOFLAGS -Wl,-rpath,\$(libdir),-set_version,sgi1.0,-soname,libmxml.so.1 -shared \$(OPTIM)"
+			DSOFLAGS="$DSOFLAGS -Wl,-set_version,sgi1.0,-soname,libmxml.so.1 -shared \$(OPTIM)"
 			;;
 
 		osf | linux* | gnu)
 			AC_MSG_RESULT(yes)
 			LIBMXML="libmxml.so.1.6"
 			DSO="\$(CC)"
-			DSOFLAGS="$DSOFLAGS -Wl,-soname,libmxml.so.1,-rpath,\$(libdir) -shared \$(OPTIM)"
-                        LDFLAGS="$LDFLAGS -Wl,-rpath,\$(libdir)"
+			DSOFLAGS="$DSOFLAGS -Wl,-soname,libmxml.so.1 -shared \$(OPTIM)"
 			;;
 
 		*bsd)
 			AC_MSG_RESULT(yes)
 			LIBMXML="libmxml.so.1.6"
 			DSO="\$(CC)"
-			DSOFLAGS="$DSOFLAGS -Wl,-soname,libmxml.so.1,-R\$(libdir) -shared \$(OPTIM)"
-			LDFLAGS="$LDFLAGS -Wl,-R\$(libdir)"
+			DSOFLAGS="$DSOFLAGS -Wl,-soname,libmxml.so.1  -shared \$(OPTIM)"
                         ;;
 
 		darwin)

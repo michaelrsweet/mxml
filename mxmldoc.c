@@ -37,7 +37,15 @@ extern char **environ;
 #  include "zipc.h"
 #endif /* HAVE_ZLIB_H */
 
+#  ifndef HAVE_STRLCPY
+extern size_t	_mxml_strlcpy(char *, const char *, size_t);
+#    define strlcpy _mxml_strlcpy
+#  endif /* !HAVE_STRLCPY */
 
+#ifndef HAVE_STRLCAT
+extern size_t  _mxml_strlcat( char *, const char *, size_t);
+#define strlcat _mxml_strlcat
+#endif
 /*
  * This program scans source and header files and produces public API
  * documentation for code that conforms to the CUPS Configuration

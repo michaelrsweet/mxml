@@ -162,7 +162,7 @@ install:	$(TARGETS) install-$(LIBMXML) install-libmxml.a
 	$(INSTALL_DIR) $(BUILDROOT)$(mandir)/man3
 	$(INSTALL_MAN) doc/mxml.man $(BUILDROOT)$(mandir)/man3/mxml.3
 
-install-libmxml.a:
+install-libmxml.a: libmxml.a
 	echo Installing libmxml.a to $(BUILDROOT)$(libdir)...
 	$(INSTALL_DIR) $(BUILDROOT)$(libdir)
 	$(INSTALL_LIB) libmxml.a $(BUILDROOT)$(libdir)
@@ -271,7 +271,7 @@ mxml1.dll:	$(LIBOBJS)
 
 libmxml.so.1.6:	$(LIBOBJS)
 	echo Creating $@...
-	$(DSO) $(DSOFLAGS) -o libmxml.so.1.6 $(LIBOBJS)
+	$(DSO) $(DSOFLAGS) -o libmxml.so.1.6 $(LIBOBJS) $(LIBS) $(LDFLAGS)
 	$(RM) libmxml.so libmxml.so.1
 	$(LN) libmxml.so.1.6 libmxml.so
 	$(LN) libmxml.so.1.6 libmxml.so.1

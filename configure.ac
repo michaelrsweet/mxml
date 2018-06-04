@@ -28,7 +28,7 @@ AC_CONFIG_HEADER(config.h)
 dnl Version number...
 VERSION="AC_PACKAGE_VERSION"
 AC_SUBST(VERSION)
-AC_DEFINE_UNQUOTED(MXML_VERSION, "Mini-XML v$VERSION")
+AC_DEFINE_UNQUOTED(MXML_VERSION, "Mini-XML v$VERSION", "MXML VERSION")
 
 dnl Clear default debugging options and set normal optimization by
 dnl default unless the user asks for debugging specifically.
@@ -113,7 +113,7 @@ AC_CACHE_CHECK(for long long int, ac_cv_c_long_long,
 	fi])
 
 if test $ac_cv_c_long_long = yes; then
-	AC_DEFINE(HAVE_LONG_LONG)
+	AC_DEFINE(HAVE_LONG_LONG, 1, "long long int support")
 fi
 
 dnl EPUB support (via libz and zipc)
@@ -122,7 +122,7 @@ AC_SUBST(MXML_EPUB)
 ZIPC=""
 AC_SUBST(ZIPC)
 AC_SEARCH_LIBS(gzgets,z,[
-	AC_DEFINE(HAVE_ZLIB_H)
+	AC_DEFINE(HAVE_ZLIB_H, 1, "<zlib.h> present")
 	ZIPC="zipc.o"
 	MXML_EPUB="mxml.epub"
 	LIBS="-lz $LIBS"])
@@ -135,7 +135,7 @@ PTHREAD_FLAGS=""
 PTHREAD_LIBS=""
 
 if test "x$enable_threads" != xno; then
-	AC_CHECK_HEADER(pthread.h, AC_DEFINE(HAVE_PTHREAD_H))
+	AC_CHECK_HEADER(pthread.h, AC_DEFINE(HAVE_PTHREAD_H, 1, "pthreads headers available"))
 
 	if test x$ac_cv_header_pthread_h = xyes; then
 		dnl Check various threading options for the platforms we support
@@ -184,8 +184,7 @@ if test x$enable_shared != xno; then
 			AC_MSG_RESULT(yes)
 			LIBMXML="libmxml.so.1.6"
 			DSO="\$(CC)"
-			DSOFLAGS="$DSOFLAGS -Wl,-h,libmxml.so.1 -G -R\$(libdir) \$(OPTIM)"
-			LDFLAGS="$LDFLAGS -R\$(libdir)"
+			DSOFLAGS="$DSOFLAGS -Wl,-h,libmxml.so.1 -G \$(OPTIM)"
                 	;;
 
 		hp-ux)
@@ -200,23 +199,21 @@ if test x$enable_shared != xno; then
 			AC_MSG_RESULT(yes)
 			LIBMXML="libmxml.so.1.6"
 			DSO="\$(CC)"
-			DSOFLAGS="$DSOFLAGS -Wl,-rpath,\$(libdir),-set_version,sgi1.0,-soname,libmxml.so.1 -shared \$(OPTIM)"
+			DSOFLAGS="$DSOFLAGS -Wl,-set_version,sgi1.0,-soname,libmxml.so.1 -shared \$(OPTIM)"
 			;;
 
 		osf | linux* | gnu)
 			AC_MSG_RESULT(yes)
 			LIBMXML="libmxml.so.1.6"
 			DSO="\$(CC)"
-			DSOFLAGS="$DSOFLAGS -Wl,-soname,libmxml.so.1,-rpath,\$(libdir) -shared \$(OPTIM)"
-                        LDFLAGS="$LDFLAGS -Wl,-rpath,\$(libdir)"
+			DSOFLAGS="$DSOFLAGS -Wl,-soname,libmxml.so.1 -shared \$(OPTIM)"
 			;;
 
 		*bsd)
 			AC_MSG_RESULT(yes)
 			LIBMXML="libmxml.so.1.6"
 			DSO="\$(CC)"
-			DSOFLAGS="$DSOFLAGS -Wl,-soname,libmxml.so.1,-R\$(libdir) -shared \$(OPTIM)"
-			LDFLAGS="$LDFLAGS -Wl,-R\$(libdir)"
+			DSOFLAGS="$DSOFLAGS -Wl,-soname,libmxml.so.1  -shared \$(OPTIM)"
                         ;;
 
 		darwin)

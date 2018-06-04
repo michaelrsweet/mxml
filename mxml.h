@@ -28,7 +28,7 @@
 #  include <string.h>
 #  include <ctype.h>
 #  include <errno.h>
-
+#  include <stdarg.h>
 
 /*
  * Constants...

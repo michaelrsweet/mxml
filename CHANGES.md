@@ -1,3 +1,10 @@
+# Changes in Mini-XML 2.12
+
+- No longer build documentation sets on macOS since Xcode no longer supports
+  them.
+- Updated ZIP container library used for mxmldoc.
+
+
 # Changes in Mini-XML 2.11
 
 - CDATA nodes now omit the trailing "]]" for convenience (Issue #170)

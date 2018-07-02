@@ -1,7 +1,7 @@
 /*
  * Node set functions for Mini-XML, a small XML file parsing library.
  *
- * Copyright 2003-2017 by Michael R Sweet.
+ * Copyright 2003-2018 by Michael R Sweet.
  *
  * These coded instructions, statements, and computer programs are the
  * property of Michael R Sweet and are protected by Federal copyright
@@ -53,7 +53,7 @@ mxmlSetCDATA(mxml_node_t *node,		/* I - Node to set */
   if (node->value.element.name)
     free(node->value.element.name);
 
-  node->value.element.name = _mxml_strdupf("![CDATA[%s]]", data);
+  node->value.element.name = _mxml_strdupf("![CDATA[%s", data);
 
   return (0);
 }

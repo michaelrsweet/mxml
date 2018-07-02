@@ -2,7 +2,9 @@
 
 - No longer build documentation sets on macOS since Xcode no longer supports
   them (Issue #198)
-- Updated ZIP container library used for mxmldoc.
+- The `mxmlNewCDATA` and `mxmlSetCDATA` functions incorrectly added the XML
+  trailer "]]" to the string (Issue #216)
+- Updated the ZIP container library used for mxmldoc.
 
 
 # Changes in Mini-XML 2.11

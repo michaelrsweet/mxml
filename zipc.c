@@ -7,7 +7,7 @@
  * ZIPC_ONLY_WRITE to compile with just the ZIP writing code.  Otherwise both
  * ZIP reader and writer code is built.
  *
- * Copyright 2017 by Michael R Sweet.
+ * Copyright 2017-2018 by Michael R Sweet.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -124,17 +124,17 @@ static int              zipc_read_char(zipc_file_t *zf);
 static ssize_t		zipc_read_file(zipc_file_t *zf, void *buffer, size_t bytes);
 static unsigned		zipc_read_u16(zipc_t *zc);
 static unsigned		zipc_read_u32(zipc_t *zc);
-static int		zipc_write(zipc_t *zc, const void *buffer, size_t bytes);
+static void             zipc_xml_unescape(char *buffer);
 #endif /* !ZIPC_ONLY_WRITE */
 #ifndef ZIPC_ONLY_READ
 static zipc_file_t	*zipc_add_file(zipc_t *zc, const char *filename, int compression);
+static int		zipc_write(zipc_t *zc, const void *buffer, size_t bytes);
 static int		zipc_write_dir_header(zipc_t *zc, zipc_file_t *zf);
 static int		zipc_write_local_header(zipc_t *zc, zipc_file_t *zf);
 static int		zipc_write_local_trailer(zipc_t *zc, zipc_file_t *zf);
 static int		zipc_write_u16(zipc_t *zc, unsigned value);
 static int		zipc_write_u32(zipc_t *zc, unsigned value);
 #endif /* !ZIPC_ONLY_READ */
-static void             zipc_xml_unescape(char *buffer);
 static const char       *zipc_zlib_status(int zstatus);
 
 

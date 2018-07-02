@@ -1,7 +1,7 @@
 #
 # Makefile for Mini-XML, a small XML-like file parsing library.
 #
-# Copyright 2003-2017 by Michael R Sweet.
+# Copyright 2003-2018 by Michael R Sweet.
 #
 # These coded instructions, statements, and computer programs are the
 # property of Michael R Sweet and are protected by Federal copyright
@@ -20,7 +20,7 @@ AR		=	@AR@
 ARFLAGS		=	@ARFLAGS@
 ARCHFLAGS	=	@ARCHFLAGS@
 CC		=	@CC@
-CFLAGS		=	$(OPTIM) $(ARCHFLAGS) @CFLAGS@ @CPPFLAGS@ @PTHREAD_FLAGS@
+CFLAGS		=	$(OPTIM) $(ARCHFLAGS) @CFLAGS@ @CPPFLAGS@ @PTHREAD_FLAGS@ -DZIPC_ONLY_WRITE
 CP		=	@CP@
 DSO		=	@DSO@
 DSOFLAGS	=	@DSOFLAGS@
@@ -361,39 +361,25 @@ testmxml.o:	mxml.h
 #
 
 mxml.xml:	mxmldoc-static mxml.h $(PUBLIBOBJS:.o=.c) \
-		doc/body.man doc/body.md \
-		doc/docset.css doc/docset.header \
+		doc/body.man doc/footer.man \
 		doc/reference.header
 	echo Generating API documentation...
 	$(RM) mxml.xml
 	./mxmldoc-static --header doc/reference.header \
 		--docversion @VERSION@ --author "Michael R Sweet" \
-		--copyright "Copyright 2003-2017, All Rights Reserved." \
+		--copyright "Copyright 2003-2018, All Rights Reserved." \
 		--title "Mini-XML API Reference" \
 		mxml.xml mxml.h $(PUBLIBOBJS:.o=.c) >doc/reference.html
 	./mxmldoc-static --man mxml --title "Mini-XML API" \
 		--body doc/body.man --footer doc/footer.man \
 		mxml.xml >doc/mxml.man
-	if test "x`uname`" = xDarwin; then \
-		./mxmldoc-static --docset org.msweet.mxml.docset \
-			--docversion @VERSION@ --feedname org.msweet.mxml \
-			--feedurl https://michaelrsweet.github.io/mxml/org.msweet.mxml.atom \
-			--header doc/docset.header --body doc/body.md \
-			--css doc/docset.css \
-			mxml.xml || exit 1; \
-		$(RM) org.msweet.mxml.atom; \
-		xcrun docsetutil package --output org.msweet.mxml.xar \
-			--atom org.msweet.mxml.atom \
-			--download-url https://michaelrsweet.github.io/mxml/org.msweet.mxml.xar \
-			org.msweet.mxml.docset || exit 1; \
-	fi
 
 
 #
 # mxml.epub
 #
 
-mxml.epub:	mxml.xml doc/body.md doc/mxml-cover.png
+mxml.epub:	mxml.xml mxmldoc-static doc/body.md doc/mxml-cover.png
 	echo Generating EPUB API documentation...
 	./mxmldoc-static --body doc/body.md \
 		--coverimage doc/mxml-cover.png \

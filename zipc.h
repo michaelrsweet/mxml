@@ -61,19 +61,24 @@ extern zipc_file_t	*zipcCreateFile(zipc_t *zc, const char *filename, int compres
 extern int		zipcCreateFileWithString(zipc_t *zc, const char *filename, const char *contents);
 extern const char	*zipcError(zipc_t *zc);
 extern int		zipcFileFinish(zipc_file_t *zf);
+extern int              zipcFileGets(zipc_file_t *zf, char *line, size_t linesize);
 extern int		zipcFilePrintf(zipc_file_t *zf, const char *format, ...)
 #  ifdef __GNUC__
 __attribute__ ((__format__ (__printf__, 2, 3)))
 #  endif /* __GNUC__ */
 ;
 extern int		zipcFilePuts(zipc_file_t *zf, const char *s);
+extern ssize_t		zipcFileRead(zipc_file_t *zf, void *data, size_t bytes);
 extern int		zipcFileWrite(zipc_file_t *zf, const void *data, size_t bytes);
+extern int              zipcFileXMLGets(zipc_file_t *zf, char *fragment, size_t fragsize);
 extern int		zipcFileXMLPrintf(zipc_file_t *zf, const char *format, ...)
 #  ifdef __GNUC__
 __attribute__ ((__format__ (__printf__, 2, 3)))
 #  endif /* __GNUC__ */
 ;
 extern zipc_t		*zipcOpen(const char *filename, const char *mode);
+extern zipc_file_t      *zipcOpenFile(zipc_t *zc, const char *filename);
+extern const char       *zipcXMLGetAttribute(const char *element, const char *attrname, char *buffer, size_t bufsize);
 
 #  ifdef __cplusplus
 }

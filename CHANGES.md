@@ -1,5 +1,7 @@
 # Changes in Mini-XML 2.12
 
+- Added yet more documentation about using `MXML_OPAQUE_CALLBACK` when you want
+  to get full strings for inline text instead of separated words (Issue #190)
 - No longer build documentation sets on macOS since Xcode no longer supports
   them (Issue #198)
 - The `mxmlNewCDATA` and `mxmlSetCDATA` functions incorrectly added the XML

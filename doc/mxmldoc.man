@@ -1,7 +1,7 @@
 .\"
 .\" mxmldoc man page for mini-XML, a small XML-like file parsing library.
 .\"
-.\" Copyright 2003-2017 by Michael R Sweet.
+.\" Copyright 2003-2018 by Michael R Sweet.
 .\"
 .\" These coded instructions, statements, and computer programs are the
 .\" property of Michael R Sweet and are protected by Federal copyright
@@ -11,7 +11,7 @@
 .\"
 .\"     https://michaelrsweet.github.io/mxml
 .\"
-.TH mxmldoc 1 "Mini-XML" "30 April 2017" "Michael R Sweet"
+.TH mxmldoc 1 "Mini-XML" "2 July 2018" "Michael R Sweet"
 .SH NAME
 mxmldoc \- mini-xml documentation generator
 .SH SYNOPSIS
@@ -43,44 +43,6 @@ mxmldoc \- mini-xml documentation generator
 .I source file(s)
 ] >
 .I filename.html
-.br
-.B mxmldoc
-\-\-docset
-.I directory.docset
-[ \-\-author
-.I author
-] [ \-\-body
-.I bodyfile
-] [ \-\-copyright
-.I copyright
-] [ \-\-docversion
-.I version
-] [ \-\-feedname
-.I name
-] [ \-\-feedurl
-.I url
-] [ \-\-footer
-.I footerfile
-] [ \-\-header
-.I headerfile
-] [ \-\-section
-.I section
-] [ \-\-title
-.I title
-] [
-.I filename.xml
-] [
-.I source file(s)
-]
-.br
-.B mxmldoc
-\-\-tokens
-.I path
-[
-.I filename.xml
-] [
-.I source file(s)
-] > tokens.xml
 .br
 .B mxmldoc
 \-\-framed
@@ -190,27 +152,13 @@ Inserts the specified file between the table of contents and references.
 .br
 Specifies the copyright text to use.
 .TP 5
-\-\-docset directory.docset
-.br
-Creates an Xcode documentation set in the specified directory.
-.TP 5
 \-\-docversion version
 .br
-Specifies the version number for the Xcode documentation set.
+Specifies the version number for the generated documentation.
 .TP 5
 \-\-epub filename.epub
 .br
 Creates an EPUB book with the specified filename.
-.TP 5
-\-\-feedname name
-.br
-Specifies the Xcode documentation set feed name, typically the project or
-company name.
-.TP 5
-\-\-feedurl url
-.br
-Specifies the Xcode documentation set feed URL which must point to an ATOM file
-linking to updates.
 .TP 5
 \-\-footer footerfile
 .br
@@ -240,11 +188,7 @@ Sets the section/keywords in the output documentation.
 \-\-title title
 .br
 Sets the title of the output documentation.
-.TP 5
-\-\-tokens
-.br
-Generates a Tokens.xml file for use with the Xcode documentation tools.
 .SH SEE ALSO
 mxml(3), Mini-XML Programmers Manual, https://michaelrsweet.github.io/mxml
 .SH COPYRIGHT
-Copyright \[co] 2003-2017 by Michael R Sweet.
+Copyright \[co] 2003-2018 by Michael R Sweet.

@@ -35,7 +35,7 @@
  */
 
 #  define MXML_MAJOR_VERSION	2	/* Major version number */
-#  define MXML_MINOR_VERSION	11	/* Minor version number */
+#  define MXML_MINOR_VERSION	12	/* Minor version number */
 
 #  define MXML_TAB		8	/* Tabs every N columns */
 

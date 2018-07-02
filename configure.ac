@@ -1,7 +1,7 @@
 dnl
 dnl Configuration script for Mini-XML, a small XML-like file parsing library.
 dnl
-dnl Copyright 2003-2017 by Michael R Sweet.
+dnl Copyright 2003-2018 by Michael R Sweet.
 dnl
 dnl These coded instructions, statements, and computer programs are the
 dnl property of Michael R Sweet and are protected by Federal copyright
@@ -13,7 +13,7 @@ dnl     https://michaelrsweet.github.io/mxml
 dnl
 
 dnl Package name and version...
-AC_INIT([Mini-XML], [2.11], [https://github.com/michaelrsweet/mxml/issues], [mxml], [https://michaelrsweet.github.io/mxml])
+AC_INIT([Mini-XML], [2.12], [https://github.com/michaelrsweet/mxml/issues], [mxml], [https://michaelrsweet.github.io/mxml])
 
 dnl Get the build and host platforms and split the host_os value
 AC_CANONICAL_BUILD

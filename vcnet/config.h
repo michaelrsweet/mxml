@@ -1,7 +1,8 @@
 /*
- * Configuration file for Mini-XML, a small XML file parsing library.
+ * Visual Studio configuration file for Mini-XML, a small XML file parsing
+ * library.
  *
- * Copyright 2003-2017 by Michael R Sweet.
+ * Copyright 2003-2018 by Michael R Sweet.
  *
  * These coded instructions, statements, and computer programs are the
  * property of Michael R Sweet and are protected by Federal copyright
@@ -62,7 +63,7 @@
  * Version number...
  */
 
-#define MXML_VERSION "Mini-XML v2.11"
+#define MXML_VERSION "Mini-XML v2.12"
 
 
 /*

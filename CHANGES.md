@@ -1,7 +1,7 @@
 # Changes in Mini-XML 2.12
 
 - No longer build documentation sets on macOS since Xcode no longer supports
-  them.
+  them (Issue #198)
 - Updated ZIP container library used for mxmldoc.
 
 

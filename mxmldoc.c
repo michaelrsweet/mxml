@@ -27,12 +27,6 @@
 #  include <dirent.h>
 #  include <unistd.h>
 #endif /* !WIN32 */
-#ifdef __APPLE__
-#  include <spawn.h>
-#  include <sys/wait.h>
-extern char **environ;
-#endif /* __APPLE__ */
-
 #ifdef HAVE_ZLIB_H
 #  include "zipc.h"
 #endif /* HAVE_ZLIB_H */
@@ -133,9 +127,7 @@ extern char **environ;
 #define OUTPUT_HTML		1	/* Output HTML */
 #define OUTPUT_XML		2	/* Output XML */
 #define OUTPUT_MAN		3	/* Output nroff/man */
-#define OUTPUT_TOKENS		4	/* Output docset Tokens.xml file */
-#define OUTPUT_EPUB		5	/* Output EPUB (XHTML) */
-#define OUTPUT_DOCSET		6	/* Output Xcode documentation set (HTML) */
+#define OUTPUT_EPUB		4	/* Output EPUB (XHTML) */
 
 
 /*
@@ -175,18 +167,12 @@ static const char	*markdown_anchor(const char *text);
 static void		markdown_write_block(FILE *out, mmd_t *parent, int mode);
 static void		markdown_write_leaf(FILE *out, mmd_t *node, int mode);
 static mxml_node_t	*new_documentation(mxml_node_t **mxmldoc);
-#ifdef __APPLE__
-static int		remove_directory(const char *path);
-#endif /* __APPLE__ */
 static void		safe_strcpy(char *dst, const char *src);
 static int		scan_file(const char *filename, FILE *fp, mxml_node_t *doc);
 static void		sort_node(mxml_node_t *tree, mxml_node_t *func);
 static void		update_comment(mxml_node_t *parent, mxml_node_t *comment);
 static void		usage(const char *option);
 static void		write_description(FILE *out, int mode, mxml_node_t *description, const char *element, int summary);
-#ifdef __APPLE__
-static void		write_docset(const char *docset, const char *section, const char *title, const char *author, const char *copyright, const char *docversion, const char *feedname, const char *feedurl, const char *cssfile, const char *headerfile, const char *bodyfile, mmd_t *body, mxml_node_t *doc, const char *footerfile);
-#endif /* __APPLE__ */
 static void		write_element(FILE *out, mxml_node_t *doc, mxml_node_t *element, int mode);
 #ifdef HAVE_ZLIB_H
 static void		write_epub(const char *epubfile, const char *section, const char *title, const char *author, const char *copyright, const char *docversion, const char *cssfile, const char *coverimage, const char *headerfile, const char *bodyfile, mmd_t *body, mxml_node_t *doc, const char *footerfile);
@@ -200,7 +186,6 @@ static void		write_html_toc(FILE *out, const char *title, toc_t *toc, const char
 static void		write_man(const char *man_name, const char *section, const char *title, const char *author, const char *copyright, const char *headerfile, const char *bodyfile, mmd_t *body, mxml_node_t *doc, const char *footerfile);
 static void		write_scu(FILE *out, int mode, mxml_node_t *doc, mxml_node_t *scut);
 static void		write_string(FILE *out, const char *s, int mode);
-static void		write_tokens(FILE *out, mxml_node_t *doc, const char *path);
 static const char	*ws_cb(mxml_node_t *node, int where);
 
 
@@ -220,18 +205,14 @@ main(int  argc,				/* I - Number of command-line args */
   const char	*author = NULL,		/* Author */
               	*copyright = NULL,	/* Copyright */
 		*cssfile = NULL,	/* CSS stylesheet file */
-		*docset = NULL,		/* Documentation set directory */
 		*docversion = NULL,	/* Documentation set version */
                 *epubfile = NULL,	/* EPUB filename */
-		*feedname = NULL,	/* Feed name for documentation set */
-		*feedurl = NULL,	/* Feed URL for documentation set */
 		*footerfile = NULL,	/* Footer file */
 		*framefile = NULL,	/* Framed HTML basename */
 		*headerfile = NULL,	/* Header file */
 		*bodyfile = NULL,	/* Body file */
                 *coverimage = NULL,	/* Cover image file */
 		*name = NULL,		/* Name of manpage */
-		*path = NULL,		/* Path to help file for tokens */
 		*section = NULL,	/* Section/keywords of documentation */
 		*title = NULL,		/* Title of documentation */
 		*xmlfile = NULL;	/* XML file */
@@ -310,19 +291,14 @@ main(int  argc,				/* I - Number of command-line args */
       else
         usage(NULL);
     }
-    else if (!strcmp(argv[i], "--docset") && !docset)
+    else if (!strcmp(argv[i], "--docset"))
     {
      /*
       * Set documentation set directory...
       */
 
-      mode = OUTPUT_DOCSET;
-
-      i ++;
-      if (i < argc)
-        docset = argv[i];
-      else
-        usage(NULL);
+      fputs("mxmldoc: Sorry, Xcode documentation sets are no longer supported.\n", stderr);
+      usage(NULL);
     }
     else if (!strcmp(argv[i], "--docversion") && !docversion)
     {
@@ -359,30 +335,6 @@ main(int  argc,				/* I - Number of command-line args */
       i ++;
       if (i < argc)
         footerfile = argv[i];
-      else
-        usage(NULL);
-    }
-    else if (!strcmp(argv[i], "--feedname") && !feedname)
-    {
-     /*
-      * Set documentation set feed name...
-      */
-
-      i ++;
-      if (i < argc)
-        feedname = argv[i];
-      else
-        usage(NULL);
-    }
-    else if (!strcmp(argv[i], "--feedurl") && !feedurl)
-    {
-     /*
-      * Set documentation set feed name...
-      */
-
-      i ++;
-      if (i < argc)
-        feedurl = argv[i];
       else
         usage(NULL);
     }
@@ -460,20 +412,6 @@ main(int  argc,				/* I - Number of command-line args */
       i ++;
       if (i < argc)
         title = argv[i];
-      else
-        usage(NULL);
-    }
-    else if (!strcmp(argv[i], "--tokens"))
-    {
-     /*
-      * Output Tokens.xml file...
-      */
-
-      mode = OUTPUT_TOKENS;
-
-      i ++;
-      if (i < argc)
-        path = argv[i];
       else
         usage(NULL);
     }
@@ -644,18 +582,6 @@ main(int  argc,				/* I - Number of command-line args */
 
   switch (mode)
   {
-    case OUTPUT_DOCSET :
-       /*
-        * Write Xcode documentation set...
-        */
-
-#ifdef __APPLE__
-        write_docset(docset, section, title, author, copyright, docversion, feedname, feedurl, cssfile, headerfile, bodyfile, body, mxmldoc, footerfile);
-#else
-        fputs("mxmldoc: Sorry, Xcode documentation sets can only be created on macOS.\n", stderr);
-#endif /* __APPLE__ */
-        break;
-
     case OUTPUT_EPUB :
        /*
         * Write EPUB (XHTML) documentation...
@@ -682,15 +608,6 @@ main(int  argc,				/* I - Number of command-line args */
         */
 
         write_man(name, section, title, author, copyright, headerfile, bodyfile, body, mxmldoc, footerfile);
-        break;
-
-    case OUTPUT_TOKENS :
-	fputs("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
-	      "<Tokens version=\"1.0\">\n", stdout);
-
-	write_tokens(stdout, mxmldoc, path);
-
-	fputs("</Tokens>\n", stdout);
         break;
   }
 
@@ -1285,8 +1202,6 @@ find_public(mxml_node_t *node,		/* I - Current node */
           {
             if (!strncmp(exclude, "docset", 6))
             {
-              if (mode == OUTPUT_DOCSET)
-                break;
               exclude += 6;
             }
             else if (!strncmp(exclude, "epub", 4))
@@ -1309,8 +1224,6 @@ find_public(mxml_node_t *node,		/* I - Current node */
             }
             else if (!strncmp(exclude, "tokens", 6))
             {
-              if (mode == OUTPUT_TOKENS)
-                break;
               exclude += 6;
             }
             else if (!strncmp(exclude, "xml", 3))
@@ -1879,81 +1792,6 @@ new_documentation(mxml_node_t **mxmldoc)/* O - mxmldoc node */
 
   return (doc);
 }
-
-
-#ifdef __APPLE__
-/*
- * 'remove_directory()' - Remove a directory.
- */
-
-static int				/* O - 1 on success, 0 on failure */
-remove_directory(const char *path)	/* I - Directory to remove */
-{
-  DIR		*dir;			/* Directory */
-  struct dirent	*dent;			/* Current directory entry */
-  char		filename[1024];		/* Current filename */
-  struct stat	fileinfo;		/* File information */
-
-
-  if ((dir = opendir(path)) == NULL)
-  {
-    fprintf(stderr, "mxmldoc: Unable to open directory \"%s\": %s\n", path,
-            strerror(errno));
-    return (0);
-  }
-
-  while ((dent = readdir(dir)) != NULL)
-  {
-   /*
-    * Skip "." and ".."...
-    */
-
-    if (!strcmp(dent->d_name, ".") || !strcmp(dent->d_name, ".."))
-      continue;
-
-   /*
-    * See if we have a file or directory...
-    */
-
-    snprintf(filename, sizeof(filename), "%s/%s", path, dent->d_name);
-
-    if (stat(filename, &fileinfo))
-    {
-      fprintf(stderr, "mxmldoc: Unable to stat \"%s\": %s\n", filename,
-	      strerror(errno));
-      closedir(dir);
-      return (0);
-    }
-
-    if (S_ISDIR(fileinfo.st_mode))
-    {
-      if (!remove_directory(filename))
-      {
-        closedir(dir);
-	return (0);
-      }
-    }
-    else if (unlink(filename))
-    {
-      fprintf(stderr, "mxmldoc: Unable to remove \"%s\": %s\n", filename,
-	      strerror(errno));
-      closedir(dir);
-      return (0);
-    }
-  }
-
-  closedir(dir);
-
-  if (rmdir(path))
-  {
-    fprintf(stderr, "mxmldoc: Unable to remove directory \"%s\": %s\n", path,
-            strerror(errno));
-    return (0);
-  }
-
-  return (1);
-}
-#endif /* __APPLE__ */
 
 
 /*
@@ -3705,11 +3543,8 @@ usage(const char *option)		/* I - Unknown option */
   puts("    --copyright text           Set copyright text");
   puts("    --coverimage image.png     Set cover image (EPUB)");
   puts("    --css filename.css         Set CSS stylesheet file");
-  puts("    --docset bundleid.docset   Generate documentation set");
   puts("    --docversion version       Set documentation version");
   puts("    --epub filename.epub       Generate EPUB file");
-  puts("    --feedname name            Set documentation set feed name");
-  puts("    --feedurl url              Set documentation set feed URL");
   puts("    --footer footerfile        Set footer file");
   puts("    --framed basename          Generate framed HTML to basename*.html");
   puts("    --header headerfile        Set header file");
@@ -3717,7 +3552,6 @@ usage(const char *option)		/* I - Unknown option */
   puts("    --no-output                Do no generate documentation file");
   puts("    --section section          Set section name");
   puts("    --title title              Set documentation title");
-  puts("    --tokens path              Generate Xcode docset Tokens.xml file");
   puts("    --version                  Show mxmldoc/Mini-XML version");
 
   exit(1);
@@ -3907,381 +3741,6 @@ write_description(
 }
 
 
-#ifdef __APPLE__
-/*
- * 'write_docset()' - Write Xcode documentation.
- */
-
-static void
-write_docset(const char  *docset,	/* I - Documentation set directory */
-             const char  *section,	/* I - Section */
-             const char  *title,	/* I - Title */
-             const char  *author,	/* I - Author's name */
-             const char  *copyright,	/* I - Copyright string */
-             const char  *docversion,	/* I - Documentation set version */
-             const char  *feedname,	/* I - Feed name for doc set */
-             const char  *feedurl,	/* I - Feed URL for doc set */
-             const char  *cssfile,	/* I - Stylesheet file */
-             const char  *headerfile,	/* I - Header file */
-             const char  *bodyfile,	/* I - Body file */
-             mmd_t       *body,		/* I - Markdown body */
-             mxml_node_t *doc,		/* I - XML documentation */
-             const char  *footerfile)	/* I - Footer file */
-{
-  FILE  	*out;			/* Output file */
-  char	        filename[1024];		/* Current output filename */
-  toc_t	        *toc;			/* Table of contents */
-  const char	*id;			/* Identifier */
-  size_t	i;			/* Looping var */
-  toc_entry_t	*tentry;		/* Current table of contents */
-  int		toc_level;		/* Current table-of-contents level */
-  int		xmlid = 1;		/* Current XML node ID */
-  const char	*indent;		/* Indentation */
-
-
-
- /*
-  * Create the table-of-contents entries...
-  */
-
-  toc = build_toc(doc, bodyfile, body, OUTPUT_DOCSET);
-
- /*
-  * Create an Xcode documentation set - start by removing any existing
-  * output directory...
-  */
-
-  if (!access(docset, 0) && !remove_directory(docset))
-    return;
-
- /*
-  * Then make the Apple standard bundle directory structure...
-  */
-
-  if (mkdir(docset, 0755))
-  {
-    fprintf(stderr, "mxmldoc: Unable to create \"%s\": %s\n", docset,
-            strerror(errno));
-    return;
-  }
-
-  snprintf(filename, sizeof(filename), "%s/Contents", docset);
-  if (mkdir(filename, 0755))
-  {
-    fprintf(stderr, "mxmldoc: Unable to create \"%s\": %s\n", filename,
-            strerror(errno));
-    return;
-  }
-
-  snprintf(filename, sizeof(filename), "%s/Contents/Resources", docset);
-  if (mkdir(filename, 0755))
-  {
-    fprintf(stderr, "mxmldoc: Unable to create \"%s\": %s\n", filename,
-            strerror(errno));
-    return;
-  }
-
-  snprintf(filename, sizeof(filename), "%s/Contents/Resources/Documentation",
-           docset);
-  if (mkdir(filename, 0755))
-  {
-    fprintf(stderr, "mxmldoc: Unable to create \"%s\": %s\n", filename,
-            strerror(errno));
-    return;
-  }
-
- /*
-  * The Info.plist file, which describes the documentation set...
-  */
-
-  if ((id = strrchr(docset, '/')) != NULL)
-    id ++;
-  else
-    id = docset;
-
-  snprintf(filename, sizeof(filename), "%s/Contents/Info.plist", docset);
-  if ((out = fopen(filename, "w")) == NULL)
-  {
-    fprintf(stderr, "mxmldoc: Unable to create \"%s\": %s\n", filename,
-            strerror(errno));
-    return;
-  }
-
-  fputs("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
-        "<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">\n"
-        "<plist version=\"1.0\">\n"
-        "  <dict>\n"
-        "    <key>CFBundleIdentifier</key>\n"
-        "    <string>", out);
-  write_string(out, id, OUTPUT_HTML);
-  fputs("</string>\n"
-        "    <key>CFBundleName</key>\n"
-        "    <string>", out);
-  write_string(out, title, OUTPUT_HTML);
-  fputs("</string>\n"
-        "    <key>CFBundleVersion</key>\n"
-        "    <string>", out);
-  write_string(out, docversion ? docversion : "0.0", OUTPUT_HTML);
-  fputs("</string>\n"
-        "    <key>CFBundleShortVersionString</key>\n"
-        "    <string>", out);
-  write_string(out, docversion ? docversion : "0.0", OUTPUT_HTML);
-  fputs("</string>\n", out);
-
-  if (feedname)
-  {
-    fputs("    <key>DocSetFeedName</key>\n"
-          "    <string>", out);
-    write_string(out, feedname ? feedname : title, OUTPUT_HTML);
-    fputs("</string>\n", out);
-  }
-
-  if (feedurl)
-  {
-    fputs("    <key>DocSetFeedURL</key>\n"
-          "    <string>", out);
-    write_string(out, feedurl, OUTPUT_HTML);
-    fputs("</string>\n", out);
-  }
-
-  fputs("  </dict>\n"
-        "</plist>\n", out);
-
-  fclose(out);
-
- /*
-  * Next the Nodes.xml file...
-  */
-
-  snprintf(filename, sizeof(filename), "%s/Contents/Resources/Nodes.xml",
-           docset);
-  if ((out = fopen(filename, "w")) == NULL)
-  {
-    fprintf(stderr, "mxmldoc: Unable to create \"%s\": %s\n", filename,
-            strerror(errno));
-    return;
-  }
-
-  fputs("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
-        "<DocSetNodes version=\"1.0\">\n"
-        "  <TOC>\n"
-        "    <Node id=\"0\">\n"
-        "      <Name>", out);
-  write_string(out, title, OUTPUT_HTML);
-  fputs("      </Name>\n"
-        "      <Path>Documentation/index.html</Path>\n"
-        "      <Subnodes>\n", out);
-
-  for (i = 0, tentry = toc->entries, toc_level = 1; i < toc->num_entries; i ++, tentry ++)
-  {
-    if (tentry->level > toc_level)
-    {
-      toc_level = tentry->level;
-    }
-    else if (tentry->level < toc_level)
-    {
-      fputs("        </Subnodes>\n"
-            "      </Node>\n", out);
-      toc_level = tentry->level;
-    }
-
-    indent = toc_level == 2 ? "            " : "      ";
-
-    fprintf(out, "%s<Node id=\"%d\">\n"
-                 "%s  <Path>Documentation/index.html</Path>\n"
-                 "%s  <Anchor>%s</Anchor>\n"
-                 "%s  <Name>", indent, xmlid ++, indent, indent, tentry->anchor, indent);
-    write_string(out, tentry->title, OUTPUT_HTML);
-
-    if ((i + 1) < toc->num_entries && tentry[1].level > toc_level)
-      fprintf(out, "</Name>\n"
-                   "%s  <Subnodes>\n", indent);
-    else
-      fprintf(out, "</Name>\n"
-                   "%s</Node>\n", indent);
-  }
-
-  if (toc_level == 2)
-    fputs("        </Subnodes>\n"
-          "      </Node>\n", out);
-
-  fputs("      </Subnodes>\n"
-        "    </Node>\n"
-        "  </TOC>\n"
-        "</DocSetNodes>\n", out);
-
-  fclose(out);
-
- /*
-  * Then the Tokens.xml file...
-  */
-
-  snprintf(filename, sizeof(filename), "%s/Contents/Resources/Tokens.xml",
-           docset);
-  if ((out = fopen(filename, "w")) == NULL)
-  {
-    fprintf(stderr, "mxmldoc: Unable to create \"%s\": %s\n", filename,
-            strerror(errno));
-    return;
-  }
-
-  fputs("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
-        "<Tokens version=\"1.0\">\n", out);
-
-  write_tokens(out, doc, "index.html");
-
-  fputs("</Tokens>\n", out);
-
-  fclose(out);
-
- /*
-  * Finally the HTML file...
-  */
-
-  snprintf(filename, sizeof(filename),
-           "%s/Contents/Resources/Documentation/index.html",
-           docset);
-  if ((out = fopen(filename, "w")) == NULL)
-  {
-    fprintf(stderr, "mxmldoc: Unable to create \"%s\": %s\n", filename,
-            strerror(errno));
-    return;
-  }
-
- /*
-  * Standard header...
-  */
-
-  write_html_head(out, OUTPUT_HTML, section, title, author, copyright, docversion, cssfile);
-
- /*
-  * Header...
-  */
-
-  if (headerfile)
-  {
-   /*
-    * Use custom header...
-    */
-
-    write_file(out, headerfile, OUTPUT_HTML);
-  }
-  else
-  {
-   /*
-    * Use standard header...
-    */
-
-    fputs("    <h1 class=\"title\">", out);
-    write_string(out, title, OUTPUT_HTML);
-    fputs("</h1>\n", out);
-
-    if (author)
-    {
-      fputs("    <p>", out);
-      write_string(out, author, OUTPUT_HTML);
-      fputs("</p>\n", out);
-    }
-
-    if (copyright)
-    {
-      fputs("    <p>", out);
-      write_string(out, copyright, OUTPUT_HTML);
-      fputs("</p>\n", out);
-    }
-  }
-
- /*
-  * Table of contents...
-  */
-
-  write_html_toc(out, title, toc, NULL, NULL);
-
-  free_toc(toc);
-
- /*
-  * Body...
-  */
-
-  fputs("    <div class=\"body\">\n", out);
-
-  write_html_body(out, OUTPUT_HTML, bodyfile, body, doc);
-
- /*
-  * Footer...
-  */
-
-  if (footerfile)
-  {
-   /*
-    * Use custom footer...
-    */
-
-    write_file(out, footerfile, OUTPUT_HTML);
-  }
-
-  fputs("    </div>\n"
-        "  </body>\n"
-        "</html>\n", out);
-
-  fclose(out);
-
- /*
-  * When generating document sets, run the docsetutil program to index it...
-  */
-
-  if (docset)
-  {
-    int		argc = 0;		/* Argument count */
-    const char	*args[5];		/* Argument array */
-    pid_t	pid;			/* Process ID */
-    int		status;			/* Exit status */
-
-
-    args[argc++] = "/usr/bin/xcrun";
-    args[argc++] = "docsetutil";
-    args[argc++] = "index";
-    args[argc++] = docset;
-    args[argc  ] = NULL;
-
-    if (posix_spawn(&pid, args[0], NULL, NULL, (char **)args, environ))
-    {
-      fprintf(stderr, "mxmldoc: Unable to index documentation set \"%s\": %s\n",
-              docset, strerror(errno));
-    }
-    else
-    {
-      while (wait(&status) != pid);
-
-      if (status)
-      {
-        if (WIFEXITED(status))
-	  fprintf(stderr, "mxmldoc: docsetutil exited with status %d\n",
-		  WEXITSTATUS(status));
-        else
-	  fprintf(stderr, "mxmldoc: docsetutil crashed with signal %d\n",
-		  WTERMSIG(status));
-      }
-      else
-      {
-       /*
-        * Remove unneeded temporary XML files...
-	*/
-
-	snprintf(filename, sizeof(filename), "%s/Contents/Resources/Nodes.xml",
-		 docset);
-        unlink(filename);
-
-	snprintf(filename, sizeof(filename), "%s/Contents/Resources/Tokens.xml",
-		 docset);
-        unlink(filename);
-      }
-    }
-  }
-}
-#endif /* __APPLE__ */
-
-
 /*
  * 'write_element()' - Write an element's text nodes.
  */
@@ -4306,7 +3765,7 @@ write_element(FILE        *out,		/* I - Output file */
       if (node->value.text.whitespace)
 	putc(' ', out);
 
-      if ((mode == OUTPUT_HTML || mode == OUTPUT_EPUB || mode == OUTPUT_DOCSET) &&
+      if ((mode == OUTPUT_HTML || mode == OUTPUT_EPUB) &&
           (mxmlFindElement(doc, doc, "class", "name", node->value.text.string,
                            MXML_DESCEND) ||
 	   mxmlFindElement(doc, doc, "enumeration", "name",
@@ -6430,7 +5889,6 @@ write_string(FILE       *out,		/* I - Output file */
 
   switch (mode)
   {
-    case OUTPUT_DOCSET :
     case OUTPUT_EPUB :
     case OUTPUT_HTML :
     case OUTPUT_XML :
@@ -6493,362 +5951,6 @@ write_string(FILE       *out,		/* I - Output file */
           putc(*s++, out);
         }
         break;
-  }
-}
-
-
-/*
- * 'write_tokens()' - Write <Token> nodes for all APIs.
- */
-
-static void
-write_tokens(FILE        *out,		/* I - Output file */
-             mxml_node_t *doc,		/* I - Document */
-	     const char  *path)		/* I - Path to help file */
-{
-  mxml_node_t	*function,		/* Current function */
-		*scut,			/* Struct/class/union/typedef */
-		*arg,			/* Current argument */
-		*description,		/* Description of function/var */
-		*type,			/* Type node */
-		*node;			/* Current child node */
-  const char	*name,			/* Name of function/type */
-		*cename,		/* Current class/enum name */
-		*defval;		/* Default value for argument */
-  char		prefix;			/* Prefix for declarations */
-
-
- /*
-  * Classes...
-  */
-
-  if ((scut = find_public(doc, doc, "class", NULL, OUTPUT_TOKENS)) != NULL)
-  {
-    while (scut)
-    {
-      cename      = mxmlElementGetAttr(scut, "name");
-      description = mxmlFindElement(scut, scut, "description",
-				    NULL, NULL, MXML_DESCEND_FIRST);
-
-      fprintf(out, "  <Token>\n"
-		   "    <Path>Documentation/%s</Path>\n"
-		   "    <Anchor>%s</Anchor>\n"
-		   "    <TokenIdentifier>//apple_ref/cpp/cl/%s</TokenIdentifier>\n"
-		   "    <Abstract>", path, cename, cename);
-      write_description(out, OUTPUT_TOKENS, description, "", 1);
-      fputs("    </Abstract>\n"
-            "  </Token>\n", out);
-
-      if ((function = find_public(scut, scut, "function", NULL, OUTPUT_TOKENS)) != NULL)
-      {
-	while (function)
-	{
-	  name        = mxmlElementGetAttr(function, "name");
-	  description = mxmlFindElement(function, function, "description",
-					NULL, NULL, MXML_DESCEND_FIRST);
-
-	  fprintf(out, "  <Token>\n"
-		       "    <Path>Documentation/%s</Path>\n"
-		       "    <Anchor>%s.%s</Anchor>\n"
-		       "    <TokenIdentifier>//apple_ref/cpp/clm/%s/%s", path,
-		  cename, name, cename, name);
-
-	  arg = mxmlFindElement(function, function, "returnvalue", NULL,
-				NULL, MXML_DESCEND_FIRST);
-
-	  if (arg && (type = mxmlFindElement(arg, arg, "type", NULL,
-					     NULL, MXML_DESCEND_FIRST)) != NULL)
-          {
-	    for (node = type->child; node; node = node->next)
-	      fputs(node->value.text.string, out);
-	  }
-	  else if (strcmp(cename, name) && strcmp(cename, name + 1))
-	    fputs("void", out);
-
-	  fputs("/", out);
-
-	  for (arg = mxmlFindElement(function, function, "argument", NULL, NULL,
-				     MXML_DESCEND_FIRST), prefix = '(';
-	       arg;
-	       arg = mxmlFindElement(arg, function, "argument", NULL, NULL,
-				     MXML_NO_DESCEND), prefix = ',')
-	  {
-	    type = mxmlFindElement(arg, arg, "type", NULL, NULL,
-				   MXML_DESCEND_FIRST);
-
-	    putc(prefix, out);
-
-	    for (node = type->child; node; node = node->next)
-	      fputs(node->value.text.string, out);
-
-	    fputs(mxmlElementGetAttr(arg, "name"), out);
-	  }
-
-	  if (prefix == '(')
-	    fputs("(void", out);
-
-	  fputs(")</TokenIdentifier>\n"
-	        "    <Abstract>", out);
-	  write_description(out, OUTPUT_TOKENS, description, "", 1);
-	  fputs("    </Abstract>\n"
-		"    <Declaration>", out);
-
-	  arg = mxmlFindElement(function, function, "returnvalue", NULL,
-				NULL, MXML_DESCEND_FIRST);
-
-	  if (arg)
-	    write_element(out, doc, mxmlFindElement(arg, arg, "type", NULL,
-						    NULL, MXML_DESCEND_FIRST),
-			  OUTPUT_XML);
-	  else if (strcmp(cename, name) && strcmp(cename, name + 1))
-	    fputs("void ", out);
-
-	  fputs(name, out);
-
-	  for (arg = mxmlFindElement(function, function, "argument", NULL, NULL,
-				     MXML_DESCEND_FIRST), prefix = '(';
-	       arg;
-	       arg = mxmlFindElement(arg, function, "argument", NULL, NULL,
-				     MXML_NO_DESCEND), prefix = ',')
-	  {
-	    type = mxmlFindElement(arg, arg, "type", NULL, NULL,
-				   MXML_DESCEND_FIRST);
-
-	    putc(prefix, out);
-	    if (prefix == ',')
-	      putc(' ', out);
-
-	    if (type->child)
-	      write_element(out, doc, type, OUTPUT_XML);
-
-	    fputs(mxmlElementGetAttr(arg, "name"), out);
-	    if ((defval = mxmlElementGetAttr(arg, "default")) != NULL)
-	      fprintf(out, " %s", defval);
-	  }
-
-	  if (prefix == '(')
-	    fputs("(void);", out);
-	  else
-	    fputs(");", out);
-
-	  fputs("    </Declaration>\n"
-		"  </Token>\n", out);
-
-	  function = find_public(function, doc, "function", NULL, OUTPUT_TOKENS);
-	}
-      }
-      scut = find_public(scut, doc, "class", NULL, OUTPUT_TOKENS);
-    }
-  }
-
- /*
-  * Functions...
-  */
-
-  if ((function = find_public(doc, doc, "function", NULL, OUTPUT_TOKENS)) != NULL)
-  {
-    while (function)
-    {
-      name        = mxmlElementGetAttr(function, "name");
-      description = mxmlFindElement(function, function, "description",
-				    NULL, NULL, MXML_DESCEND_FIRST);
-
-      fprintf(out, "  <Token>\n"
-		   "    <Path>Documentation/%s</Path>\n"
-		   "    <Anchor>%s</Anchor>\n"
-		   "    <TokenIdentifier>//apple_ref/c/func/%s</TokenIdentifier>\n"
-		   "    <Abstract>", path, name, name);
-      write_description(out, OUTPUT_TOKENS, description, "", 1);
-      fputs("    </Abstract>\n"
-            "    <Declaration>", out);
-
-      arg = mxmlFindElement(function, function, "returnvalue", NULL,
-			    NULL, MXML_DESCEND_FIRST);
-
-      if (arg)
-	write_element(out, doc, mxmlFindElement(arg, arg, "type", NULL,
-						NULL, MXML_DESCEND_FIRST),
-		      OUTPUT_XML);
-      else // if (strcmp(cname, name) && strcmp(cname, name + 1))
-	fputs("void ", out);
-
-      fputs(name, out);
-
-      for (arg = mxmlFindElement(function, function, "argument", NULL, NULL,
-				 MXML_DESCEND_FIRST), prefix = '(';
-	   arg;
-	   arg = mxmlFindElement(arg, function, "argument", NULL, NULL,
-				 MXML_NO_DESCEND), prefix = ',')
-      {
-	type = mxmlFindElement(arg, arg, "type", NULL, NULL,
-			       MXML_DESCEND_FIRST);
-
-	putc(prefix, out);
-	if (prefix == ',')
-	  putc(' ', out);
-
-	if (type->child)
-	  write_element(out, doc, type, OUTPUT_XML);
-
-	fputs(mxmlElementGetAttr(arg, "name"), out);
-	if ((defval = mxmlElementGetAttr(arg, "default")) != NULL)
-	  fprintf(out, " %s", defval);
-      }
-
-      if (prefix == '(')
-	fputs("(void);", out);
-      else
-	fputs(");", out);
-
-      fputs("    </Declaration>\n"
-            "  </Token>\n", out);
-
-      function = find_public(function, doc, "function", NULL, OUTPUT_TOKENS);
-    }
-  }
-
- /*
-  * Data types...
-  */
-
-  if ((scut = find_public(doc, doc, "typedef", NULL, OUTPUT_TOKENS)) != NULL)
-  {
-    while (scut)
-    {
-      name        = mxmlElementGetAttr(scut, "name");
-      description = mxmlFindElement(scut, scut, "description",
-				    NULL, NULL, MXML_DESCEND_FIRST);
-
-      fprintf(out, "  <Token>\n"
-		   "    <Path>Documentation/%s</Path>\n"
-		   "    <Anchor>%s</Anchor>\n"
-		   "    <TokenIdentifier>//apple_ref/c/tdef/%s</TokenIdentifier>\n"
-		   "    <Abstract>", path, name, name);
-      write_description(out, OUTPUT_TOKENS, description, "", 1);
-      fputs("    </Abstract>\n"
-            "  </Token>\n", out);
-
-      scut = find_public(scut, doc, "typedef", NULL, OUTPUT_TOKENS);
-    }
-  }
-
- /*
-  * Structures...
-  */
-
-  if ((scut = find_public(doc, doc, "struct", NULL, OUTPUT_TOKENS)) != NULL)
-  {
-    while (scut)
-    {
-      name        = mxmlElementGetAttr(scut, "name");
-      description = mxmlFindElement(scut, scut, "description",
-				    NULL, NULL, MXML_DESCEND_FIRST);
-
-      fprintf(out, "  <Token>\n"
-		   "    <Path>Documentation/%s</Path>\n"
-		   "    <Anchor>%s</Anchor>\n"
-		   "    <TokenIdentifier>//apple_ref/c/tag/%s</TokenIdentifier>\n"
-		   "    <Abstract>", path, name, name);
-      write_description(out, OUTPUT_TOKENS, description, "", 1);
-      fputs("    </Abstract>\n"
-            "  </Token>\n", out);
-
-      scut = find_public(scut, doc, "struct", NULL, OUTPUT_TOKENS);
-    }
-  }
-
- /*
-  * Unions...
-  */
-
-  if ((scut = find_public(doc, doc, "union", NULL, OUTPUT_TOKENS)) != NULL)
-  {
-    while (scut)
-    {
-      name        = mxmlElementGetAttr(scut, "name");
-      description = mxmlFindElement(scut, scut, "description",
-				    NULL, NULL, MXML_DESCEND_FIRST);
-
-      fprintf(out, "  <Token>\n"
-		   "    <Path>Documentation/%s</Path>\n"
-		   "    <Anchor>%s</Anchor>\n"
-		   "    <TokenIdentifier>//apple_ref/c/tag/%s</TokenIdentifier>\n"
-		   "    <Abstract>", path, name, name);
-      write_description(out, OUTPUT_TOKENS, description, "", 1);
-      fputs("    </Abstract>\n"
-            "  </Token>\n", out);
-
-      scut = find_public(scut, doc, "union", NULL, OUTPUT_TOKENS);
-    }
-  }
-
- /*
-  * Globals variables...
-  */
-
-  if ((arg = find_public(doc, doc, "variable", NULL, OUTPUT_TOKENS)) != NULL)
-  {
-    while (arg)
-    {
-      name        = mxmlElementGetAttr(arg, "name");
-      description = mxmlFindElement(arg, arg, "description",
-				    NULL, NULL, MXML_DESCEND_FIRST);
-
-      fprintf(out, "  <Token>\n"
-		   "    <Path>Documentation/%s</Path>\n"
-		   "    <Anchor>%s</Anchor>\n"
-		   "    <TokenIdentifier>//apple_ref/c/data/%s</TokenIdentifier>\n"
-		   "    <Abstract>", path, name, name);
-      write_description(out, OUTPUT_TOKENS, description, "", 1);
-      fputs("    </Abstract>\n"
-            "  </Token>\n", out);
-
-      arg = find_public(arg, doc, "variable", NULL, OUTPUT_TOKENS);
-    }
-  }
-
- /*
-  * Enumerations/constants...
-  */
-
-  if ((scut = find_public(doc, doc, "enumeration", NULL, OUTPUT_TOKENS)) != NULL)
-  {
-    while (scut)
-    {
-      cename      = mxmlElementGetAttr(scut, "name");
-      description = mxmlFindElement(scut, scut, "description",
-				    NULL, NULL, MXML_DESCEND_FIRST);
-
-      fprintf(out, "  <Token>\n"
-		   "    <Path>Documentation/%s</Path>\n"
-		   "    <Anchor>%s</Anchor>\n"
-		   "    <TokenIdentifier>//apple_ref/c/tag/%s</TokenIdentifier>\n"
-		   "    <Abstract>", path, cename, cename);
-      write_description(out, OUTPUT_TOKENS, description, "", 1);
-      fputs("    </Abstract>\n"
-            "  </Token>\n", out);
-
-      for (arg = mxmlFindElement(scut, scut, "constant", NULL, NULL,
-                        	 MXML_DESCEND_FIRST);
-	   arg;
-	   arg = mxmlFindElement(arg, scut, "constant", NULL, NULL,
-                        	 MXML_NO_DESCEND))
-      {
-        name        = mxmlElementGetAttr(arg, "name");
-	description = mxmlFindElement(arg, arg, "description", NULL,
-                                      NULL, MXML_DESCEND_FIRST);
-	fprintf(out, "  <Token>\n"
-		     "    <Path>Documentation/%s</Path>\n"
-		     "    <Anchor>%s</Anchor>\n"
-		     "    <TokenIdentifier>//apple_ref/c/econst/%s</TokenIdentifier>\n"
-		     "    <Abstract>", path, cename, name);
-	write_description(out, OUTPUT_TOKENS, description, "", 1);
-	fputs("    </Abstract>\n"
-	      "  </Token>\n", out);
-      }
-
-      scut = find_public(scut, doc, "enumeration", NULL, OUTPUT_TOKENS);
-    }
   }
 }
 

@@ -4,6 +4,7 @@
   them (Issue #198)
 - The `mxmlNewCDATA` and `mxmlSetCDATA` functions incorrectly added the XML
   trailer "]]" to the string (Issue #216)
+- Cross-compiling failed on install (Issue #218)
 - Updated the ZIP container library used for mxmldoc.
 
 

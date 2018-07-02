@@ -106,6 +106,12 @@ static int		mxml_write_ws(mxml_node_t *node, void *p,
  * The constants @code MXML_INTEGER_CALLBACK@, @code MXML_OPAQUE_CALLBACK@,
  * @code MXML_REAL_CALLBACK@, and @code MXML_TEXT_CALLBACK@ are defined for
  * loading child (data) nodes of the specified type.
+ *
+ * Note: The most common programming error when using the Mini-XML library is
+ * to load an XML file using the @code MXML_TEXT_CALLBACK@, which returns inline
+ * text as a series of whitespace-delimited words, instead of using the
+ * @code MXML_OPAQUE_CALLBACK@ which returns the inline text as a single string
+ * (including whitespace).
  */
 
 mxml_node_t *				/* O - First node or @code NULL@ if the file could not be read. */
@@ -142,6 +148,12 @@ mxmlLoadFd(mxml_node_t    *top,		/* I - Top node */
  * The constants @code MXML_INTEGER_CALLBACK@, @code MXML_OPAQUE_CALLBACK@,
  * @code MXML_REAL_CALLBACK@, and @code MXML_TEXT_CALLBACK@ are defined for
  * loading child (data) nodes of the specified type.
+ *
+ * Note: The most common programming error when using the Mini-XML library is
+ * to load an XML file using the @code MXML_TEXT_CALLBACK@, which returns inline
+ * text as a series of whitespace-delimited words, instead of using the
+ * @code MXML_OPAQUE_CALLBACK@ which returns the inline text as a single string
+ * (including whitespace).
  */
 
 mxml_node_t *				/* O - First node or @code NULL@ if the file could not be read. */
@@ -167,6 +179,12 @@ mxmlLoadFile(mxml_node_t    *top,	/* I - Top node */
  * The constants @code MXML_INTEGER_CALLBACK@, @code MXML_OPAQUE_CALLBACK@,
  * @code MXML_REAL_CALLBACK@, and @code MXML_TEXT_CALLBACK@ are defined for
  * loading child (data) nodes of the specified type.
+ *
+ * Note: The most common programming error when using the Mini-XML library is
+ * to load an XML file using the @code MXML_TEXT_CALLBACK@, which returns inline
+ * text as a series of whitespace-delimited words, instead of using the
+ * @code MXML_OPAQUE_CALLBACK@ which returns the inline text as a single string
+ * (including whitespace).
  */
 
 mxml_node_t *				/* O - First node or @code NULL@ if the string has errors. */

@@ -51,41 +51,41 @@ type to return.</p>
 child nodes:</p>
 
 <pre>
-    mxml_type_t
-    type_cb(mxml_node_t *node)
-    {
-      const char *type;
+mxml_type_t
+type_cb(mxml_node_t *node)
+{
+  const char *type;
 
-     /*
-      * You can lookup attributes and/or use the
-      * element name, hierarchy, etc...
-      */
+ /*
+  * You can lookup attributes and/or use the
+  * element name, hierarchy, etc...
+  */
 
-      type = mxmlElementGetAttr(node, "type");
-      if (type == NULL)
-	type = mxmlGetElement(node);
+  type = mxmlElementGetAttr(node, "type");
+  if (type == NULL)
+    type = mxmlGetElement(node);
 
-      if (!strcmp(type, "integer"))
-	return (MXML_INTEGER);
-      else if (!strcmp(type, "opaque"))
-	return (MXML_OPAQUE);
-      else if (!strcmp(type, "real"))
-	return (MXML_REAL);
-      else
-	return (MXML_TEXT);
-    }
+  if (!strcmp(type, "integer"))
+    return (MXML_INTEGER);
+  else if (!strcmp(type, "opaque"))
+    return (MXML_OPAQUE);
+  else if (!strcmp(type, "real"))
+    return (MXML_REAL);
+  else
+    return (MXML_TEXT);
+}
 </pre>
 
 <p>To use this callback function, simply use the name when you
 call any of the load functions:</p>
 
 <pre>
-    FILE *fp;
-    mxml_node_t *tree;
+FILE *fp;
+mxml_node_t *tree;
 
-    fp = fopen("filename.xml", "r");
-    tree = mxmlLoadFile(NULL, fp, <b>type_cb</b>);
-    fclose(fp);
+fp = fopen("filename.xml", "r");
+tree = mxmlLoadFile(NULL, fp, <b>type_cb</b>);
+fclose(fp);
 </pre>
 
 
@@ -112,85 +112,85 @@ whitespace to XHTML output to make it more readable in a standard
 text editor:</p>
 
 <pre>
-    const char *
-    whitespace_cb(mxml_node_t *node,
-                  int where)
-    {
-      const char *name;
+const char *
+whitespace_cb(mxml_node_t *node,
+              int where)
+{
+  const char *name;
 
-     /*
-      * We can conditionally break to a new line
-      * before or after any element. These are
-      * just common HTML elements...
-      */
+ /*
+  * We can conditionally break to a new line
+  * before or after any element. These are
+  * just common HTML elements...
+  */
 
-      name = mxmlGetElement(node);
+  name = mxmlGetElement(node);
 
-      if (!strcmp(name, "html") ||
-          !strcmp(name, "head") ||
-          !strcmp(name, "body") ||
-	  !strcmp(name, "pre") ||
-          !strcmp(name, "p") ||
-	  !strcmp(name, "h1") ||
-          !strcmp(name, "h2") ||
-          !strcmp(name, "h3") ||
-	  !strcmp(name, "h4") ||
-          !strcmp(name, "h5") ||
-          !strcmp(name, "h6"))
-      {
-       /*
-	* Newlines before open and after
-        * close...
-	*/
+  if (!strcmp(name, "html") ||
+      !strcmp(name, "head") ||
+      !strcmp(name, "body") ||
+      !strcmp(name, "pre") ||
+      !strcmp(name, "p") ||
+      !strcmp(name, "h1") ||
+      !strcmp(name, "h2") ||
+      !strcmp(name, "h3") ||
+      !strcmp(name, "h4") ||
+      !strcmp(name, "h5") ||
+      !strcmp(name, "h6"))
+  {
+   /*
+    * Newlines before open and after
+    * close...
+    */
 
-	if (where == MXML_WS_BEFORE_OPEN ||
-            where == MXML_WS_AFTER_CLOSE)
-	  return ("\n");
-      }
-      else if (!strcmp(name, "dl") ||
-               !strcmp(name, "ol") ||
-               !strcmp(name, "ul"))
-      {
-       /*
-	* Put a newline before and after list
-        * elements...
-	*/
+    if (where == MXML_WS_BEFORE_OPEN ||
+        where == MXML_WS_AFTER_CLOSE)
+      return ("\n");
+  }
+  else if (!strcmp(name, "dl") ||
+           !strcmp(name, "ol") ||
+           !strcmp(name, "ul"))
+  {
+   /*
+    * Put a newline before and after list
+    * elements...
+    */
 
-	return ("\n");
-      }
-      else if (!strcmp(name, "dd") ||
-               !strcmp(name, "dt") ||
-               !strcmp(name, "li"))
-      {
-       /*
-	* Put a tab before &lt;li>'s, * &lt;dd>'s,
-        * and &lt;dt>'s, and a newline after them...
-	*/
+    return ("\n");
+  }
+  else if (!strcmp(name, "dd") ||
+           !strcmp(name, "dt") ||
+           !strcmp(name, "li"))
+  {
+   /*
+    * Put a tab before &lt;li>'s, * &lt;dd>'s,
+    * and &lt;dt>'s, and a newline after them...
+    */
 
-	if (where == MXML_WS_BEFORE_OPEN)
-	  return ("\t");
-	else if (where == MXML_WS_AFTER_CLOSE)
-	  return ("\n");
-      }
+    if (where == MXML_WS_BEFORE_OPEN)
+      return ("\t");
+    else if (where == MXML_WS_AFTER_CLOSE)
+      return ("\n");
+  }
 
-     /*
-      * Return NULL for no added whitespace...
-      */
+ /*
+  * Return NULL for no added whitespace...
+  */
 
-      return (NULL);
-    }
+  return (NULL);
+}
 </pre>
 
 <p>To use this callback function, simply use the name when you
 call any of the save functions:</p>
 
 <pre>
-    FILE *fp;
-    mxml_node_t *tree;
+FILE *fp;
+mxml_node_t *tree;
 
-    fp = fopen("filename.xml", "w");
-    mxmlSaveFile(tree, fp, <b>whitespace_cb</b>);
-    fclose(fp);
+fp = fopen("filename.xml", "w");
+mxmlSaveFile(tree, fp, <b>whitespace_cb</b>);
+fclose(fp);
 </pre>
 
 
@@ -212,97 +212,97 @@ date/time type whose value is encoded as "yyyy-mm-ddThh:mm:ssZ"
 following:</p>
 
 <pre>
-    typedef struct
-    {
-      unsigned      year,    /* Year */
-                    month,   /* Month */
-                    day,     /* Day */
-                    hour,    /* Hour */
-                    minute,  /* Minute */
-                    second;  /* Second */
-      time_t        unix;    /* UNIX time */
-    } iso_date_time_t;
+typedef struct
+{
+  unsigned      year,    /* Year */
+                month,   /* Month */
+                day,     /* Day */
+                hour,    /* Hour */
+                minute,  /* Minute */
+                second;  /* Second */
+  time_t        unix;    /* UNIX time */
+} iso_date_time_t;
 
-    int
-    load_custom(mxml_node_t *node,
-                const char *data)
-    {
-      iso_date_time_t *dt;
-      struct tm tmdata;
+int
+load_custom(mxml_node_t *node,
+            const char *data)
+{
+  iso_date_time_t *dt;
+  struct tm tmdata;
 
-     /*
-      * Allocate data structure...
-      */
+ /*
+  * Allocate data structure...
+  */
 
-      dt = calloc(1, sizeof(iso_date_time_t));
+  dt = calloc(1, sizeof(iso_date_time_t));
 
-     /*
-      * Try reading 6 unsigned integers from the
-      * data string...
-      */
+ /*
+  * Try reading 6 unsigned integers from the
+  * data string...
+  */
 
-      if (sscanf(data, "%u-%u-%uT%u:%u:%uZ",
-                 &amp;(dt->year), &amp;(dt->month),
-                 &amp;(dt->day), &amp;(dt->hour),
-                 &amp;(dt->minute),
-                 &amp;(dt->second)) != 6)
-      {
-       /*
-        * Unable to read numbers, free the data
-        * structure and return an error...
-        */
+  if (sscanf(data, "%u-%u-%uT%u:%u:%uZ",
+             &amp;(dt->year), &amp;(dt->month),
+             &amp;(dt->day), &amp;(dt->hour),
+             &amp;(dt->minute),
+             &amp;(dt->second)) != 6)
+  {
+   /*
+    * Unable to read numbers, free the data
+    * structure and return an error...
+    */
 
-        free(dt);
+    free(dt);
 
-        return (-1);
-      }
+    return (-1);
+  }
 
-     /*
-      * Range check values...
-      */
+ /*
+  * Range check values...
+  */
 
-      if (dt->month < 1 || dt->month > 12 ||
-          dt->day < 1 || dt->day > 31 ||
-          dt->hour < 0 || dt->hour > 23 ||
-          dt->minute < 0 || dt->minute > 59 ||
-          dt->second < 0 || dt->second > 59)
-      {
-       /*
-        * Date information is out of range...
-        */
+  if (dt->month < 1 || dt->month > 12 ||
+      dt->day < 1 || dt->day > 31 ||
+      dt->hour < 0 || dt->hour > 23 ||
+      dt->minute < 0 || dt->minute > 59 ||
+      dt->second < 0 || dt->second > 59)
+  {
+   /*
+    * Date information is out of range...
+    */
 
-        free(dt);
+    free(dt);
 
-        return (-1);
-      }
+    return (-1);
+  }
 
-     /*
-      * Convert ISO time to UNIX time in
-      * seconds...
-      */
+ /*
+  * Convert ISO time to UNIX time in
+  * seconds...
+  */
 
-      tmdata.tm_year = dt->year - 1900;
-      tmdata.tm_mon  = dt->month - 1;
-      tmdata.tm_day  = dt->day;
-      tmdata.tm_hour = dt->hour;
-      tmdata.tm_min  = dt->minute;
-      tmdata.tm_sec  = dt->second;
+  tmdata.tm_year = dt->year - 1900;
+  tmdata.tm_mon  = dt->month - 1;
+  tmdata.tm_day  = dt->day;
+  tmdata.tm_hour = dt->hour;
+  tmdata.tm_min  = dt->minute;
+  tmdata.tm_sec  = dt->second;
 
-      dt->unix = gmtime(&amp;tmdata);
+  dt->unix = gmtime(&amp;tmdata);
 
-     /*
-      * Assign custom node data and destroy
-      * function pointers...
-      */
+ /*
+  * Assign custom node data and destroy
+  * function pointers...
+  */
 
-      mxmlSetCustom(node, data, destroy);
+  mxmlSetCustom(node, data, destroy);
 
-     /*
-      * Return with no errors...
-      */
+ /*
+  * Return with no errors...
+  */
 
-      return (0);
-    }
+  return (0);
+}
 </pre>
 
 <p>The function itself can return 0 on success or -1 if it is
@@ -318,22 +318,22 @@ allocated string containing the custom data value. The following
 save callback could be used for our ISO date/time type:</p>
 
 <pre>
-    char *
-    save_custom(mxml_node_t *node)
-    {
-      char data[255];
-      iso_date_time_t *dt;
+char *
+save_custom(mxml_node_t *node)
+{
+  char data[255];
+  iso_date_time_t *dt;
 
 
-      dt = (iso_date_time_t *)mxmlGetCustom(node);
+  dt = (iso_date_time_t *)mxmlGetCustom(node);
 
-      snprintf(data, sizeof(data),
-               "%04u-%02u-%02uT%02u:%02u:%02uZ",
-               dt->year, dt->month, dt->day,
-               dt->hour, dt->minute, dt->second);
+  snprintf(data, sizeof(data),
+           "%04u-%02u-%02uT%02u:%02u:%02uZ",
+           dt->year, dt->month, dt->day,
+           dt->hour, dt->minute, dt->second);
 
-      return (strdup(data));
-    }
+  return (strdup(data));
+}
 </pre>
 
 <p>You register the callback functions using the <a
@@ -341,8 +341,8 @@ href='#mxmlSetCustomHandlers'><tt>mxmlSetCustomHandlers()</tt></a>
 function:</p>
 
 <pre>
-    mxmlSetCustomHandlers(<b>load_custom</b>,
-                          <b>save_custom</b>);
+mxmlSetCustomHandlers(<b>load_custom</b>,
+                      <b>save_custom</b>);
 </pre>
 
 
@@ -366,9 +366,9 @@ example, use the following function call to change a text node
 to contain the text "new" with leading whitespace:</p>
 
 <pre>
-    mxml_node_t *node;
+mxml_node_t *node;
 
-    mxmlSetText(node, 1, "new");
+mxmlSetText(node, 1, "new");
 </pre>
 
 
@@ -382,10 +382,10 @@ function call to create a new text node containing a constructed
 filename:</p>
 
 <pre>
-    mxml_node_t</a> *node;
+mxml_node_t</a> *node;
 
-    node = mxmlNewTextf(node, 1, "%s/%s",
-                        path, filename);
+node = mxmlNewTextf(node, 1, "%s/%s",
+                    path, filename);
 </pre>
 
 
@@ -408,11 +408,11 @@ structures. The <a href='#mxmlIndexNew'><tt>mxmlIndexNew()</tt></a> function
 creates a new index:</p>
 
 <pre>
-    mxml_node_t *tree;
-    mxml_index_t *ind;
+mxml_node_t *tree;
+mxml_index_t *ind;
 
-    ind = mxmlIndexNew(tree, "element",
-                       "attribute");
+ind = mxmlIndexNew(tree, "element",
+                   "attribute");
 </pre>
 
 <p>The first argument is the XML node tree to index. Normally this
@@ -441,14 +441,14 @@ function enumerates each of the nodes in the index and can be
 used in a loop as follows:</p>
 
 <pre>
-    mxml_node_t *node;
+mxml_node_t *node;
 
-    mxmlIndexReset(ind);
+mxmlIndexReset(ind);
 
-    while ((node = mxmlIndexEnum(ind)) != NULL)
-    {
-      // do something with node
-    }
+while ((node = mxmlIndexEnum(ind)) != NULL)
+{
+  // do something with node
+}
 </pre>
 
 <p>The <a href='#mxmlIndexFind'><tt>mxmlIndexFind()</tt></a>
@@ -457,16 +457,16 @@ attribute value in the index. It can be used to find all
 matching elements in an index, as follows:</p>
 
 <pre>
-    mxml_node_t *node;
+mxml_node_t *node;
 
-    mxmlIndexReset(ind);
+mxmlIndexReset(ind);
 
-    while ((node = mxmlIndexFind(ind, "element",
-                                 "attr-value"))
-                != NULL)
-    {
-      // do something with node
-    }
+while ((node = mxmlIndexFind(ind, "element",
+                             "attr-value"))
+            != NULL)
+{
+  // do something with node
+}
 </pre>
 
 <p>The second and third arguments represent the element name and
@@ -480,7 +480,7 @@ is equivalent to calling <tt>mxmlIndexEnum</tt>.</p>
 function:</p>
 
 <pre>
-    mxmlIndexDelete(ind);
+mxmlIndexDelete(ind);
 </pre>
 
 <h2>SAX (Stream) Loading of Documents</h2>
@@ -502,13 +502,13 @@ process each node as it is read.</p>
 a user data pointer you supply:</p>
 
 <pre>
-    void
-    sax_cb(mxml_node_t *node,
-           mxml_sax_event_t event,
-           void *data)
-    {
-      ... do something ...
-    }
+void
+sax_cb(mxml_node_t *node,
+       mxml_sax_event_t event,
+       void *data)
+{
+  ... do something ...
+}
 </pre>
 
 <p>The event will be one of the following:</p>
@@ -537,14 +537,14 @@ the following SAX callback will retain all nodes, effectively
 simulating a normal in-memory load:</p>
 
 <pre>
-    void
-    sax_cb(mxml_node_t *node,
-           mxml_sax_event_t event,
-           void *data)
-    {
-      if (event != MXML_SAX_ELEMENT_CLOSE)
-        mxmlRetain(node);
-    }
+void
+sax_cb(mxml_node_t *node,
+       mxml_sax_event_t event,
+       void *data)
+{
+  if (event != MXML_SAX_ELEMENT_CLOSE)
+    mxmlRetain(node);
+}
 </pre>
 
 <p>More typically the SAX callback will only retain a small portion
@@ -555,46 +555,46 @@ directives like  <tt>&lt;?xml ... ?&gt;</tt> and  <tt>&lt;!DOCTYPE ... &gt;</tt>
 
 <!-- NEED 10 -->
 <pre>
-    void
-    sax_cb(mxml_node_t *node,
-           mxml_sax_event_t event,
-           void *data)
+void
+sax_cb(mxml_node_t *node,
+       mxml_sax_event_t event,
+       void *data)
+{
+  if (event == MXML_SAX_ELEMENT_OPEN)
+  {
+   /*
+    * Retain headings and titles...
+    */
+
+    char *name = mxmlGetElement(node);
+
+    if (!strcmp(name, "html") ||
+        !strcmp(name, "head") ||
+        !strcmp(name, "title") ||
+        !strcmp(name, "body") ||
+        !strcmp(name, "h1") ||
+        !strcmp(name, "h2") ||
+        !strcmp(name, "h3") ||
+        !strcmp(name, "h4") ||
+        !strcmp(name, "h5") ||
+        !strcmp(name, "h6"))
+      mxmlRetain(node);
+  }
+  else if (event == MXML_SAX_DIRECTIVE)
+    mxmlRetain(node);
+  else if (event == MXML_SAX_DATA)
+  {
+    if (mxmlGetRefCount(mxmlGetParent(node)) > 1)
     {
-      if (event == MXML_SAX_ELEMENT_OPEN)
-      {
-       /*
-        * Retain headings and titles...
-        */
+     /*
+      * If the parent was retained, then retain
+      * this data node as well.
+      */
 
-        char *name = mxmlGetElement(node);
-
-        if (!strcmp(name, "html") ||
-            !strcmp(name, "head") ||
-            !strcmp(name, "title") ||
-            !strcmp(name, "body") ||
-            !strcmp(name, "h1") ||
-            !strcmp(name, "h2") ||
-            !strcmp(name, "h3") ||
-            !strcmp(name, "h4") ||
-            !strcmp(name, "h5") ||
-            !strcmp(name, "h6"))
-          mxmlRetain(node);
-      }
-      else if (event == MXML_SAX_DIRECTIVE)
-        mxmlRetain(node);
-      else if (event == MXML_SAX_DATA)
-      {
-        if (mxmlGetRefCount(mxmlGetParent(node)) > 1)
-        {
-         /*
-          * If the parent was retained, then retain
-          * this data node as well.
-          */
-
-          mxmlRetain(node);
-        }
-      }
+      mxmlRetain(node);
     }
+  }
+}
 </pre>
 
 <p>The resulting skeleton document tree can then be searched just
@@ -603,30 +603,30 @@ a filter that reads an XHTML document from stdin and then shows the
 title and headings in the document would look like:</p>
 
 <pre>
-    mxml_node_t *doc, *title, *body, *heading;
+mxml_node_t *doc, *title, *body, *heading;
 
-    doc = mxmlSAXLoadFd(NULL, 0,
-                        MXML_TEXT_CALLBACK,
-                        <b>sax_cb</b>, NULL);
+doc = mxmlSAXLoadFd(NULL, 0,
+                    MXML_TEXT_CALLBACK,
+                    <b>sax_cb</b>, NULL);
 
-    title = mxmlFindElement(doc, doc, "title",
-                            NULL, NULL,
-                            MXML_DESCEND);
+title = mxmlFindElement(doc, doc, "title",
+                        NULL, NULL,
+                        MXML_DESCEND);
 
-    if (title)
-      print_children(title);
+if (title)
+  print_children(title);
 
-    body = mxmlFindElement(doc, doc, "body",
-                           NULL, NULL,
-                           MXML_DESCEND);
+body = mxmlFindElement(doc, doc, "body",
+                       NULL, NULL,
+                       MXML_DESCEND);
 
-    if (body)
-    {
-      for (heading = mxmlGetFirstChild(body);
-           heading;
-           heading = mxmlGetNextSibling(heading))
-        print_children(heading);
-    }
+if (body)
+{
+  for (heading = mxmlGetFirstChild(body);
+       heading;
+       heading = mxmlGetNextSibling(heading))
+    print_children(heading);
+}
 </pre>
 
 </body>

@@ -578,6 +578,12 @@ const char * mxmlGetText (
 .PP
 \fBNULL\fR is returned if the node (or its first child) is not a text node.
 The "whitespace" argument can be \fBNULL\fR.
+.PP
+Note: Text nodes consist of whitespace-delimited words. You will only get
+single words of text when reading an XML file with \fBMXML_TEXT\fR nodes.
+If you want the entire string between elements in the XML file, you MUST read
+the XML file with \fBMXML_OPAQUE\fR nodes and get the resulting strings
+using the \fImxmlGetOpaque\fR function instead.
 
 
 .SS mxmlGetType
@@ -693,6 +699,12 @@ function returns the value type that should be used for child nodes.
 The constants \fBMXML_INTEGER_CALLBACK\fR, \fBMXML_OPAQUE_CALLBACK\fR,
 \fBMXML_REAL_CALLBACK\fR, and \fBMXML_TEXT_CALLBACK\fR are defined for
 loading child (data) nodes of the specified type.
+.PP
+Note: The most common programming error when using the Mini-XML library is
+to load an XML file using the \fBMXML_TEXT_CALLBACK\fR, which returns inline
+text as a series of whitespace-delimited words, instead of using the
+\fBMXML_OPAQUE_CALLBACK\fR which returns the inline text as a single string
+(including whitespace).
 .SS mxmlLoadFile
 Load a file into an XML node tree.
 .PP
@@ -711,6 +723,12 @@ function returns the value type that should be used for child nodes.
 The constants \fBMXML_INTEGER_CALLBACK\fR, \fBMXML_OPAQUE_CALLBACK\fR,
 \fBMXML_REAL_CALLBACK\fR, and \fBMXML_TEXT_CALLBACK\fR are defined for
 loading child (data) nodes of the specified type.
+.PP
+Note: The most common programming error when using the Mini-XML library is
+to load an XML file using the \fBMXML_TEXT_CALLBACK\fR, which returns inline
+text as a series of whitespace-delimited words, instead of using the
+\fBMXML_OPAQUE_CALLBACK\fR which returns the inline text as a single string
+(including whitespace).
 .SS mxmlLoadString
 Load a string into an XML node tree.
 .PP
@@ -729,6 +747,12 @@ function returns the value type that should be used for child nodes.
 The constants \fBMXML_INTEGER_CALLBACK\fR, \fBMXML_OPAQUE_CALLBACK\fR,
 \fBMXML_REAL_CALLBACK\fR, and \fBMXML_TEXT_CALLBACK\fR are defined for
 loading child (data) nodes of the specified type.
+.PP
+Note: The most common programming error when using the Mini-XML library is
+to load an XML file using the \fBMXML_TEXT_CALLBACK\fR, which returns inline
+text as a series of whitespace-delimited words, instead of using the
+\fBMXML_OPAQUE_CALLBACK\fR which returns the inline text as a single string
+(including whitespace).
 .SS mxmlNewCDATA
 Create a new CDATA node.
 .PP

@@ -82,7 +82,7 @@ You load an XML file using the `mxmlLoadFile()` function:
     mxml_node_t *tree;
 
     fp = fopen("filename.xml", "r");
-    tree = mxmlLoadFile(NULL, fp, MXML_NO_CALLBACK);
+    tree = mxmlLoadFile(NULL, fp, MXML_OPAQUE_CALLBACK);
     fclose(fp);
 
 Similarly, you save an XML file using the `mxmlSaveFile()` function:
@@ -102,7 +102,7 @@ functions load XML node trees from and save XML node trees to strings:
     mxml_node_t *tree;
 
     ...
-    tree = mxmlLoadString(NULL, buffer, MXML_NO_CALLBACK);
+    tree = mxmlLoadString(NULL, buffer, MXML_OPAQUE_CALLBACK);
 
     ...
     mxmlSaveString(tree, buffer, sizeof(buffer), MXML_NO_CALLBACK);

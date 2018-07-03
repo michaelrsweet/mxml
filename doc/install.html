@@ -73,46 +73,5 @@ directories:</p>
 </pre>
 
 
-<h2>Creating Mini-XML Packages</h2>
-
-<p>Mini-XML includes two files that can be used to create binary
-packages. The first file is <var>mxml.spec</var> which is used
-by the <tt>rpmbuild(8)</tt> software to create Red Hat Package
-Manager ("RPM") packages which are commonly used on Linux. Since
-<tt>rpmbuild</tt> wants to compile the software on its own, you
-can provide it with the Mini-XML tar file to build the
-package:</p>
-
-<pre>
-    <kbd>rpmbuild -ta mxml-<i>version</i>.tar.gz ENTER</kbd>
-</pre>
-
-<p>The second file is <var>mxml.list</var> which is used by the
-<tt>epm(1)</tt> program to create software packages in a variety
-of formats. The <tt>epm</tt> program is available from the
-following URL:</p>
-
-<pre>
-    <a href="http://www.epmhome.org/">http://www.epmhome.org/</a>
-</pre>
-
-<p>Use the <tt>make</tt> command with the <kbd>epm</kbd> target
-to create portable and native packages for your system:</p>
-
-<pre>
-    <kbd>make epm ENTER</kbd>
-</pre>
-
-<p>The packages are stored in a subdirectory named
-<var>dist</var> for your convenience. The portable packages
-utilize scripts and tar files to install the software on the
-target system. After extracting the package archive, use the
-<var>mxml.install</var> script to install the software.</p>
-
-<p>The native packages will be in the local OS's native format:
-RPM for Red Hat Linux, DPKG for Debian Linux, PKG for Solaris,
-and so forth. Use the corresponding commands to install the
-native packages.</p>
-
 </body>
 </html>

@@ -703,7 +703,13 @@ const char *mxmlGetText(<a href="#mxml_node_t">mxml_node_t</a> *node, int *white
         <p class="description">Text string or <code>NULL</code></p>
 <h4 class="discussion">Discussion</h4>
         <p class="discussion"><code>NULL</code> is returned if the node (or its first child) is not a text node.
-The &quot;whitespace&quot; argument can be <code>NULL</code>.
+The &quot;whitespace&quot; argument can be <code>NULL</code>.<br>
+<br>
+Note: Text nodes consist of whitespace-delimited words. You will only get
+single words of text when reading an XML file with <code>MXML_TEXT</code> nodes.
+If you want the entire string between elements in the XML file, you MUST read
+the XML file with <code>MXML_OPAQUE</code> nodes and get the resulting strings
+using the <a href="#mxmlGetOpaque"><code>mxmlGetOpaque</code></a> function instead.
 
 </p>
 <h3 class="function"><span class="info">&#160;Mini-XML 2.7&#160;</span><a id="mxmlGetType">mxmlGetType</a></h3>
@@ -845,7 +851,13 @@ single parent node like &lt;?xml&gt; for the entire file. The callback
 function returns the value type that should be used for child nodes.
 The constants <code>MXML_INTEGER_CALLBACK</code>, <code>MXML_OPAQUE_CALLBACK</code>,
 <code>MXML_REAL_CALLBACK</code>, and <code>MXML_TEXT_CALLBACK</code> are defined for
-loading child (data) nodes of the specified type.</p>
+loading child (data) nodes of the specified type.<br>
+<br>
+Note: The most common programming error when using the Mini-XML library is
+to load an XML file using the <code>MXML_TEXT_CALLBACK</code>, which returns inline
+text as a series of whitespace-delimited words, instead of using the
+<code>MXML_OPAQUE_CALLBACK</code> which returns the inline text as a single string
+(including whitespace).</p>
 <h3 class="function"><a id="mxmlLoadFile">mxmlLoadFile</a></h3>
         <p class="description">Load a file into an XML node tree.</p>
 <p class="code">
@@ -868,7 +880,13 @@ single parent node like &lt;?xml&gt; for the entire file. The callback
 function returns the value type that should be used for child nodes.
 The constants <code>MXML_INTEGER_CALLBACK</code>, <code>MXML_OPAQUE_CALLBACK</code>,
 <code>MXML_REAL_CALLBACK</code>, and <code>MXML_TEXT_CALLBACK</code> are defined for
-loading child (data) nodes of the specified type.</p>
+loading child (data) nodes of the specified type.<br>
+<br>
+Note: The most common programming error when using the Mini-XML library is
+to load an XML file using the <code>MXML_TEXT_CALLBACK</code>, which returns inline
+text as a series of whitespace-delimited words, instead of using the
+<code>MXML_OPAQUE_CALLBACK</code> which returns the inline text as a single string
+(including whitespace).</p>
 <h3 class="function"><a id="mxmlLoadString">mxmlLoadString</a></h3>
         <p class="description">Load a string into an XML node tree.</p>
 <p class="code">
@@ -891,7 +909,13 @@ single parent node like &lt;?xml&gt; for the entire string. The callback
 function returns the value type that should be used for child nodes.
 The constants <code>MXML_INTEGER_CALLBACK</code>, <code>MXML_OPAQUE_CALLBACK</code>,
 <code>MXML_REAL_CALLBACK</code>, and <code>MXML_TEXT_CALLBACK</code> are defined for
-loading child (data) nodes of the specified type.</p>
+loading child (data) nodes of the specified type.<br>
+<br>
+Note: The most common programming error when using the Mini-XML library is
+to load an XML file using the <code>MXML_TEXT_CALLBACK</code>, which returns inline
+text as a series of whitespace-delimited words, instead of using the
+<code>MXML_OPAQUE_CALLBACK</code> which returns the inline text as a single string
+(including whitespace).</p>
 <h3 class="function"><span class="info">&#160;Mini-XML 2.3&#160;</span><a id="mxmlNewCDATA">mxmlNewCDATA</a></h3>
         <p class="description">Create a new CDATA node.</p>
 <p class="code">

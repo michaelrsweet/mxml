@@ -26,14 +26,14 @@ functionality:</p>
 <p>Mini-XML provides a single header file which you include:</p>
 
 <pre>
-    #include &lt;mxml.h&gt;
+#include &lt;mxml.h&gt;
 </pre>
 
 <p>The Mini-XML library is included with your program using the
 <kbd>-lmxml</kbd> option:</p>
 
 <pre>
-    <kbd>gcc -o myprogram myprogram.c -lmxml ENTER</kbd>
+<kbd>gcc -o myprogram myprogram.c -lmxml ENTER</kbd>
 </pre>
 
 <p>If you have the <tt>pkg-config(1)</tt> software installed,
@@ -41,8 +41,8 @@ you can use it to determine the proper compiler and linker options
 for your installation:</p>
 
 <pre>
-    <kbd>pkg-config --cflags mxml ENTER</kbd>
-    <kbd>pkg-config --libs mxml ENTER</kbd>
+<kbd>pkg-config --cflags mxml ENTER</kbd>
+<kbd>pkg-config --libs mxml ENTER</kbd>
 </pre>
 
 <h2>Nodes</h2>
@@ -55,35 +55,35 @@ sibling nodes (previous and next), and potentially child nodes.</p>
 <p>For example, if you have an XML file like the following:</p>
 
 <pre>
-    &lt;?xml version="1.0" encoding="utf-8"?&gt;
-    &lt;data&gt;
-        &lt;node&gt;val1&lt;/node&gt;
-        &lt;node&gt;val2&lt;/node&gt;
-        &lt;node&gt;val3&lt;/node&gt;
-        &lt;group&gt;
-            &lt;node&gt;val4&lt;/node&gt;
-            &lt;node&gt;val5&lt;/node&gt;
-            &lt;node&gt;val6&lt;/node&gt;
-        &lt;/group&gt;
-        &lt;node&gt;val7&lt;/node&gt;
-        &lt;node&gt;val8&lt;/node&gt;
-    &lt;/data&gt;
+&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;data&gt;
+    &lt;node&gt;val1&lt;/node&gt;
+    &lt;node&gt;val2&lt;/node&gt;
+    &lt;node&gt;val3&lt;/node&gt;
+    &lt;group&gt;
+        &lt;node&gt;val4&lt;/node&gt;
+        &lt;node&gt;val5&lt;/node&gt;
+        &lt;node&gt;val6&lt;/node&gt;
+    &lt;/group&gt;
+    &lt;node&gt;val7&lt;/node&gt;
+    &lt;node&gt;val8&lt;/node&gt;
+&lt;/data&gt;
 </pre>
 
 <p>the node tree for the file would look like the following in memory:</p>
 
 <pre>
-    ?xml version="1.0" encoding="utf-8"?
-      |
-    data
-      |
-    node - node - node - group - node - node
-      |      |      |      |       |      |
-    val1   val2   val3     |     val7   val8
-                           |
-                         node - node - node
-                           |      |      |
-                         val4   val5   val6
+?xml version="1.0" encoding="utf-8"?
+  |
+data
+  |
+node - node - node - group - node - node
+  |      |      |      |       |      |
+val1   val2   val3     |     val7   val8
+                       |
+                     node - node - node
+                       |      |      |
+                     val4   val5   val6
 </pre>
 
 <p>where "-" is a pointer to the sibling node and "|" is a pointer
@@ -154,22 +154,22 @@ first and last child nodes for the element, respectively.</p>
 <a href="#mxmlGetInteger"><tt>mxmlGetInteger</tt></a> function retrieves the
 integer value for a node.</p>
 
-<h3>Opaque Nodes</h3>
+<h3>Opaque String Nodes</h3>
 
-<p>Opaque (<tt>MXML_OPAQUE</tt>) nodes are created using the
+<p>Opaque string (<tt>MXML_OPAQUE</tt>) nodes are created using the
 <a href="#mxmlNewOpaque"><tt>mxmlNewOpaque</tt></a> function. The
 <a href="#mxmlGetOpaque"><tt>mxmlGetOpaque</tt></a> function retrieves the
 opaque string pointer for a node. Opaque nodes are like string nodes but
 preserve all whitespace between nodes.</p>
 
-<h3>Text Nodes</h3>
+<h3>Text String Nodes</h3>
 
-<p>Text (<tt>MXML_TEXT</tt>) nodes are created using the
+<p>Text string (<tt>MXML_TEXT</tt>) nodes are created using the
 <a href="#mxmlNewText"><tt>mxmlNewText</tt></a> and
 <a href="#mxmlNewTextf"><tt>mxmlNewTextf</tt></a> functions. Each text node
-consists of a text string and (leading) whitespace value - the
+consists of a single word string and (leading) whitespace value - the
 <a href="#mxmlGetText"><tt>mxmlGetText</tt></a> function retrieves the
-text string pointer and whitespace value for a node.</p>
+string pointer and whitespace value for a node.</p>
 
 <!-- NEED 12 -->
 <h3>Processing Instruction Nodes</h3>
@@ -216,35 +216,35 @@ various <tt>mxmlNew</tt> functions. The following code will
 create the XML document described in the previous section:</p>
 
 <pre>
-    mxml_node_t *xml;    /* &lt;?xml ... ?&gt; */
-    mxml_node_t *data;   /* &lt;data&gt; */
-    mxml_node_t *node;   /* &lt;node&gt; */
-    mxml_node_t *group;  /* &lt;group&gt; */
+mxml_node_t *xml;    /* &lt;?xml ... ?&gt; */
+mxml_node_t *data;   /* &lt;data&gt; */
+mxml_node_t *node;   /* &lt;node&gt; */
+mxml_node_t *group;  /* &lt;group&gt; */
 
-    xml = mxmlNewXML("1.0");
+xml = mxmlNewXML("1.0");
 
-    data = mxmlNewElement(xml, "data");
+data = mxmlNewElement(xml, "data");
 
-        node = mxmlNewElement(data, "node");
-        mxmlNewText(node, 0, "val1");
-        node = mxmlNewElement(data, "node");
-        mxmlNewText(node, 0, "val2");
-        node = mxmlNewElement(data, "node");
-        mxmlNewText(node, 0, "val3");
+    node = mxmlNewElement(data, "node");
+    mxmlNewText(node, 0, "val1");
+    node = mxmlNewElement(data, "node");
+    mxmlNewText(node, 0, "val2");
+    node = mxmlNewElement(data, "node");
+    mxmlNewText(node, 0, "val3");
 
-        group = mxmlNewElement(data, "group");
+    group = mxmlNewElement(data, "group");
 
-            node = mxmlNewElement(group, "node");
-            mxmlNewText(node, 0, "val4");
-            node = mxmlNewElement(group, "node");
-            mxmlNewText(node, 0, "val5");
-            node = mxmlNewElement(group, "node");
-            mxmlNewText(node, 0, "val6");
+        node = mxmlNewElement(group, "node");
+        mxmlNewText(node, 0, "val4");
+        node = mxmlNewElement(group, "node");
+        mxmlNewText(node, 0, "val5");
+        node = mxmlNewElement(group, "node");
+        mxmlNewText(node, 0, "val6");
 
-        node = mxmlNewElement(data, "node");
-        mxmlNewText(node, 0, "val7");
-        node = mxmlNewElement(data, "node");
-        mxmlNewText(node, 0, "val8");
+    node = mxmlNewElement(data, "node");
+    mxmlNewText(node, 0, "val7");
+    node = mxmlNewElement(data, "node");
+    mxmlNewText(node, 0, "val8");
 </pre>
 
 <!-- NEED 6 -->
@@ -252,7 +252,7 @@ create the XML document described in the previous section:</p>
 <a href="#mxmlNewXML"><tt>mxmlNewXML</tt></a> function:</p>
 
 <pre>
-    xml = mxmlNewXML("1.0");
+xml = mxmlNewXML("1.0");
 </pre>
 
 <p>We then create the <tt>&lt;data&gt;</tt> node used for this document using
@@ -261,7 +261,7 @@ argument specifies the parent node (<tt>xml</tt>) while the second specifies the
 element name (<tt>data</tt>):</p>
 
 <pre>
-    data = mxmlNewElement(xml, "data");
+data = mxmlNewElement(xml, "data");
 </pre>
 
 <p>Each <tt>&lt;node&gt;...&lt;/node&gt;</tt> in the file is created using the
@@ -272,8 +272,8 @@ the text - 0 or false in this case. The last argument specifies the actual text
 to add:</p>
 
 <pre>
-    node = mxmlNewElement(data, "node");
-    mxmlNewText(node, 0, "val1");
+node = mxmlNewElement(data, "node");
+mxmlNewText(node, 0, "val1");
 </pre>
 
 <p>The resulting in-memory XML document can then be saved or processed just like
@@ -287,13 +287,13 @@ href='#mxmlLoadFile'><tt>mxmlLoadFile</tt></a>
 function:</p>
 
 <pre>
-    FILE *fp;
-    mxml_node_t *tree;
+FILE *fp;
+mxml_node_t *tree;
 
-    fp = fopen("filename.xml", "r");
-    tree = mxmlLoadFile(NULL, fp,
-                        MXML_TEXT_CALLBACK);
-    fclose(fp);
+fp = fopen("filename.xml", "r");
+tree = mxmlLoadFile(NULL, fp,
+                    MXML_OPAQUE_CALLBACK);
+fclose(fp);
 </pre>
 
 <p>The first argument specifies an existing XML parent node, if
@@ -313,24 +313,24 @@ the value type of the immediate children for a new element node:
 <tt>MXML_INTEGER</tt>, <tt>MXML_OPAQUE</tt>, <tt>MXML_REAL</tt>,
 or <tt>MXML_TEXT</tt>. Load callbacks are described in detail in
 <a href='#LOAD_CALLBACKS'>Chapter 3</a>. The example code uses
-the <tt>MXML_TEXT_CALLBACK</tt> constant which specifies that all
-data nodes in the document contain whitespace-separated text
-values. Other standard callbacks include
+the <tt>MXML_OPAQUE_CALLBACK</tt> constant which specifies that all
+data nodes in the document contain opaque string values with whitespace
+preserved. Other standard callbacks include
 <tt>MXML_IGNORE_CALLBACK</tt>, <tt>MXML_INTEGER_CALLBACK</tt>,
-<tt>MXML_OPAQUE_CALLBACK</tt>, and
-<tt>MXML_REAL_CALLBACK</tt>.</p>
+<tt>MXML_REAL_CALLBACK</tt>, and
+<tt>MXML_TEXT_CALLBACK</tt>.</p>
 
 <p>The <a href='#mxmlLoadString'><tt>mxmlLoadString</tt></a>
 function loads XML node trees from a string:</p>
 
 <!-- NEED 10 -->
 <pre>
-    char buffer[8192];
-    mxml_node_t *tree;
+char buffer[8192];
+mxml_node_t *tree;
 
-    ...
-    tree = mxmlLoadString(NULL, buffer,
-                          MXML_TEXT_CALLBACK);
+...
+tree = mxmlLoadString(NULL, buffer,
+                      MXML_OPAQUE_CALLBACK);
 </pre>
 
 <p>The first and third arguments are the same as used for
@@ -347,12 +347,12 @@ is <tt>NULL</tt>.</p>
 href='#mxmlSaveFile'><tt>mxmlSaveFile</tt></a> function:</p>
 
 <pre>
-    FILE *fp;
-    mxml_node_t *tree;
+FILE *fp;
+mxml_node_t *tree;
 
-    fp = fopen("filename.xml", "w");
-    mxmlSaveFile(tree, fp, MXML_NO_CALLBACK);
-    fclose(fp);
+fp = fopen("filename.xml", "w");
+mxmlSaveFile(tree, fp, MXML_NO_CALLBACK);
+fclose(fp);
 </pre>
 
 <p>The first argument is the XML node tree to save. It should
@@ -376,16 +376,16 @@ and <a href='#mxmlSaveString'><tt>mxmlSaveString</tt></a>
 functions save XML node trees to strings:</p>
 
 <pre>
-    char buffer[8192];
-    char *ptr;
-    mxml_node_t *tree;
+char buffer[8192];
+char *ptr;
+mxml_node_t *tree;
 
-    ...
-    mxmlSaveString(tree, buffer, sizeof(buffer),
-                   MXML_NO_CALLBACK);
+...
+mxmlSaveString(tree, buffer, sizeof(buffer),
+               MXML_NO_CALLBACK);
 
-    ...
-    ptr = mxmlSaveAllocString(tree, MXML_NO_CALLBACK);
+...
+ptr = mxmlSaveAllocString(tree, MXML_NO_CALLBACK);
 </pre>
 
 <p>The first and last arguments are the same as used for
@@ -405,11 +405,11 @@ href='#mxmlSetWrapMargin'><tt>mxmlSetWrapMargin</tt></a> function
 overrides the default wrap margin:</p>
 
 <pre>
-    /* Set the margin to 132 columns */
-    mxmlSetWrapMargin(132);
+/* Set the margin to 132 columns */
+mxmlSetWrapMargin(132);
 
-    /* Disable wrapping */
-    mxmlSetWrapMargin(0);
+/* Disable wrapping */
+mxmlSetWrapMargin(0);
 </pre>
 
 <h2>Memory Management</h2>
@@ -420,7 +420,7 @@ free the memory that is used for a particular node or the entire
 tree:</p>
 
 <pre>
-    mxmlDelete(tree);
+mxmlDelete(tree);
 </pre>
 
 <p>You can also use reference counting to manage memory usage. The
@@ -442,13 +442,13 @@ href='#mxmlWalkNext'><tt>mxmlWalkNext</tt></a>functions
 can be used to iterate through the XML node tree:</p>
 
 <pre>
-    mxml_node_t *node;
+mxml_node_t *node;
 
-    node = mxmlWalkPrev(current, tree,
-                        MXML_DESCEND);
+node = mxmlWalkPrev(current, tree,
+                    MXML_DESCEND);
 
-    node = mxmlWalkNext(current, tree,
-                        MXML_DESCEND);
+node = mxmlWalkNext(current, tree,
+                    MXML_DESCEND);
 </pre>
 
 <p>In addition, you can find a named element/node using the <a
@@ -456,11 +456,11 @@ href='#mxmlFindElement'><tt>mxmlFindElement</tt></a>
 function:</p>
 
 <pre>
-    mxml_node_t *node;
+mxml_node_t *node;
 
-    node = mxmlFindElement(tree, tree, "name",
-                           "attr", "value",
-                           MXML_DESCEND);
+node = mxmlFindElement(tree, tree, "name",
+                       "attr", "value",
+                       MXML_DESCEND);
 </pre>
 
 <p>The <tt>name</tt>, <tt>attr</tt>, and <tt>value</tt>
@@ -469,62 +469,62 @@ e.g.:</p>
 
 <!-- NEED 4 -->
 <pre>
-    /* Find the first "a" element */
-    node = mxmlFindElement(tree, tree, "a",
-                           NULL, NULL,
-                           MXML_DESCEND);
+/* Find the first "a" element */
+node = mxmlFindElement(tree, tree, "a",
+                       NULL, NULL,
+                       MXML_DESCEND);
 </pre>
 <!-- NEED 5 -->
 <pre>
-    /* Find the first "a" element with "href"
-       attribute */
-    node = mxmlFindElement(tree, tree, "a",
-                           "href", NULL,
-                           MXML_DESCEND);
+/* Find the first "a" element with "href"
+   attribute */
+node = mxmlFindElement(tree, tree, "a",
+                       "href", NULL,
+                       MXML_DESCEND);
 </pre>
 <!-- NEED 6 -->
 <pre>
-    /* Find the first "a" element with "href"
-       to a URL */
-    node = mxmlFindElement(tree, tree, "a",
-                           "href",
-                           "http://www.easysw.com/",
-                           MXML_DESCEND);
+/* Find the first "a" element with "href"
+   to a URL */
+node = mxmlFindElement(tree, tree, "a",
+                       "href",
+                       "http://www.example.com/",
+                       MXML_DESCEND);
 </pre>
 <!-- NEED 5 -->
 <pre>
-    /* Find the first element with a "src"
-       attribute */
-    node = mxmlFindElement(tree, tree, NULL,
-                           "src", NULL,
-                           MXML_DESCEND);
+/* Find the first element with a "src"
+   attribute */
+node = mxmlFindElement(tree, tree, NULL,
+                       "src", NULL,
+                       MXML_DESCEND);
 </pre>
 <!-- NEED 5 -->
 <pre>
-    /* Find the first element with a "src"
-       = "foo.jpg" */
-    node = mxmlFindElement(tree, tree, NULL,
-                           "src", "foo.jpg",
-                           MXML_DESCEND);
+/* Find the first element with a "src"
+   = "foo.jpg" */
+node = mxmlFindElement(tree, tree, NULL,
+                       "src", "foo.jpg",
+                       MXML_DESCEND);
 </pre>
 
 <p>You can also iterate with the same function:</p>
 
 <pre>
-    mxml_node_t *node;
+mxml_node_t *node;
 
-    for (node = mxmlFindElement(tree, tree,
-                                "name",
-                                NULL, NULL,
-                                MXML_DESCEND);
-         node != NULL;
-         node = mxmlFindElement(node, tree,
-                                "name",
-                                NULL, NULL,
-                                MXML_DESCEND))
-    {
-      ... do something ...
-    }
+for (node = mxmlFindElement(tree, tree,
+                            "name",
+                            NULL, NULL,
+                            MXML_DESCEND);
+     node != NULL;
+     node = mxmlFindElement(node, tree,
+                            "name",
+                            NULL, NULL,
+                            MXML_DESCEND))
+{
+  ... do something ...
+}
 </pre>
 
 <!-- NEED 10 -->
@@ -577,9 +577,9 @@ three constants:</p>
 href='#mxmlFindValue'><tt>mxmlFindPath</tt></a>, for example:
 
 <pre>
-    mxml_node_t *value;
+mxml_node_t *value;
 
-    value = mxmlFindPath(tree, "path/to/*/foo/bar");
+value = mxmlFindPath(tree, "path/to/*/foo/bar");
 </pre>
 
 <p>The second argument is a "path" to the parent node. Each component of the

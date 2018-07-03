@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <HTML>
 <HEAD>
-<TITLE>Mini-XML Programmers Manual, Version 2.11</TITLE>
+<TITLE>Mini-XML Programmers Manual, Version 2.12</TITLE>
 <META NAME="author" CONTENT="Michael R Sweet">
-<META NAME="copyright" CONTENT="Copyright 2003-2017">
+<META NAME="copyright" CONTENT="Copyright 2003-2018">
 <META HTTP-EQUIV="Content-Type" CONTENT="text/html; CHARSET=iso-8859-1">
 <STYLE TYPE="text/css"><!--
 BODY { font-family: sans-serif; }
@@ -40,7 +40,6 @@ A { text-decoration: none; }
 </ul>
 </li>
 <li><a HREF="#2_2">Installing Mini-XML</a></li>
-<li><a HREF="#2_3">Creating Mini-XML Packages</a></li>
 </ul>
 <b><a HREF="#BASICS">Chapter 2 - Getting Started with Mini-XML</a></b>
 <ul>
@@ -52,8 +51,8 @@ A { text-decoration: none; }
 <li><a HREF="#3_2_3">Comment Nodes</a></li>
 <li><a HREF="#3_2_4">Element Nodes</a></li>
 <li><a HREF="#3_2_5">Integer Nodes</a></li>
-<li><a HREF="#3_2_6">Opaque Nodes</a></li>
-<li><a HREF="#3_2_7">Text Nodes</a></li>
+<li><a HREF="#3_2_6">Opaque String Nodes</a></li>
+<li><a HREF="#3_2_7">Text String Nodes</a></li>
 <li><a HREF="#3_2_8">Processing Instruction Nodes</a></li>
 <li><a HREF="#3_2_9">Real Number Nodes</a></li>
 <li><a HREF="#3_2_10">XML Declaration Nodes</a></li>
@@ -87,7 +86,6 @@ A { text-decoration: none; }
 <ul>
 <li><a HREF="#5_1_1">Creating Man Pages</a></li>
 <li><a HREF="#5_1_2">Creating EPUB Books</a></li>
-<li><a HREF="#5_1_3">Creating Xcode Documentation Sets</a></li>
 </ul>
 </li>
 <li><a HREF="#5_2">Commenting Your Code</a></li>
@@ -202,7 +200,7 @@ A { text-decoration: none; }
 <ul></ul>
 <HR NOSHADE>
 <h1 align="right"><a name="INTRO">Introduction</a></h1>
-<p>This programmers manual describes Mini-XML version 2.11, a small XML
+<p>This programmers manual describes Mini-XML version 2.12, a small XML
  parsing library that you can use to read and write XML data files in
  your C and C++ applications.</p>
 <p>Mini-XML was initially developed for the <a href="http://gutenprint.sf.net/">
@@ -335,7 +333,7 @@ libxml2</tt> library with something substantially smaller and
 
 <!-- NEED 6 -->
 <h2><a NAME="1_5">Legal Stuff</a></h2>
-<p>The Mini-XML library is copyright 2003-2017 by Michael R Sweet.
+<p>The Mini-XML library is copyright 2003-2018 by Michael R Sweet.
  License terms are described in <a href="#LICENSE">Appendix A - Mini-XML
  License</a>.</p>
 <HR NOSHADE>
@@ -388,35 +386,6 @@ make</tt> program in addition to the C compiler.</p>
 <pre>
     <kbd>make install ENTER</kbd>
 </pre>
-<h2><a NAME="2_3">Creating Mini-XML Packages</a></h2>
-<p>Mini-XML includes two files that can be used to create binary
- packages. The first file is<var> mxml.spec</var> which is used by the <tt>
-rpmbuild(8)</tt> software to create Red Hat Package Manager (&quot;RPM&quot;)
- packages which are commonly used on Linux. Since <tt>rpmbuild</tt>
- wants to compile the software on its own, you can provide it with the
- Mini-XML tar file to build the package:</p>
-<pre>
-    <kbd>rpmbuild -ta mxml-<i>version</i>.tar.gz ENTER</kbd>
-</pre>
-<p>The second file is<var> mxml.list</var> which is used by the <tt>
-epm(1)</tt> program to create software packages in a variety of formats.
- The <tt>epm</tt> program is available from the following URL:</p>
-<pre>
-    <a href="http://www.epmhome.org/">http://www.epmhome.org/</a>
-</pre>
-<p>Use the <tt>make</tt> command with the <kbd>epm</kbd> target to
- create portable and native packages for your system:</p>
-<pre>
-    <kbd>make epm ENTER</kbd>
-</pre>
-<p>The packages are stored in a subdirectory named<var> dist</var> for
- your convenience. The portable packages utilize scripts and tar files
- to install the software on the target system. After extracting the
- package archive, use the<var> mxml.install</var> script to install the
- software.</p>
-<p>The native packages will be in the local OS's native format: RPM for
- Red Hat Linux, DPKG for Debian Linux, PKG for Solaris, and so forth.
- Use the corresponding commands to install the native packages.</p>
 <HR NOSHADE>
 <h1 align="right"><a name="BASICS">Chapter 2 - Getting Started with
  Mini-XML</a></h1>
@@ -444,19 +413,19 @@ epm(1)</tt> program to create software packages in a variety of formats.
 <h2><a NAME="3_1">The Basics</a></h2>
 <p>Mini-XML provides a single header file which you include:</p>
 <pre>
-    #include &lt;mxml.h&gt;
+#include &lt;mxml.h&gt;
 </pre>
 <p>The Mini-XML library is included with your program using the <kbd>
 -lmxml</kbd> option:</p>
 <pre>
-    <kbd>gcc -o myprogram myprogram.c -lmxml ENTER</kbd>
+<kbd>gcc -o myprogram myprogram.c -lmxml ENTER</kbd>
 </pre>
 <p>If you have the <tt>pkg-config(1)</tt> software installed, you can
  use it to determine the proper compiler and linker options for your
  installation:</p>
 <pre>
-    <kbd>pkg-config --cflags mxml ENTER</kbd>
-    <kbd>pkg-config --libs mxml ENTER</kbd>
+<kbd>pkg-config --cflags mxml ENTER</kbd>
+<kbd>pkg-config --libs mxml ENTER</kbd>
 </pre>
 <h2><a NAME="3_2">Nodes</a></h2>
 <p>Every piece of information in an XML file is stored in memory in
@@ -466,33 +435,33 @@ mxml_node_t</tt></a> structure. Each node has a typed value, optional
  potentially child nodes.</p>
 <p>For example, if you have an XML file like the following:</p>
 <pre>
-    &lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
-    &lt;data&gt;
-        &lt;node&gt;val1&lt;/node&gt;
-        &lt;node&gt;val2&lt;/node&gt;
-        &lt;node&gt;val3&lt;/node&gt;
-        &lt;group&gt;
-            &lt;node&gt;val4&lt;/node&gt;
-            &lt;node&gt;val5&lt;/node&gt;
-            &lt;node&gt;val6&lt;/node&gt;
-        &lt;/group&gt;
-        &lt;node&gt;val7&lt;/node&gt;
-        &lt;node&gt;val8&lt;/node&gt;
-    &lt;/data&gt;
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
+&lt;data&gt;
+    &lt;node&gt;val1&lt;/node&gt;
+    &lt;node&gt;val2&lt;/node&gt;
+    &lt;node&gt;val3&lt;/node&gt;
+    &lt;group&gt;
+        &lt;node&gt;val4&lt;/node&gt;
+        &lt;node&gt;val5&lt;/node&gt;
+        &lt;node&gt;val6&lt;/node&gt;
+    &lt;/group&gt;
+    &lt;node&gt;val7&lt;/node&gt;
+    &lt;node&gt;val8&lt;/node&gt;
+&lt;/data&gt;
 </pre>
 <p>the node tree for the file would look like the following in memory:</p>
 <pre>
-    ?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?
-      |
-    data
-      |
-    node - node - node - group - node - node
-      |      |      |      |       |      |
-    val1   val2   val3     |     val7   val8
-                           |
-                         node - node - node
-                           |      |      |
-                         val4   val5   val6
+?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?
+  |
+data
+  |
+node - node - node - group - node - node
+  |      |      |      |       |      |
+val1   val2   val3     |     val7   val8
+                       |
+                     node - node - node
+                       |      |      |
+                     val4   val5   val6
 </pre>
 <p>where &quot;-&quot; is a pointer to the sibling node and &quot;|&quot; is a pointer to
  the first child or parent node.</p>
@@ -542,18 +511,18 @@ mxmlGetLastChild</tt></a> functions retrieve the first and last child
 <p>Integer (<tt>MXML_INTEGER</tt>) nodes are created using the <a href="#mxmlNewInteger">
 <tt>mxmlNewInteger</tt></a> function. The <a href="#mxmlGetInteger"><tt>
 mxmlGetInteger</tt></a> function retrieves the integer value for a node.</p>
-<h3><a NAME="3_2_6">Opaque Nodes</a></h3>
-<p>Opaque (<tt>MXML_OPAQUE</tt>) nodes are created using the <a href="#mxmlNewOpaque">
+<h3><a NAME="3_2_6">Opaque String Nodes</a></h3>
+<p>Opaque string (<tt>MXML_OPAQUE</tt>) nodes are created using the <a href="#mxmlNewOpaque">
 <tt>mxmlNewOpaque</tt></a> function. The <a href="#mxmlGetOpaque"><tt>
 mxmlGetOpaque</tt></a> function retrieves the opaque string pointer for
  a node. Opaque nodes are like string nodes but preserve all whitespace
  between nodes.</p>
-<h3><a NAME="3_2_7">Text Nodes</a></h3>
-<p>Text (<tt>MXML_TEXT</tt>) nodes are created using the <a href="#mxmlNewText">
+<h3><a NAME="3_2_7">Text String Nodes</a></h3>
+<p>Text string (<tt>MXML_TEXT</tt>) nodes are created using the <a href="#mxmlNewText">
 <tt>mxmlNewText</tt></a> and <a href="#mxmlNewTextf"><tt>mxmlNewTextf</tt>
-</a> functions. Each text node consists of a text string and (leading)
- whitespace value - the <a href="#mxmlGetText"><tt>mxmlGetText</tt></a>
- function retrieves the text string pointer and whitespace value for a
+</a> functions. Each text node consists of a single word string and
+ (leading) whitespace value - the <a href="#mxmlGetText"><tt>mxmlGetText</tt>
+</a> function retrieves the string pointer and whitespace value for a
  node.</p>
 
 <!-- NEED 12 -->
@@ -590,49 +559,49 @@ href="#mxmlNewXML"><tt>mxmlNewXML</tt></a> function. The <a href="#mxmlGetElemen
 mxmlNew</tt> functions. The following code will create the XML document
  described in the previous section:</p>
 <pre>
-    mxml_node_t *xml;    /* &lt;?xml ... ?&gt; */
-    mxml_node_t *data;   /* &lt;data&gt; */
-    mxml_node_t *node;   /* &lt;node&gt; */
-    mxml_node_t *group;  /* &lt;group&gt; */
+mxml_node_t *xml;    /* &lt;?xml ... ?&gt; */
+mxml_node_t *data;   /* &lt;data&gt; */
+mxml_node_t *node;   /* &lt;node&gt; */
+mxml_node_t *group;  /* &lt;group&gt; */
 
-    xml = mxmlNewXML(&quot;1.0&quot;);
+xml = mxmlNewXML(&quot;1.0&quot;);
 
-    data = mxmlNewElement(xml, &quot;data&quot;);
+data = mxmlNewElement(xml, &quot;data&quot;);
 
-        node = mxmlNewElement(data, &quot;node&quot;);
-        mxmlNewText(node, 0, &quot;val1&quot;);
-        node = mxmlNewElement(data, &quot;node&quot;);
-        mxmlNewText(node, 0, &quot;val2&quot;);
-        node = mxmlNewElement(data, &quot;node&quot;);
-        mxmlNewText(node, 0, &quot;val3&quot;);
+    node = mxmlNewElement(data, &quot;node&quot;);
+    mxmlNewText(node, 0, &quot;val1&quot;);
+    node = mxmlNewElement(data, &quot;node&quot;);
+    mxmlNewText(node, 0, &quot;val2&quot;);
+    node = mxmlNewElement(data, &quot;node&quot;);
+    mxmlNewText(node, 0, &quot;val3&quot;);
 
-        group = mxmlNewElement(data, &quot;group&quot;);
+    group = mxmlNewElement(data, &quot;group&quot;);
 
-            node = mxmlNewElement(group, &quot;node&quot;);
-            mxmlNewText(node, 0, &quot;val4&quot;);
-            node = mxmlNewElement(group, &quot;node&quot;);
-            mxmlNewText(node, 0, &quot;val5&quot;);
-            node = mxmlNewElement(group, &quot;node&quot;);
-            mxmlNewText(node, 0, &quot;val6&quot;);
+        node = mxmlNewElement(group, &quot;node&quot;);
+        mxmlNewText(node, 0, &quot;val4&quot;);
+        node = mxmlNewElement(group, &quot;node&quot;);
+        mxmlNewText(node, 0, &quot;val5&quot;);
+        node = mxmlNewElement(group, &quot;node&quot;);
+        mxmlNewText(node, 0, &quot;val6&quot;);
 
-        node = mxmlNewElement(data, &quot;node&quot;);
-        mxmlNewText(node, 0, &quot;val7&quot;);
-        node = mxmlNewElement(data, &quot;node&quot;);
-        mxmlNewText(node, 0, &quot;val8&quot;);
+    node = mxmlNewElement(data, &quot;node&quot;);
+    mxmlNewText(node, 0, &quot;val7&quot;);
+    node = mxmlNewElement(data, &quot;node&quot;);
+    mxmlNewText(node, 0, &quot;val8&quot;);
 </pre>
 
 <!-- NEED 6 -->
 <p>We start by creating the declaration node common to all XML files
  using the <a href="#mxmlNewXML"><tt>mxmlNewXML</tt></a> function:</p>
 <pre>
-    xml = mxmlNewXML(&quot;1.0&quot;);
+xml = mxmlNewXML(&quot;1.0&quot;);
 </pre>
 <p>We then create the <tt>&lt;data&gt;</tt> node used for this document using
  the <a href="#mxmlNewElement"><tt>mxmlNewElement</tt></a> function. The
  first argument specifies the parent node (<tt>xml</tt>) while the
  second specifies the element name (<tt>data</tt>):</p>
 <pre>
-    data = mxmlNewElement(xml, &quot;data&quot;);
+data = mxmlNewElement(xml, &quot;data&quot;);
 </pre>
 <p>Each <tt>&lt;node&gt;...&lt;/node&gt;</tt> in the file is created using the <tt>
 mxmlNewElement</tt> and <a href="#mxmlNewText"><tt>mxmlNewText</tt></a>
@@ -641,8 +610,8 @@ mxmlNewElement</tt> and <a href="#mxmlNewText"><tt>mxmlNewText</tt></a>
  whitespace appears before the text - 0 or false in this case. The last
  argument specifies the actual text to add:</p>
 <pre>
-    node = mxmlNewElement(data, &quot;node&quot;);
-    mxmlNewText(node, 0, &quot;val1&quot;);
+node = mxmlNewElement(data, &quot;node&quot;);
+mxmlNewText(node, 0, &quot;val1&quot;);
 </pre>
 <p>The resulting in-memory XML document can then be saved or processed
  just like one loaded from disk or a string.</p>
@@ -652,13 +621,13 @@ mxmlNewElement</tt> and <a href="#mxmlNewText"><tt>mxmlNewText</tt></a>
 <p>You load an XML file using the <a href="#mxmlLoadFile"><tt>
 mxmlLoadFile</tt></a> function:</p>
 <pre>
-    FILE *fp;
-    mxml_node_t *tree;
+FILE *fp;
+mxml_node_t *tree;
 
-    fp = fopen(&quot;filename.xml&quot;, &quot;r&quot;);
-    tree = mxmlLoadFile(NULL, fp,
-                        MXML_TEXT_CALLBACK);
-    fclose(fp);
+fp = fopen(&quot;filename.xml&quot;, &quot;r&quot;);
+tree = mxmlLoadFile(NULL, fp,
+                    MXML_OPAQUE_CALLBACK);
+fclose(fp);
 </pre>
 <p>The first argument specifies an existing XML parent node, if any.
  Normally you will pass <tt>NULL</tt> for this argument unless you are
@@ -673,22 +642,22 @@ NULL</tt>.</p>
 MXML_CUSTOM</tt>, <tt>MXML_IGNORE</tt>, <tt>MXML_INTEGER</tt>, <tt>
 MXML_OPAQUE</tt>, <tt>MXML_REAL</tt>, or <tt>MXML_TEXT</tt>. Load
  callbacks are described in detail in <a href="#LOAD_CALLBACKS">Chapter
- 3</a>. The example code uses the <tt>MXML_TEXT_CALLBACK</tt> constant
- which specifies that all data nodes in the document contain
- whitespace-separated text values. Other standard callbacks include <tt>
-MXML_IGNORE_CALLBACK</tt>, <tt>MXML_INTEGER_CALLBACK</tt>, <tt>
-MXML_OPAQUE_CALLBACK</tt>, and <tt>MXML_REAL_CALLBACK</tt>.</p>
+ 3</a>. The example code uses the <tt>MXML_OPAQUE_CALLBACK</tt> constant
+ which specifies that all data nodes in the document contain opaque
+ string values with whitespace preserved. Other standard callbacks
+ include <tt>MXML_IGNORE_CALLBACK</tt>, <tt>MXML_INTEGER_CALLBACK</tt>, <tt>
+MXML_REAL_CALLBACK</tt>, and <tt>MXML_TEXT_CALLBACK</tt>.</p>
 <p>The <a href="#mxmlLoadString"><tt>mxmlLoadString</tt></a> function
  loads XML node trees from a string:</p>
 
 <!-- NEED 10 -->
 <pre>
-    char buffer[8192];
-    mxml_node_t *tree;
+char buffer[8192];
+mxml_node_t *tree;
 
-    ...
-    tree = mxmlLoadString(NULL, buffer,
-                          MXML_TEXT_CALLBACK);
+...
+tree = mxmlLoadString(NULL, buffer,
+                      MXML_OPAQUE_CALLBACK);
 </pre>
 <p>The first and third arguments are the same as used for <tt>
 mxmlLoadFile()</tt>. The second argument specifies the string or
@@ -700,12 +669,12 @@ mxmlLoadFile()</tt>. The second argument specifies the string or
 <p>You save an XML file using the <a href="#mxmlSaveFile"><tt>
 mxmlSaveFile</tt></a> function:</p>
 <pre>
-    FILE *fp;
-    mxml_node_t *tree;
+FILE *fp;
+mxml_node_t *tree;
 
-    fp = fopen(&quot;filename.xml&quot;, &quot;w&quot;);
-    mxmlSaveFile(tree, fp, MXML_NO_CALLBACK);
-    fclose(fp);
+fp = fopen(&quot;filename.xml&quot;, &quot;w&quot;);
+mxmlSaveFile(tree, fp, MXML_NO_CALLBACK);
+fclose(fp);
 </pre>
 <p>The first argument is the XML node tree to save. It should normally
  be a pointer to the top-level <tt>?xml</tt> node in your XML document.</p>
@@ -720,16 +689,16 @@ Chapter 3</a>. The previous example code uses the <tt>MXML_NO_CALLBACK</tt>
  and <a href="#mxmlSaveString"><tt>mxmlSaveString</tt></a> functions
  save XML node trees to strings:</p>
 <pre>
-    char buffer[8192];
-    char *ptr;
-    mxml_node_t *tree;
+char buffer[8192];
+char *ptr;
+mxml_node_t *tree;
 
-    ...
-    mxmlSaveString(tree, buffer, sizeof(buffer),
-                   MXML_NO_CALLBACK);
+...
+mxmlSaveString(tree, buffer, sizeof(buffer),
+               MXML_NO_CALLBACK);
 
-    ...
-    ptr = mxmlSaveAllocString(tree, MXML_NO_CALLBACK);
+...
+ptr = mxmlSaveAllocString(tree, MXML_NO_CALLBACK);
 </pre>
 <p>The first and last arguments are the same as used for <tt>
 mxmlSaveFile()</tt>. The <tt>mxmlSaveString</tt> function takes pointer
@@ -744,18 +713,18 @@ mxmlSaveFile()</tt>. The <tt>mxmlSaveString</tt> function takes pointer
 <tt>mxmlSetWrapMargin</tt></a> function overrides the default wrap
  margin:</p>
 <pre>
-    /* Set the margin to 132 columns */
-    mxmlSetWrapMargin(132);
+/* Set the margin to 132 columns */
+mxmlSetWrapMargin(132);
 
-    /* Disable wrapping */
-    mxmlSetWrapMargin(0);
+/* Disable wrapping */
+mxmlSetWrapMargin(0);
 </pre>
 <h2><a NAME="3_6">Memory Management</a></h2>
 <p>Once you are done with the XML data, use the <a href="#mxmlDelete"><tt>
 mxmlDelete</tt></a> function to recursively free the memory that is used
  for a particular node or the entire tree:</p>
 <pre>
-    mxmlDelete(tree);
+mxmlDelete(tree);
 </pre>
 <p>You can also use reference counting to manage memory usage. The <a href="#mxmlRetain">
 <tt>mxmlRetain</tt></a> and <a href="#mxmlRelease"><tt>mxmlRelease</tt></a>
@@ -770,86 +739,86 @@ mxmlDelete</tt></a> function to recursively free the memory that is used
 <tt>mxmlWalkNext</tt></a>functions can be used to iterate through the
  XML node tree:</p>
 <pre>
-    mxml_node_t *node;
+mxml_node_t *node;
 
-    node = mxmlWalkPrev(current, tree,
-                        MXML_DESCEND);
+node = mxmlWalkPrev(current, tree,
+                    MXML_DESCEND);
 
-    node = mxmlWalkNext(current, tree,
-                        MXML_DESCEND);
+node = mxmlWalkNext(current, tree,
+                    MXML_DESCEND);
 </pre>
 <p>In addition, you can find a named element/node using the <a href="#mxmlFindElement">
 <tt>mxmlFindElement</tt></a> function:</p>
 <pre>
-    mxml_node_t *node;
+mxml_node_t *node;
 
-    node = mxmlFindElement(tree, tree, &quot;name&quot;,
-                           &quot;attr&quot;, &quot;value&quot;,
-                           MXML_DESCEND);
+node = mxmlFindElement(tree, tree, &quot;name&quot;,
+                       &quot;attr&quot;, &quot;value&quot;,
+                       MXML_DESCEND);
 </pre>
 <p>The <tt>name</tt>, <tt>attr</tt>, and <tt>value</tt> arguments can be
  passed as <tt>NULL</tt> to act as wildcards, e.g.:</p>
 
 <!-- NEED 4 -->
 <pre>
-    /* Find the first &quot;a&quot; element */
-    node = mxmlFindElement(tree, tree, &quot;a&quot;,
-                           NULL, NULL,
-                           MXML_DESCEND);
+/* Find the first &quot;a&quot; element */
+node = mxmlFindElement(tree, tree, &quot;a&quot;,
+                       NULL, NULL,
+                       MXML_DESCEND);
 </pre>
 
 <!-- NEED 5 -->
 <pre>
-    /* Find the first &quot;a&quot; element with &quot;href&quot;
-       attribute */
-    node = mxmlFindElement(tree, tree, &quot;a&quot;,
-                           &quot;href&quot;, NULL,
-                           MXML_DESCEND);
+/* Find the first &quot;a&quot; element with &quot;href&quot;
+   attribute */
+node = mxmlFindElement(tree, tree, &quot;a&quot;,
+                       &quot;href&quot;, NULL,
+                       MXML_DESCEND);
 </pre>
 
 <!-- NEED 6 -->
 <pre>
-    /* Find the first &quot;a&quot; element with &quot;href&quot;
-       to a URL */
-    node = mxmlFindElement(tree, tree, &quot;a&quot;,
-                           &quot;href&quot;,
-                           &quot;http://www.easysw.com/&quot;,
-                           MXML_DESCEND);
+/* Find the first &quot;a&quot; element with &quot;href&quot;
+   to a URL */
+node = mxmlFindElement(tree, tree, &quot;a&quot;,
+                       &quot;href&quot;,
+                       &quot;http://www.example.com/&quot;,
+                       MXML_DESCEND);
 </pre>
 
 <!-- NEED 5 -->
 <pre>
-    /* Find the first element with a &quot;src&quot;
-       attribute */
-    node = mxmlFindElement(tree, tree, NULL,
-                           &quot;src&quot;, NULL,
-                           MXML_DESCEND);
+/* Find the first element with a &quot;src&quot;
+   attribute */
+node = mxmlFindElement(tree, tree, NULL,
+                       &quot;src&quot;, NULL,
+                       MXML_DESCEND);
 </pre>
 
 <!-- NEED 5 -->
 <pre>
-    /* Find the first element with a &quot;src&quot;
-       = &quot;foo.jpg&quot; */
-    node = mxmlFindElement(tree, tree, NULL,
-                           &quot;src&quot;, &quot;foo.jpg&quot;,
-                           MXML_DESCEND);
+/* Find the first element with a &quot;src&quot;
+   = &quot;foo.jpg&quot; */
+node = mxmlFindElement(tree, tree, NULL,
+                       &quot;src&quot;, &quot;foo.jpg&quot;,
+                       MXML_DESCEND);
 </pre>
 <p>You can also iterate with the same function:</p>
 <pre>
-    mxml_node_t *node;
+mxml_node_t *node;
 
-    for (node = mxmlFindElement(tree, tree,
-                                &quot;name&quot;,
-                                NULL, NULL,
-                                MXML_DESCEND);
-         node != NULL;
-         node = mxmlFindElement(node, tree,
-                                &quot;name&quot;,
-                                NULL, NULL,
-                                MXML_DESCEND))
-    {
-      ... do something ...
-    }
+for (node = mxmlFindElement(tree, tree,
+                            &quot;name&quot;,
+                            NULL, NULL,
+                            MXML_DESCEND);
+     node != NULL;
+     node = mxmlFindElement(node, tree,
+                            &quot;name&quot;,
+                            NULL, NULL,
+                            MXML_DESCEND))
+{
+  ... do something ...
+}
 </pre>
 
 <!-- NEED 10 -->
@@ -891,9 +860,9 @@ mxmlDelete</tt></a> function to recursively free the memory that is used
 <p>You can find specific nodes in the tree using the <a href="#mxmlFindValue">
 <tt>mxmlFindPath</tt></a>, for example:</p>
 <pre>
-    mxml_node_t *value;
+mxml_node_t *value;
 
-    value = mxmlFindPath(tree, &quot;path/to/*/foo/bar&quot;);
+value = mxmlFindPath(tree, &quot;path/to/*/foo/bar&quot;);
 </pre>
 <p>The second argument is a &quot;path&quot; to the parent node. Each component of
  the path is separated by a slash (/) and represents a named element in
@@ -935,39 +904,39 @@ MXML_REAL</tt>, or <tt>MXML_TEXT</tt>. The function is called<i> after</i>
 <p>The following callback function looks for an attribute named &quot;type&quot;
  or the element name to determine the value type for its child nodes:</p>
 <pre>
-    mxml_type_t
-    type_cb(mxml_node_t *node)
-    {
-      const char *type;
+mxml_type_t
+type_cb(mxml_node_t *node)
+{
+  const char *type;
 
-     /*
-      * You can lookup attributes and/or use the
-      * element name, hierarchy, etc...
-      */
+ /*
+  * You can lookup attributes and/or use the
+  * element name, hierarchy, etc...
+  */
 
-      type = mxmlElementGetAttr(node, &quot;type&quot;);
-      if (type == NULL)
-	type = mxmlGetElement(node);
+  type = mxmlElementGetAttr(node, &quot;type&quot;);
+  if (type == NULL)
+    type = mxmlGetElement(node);
 
-      if (!strcmp(type, &quot;integer&quot;))
-	return (MXML_INTEGER);
-      else if (!strcmp(type, &quot;opaque&quot;))
-	return (MXML_OPAQUE);
-      else if (!strcmp(type, &quot;real&quot;))
-	return (MXML_REAL);
-      else
-	return (MXML_TEXT);
-    }
+  if (!strcmp(type, &quot;integer&quot;))
+    return (MXML_INTEGER);
+  else if (!strcmp(type, &quot;opaque&quot;))
+    return (MXML_OPAQUE);
+  else if (!strcmp(type, &quot;real&quot;))
+    return (MXML_REAL);
+  else
+    return (MXML_TEXT);
+}
 </pre>
 <p>To use this callback function, simply use the name when you call any
  of the load functions:</p>
 <pre>
-    FILE *fp;
-    mxml_node_t *tree;
+FILE *fp;
+mxml_node_t *tree;
 
-    fp = fopen(&quot;filename.xml&quot;, &quot;r&quot;);
-    tree = mxmlLoadFile(NULL, fp, <b>type_cb</b>);
-    fclose(fp);
+fp = fopen(&quot;filename.xml&quot;, &quot;r&quot;);
+tree = mxmlLoadFile(NULL, fp, <b>type_cb</b>);
+fclose(fp);
 </pre>
 <h2><a name="SAVE_CALLBACKS">Save Callbacks</a></h2>
 <p><a href="#LOAD_XML">Chapter 2</a> also introduced the <a href="#mxmlSaveFile">
@@ -986,83 +955,83 @@ MXML_WS_BEFORE_CLOSE</tt>, or <tt>MXML_WS_AFTER_CLOSE</tt>. The callback
 <p>The following whitespace callback can be used to add whitespace to
  XHTML output to make it more readable in a standard text editor:</p>
 <pre>
-    const char *
-    whitespace_cb(mxml_node_t *node,
-                  int where)
-    {
-      const char *name;
+const char *
+whitespace_cb(mxml_node_t *node,
+              int where)
+{
+  const char *name;
 
-     /*
-      * We can conditionally break to a new line
-      * before or after any element. These are
-      * just common HTML elements...
-      */
+ /*
+  * We can conditionally break to a new line
+  * before or after any element. These are
+  * just common HTML elements...
+  */
 
-      name = mxmlGetElement(node);
+  name = mxmlGetElement(node);
 
-      if (!strcmp(name, &quot;html&quot;) ||
-          !strcmp(name, &quot;head&quot;) ||
-          !strcmp(name, &quot;body&quot;) ||
-	  !strcmp(name, &quot;pre&quot;) ||
-          !strcmp(name, &quot;p&quot;) ||
-	  !strcmp(name, &quot;h1&quot;) ||
-          !strcmp(name, &quot;h2&quot;) ||
-          !strcmp(name, &quot;h3&quot;) ||
-	  !strcmp(name, &quot;h4&quot;) ||
-          !strcmp(name, &quot;h5&quot;) ||
-          !strcmp(name, &quot;h6&quot;))
-      {
-       /*
-	* Newlines before open and after
-        * close...
-	*/
+  if (!strcmp(name, &quot;html&quot;) ||
+      !strcmp(name, &quot;head&quot;) ||
+      !strcmp(name, &quot;body&quot;) ||
+      !strcmp(name, &quot;pre&quot;) ||
+      !strcmp(name, &quot;p&quot;) ||
+      !strcmp(name, &quot;h1&quot;) ||
+      !strcmp(name, &quot;h2&quot;) ||
+      !strcmp(name, &quot;h3&quot;) ||
+      !strcmp(name, &quot;h4&quot;) ||
+      !strcmp(name, &quot;h5&quot;) ||
+      !strcmp(name, &quot;h6&quot;))
+  {
+   /*
+    * Newlines before open and after
+    * close...
+    */
 
-	if (where == MXML_WS_BEFORE_OPEN ||
-            where == MXML_WS_AFTER_CLOSE)
-	  return (&quot;\n&quot;);
-      }
-      else if (!strcmp(name, &quot;dl&quot;) ||
-               !strcmp(name, &quot;ol&quot;) ||
-               !strcmp(name, &quot;ul&quot;))
-      {
-       /*
-	* Put a newline before and after list
-        * elements...
-	*/
+    if (where == MXML_WS_BEFORE_OPEN ||
+        where == MXML_WS_AFTER_CLOSE)
+      return (&quot;\n&quot;);
+  }
+  else if (!strcmp(name, &quot;dl&quot;) ||
+           !strcmp(name, &quot;ol&quot;) ||
+           !strcmp(name, &quot;ul&quot;))
+  {
+   /*
+    * Put a newline before and after list
+    * elements...
+    */
 
-	return (&quot;\n&quot;);
-      }
-      else if (!strcmp(name, &quot;dd&quot;) ||
-               !strcmp(name, &quot;dt&quot;) ||
-               !strcmp(name, &quot;li&quot;))
-      {
-       /*
-	* Put a tab before &lt;li&gt;'s, * &lt;dd&gt;'s,
-        * and &lt;dt&gt;'s, and a newline after them...
-	*/
+    return (&quot;\n&quot;);
+  }
+  else if (!strcmp(name, &quot;dd&quot;) ||
+           !strcmp(name, &quot;dt&quot;) ||
+           !strcmp(name, &quot;li&quot;))
+  {
+   /*
+    * Put a tab before &lt;li&gt;'s, * &lt;dd&gt;'s,
+    * and &lt;dt&gt;'s, and a newline after them...
+    */
 
-	if (where == MXML_WS_BEFORE_OPEN)
-	  return (&quot;\t&quot;);
-	else if (where == MXML_WS_AFTER_CLOSE)
-	  return (&quot;\n&quot;);
-      }
+    if (where == MXML_WS_BEFORE_OPEN)
+      return (&quot;\t&quot;);
+    else if (where == MXML_WS_AFTER_CLOSE)
+      return (&quot;\n&quot;);
+  }
 
-     /*
-      * Return NULL for no added whitespace...
-      */
+ /*
+  * Return NULL for no added whitespace...
+  */
 
-      return (NULL);
-    }
+  return (NULL);
+}
 </pre>
 <p>To use this callback function, simply use the name when you call any
  of the save functions:</p>
 <pre>
-    FILE *fp;
-    mxml_node_t *tree;
+FILE *fp;
+mxml_node_t *tree;
 
-    fp = fopen(&quot;filename.xml&quot;, &quot;w&quot;);
-    mxmlSaveFile(tree, fp, <b>whitespace_cb</b>);
-    fclose(fp);
+fp = fopen(&quot;filename.xml&quot;, &quot;w&quot;);
+mxmlSaveFile(tree, fp, <b>whitespace_cb</b>);
+fclose(fp);
 </pre>
 
 <!-- NEED 10 -->
@@ -1079,97 +1048,97 @@ MXML_WS_BEFORE_CLOSE</tt>, or <tt>MXML_WS_AFTER_CLOSE</tt>. The callback
  as &quot;yyyy-mm-ddThh:mm:ssZ&quot; (ISO format), the load callback would look
  like the following:</p>
 <pre>
-    typedef struct
-    {
-      unsigned      year,    /* Year */
-                    month,   /* Month */
-                    day,     /* Day */
-                    hour,    /* Hour */
-                    minute,  /* Minute */
-                    second;  /* Second */
-      time_t        unix;    /* UNIX time */
-    } iso_date_time_t;
+typedef struct
+{
+  unsigned      year,    /* Year */
+                month,   /* Month */
+                day,     /* Day */
+                hour,    /* Hour */
+                minute,  /* Minute */
+                second;  /* Second */
+  time_t        unix;    /* UNIX time */
+} iso_date_time_t;
 
-    int
-    load_custom(mxml_node_t *node,
-                const char *data)
-    {
-      iso_date_time_t *dt;
-      struct tm tmdata;
+int
+load_custom(mxml_node_t *node,
+            const char *data)
+{
+  iso_date_time_t *dt;
+  struct tm tmdata;
 
-     /*
-      * Allocate data structure...
-      */
+ /*
+  * Allocate data structure...
+  */
 
-      dt = calloc(1, sizeof(iso_date_time_t));
+  dt = calloc(1, sizeof(iso_date_time_t));
 
-     /*
-      * Try reading 6 unsigned integers from the
-      * data string...
-      */
+ /*
+  * Try reading 6 unsigned integers from the
+  * data string...
+  */
 
-      if (sscanf(data, &quot;%u-%u-%uT%u:%u:%uZ&quot;,
-                 &amp;(dt-&gt;year), &amp;(dt-&gt;month),
-                 &amp;(dt-&gt;day), &amp;(dt-&gt;hour),
-                 &amp;(dt-&gt;minute),
-                 &amp;(dt-&gt;second)) != 6)
-      {
-       /*
-        * Unable to read numbers, free the data
-        * structure and return an error...
-        */
+  if (sscanf(data, &quot;%u-%u-%uT%u:%u:%uZ&quot;,
+             &amp;(dt-&gt;year), &amp;(dt-&gt;month),
+             &amp;(dt-&gt;day), &amp;(dt-&gt;hour),
+             &amp;(dt-&gt;minute),
+             &amp;(dt-&gt;second)) != 6)
+  {
+   /*
+    * Unable to read numbers, free the data
+    * structure and return an error...
+    */
 
-        free(dt);
+    free(dt);
 
-        return (-1);
-      }
+    return (-1);
+  }
 
-     /*
-      * Range check values...
-      */
+ /*
+  * Range check values...
+  */
 
-      if (dt-&gt;month &lt;1 || dt-&gt;month &gt; 12 ||
-          dt-&gt;day  &lt;1 || dt-&gt;day &gt; 31 ||
-          dt-&gt;hour  &lt;0 || dt-&gt;hour &gt; 23 ||
-          dt-&gt;minute  &lt;0 || dt-&gt;minute &gt; 59 ||
-          dt-&gt;second  &lt;0 || dt-&gt;second &gt; 59)
-      {
-       /*
-        * Date information is out of range...
-        */
+  if (dt-&gt;month &lt;1 || dt-&gt;month &gt; 12 ||
+      dt-&gt;day  &lt;1 || dt-&gt;day &gt; 31 ||
+      dt-&gt;hour  &lt;0 || dt-&gt;hour &gt; 23 ||
+      dt-&gt;minute  &lt;0 || dt-&gt;minute &gt; 59 ||
+      dt-&gt;second  &lt;0 || dt-&gt;second &gt; 59)
+  {
+   /*
+    * Date information is out of range...
+    */
 
-        free(dt);
+    free(dt);
 
-        return (-1);
-      }
+    return (-1);
+  }
 
-     /*
-      * Convert ISO time to UNIX time in
-      * seconds...
-      */
+ /*
+  * Convert ISO time to UNIX time in
+  * seconds...
+  */
 
-      tmdata.tm_year = dt-&gt;year - 1900;
-      tmdata.tm_mon  = dt-&gt;month - 1;
-      tmdata.tm_day  = dt-&gt;day;
-      tmdata.tm_hour = dt-&gt;hour;
-      tmdata.tm_min  = dt-&gt;minute;
-      tmdata.tm_sec  = dt-&gt;second;
+  tmdata.tm_year = dt-&gt;year - 1900;
+  tmdata.tm_mon  = dt-&gt;month - 1;
+  tmdata.tm_day  = dt-&gt;day;
+  tmdata.tm_hour = dt-&gt;hour;
+  tmdata.tm_min  = dt-&gt;minute;
+  tmdata.tm_sec  = dt-&gt;second;
 
-      dt-&gt;unix = gmtime(&amp;tmdata);
+  dt-&gt;unix = gmtime(&amp;tmdata);
 
-     /*
-      * Assign custom node data and destroy
-      * function pointers...
-      */
+ /*
+  * Assign custom node data and destroy
+  * function pointers...
+  */
 
-      mxmlSetCustom(node, data, destroy);
+  mxmlSetCustom(node, data, destroy);
 
-     /*
-      * Return with no errors...
-      */
+ /*
+  * Return with no errors...
+  */
 
-      return (0);
-    }
+  return (0);
+}
 </pre>
 <p>The function itself can return 0 on success or -1 if it is unable to
  decode the custom data or the data contains an error. Custom data nodes
@@ -1182,28 +1151,28 @@ MXML_WS_BEFORE_CLOSE</tt>, or <tt>MXML_WS_AFTER_CLOSE</tt>. The callback
  string containing the custom data value. The following save callback
  could be used for our ISO date/time type:</p>
 <pre>
-    char *
-    save_custom(mxml_node_t *node)
-    {
-      char data[255];
-      iso_date_time_t *dt;
+char *
+save_custom(mxml_node_t *node)
+{
+  char data[255];
+  iso_date_time_t *dt;
 
 
-      dt = (iso_date_time_t *)mxmlGetCustom(node);
+  dt = (iso_date_time_t *)mxmlGetCustom(node);
 
-      snprintf(data, sizeof(data),
-               &quot;%04u-%02u-%02uT%02u:%02u:%02uZ&quot;,
-               dt-&gt;year, dt-&gt;month, dt-&gt;day,
-               dt-&gt;hour, dt-&gt;minute, dt-&gt;second);
+  snprintf(data, sizeof(data),
+           &quot;%04u-%02u-%02uT%02u:%02u:%02uZ&quot;,
+           dt-&gt;year, dt-&gt;month, dt-&gt;day,
+           dt-&gt;hour, dt-&gt;minute, dt-&gt;second);
 
-      return (strdup(data));
-    }
+  return (strdup(data));
+}
 </pre>
 <p>You register the callback functions using the <a href="#mxmlSetCustomHandlers">
 <tt>mxmlSetCustomHandlers()</tt></a> function:</p>
 <pre>
-    mxmlSetCustomHandlers(<b>load_custom</b>,
-                          <b>save_custom</b>);
+mxmlSetCustomHandlers(<b>load_custom</b>,
+                      <b>save_custom</b>);
 </pre>
 
 <!-- NEED 20 -->
@@ -1221,9 +1190,9 @@ mxmlSetTextf()</tt></a> functions. For example, use the following
  function call to change a text node to contain the text &quot;new&quot; with
  leading whitespace:</p>
 <pre>
-    mxml_node_t *node;
+mxml_node_t *node;
 
-    mxmlSetText(node, 1, &quot;new&quot;);
+mxmlSetText(node, 1, &quot;new&quot;);
 </pre>
 <h2><a NAME="4_5">Formatted Text</a></h2>
 <p>The <a href="#mxmlNewTextf"><tt>mxmlNewTextf()</tt></a> and <a href="#mxmlSetTextf">
@@ -1232,10 +1201,10 @@ mxmlSetTextf()</tt></a> functions. For example, use the following
  For example, use the following function call to create a new text node
  containing a constructed filename:</p>
 <pre>
-    mxml_node_t *node;
+mxml_node_t *node;
 
-    node = mxmlNewTextf(node, 1, &quot;%s/%s&quot;,
-                        path, filename);
+node = mxmlNewTextf(node, 1, &quot;%s/%s&quot;,
+                    path, filename);
 </pre>
 <h2><a NAME="4_6">Indexing</a></h2>
 <p>Mini-XML provides functions for managing indices of nodes. The
@@ -1251,11 +1220,11 @@ mxmlSetTextf()</tt></a> functions. For example, use the following
  structures. The <a href="#mxmlIndexNew"><tt>mxmlIndexNew()</tt></a>
  function creates a new index:</p>
 <pre>
-    mxml_node_t *tree;
-    mxml_index_t *ind;
+mxml_node_t *tree;
+mxml_index_t *ind;
 
-    ind = mxmlIndexNew(tree, &quot;element&quot;,
-                       &quot;attribute&quot;);
+ind = mxmlIndexNew(tree, &quot;element&quot;,
+                   &quot;attribute&quot;);
 </pre>
 <p>The first argument is the XML node tree to index. Normally this will
  be a pointer to the <tt>?xml</tt> element.</p>
@@ -1276,30 +1245,30 @@ mxmlIndexEnum()</tt></a>, <a href="#mxmlIndexFind"><tt>mxmlIndexFind()</tt>
  enumerates each of the nodes in the index and can be used in a loop as
  follows:</p>
 <pre>
-    mxml_node_t *node;
+mxml_node_t *node;
 
-    mxmlIndexReset(ind);
+mxmlIndexReset(ind);
 
-    while ((node = mxmlIndexEnum(ind)) != NULL)
-    {
-      // do something with node
-    }
+while ((node = mxmlIndexEnum(ind)) != NULL)
+{
+  // do something with node
+}
 </pre>
 <p>The <a href="#mxmlIndexFind"><tt>mxmlIndexFind()</tt></a> function
  locates the next occurrence of the named element and attribute value in
  the index. It can be used to find all matching elements in an index, as
  follows:</p>
 <pre>
-    mxml_node_t *node;
+mxml_node_t *node;
 
-    mxmlIndexReset(ind);
+mxmlIndexReset(ind);
 
-    while ((node = mxmlIndexFind(ind, &quot;element&quot;,
-                                 &quot;attr-value&quot;))
-                != NULL)
-    {
-      // do something with node
-    }
+while ((node = mxmlIndexFind(ind, &quot;element&quot;,
+                             &quot;attr-value&quot;))
+            != NULL)
+{
+  // do something with node
+}
 </pre>
 <p>The second and third arguments represent the element name and
  attribute value, respectively. A <tt>NULL</tt> pointer is used to
@@ -1309,7 +1278,7 @@ mxmlIndexEnum</tt>.</p>
 <p>When you are done using the index, delete it using the <a href="#mxmlIndexDelete()">
 <tt>mxmlIndexDelete()</tt></a> function:</p>
 <pre>
-    mxmlIndexDelete(ind);
+mxmlIndexDelete(ind);
 </pre>
 <h2><a NAME="4_7">SAX (Stream) Loading of Documents</a></h2>
 <p>Mini-XML supports an implementation of the Simple API for XML (SAX)
@@ -1325,13 +1294,13 @@ mxmlSAXLoadString</tt></a> functions provide the SAX loading APIs. Each
 <p>The callback function receives the node, an event code, and a user
  data pointer you supply:</p>
 <pre>
-    void
-    sax_cb(mxml_node_t *node,
-           mxml_sax_event_t event,
-           void *data)
-    {
-      ... do something ...
-    }
+void
+sax_cb(mxml_node_t *node,
+       mxml_sax_event_t event,
+       void *data)
+{
+  ... do something ...
+}
 </pre>
 <p>The event will be one of the following:</p>
 <ul>
@@ -1351,14 +1320,14 @@ mxmlSAXLoadString</tt></a> functions provide the SAX loading APIs. Each
 mxmlRetain</tt></a> function. For example, the following SAX callback
  will retain all nodes, effectively simulating a normal in-memory load:</p>
 <pre>
-    void
-    sax_cb(mxml_node_t *node,
-           mxml_sax_event_t event,
-           void *data)
-    {
-      if (event != MXML_SAX_ELEMENT_CLOSE)
-        mxmlRetain(node);
-    }
+void
+sax_cb(mxml_node_t *node,
+       mxml_sax_event_t event,
+       void *data)
+{
+  if (event != MXML_SAX_ELEMENT_CLOSE)
+    mxmlRetain(node);
+}
 </pre>
 <p>More typically the SAX callback will only retain a small portion of
  the document that is needed for post-processing. For example, the
@@ -1369,76 +1338,76 @@ mxmlRetain</tt></a> function. For example, the following SAX callback
 
 <!-- NEED 10 -->
 <pre>
-    void
-    sax_cb(mxml_node_t *node,
-           mxml_sax_event_t event,
-           void *data)
+void
+sax_cb(mxml_node_t *node,
+       mxml_sax_event_t event,
+       void *data)
+{
+  if (event == MXML_SAX_ELEMENT_OPEN)
+  {
+   /*
+    * Retain headings and titles...
+    */
+
+    char *name = mxmlGetElement(node);
+
+    if (!strcmp(name, &quot;html&quot;) ||
+        !strcmp(name, &quot;head&quot;) ||
+        !strcmp(name, &quot;title&quot;) ||
+        !strcmp(name, &quot;body&quot;) ||
+        !strcmp(name, &quot;h1&quot;) ||
+        !strcmp(name, &quot;h2&quot;) ||
+        !strcmp(name, &quot;h3&quot;) ||
+        !strcmp(name, &quot;h4&quot;) ||
+        !strcmp(name, &quot;h5&quot;) ||
+        !strcmp(name, &quot;h6&quot;))
+      mxmlRetain(node);
+  }
+  else if (event == MXML_SAX_DIRECTIVE)
+    mxmlRetain(node);
+  else if (event == MXML_SAX_DATA)
+  {
+    if (mxmlGetRefCount(mxmlGetParent(node)) &gt; 1)
     {
-      if (event == MXML_SAX_ELEMENT_OPEN)
-      {
-       /*
-        * Retain headings and titles...
-        */
+     /*
+      * If the parent was retained, then retain
+      * this data node as well.
+      */
 
-        char *name = mxmlGetElement(node);
-
-        if (!strcmp(name, &quot;html&quot;) ||
-            !strcmp(name, &quot;head&quot;) ||
-            !strcmp(name, &quot;title&quot;) ||
-            !strcmp(name, &quot;body&quot;) ||
-            !strcmp(name, &quot;h1&quot;) ||
-            !strcmp(name, &quot;h2&quot;) ||
-            !strcmp(name, &quot;h3&quot;) ||
-            !strcmp(name, &quot;h4&quot;) ||
-            !strcmp(name, &quot;h5&quot;) ||
-            !strcmp(name, &quot;h6&quot;))
-          mxmlRetain(node);
-      }
-      else if (event == MXML_SAX_DIRECTIVE)
-        mxmlRetain(node);
-      else if (event == MXML_SAX_DATA)
-      {
-        if (mxmlGetRefCount(mxmlGetParent(node)) &gt; 1)
-        {
-         /*
-          * If the parent was retained, then retain
-          * this data node as well.
-          */
-
-          mxmlRetain(node);
-        }
-      }
+      mxmlRetain(node);
     }
+  }
+}
 </pre>
 <p>The resulting skeleton document tree can then be searched just like
  one loaded using the <tt>mxmlLoad</tt> functions. For example, a filter
  that reads an XHTML document from stdin and then shows the title and
  headings in the document would look like:</p>
 <pre>
-    mxml_node_t *doc, *title, *body, *heading;
+mxml_node_t *doc, *title, *body, *heading;
 
-    doc = mxmlSAXLoadFd(NULL, 0,
-                        MXML_TEXT_CALLBACK,
-                        <b>sax_cb</b>, NULL);
+doc = mxmlSAXLoadFd(NULL, 0,
+                    MXML_TEXT_CALLBACK,
+                    <b>sax_cb</b>, NULL);
 
-    title = mxmlFindElement(doc, doc, &quot;title&quot;,
-                            NULL, NULL,
-                            MXML_DESCEND);
+title = mxmlFindElement(doc, doc, &quot;title&quot;,
+                        NULL, NULL,
+                        MXML_DESCEND);
 
-    if (title)
-      print_children(title);
+if (title)
+  print_children(title);
 
-    body = mxmlFindElement(doc, doc, &quot;body&quot;,
-                           NULL, NULL,
-                           MXML_DESCEND);
+body = mxmlFindElement(doc, doc, &quot;body&quot;,
+                       NULL, NULL,
+                       MXML_DESCEND);
 
-    if (body)
-    {
-      for (heading = mxmlGetFirstChild(body);
-           heading;
-           heading = mxmlGetNextSibling(heading))
-        print_children(heading);
-    }
+if (body)
+{
+  for (heading = mxmlGetFirstChild(body);
+       heading;
+       heading = mxmlGetNextSibling(heading))
+    print_children(heading);
+}
 </pre>
 <HR NOSHADE>
 <h1 align="right"><a name="MXMLDOC">Chapter 4 - Using the mxmldoc
@@ -1459,49 +1428,40 @@ mxmlRetain</tt></a> function. For example, the following SAX callback
  files in the current directory and produce a HTML documentation file
  called<var> filename.html</var>:</p>
 <pre>
-    <kbd>mxmldoc *.h *.c &gt;filename.html ENTER</kbd>
+<kbd>mxmldoc *.h *.c &gt;filename.html ENTER</kbd>
 </pre>
 <p>You can also specify an XML file to create which contains all of the
  information from the source files. For example, the following command
  creates an XML file called<var> filename.xml</var> in addition to the
  HTML file:</p>
 <pre>
-    <kbd>mxmldoc filename.xml *.h *.c &gt;filename.html ENTER</kbd>
+<kbd>mxmldoc filename.xml *.h *.c &gt;filename.html ENTER</kbd>
 </pre>
 <p>The <tt>--no-output</tt> option disables the normal HTML output:</p>
 <pre>
-    <kbd>mxmldoc --no-output filename.xml *.h *.c ENTER</kbd>
+<kbd>mxmldoc --no-output filename.xml *.h *.c ENTER</kbd>
 </pre>
 <p>You can then run <tt>mxmldoc</tt> again with the XML file alone to
  generate the HTML documentation:</p>
 <pre>
-    <kbd>mxmldoc filename.xml &gt;filename.html ENTER</kbd>
+<kbd>mxmldoc filename.xml &gt;filename.html ENTER</kbd>
 </pre>
 <h3><a NAME="5_1_1">Creating Man Pages</a></h3>
 <p>The <tt>--man filename</tt> option tells <tt>mxmldoc</tt> to create a
  man page instead of HTML documentation, for example:</p>
 <pre>
-    <kbd>mxmldoc --man filename filename.xml \
-        &gt;filename.man ENTER</kbd>
+<kbd>mxmldoc --man filename filename.xml \
+    &gt;filename.man ENTER</kbd>
 
-    <kbd>mxmldoc --man filename *.h *.c \
-        &gt;filename.man ENTER</kbd>
+<kbd>mxmldoc --man filename *.h *.c \
+    &gt;filename.man ENTER</kbd>
 </pre>
 <h3><a NAME="5_1_2">Creating EPUB Books</a></h3>
 <p>The <tt>--epub filename.epub</tt> option tells <tt>mxmldoc</tt> to
  create an EPUB book containing the HTML documentation, for example:</p>
 <pre>
-    <kbd>mxmldoc --epub foo.epub *.h *.c foo.xml ENTER</kbd>
+<kbd>mxmldoc --epub foo.epub *.h *.c foo.xml ENTER</kbd>
 </pre>
-<h3><a NAME="5_1_3">Creating Xcode Documentation Sets</a></h3>
-<p>The <tt>--docset directory.docset</tt> option tells <tt>mxmldoc</tt>
- to create an Xcode documentation set containing the HTML documentation,
- for example:</p>
-<pre>
-    <kbd>mxmldoc --docset foo.docset *.h *.c foo.xml ENTER</kbd>
-</pre>
-<p>Xcode documentation sets can only be built on macOS with Xcode 3.0 or
- higher installed.</p>
 <h2><a NAME="5_2">Commenting Your Code</a></h2>
 <p>As noted previously, <tt>mxmldoc</tt> looks for in-line comments to
  describe the functions, types, and constants in your code. <tt>Mxmldoc</tt>
@@ -1516,43 +1476,43 @@ mxmlRetain</tt></a> function. For example, the following SAX callback
  example, the following code excerpt defines a key/value structure and a
  function that creates a new instance of that structure:</p>
 <pre>
-    /* A key/value pair. This is used with the
-       dictionary structure. */
+/* A key/value pair. This is used with the
+   dictionary structure. */
 
-    struct keyval
-    {
-      char *key; /* Key string */
-      char *val; /* Value string */
-    };
+struct keyval
+{
+  char *key; /* Key string */
+  char *val; /* Value string */
+};
 
-    /* Create a new key/value pair. */
+/* Create a new key/value pair. */
 
-    struct keyval * /* New key/value pair */
-    new_keyval(
-        const char *key, /* Key string */
-	const char *val) /* Value string */
-    {
-      ...
-    }
+struct keyval * /* New key/value pair */
+new_keyval(
+    const char *key, /* Key string */
+    const char *val) /* Value string */
+{
+  ...
+}
 </pre>
 <p><tt>Mxmldoc</tt> also knows to remove extra asterisks (*) from the
  comment string, so the comment string:</p>
 <pre>
-    /*
-     * Compute the value of PI.
-     *
-     * The function connects to an Internet server
-     * that streams audio of mathematical monks
-     * chanting the first 100 digits of PI.
-     */
+/*
+ * Compute the value of PI.
+ *
+ * The function connects to an Internet server
+ * that streams audio of mathematical monks
+ * chanting the first 100 digits of PI.
+ */
 </pre>
 <p>will be shown as:</p>
 <pre>
-    Compute the value of PI.
+Compute the value of PI.
 
-    The function connects to an Internet server
-    that streams audio of mathematical monks
-    chanting the first 100 digits of PI.
+The function connects to an Internet server
+that streams audio of mathematical monks
+chanting the first 100 digits of PI.
 </pre>
 <p><a name="ATDIRECTIVES">Comments</a> can also include the following
  special <tt>@name ...@</tt> directive strings:</p>
@@ -1560,9 +1520,8 @@ mxmlRetain</tt></a> function. For example, the following SAX callback
 <li><tt>@deprecated@</tt> - flags the item as deprecated to discourage
  its use</li>
 <li><tt>@exclude format[,...,format]@</tt> - excludes the item from the
- documentation in the specified formats: &quot;all&quot; for all formats, &quot;docset&quot;
- for Xcode documentation sets, &quot;epub&quot; for EPUB books, &quot;html&quot; for HTML
- output, and &quot;man&quot; for man page output</li>
+ documentation in the specified formats: &quot;all&quot; for all formats, &quot;epub&quot;
+ for EPUB books, &quot;html&quot; for HTML output, and &quot;man&quot; for man page output</li>
 <li><tt>@private@</tt> - flags the item as private so it will not be
  included in the documentation</li>
 <li><tt>@since ...@</tt> - flags the item as new since a particular
@@ -1578,21 +1537,21 @@ mxmlRetain</tt></a> function. For example, the following SAX callback
  option specifies the title for the documentation. The title string is
  usually put in quotes:</p>
 <pre>
-    <kbd>mxmldoc filename.xml \
-        --title &quot;My Famous Documentation&quot; \
-        &gt;filename.html ENTER</kbd>
+<kbd>mxmldoc filename.xml \
+    --title &quot;My Famous Documentation&quot; \
+    &gt;filename.html ENTER</kbd>
 </pre>
 <p>The <tt>--section name</tt> option specifies the section for the
  documentation. For HTML documentation, the name is placed in a HTML
  comment such as:</p>
 <pre>
-    &lt;!-- SECTION: name --&gt;
+&lt;!-- SECTION: name --&gt;
 </pre>
 <p>For man pages, the section name is usually just a number (&quot;3&quot;), or a
  number followed by a vendor name (&quot;3acme&quot;). The section name is used in
  the <tt>.TH</tt> directive in the man page:</p>
 <pre>
-    .TH mylibrary 3acme &quot;My Title&quot; ...
+.TH mylibrary 3acme &quot;My Title&quot; ...
 </pre>
 <p>The default section name for man page output is &quot;3&quot;. There is no
  default section name for HTML output.</p>
@@ -2146,14 +2105,14 @@ nroff(1)</tt> text.</p>
  *parent, int where, <a href="#mxml_node_t">mxml_node_t</a> *child, <a href="#mxml_node_t">
 mxml_node_t</a> *node);</p>
 <h4 class="parameters">Parameters</h4>
-<table class="list"><tbody></tbody>
+<table class="list"><tbody>
 <tr><th>parent</th><td class="description">Parent node</td></tr>
 <tr><th>where</th><td class="description">Where to add, <code>
 MXML_ADD_BEFORE</code> or <code>MXML_ADD_AFTER</code></td></tr>
 <tr><th>child</th><td class="description">Child node for where or <code>
 MXML_ADD_TO_PARENT</code></td></tr>
 <tr><th>node</th><td class="description">Node to add</td></tr>
-</table>
+</tbody></table>
 <h4 class="discussion">Discussion</h4>
 <p class="discussion">Adds the specified node to the parent. If the
  child argument is not <code>NULL</code>, puts the new node before or
@@ -2168,9 +2127,9 @@ MXML_ADD_TO_PARENT</code> can be used to specify a <code>NULL</code>
 <p class="code"> void mxmlDelete(<a href="#mxml_node_t">mxml_node_t</a>
  *node);</p>
 <h4 class="parameters">Parameters</h4>
-<table class="list"><tbody></tbody>
+<table class="list"><tbody>
 <tr><th>node</th><td class="description">Node to delete</td></tr>
-</table>
+</tbody></table>
 <h4 class="discussion">Discussion</h4>
 <p class="discussion">If the specified node has a parent, this function
  first removes the node from its parent using the <a href="#mxmlRemove"><code>
@@ -2181,19 +2140,19 @@ id="mxmlElementDeleteAttr">mxmlElementDeleteAttr</a></a></h3>
 <p class="code"> void mxmlElementDeleteAttr(<a href="#mxml_node_t">
 mxml_node_t</a> *node, const char *name);</p>
 <h4 class="parameters">Parameters</h4>
-<table class="list"><tbody></tbody>
+<table class="list"><tbody>
 <tr><th>node</th><td class="description">Element</td></tr>
 <tr><th>name</th><td class="description">Attribute name</td></tr>
-</table>
+</tbody></table>
 <h3 class="function"><a id="mxmlElementGetAttr">mxmlElementGetAttr</a></h3>
 <p class="description">Get an attribute.</p>
 <p class="code"> const char *mxmlElementGetAttr(<a href="#mxml_node_t">
 mxml_node_t</a> *node, const char *name);</p>
 <h4 class="parameters">Parameters</h4>
-<table class="list"><tbody></tbody>
+<table class="list"><tbody>
 <tr><th>node</th><td class="description">Element node</td></tr>
 <tr><th>name</th><td class="description">Name of attribute</td></tr>
-</table>
+</tbody></table>
 <h4 class="returnvalue">Return Value</h4>
 <p class="description">Attribute value or <code>NULL</code></p>
 <h4 class="discussion">Discussion</h4>
@@ -2205,12 +2164,12 @@ id="mxmlElementGetAttrByIndex">mxmlElementGetAttrByIndex</a></a></h3>
 <p class="code"> const char *mxmlElementGetAttrByIndex(<a href="#mxml_node_t">
 mxml_node_t</a> *node, int idx, const char **name);</p>
 <h4 class="parameters">Parameters</h4>
-<table class="list"><tbody></tbody>
+<table class="list"><tbody>
 <tr><th>node</th><td class="description">Node</td></tr>
 <tr><th>idx</th><td class="description">Attribute index, starting at 0</td>
 </tr>
 <tr><th>name</th><td class="description">Attribute name</td></tr>
-</table>
+</tbody></table>
 <h4 class="returnvalue">Return Value</h4>
 <p class="description">Attribute value</p>
 <h4 class="discussion">Discussion</h4>
@@ -2222,9 +2181,9 @@ id="mxmlElementGetAttrCount">mxmlElementGetAttrCount</a></a></h3>
 <p class="code"> int mxmlElementGetAttrCount(<a href="#mxml_node_t">
 mxml_node_t</a> *node);</p>
 <h4 class="parameters">Parameters</h4>
-<table class="list"><tbody></tbody>
+<table class="list"><tbody>
 <tr><th>node</th><td class="description">Node</td></tr>
-</table>
+</tbody></table>
 <h4 class="returnvalue">Return Value</h4>
 <p class="description">Number of attributes</p>
 <h3 class="function"><a id="mxmlElementSetAttr">mxmlElementSetAttr</a></h3>
@@ -2232,11 +2191,11 @@ mxml_node_t</a> *node);</p>
 <p class="code"> void mxmlElementSetAttr(<a href="#mxml_node_t">
 mxml_node_t</a> *node, const char *name, const char *value);</p>
 <h4 class="parameters">Parameters</h4>
-<table class="list"><tbody></tbody>
+<table class="list"><tbody>
 <tr><th>node</th><td class="description">Element node</td></tr>
 <tr><th>name</th><td class="description">Name of attribute</td></tr>
 <tr><th>value</th><td class="description">Attribute value</td></tr>
-</table>
+</tbody></table>
 <h4 class="discussion">Discussion</h4>
 <p class="discussion">If the named attribute already exists, the value
  of the attribute is replaced by the new string value. The string value
@@ -2248,14 +2207,14 @@ id="mxmlElementSetAttrf">mxmlElementSetAttrf</a></a></h3>
 <p class="code"> void mxmlElementSetAttrf(<a href="#mxml_node_t">
 mxml_node_t</a> *node, const char *name, const char *format, ...);</p>
 <h4 class="parameters">Parameters</h4>
-<table class="list"><tbody></tbody>
+<table class="list"><tbody>
 <tr><th>node</th><td class="description">Element node</td></tr>
 <tr><th>name</th><td class="description">Name of attribute</td></tr>
 <tr><th>format</th><td class="description">Printf-style attribute value</td>
 </tr>
 <tr><th>...</th><td class="description">Additional arguments as needed</td>
 </tr>
-</table>
+</tbody></table>
 <h4 class="discussion">Discussion</h4>
 <p class="discussion">If the named attribute already exists, the value
  of the attribute is replaced by the new formatted string. The formatted
@@ -2267,9 +2226,9 @@ mxml_node_t</a> *node, const char *name, const char *format, ...);</p>
 <p class="code"> int mxmlEntityAddCallback(<a href="#mxml_entity_cb_t">
 mxml_entity_cb_t</a> cb);</p>
 <h4 class="parameters">Parameters</h4>
-<table class="list"><tbody></tbody>
+<table class="list"><tbody>
 <tr><th>cb</th><td class="description">Callback function to add</td></tr>
-</table>
+</tbody></table>
 <h4 class="returnvalue">Return Value</h4>
 <p class="description">0 on success, -1 on failure</p>
 <h3 class="function"><a id="mxmlEntityGetName">mxmlEntityGetName</a></h3>
@@ -2277,9 +2236,9 @@ mxml_entity_cb_t</a> cb);</p>
  value.</p>
 <p class="code"> const char *mxmlEntityGetName(int val);</p>
 <h4 class="parameters">Parameters</h4>
-<table class="list"><tbody></tbody>
+<table class="list"><tbody>
 <tr><th>val</th><td class="description">Character value</td></tr>
-</table>
+</tbody></table>
 <h4 class="returnvalue">Return Value</h4>
 <p class="description">Entity name or <code>NULL</code></p>
 <h4 class="discussion">Discussion</h4>
@@ -2290,9 +2249,9 @@ mxml_entity_cb_t</a> cb);</p>
  entity.</p>
 <p class="code"> int mxmlEntityGetValue(const char *name);</p>
 <h4 class="parameters">Parameters</h4>
-<table class="list"><tbody></tbody>
+<table class="list"><tbody>
 <tr><th>name</th><td class="description">Entity name</td></tr>
-</table>
+</tbody></table>
 <h4 class="returnvalue">Return Value</h4>
 <p class="description">Character value or -1 on error</p>
 <h4 class="discussion">Discussion</h4>
@@ -2304,9 +2263,9 @@ mxmlEntityRemoveCallback</a></h3>
 <p class="code"> void mxmlEntityRemoveCallback(<a href="#mxml_entity_cb_t">
 mxml_entity_cb_t</a> cb);</p>
 <h4 class="parameters">Parameters</h4>
-<table class="list"><tbody></tbody>
+<table class="list"><tbody>
 <tr><th>cb</th><td class="description">Callback function to remove</td></tr>
-</table>
+</tbody></table>
 <h3 class="function"><a id="mxmlFindElement">mxmlFindElement</a></h3>
 <p class="description">Find the named element.</p>
 <p class="code"> <a href="#mxml_node_t">mxml_node_t</a>
@@ -2314,7 +2273,7 @@ mxml_entity_cb_t</a> cb);</p>
 mxml_node_t</a> *top, const char *element, const char *attr, const char
  *value, int descend);</p>
 <h4 class="parameters">Parameters</h4>
-<table class="list"><tbody></tbody>
+<table class="list"><tbody>
 <tr><th>node</th><td class="description">Current node</td></tr>
 <tr><th>top</th><td class="description">Top node</td></tr>
 <tr><th>element</th><td class="description">Element name or <code>NULL</code>
@@ -2326,7 +2285,7 @@ mxml_node_t</a> *top, const char *element, const char *attr, const char
 <tr><th>descend</th><td class="description">Descend into tree - <code>
 MXML_DESCEND</code>, <code>MXML_NO_DESCEND</code>, or <code>
 MXML_DESCEND_FIRST</code></td></tr>
-</table>
+</tbody></table>
 <h4 class="returnvalue">Return Value</h4>
 <p class="description">Element node or <code>NULL</code></p>
 <h4 class="discussion">Discussion</h4>
@@ -2345,10 +2304,10 @@ id="mxmlFindPath">mxmlFindPath</a></a></h3>
 <p class="code"> <a href="#mxml_node_t">mxml_node_t</a> *mxmlFindPath(<a href="#mxml_node_t">
 mxml_node_t</a> *top, const char *path);</p>
 <h4 class="parameters">Parameters</h4>
-<table class="list"><tbody></tbody>
+<table class="list"><tbody>
 <tr><th>top</th><td class="description">Top node</td></tr>
 <tr><th>path</th><td class="description">Path to element</td></tr>
-</table>
+</tbody></table>
 <h4 class="returnvalue">Return Value</h4>
 <p class="description">Found node or <code>NULL</code></p>
 <h4 class="discussion">Discussion</h4>
@@ -2365,9 +2324,9 @@ id="mxmlGetCDATA">mxmlGetCDATA</a></a></h3>
 <p class="code"> const char *mxmlGetCDATA(<a href="#mxml_node_t">
 mxml_node_t</a> *node);</p>
 <h4 class="parameters">Parameters</h4>
-<table class="list"><tbody></tbody>
+<table class="list"><tbody>
 <tr><th>node</th><td class="description">Node to get</td></tr>
-</table>
+</tbody></table>
 <h4 class="returnvalue">Return Value</h4>
 <p class="description">CDATA value or <code>NULL</code></p>
 <h4 class="discussion">Discussion</h4>
@@ -2379,9 +2338,9 @@ id="mxmlGetCustom">mxmlGetCustom</a></a></h3>
 <p class="code"> const void *mxmlGetCustom(<a href="#mxml_node_t">
 mxml_node_t</a> *node);</p>
 <h4 class="parameters">Parameters</h4>
-<table class="list"><tbody></tbody>
+<table class="list"><tbody>
 <tr><th>node</th><td class="description">Node to get</td></tr>
-</table>
+</tbody></table>
 <h4 class="returnvalue">Return Value</h4>
 <p class="description">Custom value or <code>NULL</code></p>
 <h4 class="discussion">Discussion</h4>
@@ -2393,9 +2352,9 @@ id="mxmlGetElement">mxmlGetElement</a></a></h3>
 <p class="code"> const char *mxmlGetElement(<a href="#mxml_node_t">
 mxml_node_t</a> *node);</p>
 <h4 class="parameters">Parameters</h4>
-<table class="list"><tbody></tbody>
+<table class="list"><tbody>
 <tr><th>node</th><td class="description">Node to get</td></tr>
-</table>
+</tbody></table>
 <h4 class="returnvalue">Return Value</h4>
 <p class="description">Element name or <code>NULL</code></p>
 <h4 class="discussion">Discussion</h4>
@@ -2407,9 +2366,9 @@ id="mxmlGetFirstChild">mxmlGetFirstChild</a></a></h3>
 <p class="code"> <a href="#mxml_node_t">mxml_node_t</a>
  *mxmlGetFirstChild(<a href="#mxml_node_t">mxml_node_t</a> *node);</p>
 <h4 class="parameters">Parameters</h4>
-<table class="list"><tbody></tbody>
+<table class="list"><tbody>
 <tr><th>node</th><td class="description">Node to get</td></tr>
-</table>
+</tbody></table>
 <h4 class="returnvalue">Return Value</h4>
 <p class="description">First child or <code>NULL</code></p>
 <h4 class="discussion">Discussion</h4>
@@ -2422,9 +2381,9 @@ id="mxmlGetInteger">mxmlGetInteger</a></a></h3>
 <p class="code"> int mxmlGetInteger(<a href="#mxml_node_t">mxml_node_t</a>
  *node);</p>
 <h4 class="parameters">Parameters</h4>
-<table class="list"><tbody></tbody>
+<table class="list"><tbody>
 <tr><th>node</th><td class="description">Node to get</td></tr>
-</table>
+</tbody></table>
 <h4 class="returnvalue">Return Value</h4>
 <p class="description">Integer value or 0</p>
 <h4 class="discussion">Discussion</h4>
@@ -2436,9 +2395,9 @@ id="mxmlGetLastChild">mxmlGetLastChild</a></a></h3>
 <p class="code"> <a href="#mxml_node_t">mxml_node_t</a>
  *mxmlGetLastChild(<a href="#mxml_node_t">mxml_node_t</a> *node);</p>
 <h4 class="parameters">Parameters</h4>
-<table class="list"><tbody></tbody>
+<table class="list"><tbody>
 <tr><th>node</th><td class="description">Node to get</td></tr>
-</table>
+</tbody></table>
 <h4 class="returnvalue">Return Value</h4>
 <p class="description">Last child or <code>NULL</code></p>
 <h4 class="discussion">Discussion</h4>
@@ -2449,9 +2408,9 @@ id="mxmlGetLastChild">mxmlGetLastChild</a></a></h3>
 <p class="code"> <a href="#mxml_node_t">mxml_node_t</a>
  *mxmlGetNextSibling(<a href="#mxml_node_t">mxml_node_t</a> *node);</p>
 <h4 class="parameters">Parameters</h4>
-<table class="list"><tbody></tbody>
+<table class="list"><tbody>
 <tr><th>node</th><td class="description">Node to get</td></tr>
-</table>
+</tbody></table>
 <h4 class="returnvalue">Return Value</h4>
 <p class="description">Get the next node for the current parent.</p>
 <p class="discussion"><code>NULL</code> is returned if this is the last
@@ -2463,9 +2422,9 @@ id="mxmlGetOpaque">mxmlGetOpaque</a></a></h3>
 <p class="code"> const char *mxmlGetOpaque(<a href="#mxml_node_t">
 mxml_node_t</a> *node);</p>
 <h4 class="parameters">Parameters</h4>
-<table class="list"><tbody></tbody>
+<table class="list"><tbody>
 <tr><th>node</th><td class="description">Node to get</td></tr>
-</table>
+</tbody></table>
 <h4 class="returnvalue">Return Value</h4>
 <p class="description">Opaque string or <code>NULL</code></p>
 <h4 class="discussion">Discussion</h4>
@@ -2477,9 +2436,9 @@ id="mxmlGetParent">mxmlGetParent</a></a></h3>
 <p class="code"> <a href="#mxml_node_t">mxml_node_t</a> *mxmlGetParent(<a
 href="#mxml_node_t">mxml_node_t</a> *node);</p>
 <h4 class="parameters">Parameters</h4>
-<table class="list"><tbody></tbody>
+<table class="list"><tbody>
 <tr><th>node</th><td class="description">Node to get</td></tr>
-</table>
+</tbody></table>
 <h4 class="returnvalue">Return Value</h4>
 <p class="description">Parent node or <code>NULL</code></p>
 <h4 class="discussion">Discussion</h4>
@@ -2490,9 +2449,9 @@ id="mxmlGetPrevSibling">mxmlGetPrevSibling</a></a></h3>
 <p class="code"> <a href="#mxml_node_t">mxml_node_t</a>
  *mxmlGetPrevSibling(<a href="#mxml_node_t">mxml_node_t</a> *node);</p>
 <h4 class="parameters">Parameters</h4>
-<table class="list"><tbody></tbody>
+<table class="list"><tbody>
 <tr><th>node</th><td class="description">Node to get</td></tr>
-</table>
+</tbody></table>
 <h4 class="returnvalue">Return Value</h4>
 <p class="description">Previous node or <code>NULL</code></p>
 <h4 class="discussion">Discussion</h4>
@@ -2504,9 +2463,9 @@ id="mxmlGetReal">mxmlGetReal</a></a></h3>
 <p class="code"> double mxmlGetReal(<a href="#mxml_node_t">mxml_node_t</a>
  *node);</p>
 <h4 class="parameters">Parameters</h4>
-<table class="list"><tbody></tbody>
+<table class="list"><tbody>
 <tr><th>node</th><td class="description">Node to get</td></tr>
-</table>
+</tbody></table>
 <h4 class="returnvalue">Return Value</h4>
 <p class="description">Real value or 0.0</p>
 <h4 class="discussion">Discussion</h4>
@@ -2518,9 +2477,9 @@ id="mxmlGetRefCount">mxmlGetRefCount</a></a></h3>
 <p class="code"> int mxmlGetRefCount(<a href="#mxml_node_t">mxml_node_t</a>
  *node);</p>
 <h4 class="parameters">Parameters</h4>
-<table class="list"><tbody></tbody>
+<table class="list"><tbody>
 <tr><th>node</th><td class="description">Node</td></tr>
-</table>
+</tbody></table>
 <h4 class="returnvalue">Return Value</h4>
 <p class="description">Reference count</p>
 <h4 class="discussion">Discussion</h4>
@@ -2534,26 +2493,33 @@ id="mxmlGetText">mxmlGetText</a></a></h3>
 <p class="code"> const char *mxmlGetText(<a href="#mxml_node_t">
 mxml_node_t</a> *node, int *whitespace);</p>
 <h4 class="parameters">Parameters</h4>
-<table class="list"><tbody></tbody>
+<table class="list"><tbody>
 <tr><th>node</th><td class="description">Node to get</td></tr>
 <tr><th>whitespace</th><td class="description">1 if string is preceded
  by whitespace, 0 otherwise</td></tr>
-</table>
+</tbody></table>
 <h4 class="returnvalue">Return Value</h4>
 <p class="description">Text string or <code>NULL</code></p>
 <h4 class="discussion">Discussion</h4>
 <p class="discussion"><code>NULL</code> is returned if the node (or its
  first child) is not a text node. The &quot;whitespace&quot; argument can be <code>
-NULL</code>.</p>
+NULL</code>.
+<br>
+<br> Note: Text nodes consist of whitespace-delimited words. You will
+ only get single words of text when reading an XML file with <code>
+MXML_TEXT</code> nodes. If you want the entire string between elements
+ in the XML file, you MUST read the XML file with <code>MXML_OPAQUE</code>
+ nodes and get the resulting strings using the <a href="#mxmlGetOpaque"><code>
+mxmlGetOpaque</code></a> function instead.</p>
 <h3 class="function"><a NAME="7_2_28"><span class="info">&nbsp;Mini-XML 2.7&nbsp;</span><a
 id="mxmlGetType">mxmlGetType</a></a></h3>
 <p class="description">Get the node type.</p>
 <p class="code"> <a href="#mxml_type_t">mxml_type_t</a> mxmlGetType(<a href="#mxml_node_t">
 mxml_node_t</a> *node);</p>
 <h4 class="parameters">Parameters</h4>
-<table class="list"><tbody></tbody>
+<table class="list"><tbody>
 <tr><th>node</th><td class="description">Node to get</td></tr>
-</table>
+</tbody></table>
 <h4 class="returnvalue">Return Value</h4>
 <p class="description">Type of node</p>
 <h4 class="discussion">Discussion</h4>
@@ -2565,9 +2531,9 @@ id="mxmlGetUserData">mxmlGetUserData</a></a></h3>
 <p class="code"> void *mxmlGetUserData(<a href="#mxml_node_t">
 mxml_node_t</a> *node);</p>
 <h4 class="parameters">Parameters</h4>
-<table class="list"><tbody></tbody>
+<table class="list"><tbody>
 <tr><th>node</th><td class="description">Node to get</td></tr>
-</table>
+</tbody></table>
 <h4 class="returnvalue">Return Value</h4>
 <p class="description">User data pointer</p>
 <h3 class="function"><a id="mxmlIndexDelete">mxmlIndexDelete</a></h3>
@@ -2575,17 +2541,17 @@ mxml_node_t</a> *node);</p>
 <p class="code"> void mxmlIndexDelete(<a href="#mxml_index_t">
 mxml_index_t</a> *ind);</p>
 <h4 class="parameters">Parameters</h4>
-<table class="list"><tbody></tbody>
+<table class="list"><tbody>
 <tr><th>ind</th><td class="description">Index to delete</td></tr>
-</table>
+</tbody></table>
 <h3 class="function"><a id="mxmlIndexEnum">mxmlIndexEnum</a></h3>
 <p class="description">Return the next node in the index.</p>
 <p class="code"> <a href="#mxml_node_t">mxml_node_t</a> *mxmlIndexEnum(<a
 href="#mxml_index_t">mxml_index_t</a> *ind);</p>
 <h4 class="parameters">Parameters</h4>
-<table class="list"><tbody></tbody>
+<table class="list"><tbody>
 <tr><th>ind</th><td class="description">Index to enumerate</td></tr>
-</table>
+</tbody></table>
 <h4 class="returnvalue">Return Value</h4>
 <p class="description">Next node or <code>NULL</code> if there is none</p>
 <h4 class="discussion">Discussion</h4>
@@ -2598,12 +2564,12 @@ mxmlIndexReset</code></a> prior to using this function to get the first
 href="#mxml_index_t">mxml_index_t</a> *ind, const char *element, const
  char *value);</p>
 <h4 class="parameters">Parameters</h4>
-<table class="list"><tbody></tbody>
+<table class="list"><tbody>
 <tr><th>ind</th><td class="description">Index to search</td></tr>
 <tr><th>element</th><td class="description">Element name to find, if any</td>
 </tr>
 <tr><th>value</th><td class="description">Attribute value, if any</td></tr>
-</table>
+</tbody></table>
 <h4 class="returnvalue">Return Value</h4>
 <p class="description">Node or <code>NULL</code> if none found</p>
 <h4 class="discussion">Discussion</h4>
@@ -2618,9 +2584,9 @@ id="mxmlIndexGetCount">mxmlIndexGetCount</a></a></h3>
 <p class="code"> int mxmlIndexGetCount(<a href="#mxml_index_t">
 mxml_index_t</a> *ind);</p>
 <h4 class="parameters">Parameters</h4>
-<table class="list"><tbody></tbody>
+<table class="list"><tbody>
 <tr><th>ind</th><td class="description">Index of nodes</td></tr>
-</table>
+</tbody></table>
 <h4 class="returnvalue">Return Value</h4>
 <p class="description">Number of nodes in index</p>
 <h3 class="function"><a id="mxmlIndexNew">mxmlIndexNew</a></h3>
@@ -2629,13 +2595,13 @@ mxml_index_t</a> *ind);</p>
 href="#mxml_node_t">mxml_node_t</a> *node, const char *element, const
  char *attr);</p>
 <h4 class="parameters">Parameters</h4>
-<table class="list"><tbody></tbody>
+<table class="list"><tbody>
 <tr><th>node</th><td class="description">XML node tree</td></tr>
 <tr><th>element</th><td class="description">Element to index or <code>
 NULL</code> for all</td></tr>
 <tr><th>attr</th><td class="description">Attribute to index or <code>
 NULL</code> for none</td></tr>
-</table>
+</tbody></table>
 <h4 class="returnvalue">Return Value</h4>
 <p class="description">New index</p>
 <h4 class="discussion">Discussion</h4>
@@ -2650,9 +2616,9 @@ NULL</code>, then the index will contain a sorted list of the elements
 <p class="code"> <a href="#mxml_node_t">mxml_node_t</a> *mxmlIndexReset(<a
 href="#mxml_index_t">mxml_index_t</a> *ind);</p>
 <h4 class="parameters">Parameters</h4>
-<table class="list"><tbody></tbody>
+<table class="list"><tbody>
 <tr><th>ind</th><td class="description">Index to reset</td></tr>
-</table>
+</tbody></table>
 <h4 class="returnvalue">Return Value</h4>
 <p class="description">First node or <code>NULL</code> if there is none</p>
 <h4 class="discussion">Discussion</h4>
@@ -2665,12 +2631,12 @@ mxmlIndexFind</code></a> for the first time.</p>
 mxml_node_t</a> *top, int fd, <a href="#mxml_load_cb_t">mxml_load_cb_t</a>
  cb);</p>
 <h4 class="parameters">Parameters</h4>
-<table class="list"><tbody></tbody>
+<table class="list"><tbody>
 <tr><th>top</th><td class="description">Top node</td></tr>
 <tr><th>fd</th><td class="description">File descriptor to read from</td></tr>
 <tr><th>cb</th><td class="description">Callback function or constant</td>
 </tr>
-</table>
+</tbody></table>
 <h4 class="returnvalue">Return Value</h4>
 <p class="description">First node or <code>NULL</code> if the file could
  not be read.</p>
@@ -2682,19 +2648,25 @@ mxml_node_t</a> *top, int fd, <a href="#mxml_load_cb_t">mxml_load_cb_t</a>
  child nodes. The constants <code>MXML_INTEGER_CALLBACK</code>, <code>
 MXML_OPAQUE_CALLBACK</code>, <code>MXML_REAL_CALLBACK</code>, and <code>
 MXML_TEXT_CALLBACK</code> are defined for loading child (data) nodes of
- the specified type.</p>
+ the specified type.
+<br>
+<br> Note: The most common programming error when using the Mini-XML
+ library is to load an XML file using the <code>MXML_TEXT_CALLBACK</code>
+, which returns inline text as a series of whitespace-delimited words,
+ instead of using the <code>MXML_OPAQUE_CALLBACK</code> which returns
+ the inline text as a single string (including whitespace).</p>
 <h3 class="function"><a id="mxmlLoadFile">mxmlLoadFile</a></h3>
 <p class="description">Load a file into an XML node tree.</p>
 <p class="code"> <a href="#mxml_node_t">mxml_node_t</a> *mxmlLoadFile(<a href="#mxml_node_t">
 mxml_node_t</a> *top, FILE *fp, <a href="#mxml_load_cb_t">mxml_load_cb_t</a>
  cb);</p>
 <h4 class="parameters">Parameters</h4>
-<table class="list"><tbody></tbody>
+<table class="list"><tbody>
 <tr><th>top</th><td class="description">Top node</td></tr>
 <tr><th>fp</th><td class="description">File to read from</td></tr>
 <tr><th>cb</th><td class="description">Callback function or constant</td>
 </tr>
-</table>
+</tbody></table>
 <h4 class="returnvalue">Return Value</h4>
 <p class="description">First node or <code>NULL</code> if the file could
  not be read.</p>
@@ -2706,19 +2678,25 @@ mxml_node_t</a> *top, FILE *fp, <a href="#mxml_load_cb_t">mxml_load_cb_t</a>
  child nodes. The constants <code>MXML_INTEGER_CALLBACK</code>, <code>
 MXML_OPAQUE_CALLBACK</code>, <code>MXML_REAL_CALLBACK</code>, and <code>
 MXML_TEXT_CALLBACK</code> are defined for loading child (data) nodes of
- the specified type.</p>
+ the specified type.
+<br>
+<br> Note: The most common programming error when using the Mini-XML
+ library is to load an XML file using the <code>MXML_TEXT_CALLBACK</code>
+, which returns inline text as a series of whitespace-delimited words,
+ instead of using the <code>MXML_OPAQUE_CALLBACK</code> which returns
+ the inline text as a single string (including whitespace).</p>
 <h3 class="function"><a id="mxmlLoadString">mxmlLoadString</a></h3>
 <p class="description">Load a string into an XML node tree.</p>
 <p class="code"> <a href="#mxml_node_t">mxml_node_t</a> *mxmlLoadString(<a
 href="#mxml_node_t">mxml_node_t</a> *top, const char *s, <a href="#mxml_load_cb_t">
 mxml_load_cb_t</a> cb);</p>
 <h4 class="parameters">Parameters</h4>
-<table class="list"><tbody></tbody>
+<table class="list"><tbody>
 <tr><th>top</th><td class="description">Top node</td></tr>
 <tr><th>s</th><td class="description">String to load</td></tr>
 <tr><th>cb</th><td class="description">Callback function or constant</td>
 </tr>
-</table>
+</tbody></table>
 <h4 class="returnvalue">Return Value</h4>
 <p class="description">First node or <code>NULL</code> if the string has
  errors.</p>
@@ -2730,18 +2708,24 @@ mxml_load_cb_t</a> cb);</p>
  used for child nodes. The constants <code>MXML_INTEGER_CALLBACK</code>,
  <code>MXML_OPAQUE_CALLBACK</code>, <code>MXML_REAL_CALLBACK</code>, and
  <code>MXML_TEXT_CALLBACK</code> are defined for loading child (data)
- nodes of the specified type.</p>
+ nodes of the specified type.
+<br>
+<br> Note: The most common programming error when using the Mini-XML
+ library is to load an XML file using the <code>MXML_TEXT_CALLBACK</code>
+, which returns inline text as a series of whitespace-delimited words,
+ instead of using the <code>MXML_OPAQUE_CALLBACK</code> which returns
+ the inline text as a single string (including whitespace).</p>
 <h3 class="function"><a NAME="7_2_39"><span class="info">&nbsp;Mini-XML 2.3&nbsp;</span><a
 id="mxmlNewCDATA">mxmlNewCDATA</a></a></h3>
 <p class="description">Create a new CDATA node.</p>
 <p class="code"> <a href="#mxml_node_t">mxml_node_t</a> *mxmlNewCDATA(<a href="#mxml_node_t">
 mxml_node_t</a> *parent, const char *data);</p>
 <h4 class="parameters">Parameters</h4>
-<table class="list"><tbody></tbody>
+<table class="list"><tbody>
 <tr><th>parent</th><td class="description">Parent node or <code>
 MXML_NO_PARENT</code></td></tr>
 <tr><th>data</th><td class="description">Data string</td></tr>
-</table>
+</tbody></table>
 <h4 class="returnvalue">Return Value</h4>
 <p class="description">New node</p>
 <h4 class="discussion">Discussion</h4>
@@ -2757,13 +2741,13 @@ id="mxmlNewCustom">mxmlNewCustom</a></a></h3>
 href="#mxml_node_t">mxml_node_t</a> *parent, void *data, <a href="#mxml_custom_destroy_cb_t">
 mxml_custom_destroy_cb_t</a> destroy);</p>
 <h4 class="parameters">Parameters</h4>
-<table class="list"><tbody></tbody>
+<table class="list"><tbody>
 <tr><th>parent</th><td class="description">Parent node or <code>
 MXML_NO_PARENT</code></td></tr>
 <tr><th>data</th><td class="description">Pointer to data</td></tr>
 <tr><th>destroy</th><td class="description">Function to destroy data</td>
 </tr>
-</table>
+</tbody></table>
 <h4 class="returnvalue">Return Value</h4>
 <p class="description">New node</p>
 <h4 class="discussion">Discussion</h4>
@@ -2777,11 +2761,11 @@ NULL</code> can be passed when the data in the node is not dynamically
 <p class="code"> <a href="#mxml_node_t">mxml_node_t</a> *mxmlNewElement(<a
 href="#mxml_node_t">mxml_node_t</a> *parent, const char *name);</p>
 <h4 class="parameters">Parameters</h4>
-<table class="list"><tbody></tbody>
+<table class="list"><tbody>
 <tr><th>parent</th><td class="description">Parent node or <code>
 MXML_NO_PARENT</code></td></tr>
 <tr><th>name</th><td class="description">Name of element</td></tr>
-</table>
+</tbody></table>
 <h4 class="returnvalue">Return Value</h4>
 <p class="description">New node</p>
 <h4 class="discussion">Discussion</h4>
@@ -2793,11 +2777,11 @@ MXML_NO_PARENT</code></td></tr>
 <p class="code"> <a href="#mxml_node_t">mxml_node_t</a> *mxmlNewInteger(<a
 href="#mxml_node_t">mxml_node_t</a> *parent, int integer);</p>
 <h4 class="parameters">Parameters</h4>
-<table class="list"><tbody></tbody>
+<table class="list"><tbody>
 <tr><th>parent</th><td class="description">Parent node or <code>
 MXML_NO_PARENT</code></td></tr>
 <tr><th>integer</th><td class="description">Integer value</td></tr>
-</table>
+</tbody></table>
 <h4 class="returnvalue">Return Value</h4>
 <p class="description">New node</p>
 <h4 class="discussion">Discussion</h4>
@@ -2809,11 +2793,11 @@ MXML_NO_PARENT</code></td></tr>
 <p class="code"> <a href="#mxml_node_t">mxml_node_t</a> *mxmlNewOpaque(<a
 href="#mxml_node_t">mxml_node_t</a> *parent, const char *opaque);</p>
 <h4 class="parameters">Parameters</h4>
-<table class="list"><tbody></tbody>
+<table class="list"><tbody>
 <tr><th>parent</th><td class="description">Parent node or <code>
 MXML_NO_PARENT</code></td></tr>
 <tr><th>opaque</th><td class="description">Opaque string</td></tr>
-</table>
+</tbody></table>
 <h4 class="returnvalue">Return Value</h4>
 <p class="description">New node</p>
 <h4 class="discussion">Discussion</h4>
@@ -2827,13 +2811,13 @@ MXML_NO_PARENT</code></td></tr>
 <p class="code"> <a href="#mxml_node_t">mxml_node_t</a> *mxmlNewOpaquef(<a
 href="#mxml_node_t">mxml_node_t</a> *parent, const char *format, ...);</p>
 <h4 class="parameters">Parameters</h4>
-<table class="list"><tbody></tbody>
+<table class="list"><tbody>
 <tr><th>parent</th><td class="description">Parent node or <code>
 MXML_NO_PARENT</code></td></tr>
 <tr><th>format</th><td class="description">Printf-style format string</td>
 </tr>
 <tr><th>...</th><td class="description">Additional args as needed</td></tr>
-</table>
+</tbody></table>
 <h4 class="returnvalue">Return Value</h4>
 <p class="description">New node</p>
 <h4 class="discussion">Discussion</h4>
@@ -2847,11 +2831,11 @@ MXML_NO_PARENT</code></td></tr>
 <p class="code"> <a href="#mxml_node_t">mxml_node_t</a> *mxmlNewReal(<a href="#mxml_node_t">
 mxml_node_t</a> *parent, double real);</p>
 <h4 class="parameters">Parameters</h4>
-<table class="list"><tbody></tbody>
+<table class="list"><tbody>
 <tr><th>parent</th><td class="description">Parent node or <code>
 MXML_NO_PARENT</code></td></tr>
 <tr><th>real</th><td class="description">Real number value</td></tr>
-</table>
+</tbody></table>
 <h4 class="returnvalue">Return Value</h4>
 <p class="description">New node</p>
 <h4 class="discussion">Discussion</h4>
@@ -2863,13 +2847,13 @@ MXML_NO_PARENT</code></td></tr>
 <p class="code"> <a href="#mxml_node_t">mxml_node_t</a> *mxmlNewText(<a href="#mxml_node_t">
 mxml_node_t</a> *parent, int whitespace, const char *string);</p>
 <h4 class="parameters">Parameters</h4>
-<table class="list"><tbody></tbody>
+<table class="list"><tbody>
 <tr><th>parent</th><td class="description">Parent node or <code>
 MXML_NO_PARENT</code></td></tr>
 <tr><th>whitespace</th><td class="description">1 = leading whitespace, 0
  = no whitespace</td></tr>
 <tr><th>string</th><td class="description">String</td></tr>
-</table>
+</tbody></table>
 <h4 class="returnvalue">Return Value</h4>
 <p class="description">New node</p>
 <h4 class="discussion">Discussion</h4>
@@ -2884,7 +2868,7 @@ MXML_NO_PARENT</code></td></tr>
 <p class="code"> <a href="#mxml_node_t">mxml_node_t</a> *mxmlNewTextf(<a href="#mxml_node_t">
 mxml_node_t</a> *parent, int whitespace, const char *format, ...);</p>
 <h4 class="parameters">Parameters</h4>
-<table class="list"><tbody></tbody>
+<table class="list"><tbody>
 <tr><th>parent</th><td class="description">Parent node or <code>
 MXML_NO_PARENT</code></td></tr>
 <tr><th>whitespace</th><td class="description">1 = leading whitespace, 0
@@ -2892,7 +2876,7 @@ MXML_NO_PARENT</code></td></tr>
 <tr><th>format</th><td class="description">Printf-style format string</td>
 </tr>
 <tr><th>...</th><td class="description">Additional args as needed</td></tr>
-</table>
+</tbody></table>
 <h4 class="returnvalue">Return Value</h4>
 <p class="description">New node</p>
 <h4 class="discussion">Discussion</h4>
@@ -2908,9 +2892,9 @@ id="mxmlNewXML">mxmlNewXML</a></a></h3>
 <p class="code"> <a href="#mxml_node_t">mxml_node_t</a>
  *mxmlNewXML(const char *version);</p>
 <h4 class="parameters">Parameters</h4>
-<table class="list"><tbody></tbody>
+<table class="list"><tbody>
 <tr><th>version</th><td class="description">Version number to use</td></tr>
-</table>
+</tbody></table>
 <h4 class="returnvalue">Return Value</h4>
 <p class="description">New ?xml node</p>
 <h4 class="discussion">Discussion</h4>
@@ -2923,9 +2907,9 @@ id="mxmlRelease">mxmlRelease</a></a></h3>
 <p class="code"> int mxmlRelease(<a href="#mxml_node_t">mxml_node_t</a>
  *node);</p>
 <h4 class="parameters">Parameters</h4>
-<table class="list"><tbody></tbody>
+<table class="list"><tbody>
 <tr><th>node</th><td class="description">Node</td></tr>
-</table>
+</tbody></table>
 <h4 class="returnvalue">Return Value</h4>
 <p class="description">New reference count</p>
 <h4 class="discussion">Discussion</h4>
@@ -2937,9 +2921,9 @@ mxmlDelete</code></a>.</p>
 <p class="code"> void mxmlRemove(<a href="#mxml_node_t">mxml_node_t</a>
  *node);</p>
 <h4 class="parameters">Parameters</h4>
-<table class="list"><tbody></tbody>
+<table class="list"><tbody>
 <tr><th>node</th><td class="description">Node to remove</td></tr>
-</table>
+</tbody></table>
 <h4 class="discussion">Discussion</h4>
 <p class="discussion">This function does not free memory used by the
  node - use <a href="#mxmlDelete"><code>mxmlDelete</code></a> for that.
@@ -2950,9 +2934,9 @@ id="mxmlRetain">mxmlRetain</a></a></h3>
 <p class="code"> int mxmlRetain(<a href="#mxml_node_t">mxml_node_t</a>
  *node);</p>
 <h4 class="parameters">Parameters</h4>
-<table class="list"><tbody></tbody>
+<table class="list"><tbody>
 <tr><th>node</th><td class="description">Node</td></tr>
-</table>
+</tbody></table>
 <h4 class="returnvalue">Return Value</h4>
 <p class="description">New reference count</p>
 <h3 class="function"><a NAME="7_2_52"><span class="info">&nbsp;Mini-XML 2.3&nbsp;</span><a
@@ -2964,7 +2948,7 @@ href="#mxml_node_t">mxml_node_t</a> *top, int fd, <a href="#mxml_load_cb_t">
 mxml_load_cb_t</a> cb, <a href="#mxml_sax_cb_t">mxml_sax_cb_t</a>
  sax_cb, void *sax_data);</p>
 <h4 class="parameters">Parameters</h4>
-<table class="list"><tbody></tbody>
+<table class="list"><tbody>
 <tr><th>top</th><td class="description">Top node</td></tr>
 <tr><th>fd</th><td class="description">File descriptor to read from</td></tr>
 <tr><th>cb</th><td class="description">Callback function or constant</td>
@@ -2972,7 +2956,7 @@ mxml_load_cb_t</a> cb, <a href="#mxml_sax_cb_t">mxml_sax_cb_t</a>
 <tr><th>sax_cb</th><td class="description">SAX callback or <code>
 MXML_NO_CALLBACK</code></td></tr>
 <tr><th>sax_data</th><td class="description">SAX user data</td></tr>
-</table>
+</tbody></table>
 <h4 class="returnvalue">Return Value</h4>
 <p class="description">First node or <code>NULL</code> if the file could
  not be read.</p>
@@ -2999,7 +2983,7 @@ id="mxmlSAXLoadFile">mxmlSAXLoadFile</a></a></h3>
  <a href="#mxml_load_cb_t">mxml_load_cb_t</a> cb, <a href="#mxml_sax_cb_t">
 mxml_sax_cb_t</a> sax_cb, void *sax_data);</p>
 <h4 class="parameters">Parameters</h4>
-<table class="list"><tbody></tbody>
+<table class="list"><tbody>
 <tr><th>top</th><td class="description">Top node</td></tr>
 <tr><th>fp</th><td class="description">File to read from</td></tr>
 <tr><th>cb</th><td class="description">Callback function or constant</td>
@@ -3007,7 +2991,7 @@ mxml_sax_cb_t</a> sax_cb, void *sax_data);</p>
 <tr><th>sax_cb</th><td class="description">SAX callback or <code>
 MXML_NO_CALLBACK</code></td></tr>
 <tr><th>sax_data</th><td class="description">SAX user data</td></tr>
-</table>
+</tbody></table>
 <h4 class="returnvalue">Return Value</h4>
 <p class="description">First node or <code>NULL</code> if the file could
  not be read.</p>
@@ -3034,7 +3018,7 @@ id="mxmlSAXLoadString">mxmlSAXLoadString</a></a></h3>
  char *s, <a href="#mxml_load_cb_t">mxml_load_cb_t</a> cb, <a href="#mxml_sax_cb_t">
 mxml_sax_cb_t</a> sax_cb, void *sax_data);</p>
 <h4 class="parameters">Parameters</h4>
-<table class="list"><tbody></tbody>
+<table class="list"><tbody>
 <tr><th>top</th><td class="description">Top node</td></tr>
 <tr><th>s</th><td class="description">String to load</td></tr>
 <tr><th>cb</th><td class="description">Callback function or constant</td>
@@ -3042,7 +3026,7 @@ mxml_sax_cb_t</a> sax_cb, void *sax_data);</p>
 <tr><th>sax_cb</th><td class="description">SAX callback or <code>
 MXML_NO_CALLBACK</code></td></tr>
 <tr><th>sax_data</th><td class="description">SAX user data</td></tr>
-</table>
+</tbody></table>
 <h4 class="returnvalue">Return Value</h4>
 <p class="description">First node or <code>NULL</code> if the string has
  errors.</p>
@@ -3065,11 +3049,11 @@ MXML_NO_CALLBACK</code></td></tr>
 <p class="code"> char *mxmlSaveAllocString(<a href="#mxml_node_t">
 mxml_node_t</a> *node, <a href="#mxml_save_cb_t">mxml_save_cb_t</a> cb);</p>
 <h4 class="parameters">Parameters</h4>
-<table class="list"><tbody></tbody>
+<table class="list"><tbody>
 <tr><th>node</th><td class="description">Node to write</td></tr>
 <tr><th>cb</th><td class="description">Whitespace callback or <code>
 MXML_NO_CALLBACK</code></td></tr>
-</table>
+</tbody></table>
 <h4 class="returnvalue">Return Value</h4>
 <p class="description">Allocated string or <code>NULL</code></p>
 <h4 class="discussion">Discussion</h4>
@@ -3089,12 +3073,12 @@ MXML_NO_CALLBACK</code> is specified, whitespace will only be added
 <p class="code"> int mxmlSaveFd(<a href="#mxml_node_t">mxml_node_t</a>
  *node, int fd, <a href="#mxml_save_cb_t">mxml_save_cb_t</a> cb);</p>
 <h4 class="parameters">Parameters</h4>
-<table class="list"><tbody></tbody>
+<table class="list"><tbody>
 <tr><th>node</th><td class="description">Node to write</td></tr>
 <tr><th>fd</th><td class="description">File descriptor to write to</td></tr>
 <tr><th>cb</th><td class="description">Whitespace callback or <code>
 MXML_NO_CALLBACK</code></td></tr>
-</table>
+</tbody></table>
 <h4 class="returnvalue">Return Value</h4>
 <p class="description">0 on success, -1 on error.</p>
 <h4 class="discussion">Discussion</h4>
@@ -3108,12 +3092,12 @@ MXML_NO_CALLBACK</code> is specified, whitespace will only be added
 <p class="code"> int mxmlSaveFile(<a href="#mxml_node_t">mxml_node_t</a>
  *node, FILE *fp, <a href="#mxml_save_cb_t">mxml_save_cb_t</a> cb);</p>
 <h4 class="parameters">Parameters</h4>
-<table class="list"><tbody></tbody>
+<table class="list"><tbody>
 <tr><th>node</th><td class="description">Node to write</td></tr>
 <tr><th>fp</th><td class="description">File to write to</td></tr>
 <tr><th>cb</th><td class="description">Whitespace callback or <code>
 MXML_NO_CALLBACK</code></td></tr>
-</table>
+</tbody></table>
 <h4 class="returnvalue">Return Value</h4>
 <p class="description">0 on success, -1 on error.</p>
 <h4 class="discussion">Discussion</h4>
@@ -3128,13 +3112,13 @@ MXML_NO_CALLBACK</code> is specified, whitespace will only be added
  *node, char *buffer, int bufsize, <a href="#mxml_save_cb_t">
 mxml_save_cb_t</a> cb);</p>
 <h4 class="parameters">Parameters</h4>
-<table class="list"><tbody></tbody>
+<table class="list"><tbody>
 <tr><th>node</th><td class="description">Node to write</td></tr>
 <tr><th>buffer</th><td class="description">String buffer</td></tr>
 <tr><th>bufsize</th><td class="description">Size of string buffer</td></tr>
 <tr><th>cb</th><td class="description">Whitespace callback or <code>
 MXML_NO_CALLBACK</code></td></tr>
-</table>
+</tbody></table>
 <h4 class="returnvalue">Return Value</h4>
 <p class="description">Size of string</p>
 <h4 class="discussion">Discussion</h4>
@@ -3153,10 +3137,10 @@ id="mxmlSetCDATA">mxmlSetCDATA</a></a></h3>
 <p class="code"> int mxmlSetCDATA(<a href="#mxml_node_t">mxml_node_t</a>
  *node, const char *data);</p>
 <h4 class="parameters">Parameters</h4>
-<table class="list"><tbody></tbody>
+<table class="list"><tbody>
 <tr><th>node</th><td class="description">Node to set</td></tr>
 <tr><th>data</th><td class="description">New data string</td></tr>
-</table>
+</tbody></table>
 <h4 class="returnvalue">Return Value</h4>
 <p class="description">0 on success, -1 on failure</p>
 <h4 class="discussion">Discussion</h4>
@@ -3170,11 +3154,11 @@ id="mxmlSetCustom">mxmlSetCustom</a></a></h3>
  *node, void *data, <a href="#mxml_custom_destroy_cb_t">
 mxml_custom_destroy_cb_t</a> destroy);</p>
 <h4 class="parameters">Parameters</h4>
-<table class="list"><tbody></tbody>
+<table class="list"><tbody>
 <tr><th>node</th><td class="description">Node to set</td></tr>
 <tr><th>data</th><td class="description">New data pointer</td></tr>
 <tr><th>destroy</th><td class="description">New destructor function</td></tr>
-</table>
+</tbody></table>
 <h4 class="returnvalue">Return Value</h4>
 <p class="description">0 on success, -1 on failure</p>
 <h4 class="discussion">Discussion</h4>
@@ -3187,10 +3171,10 @@ mxml_custom_destroy_cb_t</a> destroy);</p>
 mxml_custom_load_cb_t</a> load, <a href="#mxml_custom_save_cb_t">
 mxml_custom_save_cb_t</a> save);</p>
 <h4 class="parameters">Parameters</h4>
-<table class="list"><tbody></tbody>
+<table class="list"><tbody>
 <tr><th>load</th><td class="description">Load function</td></tr>
 <tr><th>save</th><td class="description">Save function</td></tr>
-</table>
+</tbody></table>
 <h4 class="discussion">Discussion</h4>
 <p class="discussion">The load function accepts a node pointer and a
  data string and must return 0 on success and non-zero on error.
@@ -3202,10 +3186,10 @@ mxml_custom_save_cb_t</a> save);</p>
 <p class="code"> int mxmlSetElement(<a href="#mxml_node_t">mxml_node_t</a>
  *node, const char *name);</p>
 <h4 class="parameters">Parameters</h4>
-<table class="list"><tbody></tbody>
+<table class="list"><tbody>
 <tr><th>node</th><td class="description">Node to set</td></tr>
 <tr><th>name</th><td class="description">New name string</td></tr>
-</table>
+</tbody></table>
 <h4 class="returnvalue">Return Value</h4>
 <p class="description">0 on success, -1 on failure</p>
 <h4 class="discussion">Discussion</h4>
@@ -3217,18 +3201,18 @@ mxml_custom_save_cb_t</a> save);</p>
 <p class="code"> void mxmlSetErrorCallback(<a href="#mxml_error_cb_t">
 mxml_error_cb_t</a> cb);</p>
 <h4 class="parameters">Parameters</h4>
-<table class="list"><tbody></tbody>
+<table class="list"><tbody>
 <tr><th>cb</th><td class="description">Error callback function</td></tr>
-</table>
+</tbody></table>
 <h3 class="function"><a id="mxmlSetInteger">mxmlSetInteger</a></h3>
 <p class="description">Set the value of an integer node.</p>
 <p class="code"> int mxmlSetInteger(<a href="#mxml_node_t">mxml_node_t</a>
  *node, int integer);</p>
 <h4 class="parameters">Parameters</h4>
-<table class="list"><tbody></tbody>
+<table class="list"><tbody>
 <tr><th>node</th><td class="description">Node to set</td></tr>
 <tr><th>integer</th><td class="description">Integer value</td></tr>
-</table>
+</tbody></table>
 <h4 class="returnvalue">Return Value</h4>
 <p class="description">0 on success, -1 on failure</p>
 <h4 class="discussion">Discussion</h4>
@@ -3239,10 +3223,10 @@ mxml_error_cb_t</a> cb);</p>
 <p class="code"> int mxmlSetOpaque(<a href="#mxml_node_t">mxml_node_t</a>
  *node, const char *opaque);</p>
 <h4 class="parameters">Parameters</h4>
-<table class="list"><tbody></tbody>
+<table class="list"><tbody>
 <tr><th>node</th><td class="description">Node to set</td></tr>
 <tr><th>opaque</th><td class="description">Opaque string</td></tr>
-</table>
+</tbody></table>
 <h4 class="returnvalue">Return Value</h4>
 <p class="description">0 on success, -1 on failure</p>
 <h4 class="discussion">Discussion</h4>
@@ -3255,13 +3239,13 @@ id="mxmlSetOpaquef">mxmlSetOpaquef</a></a></h3>
 <p class="code"> int mxmlSetOpaquef(<a href="#mxml_node_t">mxml_node_t</a>
  *node, const char *format, ...);</p>
 <h4 class="parameters">Parameters</h4>
-<table class="list"><tbody></tbody>
+<table class="list"><tbody>
 <tr><th>node</th><td class="description">Node to set</td></tr>
 <tr><th>format</th><td class="description">Printf-style format string</td>
 </tr>
 <tr><th>...</th><td class="description">Additional arguments as needed</td>
 </tr>
-</table>
+</tbody></table>
 <h4 class="returnvalue">Return Value</h4>
 <p class="description">0 on success, -1 on failure</p>
 <h4 class="discussion">Discussion</h4>
@@ -3272,10 +3256,10 @@ id="mxmlSetOpaquef">mxmlSetOpaquef</a></a></h3>
 <p class="code"> int mxmlSetReal(<a href="#mxml_node_t">mxml_node_t</a>
  *node, double real);</p>
 <h4 class="parameters">Parameters</h4>
-<table class="list"><tbody></tbody>
+<table class="list"><tbody>
 <tr><th>node</th><td class="description">Node to set</td></tr>
 <tr><th>real</th><td class="description">Real number value</td></tr>
-</table>
+</tbody></table>
 <h4 class="returnvalue">Return Value</h4>
 <p class="description">0 on success, -1 on failure</p>
 <h4 class="discussion">Discussion</h4>
@@ -3286,12 +3270,12 @@ id="mxmlSetOpaquef">mxmlSetOpaquef</a></a></h3>
 <p class="code"> int mxmlSetText(<a href="#mxml_node_t">mxml_node_t</a>
  *node, int whitespace, const char *string);</p>
 <h4 class="parameters">Parameters</h4>
-<table class="list"><tbody></tbody>
+<table class="list"><tbody>
 <tr><th>node</th><td class="description">Node to set</td></tr>
 <tr><th>whitespace</th><td class="description">1 = leading whitespace, 0
  = no whitespace</td></tr>
 <tr><th>string</th><td class="description">String</td></tr>
-</table>
+</tbody></table>
 <h4 class="returnvalue">Return Value</h4>
 <p class="description">0 on success, -1 on failure</p>
 <h4 class="discussion">Discussion</h4>
@@ -3303,7 +3287,7 @@ id="mxmlSetOpaquef">mxmlSetOpaquef</a></a></h3>
 <p class="code"> int mxmlSetTextf(<a href="#mxml_node_t">mxml_node_t</a>
  *node, int whitespace, const char *format, ...);</p>
 <h4 class="parameters">Parameters</h4>
-<table class="list"><tbody></tbody>
+<table class="list"><tbody>
 <tr><th>node</th><td class="description">Node to set</td></tr>
 <tr><th>whitespace</th><td class="description">1 = leading whitespace, 0
  = no whitespace</td></tr>
@@ -3311,7 +3295,7 @@ id="mxmlSetOpaquef">mxmlSetOpaquef</a></a></h3>
 </tr>
 <tr><th>...</th><td class="description">Additional arguments as needed</td>
 </tr>
-</table>
+</tbody></table>
 <h4 class="returnvalue">Return Value</h4>
 <p class="description">0 on success, -1 on failure</p>
 <h4 class="discussion">Discussion</h4>
@@ -3323,10 +3307,10 @@ id="mxmlSetUserData">mxmlSetUserData</a></a></h3>
 <p class="code"> int mxmlSetUserData(<a href="#mxml_node_t">mxml_node_t</a>
  *node, void *data);</p>
 <h4 class="parameters">Parameters</h4>
-<table class="list"><tbody></tbody>
+<table class="list"><tbody>
 <tr><th>node</th><td class="description">Node to set</td></tr>
 <tr><th>data</th><td class="description">User data pointer</td></tr>
-</table>
+</tbody></table>
 <h4 class="returnvalue">Return Value</h4>
 <p class="description">0 on success, -1 on failure</p>
 <h3 class="function"><a NAME="7_2_71"><span class="info">&nbsp;Mini-XML 2.3&nbsp;</span><a
@@ -3334,10 +3318,10 @@ id="mxmlSetWrapMargin">mxmlSetWrapMargin</a></a></h3>
 <p class="description">Set the wrap margin when saving XML data.</p>
 <p class="code"> void mxmlSetWrapMargin(int column);</p>
 <h4 class="parameters">Parameters</h4>
-<table class="list"><tbody></tbody>
+<table class="list"><tbody>
 <tr><th>column</th><td class="description">Column for wrapping, 0 to
  disable wrapping</td></tr>
-</table>
+</tbody></table>
 <h4 class="discussion">Discussion</h4>
 <p class="discussion">Wrapping is disabled when &quot;column&quot; is 0.</p>
 <h3 class="function"><a id="mxmlWalkNext">mxmlWalkNext</a></h3>
@@ -3346,13 +3330,13 @@ id="mxmlSetWrapMargin">mxmlSetWrapMargin</a></a></h3>
 mxml_node_t</a> *node, <a href="#mxml_node_t">mxml_node_t</a> *top, int
  descend);</p>
 <h4 class="parameters">Parameters</h4>
-<table class="list"><tbody></tbody>
+<table class="list"><tbody>
 <tr><th>node</th><td class="description">Current node</td></tr>
 <tr><th>top</th><td class="description">Top node</td></tr>
 <tr><th>descend</th><td class="description">Descend into tree - <code>
 MXML_DESCEND</code>, <code>MXML_NO_DESCEND</code>, or <code>
 MXML_DESCEND_FIRST</code></td></tr>
-</table>
+</tbody></table>
 <h4 class="returnvalue">Return Value</h4>
 <p class="description">Next node or <code>NULL</code></p>
 <h4 class="discussion">Discussion</h4>
@@ -3365,13 +3349,13 @@ MXML_DESCEND_FIRST</code></td></tr>
 mxml_node_t</a> *node, <a href="#mxml_node_t">mxml_node_t</a> *top, int
  descend);</p>
 <h4 class="parameters">Parameters</h4>
-<table class="list"><tbody></tbody>
+<table class="list"><tbody>
 <tr><th>node</th><td class="description">Current node</td></tr>
 <tr><th>top</th><td class="description">Top node</td></tr>
 <tr><th>descend</th><td class="description">Descend into tree - <code>
 MXML_DESCEND</code>, <code>MXML_NO_DESCEND</code>, or <code>
 MXML_DESCEND_FIRST</code></td></tr>
-</table>
+</tbody></table>
 <h4 class="returnvalue">Return Value</h4>
 <p class="description">Previous node or <code>NULL</code></p>
 <h4 class="discussion">Discussion</h4>
@@ -3429,7 +3413,7 @@ mxml_sax_event_e</a> mxml_sax_event_t;</p>
 <h3 class="enumeration"><a id="mxml_sax_event_e">mxml_sax_event_e</a></h3>
 <p class="description">SAX event type.</p>
 <h4 class="constants">Constants</h4>
-<table class="list"><tbody></tbody>
+<table class="list"><tbody>
 <tr><th>MXML_SAX_CDATA</th><td class="description">CDATA node</td></tr>
 <tr><th>MXML_SAX_COMMENT</th><td class="description">Comment node</td></tr>
 <tr><th>MXML_SAX_DATA</th><td class="description">Data node</td></tr>
@@ -3439,11 +3423,11 @@ mxml_sax_event_e</a> mxml_sax_event_t;</p>
  closed</td></tr>
 <tr><th>MXML_SAX_ELEMENT_OPEN</th><td class="description">Element opened</td>
 </tr>
-</table>
+</tbody></table>
 <h3 class="enumeration"><a id="mxml_type_e">mxml_type_e</a></h3>
 <p class="description">The XML node type.</p>
 <h4 class="constants">Constants</h4>
-<table class="list"><tbody></tbody>
+<table class="list"><tbody>
 <tr><th>MXML_CUSTOM <span class="info">&nbsp;Mini-XML 2.1&nbsp;</span></th><td class="description">
 Custom data</td></tr>
 <tr><th>MXML_ELEMENT</th><td class="description">XML element with
@@ -3454,7 +3438,7 @@ Ignore/throw away node</td></tr>
 <tr><th>MXML_OPAQUE</th><td class="description">Opaque string</td></tr>
 <tr><th>MXML_REAL</th><td class="description">Real value</td></tr>
 <tr><th>MXML_TEXT</th><td class="description">Text fragment</td></tr>
-</table>
+</tbody></table>
 </div><HR NOSHADE>
 <h1 align="right"><a name="SCHEMA">Appendix C - XML Schema</a></h1>
 <p>This appendix provides the XML schema that is used for the XML files

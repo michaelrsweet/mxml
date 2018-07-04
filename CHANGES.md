@@ -4,6 +4,7 @@
   to get full strings for inline text instead of separated words (Issue #190)
 - No longer build documentation sets on macOS since Xcode no longer supports
   them (Issue #198)
+- Updated the `va_copy` macro for use with BCC (Issue #211)
 - The `mxmlNewCDATA` and `mxmlSetCDATA` functions incorrectly added the XML
   trailer "]]" to the string (Issue #216)
 - Cross-compiling failed on install (Issue #218)

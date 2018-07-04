@@ -1,7 +1,7 @@
 /*
  * String functions for Mini-XML, a small XML file parsing library.
  *
- * Copyright 2003-2017 by Michael R Sweet.
+ * Copyright 2003-2018 by Michael R Sweet.
  *
  * These coded instructions, statements, and computer programs are the
  * property of Michael R Sweet and are protected by Federal copyright
@@ -28,7 +28,7 @@
 #  ifdef __va_copy
 #    define va_copy(dst,src) __va_copy(dst,src)
 #  else
-#    define va_copy(dst,src) memcpy(&dst, src, sizeof(va_list))
+#    define va_copy(dst,src) memcpy(&dst, &src, sizeof(va_list))
 #  endif /* __va_copy */
 #endif /* va_copy */
 

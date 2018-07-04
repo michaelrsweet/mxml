@@ -262,7 +262,7 @@ mxml-entity.o mxml-file.o mxml-private.o: mxml-private.h
 
 mxml1.dll:	$(LIBOBJS)
 	echo Creating $@...
-	$(DSO) $(DSOFLAGS) -o $@ $(LIBOBJS)
+	$(DSO) $(DSOFLAGS) $(LDFLAGS) -o $@ $(LIBOBJS) $(LIBS)
 
 
 #
@@ -271,7 +271,7 @@ mxml1.dll:	$(LIBOBJS)
 
 libmxml.so.1.6:	$(LIBOBJS)
 	echo Creating $@...
-	$(DSO) $(DSOFLAGS) -o libmxml.so.1.6 $(LIBOBJS)
+	$(DSO) $(DSOFLAGS) $(LDFLAGS) -o libmxml.so.1.6 $(LIBOBJS) $(LIBS)
 	$(RM) libmxml.so libmxml.so.1
 	$(LN) libmxml.so.1.6 libmxml.so
 	$(LN) libmxml.so.1.6 libmxml.so.1
@@ -283,7 +283,7 @@ libmxml.so.1.6:	$(LIBOBJS)
 
 libmxml.sl.1:	$(LIBOBJS)
 	echo Creating $@...
-	$(DSO) $(DSOFLAGS) -o libmxml.sl.1 $(LIBOBJS)
+	$(DSO) $(DSOFLAGS) $(LDFLAGS) -o libmxml.sl.1 $(LIBOBJS) $(LIBS)
 	$(RM) libmxml.sl
 	$(LN) libmxml.sl.1 libmxml.sl
 
@@ -294,11 +294,11 @@ libmxml.sl.1:	$(LIBOBJS)
 
 libmxml.1.dylib:	$(LIBOBJS)
 	echo Creating $@...
-	$(DSO) $(DSOFLAGS) -o libmxml.1.dylib \
+	$(DSO) $(DSOFLAGS) $(LDFLAGS) -o libmxml.1.dylib \
 		-install_name $(libdir)/libmxml.dylib \
 		-current_version 1.6.0 \
 		-compatibility_version 1.0.0 \
-		$(LIBOBJS)
+		$(LIBOBJS) $(LIBS)
 	$(RM) libmxml.dylib
 	$(LN) libmxml.1.dylib libmxml.dylib
 

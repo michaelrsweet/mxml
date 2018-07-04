@@ -15,6 +15,11 @@ dnl
 dnl Package name and version...
 AC_INIT([Mini-XML], [2.12], [https://github.com/michaelrsweet/mxml/issues], [mxml], [https://michaelrsweet.github.io/mxml])
 
+dnl This line is provided to ensure that you don't run the autoheader program
+dnl against this project.  Doing so is completely unsupported and WILL cause
+dnl problems!
+AH_TOP([#error "Somebody ran autoheader on this project which is unsupported and WILL cause problems."])
+
 dnl Get the build and host platforms and split the host_os value
 AC_CANONICAL_BUILD
 AC_CANONICAL_HOST
@@ -203,7 +208,14 @@ if test x$enable_shared != xno; then
 			DSOFLAGS="$DSOFLAGS -Wl,-rpath,\$(libdir),-set_version,sgi1.0,-soname,libmxml.so.1 -shared \$(OPTIM)"
 			;;
 
-		osf | linux* | gnu)
+		linux*)
+			AC_MSG_RESULT(yes)
+			LIBMXML="libmxml.so.1.6"
+			DSO="\$(CC)"
+			DSOFLAGS="$DSOFLAGS -Wl,-soname,libmxml.so.1 -shared \$(OPTIM)"
+			;;
+
+		osf | gnu)
 			AC_MSG_RESULT(yes)
 			LIBMXML="libmxml.so.1.6"
 			DSO="\$(CC)"

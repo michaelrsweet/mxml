@@ -113,7 +113,7 @@
       <AdditionalDependencies>mxml1.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
-      <Command>xcopy /i /e /s /y /f   "$(ProjectDir)build\$(Platform)\$(Configuration)\Lib\*" "$(ProjectDir)build\$(Platform)\$(Configuration)\Test"</Command>
+      <Command>xcopy /i  /y /f   "$(ProjectDir)build\$(Platform)\$(Configuration)\Lib\mxml1.*" "$(ProjectDir)build\$(Platform)\$(Configuration)\Test"</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -138,7 +138,7 @@
       <AdditionalDependencies>mxml1.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
-      <Command>xcopy /i /e /s /y /f   "$(ProjectDir)build\$(Platform)\$(Configuration)\Lib\*" "$(ProjectDir)build\$(Platform)\$(Configuration)\Test"</Command>
+      <Command>xcopy /i  /y /f   "$(ProjectDir)build\$(Platform)\$(Configuration)\Lib\*" "$(ProjectDir)build\$(Platform)\$(Configuration)\Test"</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">

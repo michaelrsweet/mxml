@@ -103,6 +103,13 @@
 
 /* #undef HAVE_PTHREAD_H */
 
+/*
+ * C++ support...
+ */
+
+#ifdef __cplusplus
+extern "C" {
+#  endif /* __cplusplus */
 
 /*
  * Define prototypes for string functions as needed...
@@ -130,3 +137,7 @@ extern int	_mxml_snprintf(char *, size_t, const char *, ...);
 extern int	_mxml_vsnprintf(char *, size_t, const char *, va_list);
 #    define vsnprintf _mxml_vsnprintf
 #  endif /* !HAVE_VSNPRINTF */
+
+#ifdef __cplusplus
+}
+#  endif /* __cplusplus */

@@ -31,6 +31,7 @@
  * Include necessary headers...
  */
 
+#include "config.h"
 #include "mmd.h"
 #include <stdlib.h>
 #include <ctype.h>

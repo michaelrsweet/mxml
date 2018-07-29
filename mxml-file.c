@@ -626,6 +626,13 @@ mxml_add_char(int  ch,			/* I  - Character to add */
 
     *(*bufptr)++ = ch;
   }
+  else if (ch > 0x80 && ch <= 0xFF)
+  {
+    /*
+    * Single byte ISO/IEC 8859-1...
+    */
+    *(*bufptr)++ = ch;
+  }
   else if (ch < 0x800)
   {
    /*
@@ -1227,8 +1234,16 @@ mxml_file_getc(void *p,			/* I  - Pointer to file */
 	    return (EOF);
 	  }
 	}
-	else
-	  return (EOF);
+  else
+  {
+    if (ch > 0x80 && ch <= 0xFF)
+    {
+      /*  8-bit single-byte coded: ISO / IEC 8859 - 1 */
+      return (ch);
+    }
+    else
+      return (EOF);
+  }
 	break;
 
     case ENCODE_UTF16BE :

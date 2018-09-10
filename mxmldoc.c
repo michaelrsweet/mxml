@@ -3615,11 +3615,16 @@ write_description(
       if (!*ptr)
         ptr --;
     }
-    else if (!strncmp(ptr, "@code ", 6))
+    else if (!strncmp(ptr, "@code ", 6) || *ptr == '`')
     {
-      for (ptr += 6; isspace(*ptr & 255); ptr ++);
+      char end = *ptr++;		/* Terminating character */
 
-      for (start = ptr, ptr ++; *ptr && *ptr != '@'; ptr ++);
+      if (end != '`')
+      {
+        for (ptr += 5; isspace(*ptr & 255); ptr ++);
+      }
+
+      for (start = ptr, ptr ++; *ptr && *ptr != end; ptr ++);
 
       if (*ptr)
         *ptr = '\0';

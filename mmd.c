@@ -3,28 +3,10 @@
  *
  *     https://github.com/michaelrsweet/mmd
  *
- * Copyright 2017 by Michael R Sweet.
+ * Copyright © 2017-2018 by Michael R Sweet.
  *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * 1. Redistributions of source code must retain the above copyright notice,
- *    this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright notice,
- *    this list of conditions and the following disclaimer in the documentation
- *    and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
+ * Licensed under Apache License v2.0.  See the file "LICENSE" for more
+ * information.
  */
 
 /*
@@ -35,6 +17,9 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
+#ifdef WIN32
+#  define snprintf 	_snprintf
+#endif /* WIN32 */
 
 
 /*
@@ -65,6 +50,92 @@ static void     mmd_free(mmd_t *node);
 static void     mmd_parse_inline(mmd_t *parent, char *line);
 static char     *mmd_parse_link(char *lineptr, char **text, char **url);
 static void     mmd_remove(mmd_t *node);
+
+
+/*
+ * 'mmdCopyAllText()' - Make a copy of all the text under a given node.
+ *
+ * The returned string must be freed using free().
+ */
+
+char *					/* O - Copied string */
+mmdCopyAllText(mmd_t *node)		/* I - Parent node */
+{
+  char		*all = NULL,		/* String buffer */
+		*allptr = NULL,		/* Pointer into string buffer */
+		*temp;			/* Temporary pointer */
+  size_t	allsize = 0,		/* Size of "all" buffer */
+		textlen;		/* Length of "text" string */
+  mmd_t		*current,		/* Current node */
+		*next;			/* Next node */
+
+
+  current = mmdGetFirstChild(node);
+
+  while (current != node)
+  {
+    if (current->text)
+    {
+     /*
+      * Append this node's text to the string...
+      */
+
+      textlen = strlen(current->text);
+
+      if (allsize == 0)
+      {
+        allsize = textlen + (size_t)current->whitespace + 1;
+        all     = malloc(allsize);
+        allptr  = all;
+
+	if (!all)
+	  return (NULL);
+      }
+      else
+      {
+        allsize += textlen + (size_t)current->whitespace;
+        temp    = realloc(all, allsize);
+
+        if (!temp)
+        {
+          free(all);
+          return (NULL);
+        }
+
+        allptr = temp + (allptr - all);
+        all    = temp;
+      }
+
+      if (current->whitespace)
+        *allptr++ = ' ';
+
+      memcpy(allptr, current->text, textlen);
+      allptr += textlen;
+    }
+
+   /*
+    * Find the next logical node...
+    */
+
+    if ((next = mmdGetNextSibling(current)) == NULL)
+    {
+      next = mmdGetParent(current);
+
+      while (next && next != node && mmdGetNextSibling(next) == NULL)
+	next = mmdGetParent(next);
+
+      if (next != node)
+        next = mmdGetNextSibling(next);
+    }
+
+    current = next;
+  }
+
+  if (allptr)
+    *allptr = '\0';
+
+  return (all);
+}
 
 
 /*
@@ -309,6 +380,9 @@ mmdLoadFile(FILE *fp)                   /* I - File to load */
                 *lineptr,               /* Pointer into line */
                 *lineend;               /* End of line */
   int           blank_code = 0;         /* Saved indented blank code line */
+  mmd_type_t	columns[256];		/* Alignment of table columns */
+  int		num_columns = 0,	/* Number of columns in table */
+		rows = 0;		/* Number of rows in table */
 
 
  /*
@@ -426,7 +500,11 @@ mmdLoadFile(FILE *fp)                   /* I - File to load */
       * quote...
       */
 
-      if (current == doc || current->type != MMD_TYPE_BLOCK_QUOTE)
+      mmd_t *node;			/* Current node */
+
+      for (node = current; node != doc && node->type != MMD_TYPE_BLOCK_QUOTE; node = node->parent);
+
+      if (node == doc || node->type != MMD_TYPE_BLOCK_QUOTE)
         current = mmd_add(doc, MMD_TYPE_BLOCK_QUOTE, 0, NULL, NULL);
 
      /*
@@ -446,7 +524,130 @@ mmdLoadFile(FILE *fp)                   /* I - File to load */
       block      = NULL;
       continue;
     }
-    else if (!strcmp(lineptr, "+"))
+    else if (strchr(lineptr, '|'))
+    {
+     /*
+      * Table...
+      */
+
+      int	col;			/* Current column */
+      char	*start,			/* Start of column/cell */
+		*end;			/* End of column/cell */
+      mmd_t	*row = NULL,		/* Current row */
+		*cell;			/* Current cell */
+
+//      fprintf(stderr, "TABLE current=%p (%d), rows=%d\n", current, current->type, rows);
+
+      if (current->type != MMD_TYPE_TABLE)
+      {
+        if (current != doc && current->type != MMD_TYPE_BLOCK_QUOTE)
+          current = current->parent;
+
+//        fprintf(stderr, "ADDING NEW TABLE to %p (%d)\n", current, current->type);
+
+        current = mmd_add(current, MMD_TYPE_TABLE, 0, NULL, NULL);
+        block   = mmd_add(current, MMD_TYPE_TABLE_HEADER, 0, NULL, NULL);
+
+        for (col = 0; col < (int)(sizeof(columns) / sizeof(columns[0])); col ++)
+          columns[col] = MMD_TYPE_TABLE_BODY_CELL_LEFT;
+
+        num_columns = 0;
+        rows        = -1;
+      }
+      else if (rows > 0)
+      {
+        if (rows == 1)
+          block = mmd_add(current, MMD_TYPE_TABLE_BODY, 0, NULL, NULL);
+      }
+      else
+        block = NULL;
+
+      if (block)
+        row = mmd_add(block, MMD_TYPE_TABLE_ROW, 0, NULL, NULL);
+
+      if (*lineptr == '|')
+        lineptr ++;			/* Skip leading pipe */
+
+      if ((end = lineptr + strlen(lineptr) - 1) > lineptr)
+      {
+        while ((*end == '\n' || *end == 'r') && end > lineptr)
+          end --;
+
+        if (end > lineptr && *end == '|')
+	  *end = '\0';			/* Truncate trailing pipe */
+      }
+
+      for (col = 0; lineptr && *lineptr && col < (int)(sizeof(columns) / sizeof(columns[0])); col ++)
+      {
+       /*
+        * Get the bounds of the current cell...
+        */
+
+        start = lineptr;
+        if ((lineptr = strchr(lineptr + 1, '|')) != NULL)
+          *lineptr++ = '\0';
+
+        if (block)
+        {
+         /*
+          * Add a cell to this row...
+          */
+
+          if (block->type == MMD_TYPE_TABLE_HEADER)
+            cell = mmd_add(row, MMD_TYPE_TABLE_HEADER_CELL, 0, NULL, NULL);
+          else
+            cell = mmd_add(row, columns[col], 0, NULL, NULL);
+
+          mmd_parse_inline(cell, start);
+        }
+        else
+        {
+         /*
+          * Process separator row for alignment...
+          */
+
+	  while (isspace(*start & 255))
+	    start ++;
+
+          for (end = start + strlen(start) - 1; end > start && isspace(*end & 255); end --);
+
+          if (*start == ':' && *end == ':')
+            columns[col] = MMD_TYPE_TABLE_BODY_CELL_CENTER;
+          else if (*end == ':')
+            columns[col] = MMD_TYPE_TABLE_BODY_CELL_RIGHT;
+
+//          fprintf(stderr, "COLUMN %d SEPARATOR=\"%s\", TYPE=%d\n", col, start, columns[col]);
+        }
+      }
+
+     /*
+      * Make sure the table is balanced...
+      */
+
+      if (col > num_columns)
+      {
+        num_columns = col;
+      }
+      else if (block && block->type != MMD_TYPE_TABLE_HEADER)
+      {
+        while (col < num_columns)
+        {
+          mmd_add(row, columns[col], 0, NULL, NULL);
+          col ++;
+        }
+      }
+
+      rows ++;
+      continue;
+    }
+    else if (current->type == MMD_TYPE_TABLE)
+    {
+//      fputs("END TABLE\n", stderr);
+      current = current->parent;
+      block   = NULL;
+    }
+
+    if (!strcmp(lineptr, "+"))
     {
       if (block)
       {

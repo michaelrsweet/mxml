@@ -8,7 +8,8 @@
 - The `mxmlNewCDATA` and `mxmlSetCDATA` functions incorrectly added the XML
   trailer "]]" to the string (Issue #216)
 - Cross-compiling failed on install (Issue #218)
-- Updated the ZIP container library used for mxmldoc.
+- Fixed a crash bug in the `mxmlWrite` functions (Issue #228)
+- Updated the markdown and ZIP container libraries used for mxmldoc.
 
 
 # Changes in Mini-XML 2.11

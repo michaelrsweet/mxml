@@ -3,7 +3,7 @@
  * Documentation generator using Mini-XML, a small XML file parsing
  * library.
  *
- * Copyright 2003-2017 by Michael R Sweet.
+ * Copyright 2003-2018 by Michael R Sweet.
  *
  * These coded instructions, statements, and computer programs are the
  * property of Michael R Sweet and are protected by Federal copyright

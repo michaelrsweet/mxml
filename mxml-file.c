@@ -2972,34 +2972,52 @@ mxml_write_node(mxml_node_t     *node,	/* I - Node to write */
 
     if ((next = current->child) == NULL)
     {
-      while ((next = current->next) == NULL)
+      if (current == node)
       {
-        if (current == node || !current->parent)
-          break;
-
        /*
-	* The ? and ! elements are special-cases and have no end tags...
-	*/
+        * Don't traverse to sibling node if we are at the "root" node...
+        */
 
-	current = current->parent;
+        next = NULL;
+      }
+      else
+      {
+       /*
+        * Try the next sibling, and continue traversing upwards as needed...
+        */
 
-	if (current->value.element.name[0] != '!' &&
-	    current->value.element.name[0] != '?')
+	while ((next = current->next) == NULL)
 	{
-	  col = mxml_write_ws(current, p, cb, MXML_WS_BEFORE_CLOSE, col, putc_cb);
+	  if (current == node || !current->parent)
+	    break;
 
-	  if ((*putc_cb)('<', p) < 0)
-	    return (-1);
-	  if ((*putc_cb)('/', p) < 0)
-	    return (-1);
-	  if (mxml_write_string(current->value.element.name, p, putc_cb) < 0)
-	    return (-1);
-	  if ((*putc_cb)('>', p) < 0)
-	    return (-1);
+	 /*
+	  * The ? and ! elements are special-cases and have no end tags...
+	  */
 
-	  col += strlen(current->value.element.name) + 3;
+	  current = current->parent;
 
-	  col = mxml_write_ws(current, p, cb, MXML_WS_AFTER_CLOSE, col, putc_cb);
+	  if (current->value.element.name[0] != '!' &&
+	      current->value.element.name[0] != '?')
+	  {
+	    col = mxml_write_ws(current, p, cb, MXML_WS_BEFORE_CLOSE, col, putc_cb);
+
+	    if ((*putc_cb)('<', p) < 0)
+	      return (-1);
+	    if ((*putc_cb)('/', p) < 0)
+	      return (-1);
+	    if (mxml_write_string(current->value.element.name, p, putc_cb) < 0)
+	      return (-1);
+	    if ((*putc_cb)('>', p) < 0)
+	      return (-1);
+
+	    col += strlen(current->value.element.name) + 3;
+
+	    col = mxml_write_ws(current, p, cb, MXML_WS_AFTER_CLOSE, col, putc_cb);
+	  }
+
+	  if (current == node)
+	    break;
 	}
       }
     }

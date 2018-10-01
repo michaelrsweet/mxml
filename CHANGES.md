@@ -9,6 +9,8 @@
   trailer "]]" to the string (Issue #216)
 - Cross-compiling failed on install (Issue #218)
 - Fixed a crash bug in the `mxmlWrite` functions (Issue #228)
+- The `mxmlWrite` functions no longer write the siblings of the passed node
+  (Issue #228)
 - Updated the markdown and ZIP container libraries used for mxmldoc.
 
 

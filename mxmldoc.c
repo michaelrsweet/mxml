@@ -4036,6 +4036,9 @@ write_epub(const char  *epubfile,	/* I - EPUB file (output) */
       temp = mxmlNewElement(metadata, "dc:publisher");
       mxmlNewOpaque(temp, "mxmldoc");
 
+      temp = mxmlNewElement(metadata, "dc:subject");
+      mxmlNewOpaque(temp, "Programming");
+
       temp = mxmlNewElement(metadata, "dc:identifier");
       mxmlElementSetAttr(temp, "id", epubbase);
       snprintf(identifier, sizeof(identifier), "%s-%s", epubbase, docversion);

@@ -1,8 +1,8 @@
 ---
 title: Mini-XML API Reference
 author: Michael R Sweet
-copyright: Copyright © 2003-2017, All Rights Reserved.
-docversion: 2.11
+copyright: Copyright © 2003-2018, All Rights Reserved.
+docversion: 2.12
 ...
 
 # Introduction

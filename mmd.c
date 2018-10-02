@@ -9,6 +9,21 @@
  * information.
  */
 
+ /*
+ * Beginning with VC2005, Microsoft breaks ISO C and POSIX conformance
+ * by deprecating a number of functions in the name of security, even
+ * when many of the affected functions are otherwise completely secure.
+ * The _CRT_SECURE_NO_DEPRECATE definition ensures that we won't get
+ * warnings from their use...
+ *
+ * Then Microsoft decided that they should ignore this in VC2008 and use
+ * yet another define (_CRT_SECURE_NO_WARNINGS) instead...
+ */
+
+#define _CRT_SECURE_NO_DEPRECATE
+#define _CRT_SECURE_NO_WARNINGS
+
+
 /*
  * Include necessary headers...
  */
@@ -17,8 +32,21 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
+
+
+ /*
+  * Microsoft also renames the POSIX functions to _name, and introduces
+  * a broken compatibility layer using the original names.  As a result,
+  * random crashes can occur when, for example, strdup() allocates memory
+  * from a different heap than used by malloc() and free().
+  *
+  * To avoid moronic problems like this, we #define the POSIX function
+  * names to the corresponding non-standard Microsoft names.
+  */
+
 #ifdef WIN32
 #  define snprintf 	_snprintf
+#  define strdup	_strdup
 #endif /* WIN32 */
 
 

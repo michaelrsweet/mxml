@@ -100,7 +100,7 @@
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
     </ClCompile>
     <Link>
-      <OutputFile>mxml1.dll</OutputFile>
+      <OutputFile>$(Configuration)\$(Platform)\$(ProductName)\mxml1.dll</OutputFile>
       <IgnoreSpecificDefaultLibraries>oldnames.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <ModuleDefinitionFile>.\mxml1.def</ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -108,7 +108,7 @@
       <SubSystem>Windows</SubSystem>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <DataExecutionPrevention />
-      <ImportLibrary>mxml1.lib</ImportLibrary>
+      <ImportLibrary>$(Configuration)\$(Platform)\$(ProductName)\mxml1.lib</ImportLibrary>
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
   </ItemDefinitionGroup>
@@ -122,7 +122,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
-      <OutputFile>mxml1.dll</OutputFile>
+      <OutputFile>$(Configuration)\$(Platform)\$(ProductName)\mxml1.dll</OutputFile>
       <IgnoreSpecificDefaultLibraries>oldnames.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <ModuleDefinitionFile>.\mxml1.def</ModuleDefinitionFile>
       <GenerateDebugInformation>false</GenerateDebugInformation>
@@ -131,7 +131,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <DataExecutionPrevention />
-      <ImportLibrary>mxml1.lib</ImportLibrary>
+      <ImportLibrary>$(Configuration)\$(Platform)\$(ProductName)\mxml1.lib</ImportLibrary>
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
   </ItemDefinitionGroup>
@@ -151,7 +151,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
-      <OutputFile>mxml1.dll</OutputFile>
+      <OutputFile>$(Configuration)\$(Platform)\$(ProductName)\mxml1.dll</OutputFile>
       <IgnoreSpecificDefaultLibraries>oldnames.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <ModuleDefinitionFile>.\mxml1.def</ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -159,7 +159,7 @@
       <SubSystem>Windows</SubSystem>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <DataExecutionPrevention />
-      <ImportLibrary>mxml1.lib</ImportLibrary>
+      <ImportLibrary>$(Configuration)\$(Platform)\$(ProductName)\mxml1.lib</ImportLibrary>
       <TargetMachine>MachineX64</TargetMachine>
     </Link>
   </ItemDefinitionGroup>
@@ -176,7 +176,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
-      <OutputFile>mxml1.dll</OutputFile>
+      <OutputFile>$(Configuration)\$(Platform)\$(ProductName)\mxml1.dll</OutputFile>
       <IgnoreSpecificDefaultLibraries>oldnames.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <ModuleDefinitionFile>.\mxml1.def</ModuleDefinitionFile>
       <GenerateDebugInformation>false</GenerateDebugInformation>
@@ -185,7 +185,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <DataExecutionPrevention />
-      <ImportLibrary>mxml1.lib</ImportLibrary>
+      <ImportLibrary>$(Configuration)\$(Platform)\$(ProductName)\mxml1.lib</ImportLibrary>
       <TargetMachine>MachineX64</TargetMachine>
     </Link>
   </ItemDefinitionGroup>

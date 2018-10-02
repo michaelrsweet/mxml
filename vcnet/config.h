@@ -21,7 +21,7 @@
  * warnings from their use...
  *
  * Then Microsoft decided that they should ignore this in VC2008 and use
- * yet another define (_CRT_SECURE_NO_WARNINGS) instead.  Bastards.
+ * yet another define (_CRT_SECURE_NO_WARNINGS) instead...
  */
 
 #define _CRT_SECURE_NO_DEPRECATE

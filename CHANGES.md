@@ -1,3 +1,8 @@
+# Changes in Mini-XML CURRENT
+
+- The `mxmldoc` program now sets the EPUB subject ("Programming").
+
+
 # Changes in Mini-XML 2.12
 
 - Added yet more documentation about using `MXML_OPAQUE_CALLBACK` when you want

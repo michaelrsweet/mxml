@@ -35,6 +35,10 @@
  * Include necessary headers...
  */
 
+#ifdef WIN32
+#  define _CRT_SECURE_NO_WARNINGS	/* Disable warnings for standard library functions */
+#endif /* WIN32 */
+
 #include "zipc.h"
 #include <stdio.h>
 #include <stdarg.h>

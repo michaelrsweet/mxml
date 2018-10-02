@@ -42,6 +42,10 @@
  * Types...
  */
 
+#  ifdef WIN32
+typedef long ssize_t;
+#  endif /* WIN32 */
+
 typedef struct _zipc_s zipc_t;		/* ZIP container */
 typedef struct _zipc_file_s zipc_file_t;/* File/directory in ZIP container */
 

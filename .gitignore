@@ -26,5 +26,16 @@ temp1.xmlfd
 test.xmlfd
 testmxml
 test1.xml
+vcnet/.vs
+vcnet/Debug
+vcnet/Release
+vcnet/mxml1.dll
+vcnet/mxml1.exp
+vcnet/mxml1.ilk
+vcnet/mxml1.lib
+vcnet/mxmldoc.exe
+vcnet/mxmlstat.lib
+vcnet/packages
+vcnet/testmxml.exe
 xcode/mxml.xcodeproj/project.xcworkspace
 xcode/mxml.xcodeproj/xcuserdata

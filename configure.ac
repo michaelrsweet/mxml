@@ -41,8 +41,6 @@ CFLAGS="${CFLAGS:=}"
 CXXFLAGS="${CXXFLAGS:=}"
 LDFLAGS="${LDFLAGS:=}"
 AC_SUBST(LDFLAGS)
-OPTIM=""
-AC_SUBST(OPTIM)
 
 AC_ARG_WITH(ansi, [  --with-ansi             set full ANSI C mode, default=no],
 	use_ansi="$withval",
@@ -53,9 +51,14 @@ AC_ARG_WITH(archflags, [  --with-archflags        set additional architecture fl
 	ARCHFLAGS="")
 AC_SUBST(ARCHFLAGS)
 
+AC_ARG_WITH(optim,   [  --with-optim            set additional optimization flags, default=none],
+	OPTIM="$withval",
+	OPTIM="")
+AC_SUBST(OPTIM)
+
 AC_ARG_ENABLE(debug, [  --enable-debug          turn on debugging, default=no],
 if eval "test x$enable_debug = xyes"; then
- 	OPTIM="-g"
+ 	OPTIM="$OPTIM -g"
 fi)
 
 AC_ARG_WITH(docdir, [  --with-docdir           set directory for documentation, default=${prefix}/share/doc/mxml],

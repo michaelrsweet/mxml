@@ -656,8 +656,8 @@ ac_ct_CC
 CPPFLAGS
 CFLAGS
 CC
-ARCHFLAGS
 OPTIM
+ARCHFLAGS
 LDFLAGS
 VERSION
 host_os
@@ -711,6 +711,7 @@ ac_user_opts='
 enable_option_checking
 with_ansi
 with_archflags
+with_optim
 enable_debug
 with_docdir
 with_vsnprintf
@@ -1351,6 +1352,7 @@ Optional Packages:
   --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
   --with-ansi             set full ANSI C mode, default=no
   --with-archflags        set additional architecture flags, default=none
+  --with-optim            set additional optimization flags, default=none
   --with-docdir           set directory for documentation, default=${prefix}/share/doc/mxml
   --with-vsnprintf        use vsnprintf emulation functions, default=auto
 
@@ -2309,8 +2311,6 @@ CFLAGS="${CFLAGS:=}"
 CXXFLAGS="${CXXFLAGS:=}"
 LDFLAGS="${LDFLAGS:=}"
 
-OPTIM=""
-
 
 
 # Check whether --with-ansi was given.
@@ -2331,10 +2331,20 @@ fi
 
 
 
+
+# Check whether --with-optim was given.
+if test "${with_optim+set}" = set; then :
+  withval=$with_optim; OPTIM="$withval"
+else
+  OPTIM=""
+fi
+
+
+
 # Check whether --enable-debug was given.
 if test "${enable_debug+set}" = set; then :
   enableval=$enable_debug; if eval "test x$enable_debug = xyes"; then
- 	OPTIM="-g"
+ 	OPTIM="$OPTIM -g"
 fi
 fi
 

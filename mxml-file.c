@@ -2881,7 +2881,7 @@ mxml_write_node(mxml_node_t     *node,	/* I - Node to write */
 	      col ++;
 	  }
 
-	  sprintf(s, "%d", current->value.integer);
+	  snprintf(s, sizeof(s), "%d", current->value.integer);
 	  if (mxml_write_string(s, p, putc_cb) < 0)
 	    return (-1);
 
@@ -2911,7 +2911,7 @@ mxml_write_node(mxml_node_t     *node,	/* I - Node to write */
 	      col ++;
 	  }
 
-	  sprintf(s, "%f", current->value.real);
+	  snprintf(s, sizeof(s), "%f", current->value.real);
 	  if (mxml_write_string(s, p, putc_cb) < 0)
 	    return (-1);
 

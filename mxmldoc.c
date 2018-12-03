@@ -3792,7 +3792,7 @@ write_element(FILE        *out,		/* I - Output file */
         write_string(out, node->value.text.string, mode);
     }
 
-  if (!strcmp(element->value.element.name, "type") &&
+  if (!strcmp(element->value.element.name, "type") && element->last_child &&
       element->last_child->value.text.string[0] != '*')
     putc(' ', out);
 }

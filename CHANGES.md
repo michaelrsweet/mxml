@@ -1,5 +1,7 @@
 # Changes in Mini-XML CURRENT
 
+- Fixed a potential crash bug in mxmldoc found by fuzzing (Issue #235,
+  Issue #236)
 - The `mxmldoc` program now sets the EPUB subject ("Programming").
 
 

@@ -83,7 +83,7 @@ PUBLIBOBJS	=	mxml-attr.o mxml-entity.o mxml-file.o mxml-get.o \
 			mxml-index.o mxml-node.o mxml-search.o mxml-set.o
 LIBOBJS		=	$(PUBLIBOBJS) mxml-private.o mxml-string.o
 OBJS		=	testmxml.o $(LIBOBJS)
-ALLTARGETS	=	$(LIBMXML) testmxml @MXML_EPUB@
+ALLTARGETS	=	$(LIBMXML) testmxml
 CROSSTARGETS	=	$(LIBMXML)
 TARGETS		=	$(@TARGETS@)
 

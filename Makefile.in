@@ -331,33 +331,25 @@ testmxml.o:	mxml.h
 
 
 #
-# mxml.xml (depends on separate codedoc utility)
+# Documentation (depends on separate codedoc utility)
 #
 
-mxml.xml:	mxml.h $(PUBLIBOBJS:.o=.c) \
-		doc/body.man doc/footer.man \
-		doc/reference.header
+.PHONY: doc
+doc:	mxml.h $(PUBLIBOBJS:.o=.c) \
+		doc/body.md doc/body.man doc/footer.man \
+		doc/mxml-cover.png
 	echo Generating API documentation...
 	$(RM) mxml.xml
-	codedoc --header doc/reference.header \
-		--docversion @VERSION@ --author "Michael R Sweet" \
-		--copyright "Copyright 2003-2019, All Rights Reserved." \
-		--title "Mini-XML API Reference" \
-		mxml.xml mxml.h $(PUBLIBOBJS:.o=.c) >doc/reference.html
-	codedoc --man mxml --title "Mini-XML API" \
-		--body doc/body.man --footer doc/footer.man \
-		mxml.xml >doc/mxml.man
-
-
-#
-# mxml.epub (depends on separate codedoc utility)
-#
-
-mxml.epub:	mxml.xml doc/body.md doc/mxml-cover.png
-	echo Generating EPUB API documentation...
 	codedoc --body doc/body.md \
 		--coverimage doc/mxml-cover.png \
-		--epub mxml.epub mxml.xml
+		mxml.xml mxml.h $(PUBLIBOBJS:.o=.c) >doc/mxml.html
+	codedoc --body doc/body.md \
+		--coverimage doc/mxml-cover.png \
+		--epub doc/mxml.epub mxml.xml
+	codedoc --man mxml --title "Mini-XML API" \
+		--body doc/body.man --footer doc/footer.man \
+		mxml.xml >doc/mxml.3
+	$(RM) mxml.xml
 
 
 #

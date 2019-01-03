@@ -1,4 +1,4 @@
-# Changes in Mini-XML CURRENT
+# Changes in Mini-XML 2.13
 
 - Fixed a potential buffer overflow when writing floating point data
   (Issue #233)

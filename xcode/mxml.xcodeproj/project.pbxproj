@@ -14,7 +14,6 @@
 			);
 			dependencies = (
 				272C00491E8C6B61007EBCAC /* PBXTargetDependency */,
-				272C004B1E8C6B61007EBCAC /* PBXTargetDependency */,
 				272C004D1E8C6B61007EBCAC /* PBXTargetDependency */,
 			);
 			name = All;
@@ -23,7 +22,6 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
-		271227FF1EAADBE200167F24 /* mmd.c in Sources */ = {isa = PBXBuildFile; fileRef = 271227FD1EAADBE200167F24 /* mmd.c */; };
 		272C00191E8C66C8007EBCAC /* mxml-attr.c in Sources */ = {isa = PBXBuildFile; fileRef = 272C000D1E8C66C8007EBCAC /* mxml-attr.c */; };
 		272C001A1E8C66C8007EBCAC /* mxml-entity.c in Sources */ = {isa = PBXBuildFile; fileRef = 272C000E1E8C66C8007EBCAC /* mxml-entity.c */; };
 		272C001B1E8C66C8007EBCAC /* mxml-file.c in Sources */ = {isa = PBXBuildFile; fileRef = 272C000F1E8C66C8007EBCAC /* mxml-file.c */; };
@@ -38,11 +36,7 @@
 		272C00241E8C66C8007EBCAC /* mxml.h in Headers */ = {isa = PBXBuildFile; fileRef = 272C00181E8C66C8007EBCAC /* mxml.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		272C00261E8C66CF007EBCAC /* config.h in Headers */ = {isa = PBXBuildFile; fileRef = 272C00251E8C66CF007EBCAC /* config.h */; };
 		272C00421E8C6B30007EBCAC /* testmxml.c in Sources */ = {isa = PBXBuildFile; fileRef = 272C00401E8C6B1B007EBCAC /* testmxml.c */; };
-		272C00431E8C6B34007EBCAC /* mxmldoc.c in Sources */ = {isa = PBXBuildFile; fileRef = 272C00331E8C6ADE007EBCAC /* mxmldoc.c */; };
 		272C00501E8C6B89007EBCAC /* libmxml.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 272C00051E8C6664007EBCAC /* libmxml.a */; };
-		272C00511E8C6B8E007EBCAC /* libmxml.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 272C00051E8C6664007EBCAC /* libmxml.a */; };
-		272C00591E943266007EBCAC /* zipc.c in Sources */ = {isa = PBXBuildFile; fileRef = 272C00571E943266007EBCAC /* zipc.c */; };
-		272C005B1E943423007EBCAC /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 272C005A1E943423007EBCAC /* libz.tbd */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -52,13 +46,6 @@
 			proxyType = 1;
 			remoteGlobalIDString = 272C00041E8C6664007EBCAC;
 			remoteInfo = libmxml;
-		};
-		272C004A1E8C6B61007EBCAC /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 272CFFFD1E8C6664007EBCAC /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 272C002A1E8C6A94007EBCAC;
-			remoteInfo = mxmldoc;
 		};
 		272C004C1E8C6B61007EBCAC /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -74,25 +61,9 @@
 			remoteGlobalIDString = 272C00041E8C6664007EBCAC;
 			remoteInfo = libmxml;
 		};
-		272C00521E8C6B91007EBCAC /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 272CFFFD1E8C6664007EBCAC /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 272C00041E8C6664007EBCAC;
-			remoteInfo = libmxml;
-		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		272C00291E8C6A94007EBCAC /* CopyFiles */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = /usr/share/man/man1/;
-			dstSubfolderSpec = 0;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 1;
-		};
 		272C00371E8C6AEB007EBCAC /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -105,8 +76,6 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		271227FD1EAADBE200167F24 /* mmd.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = mmd.c; path = ../mmd.c; sourceTree = "<group>"; };
-		271227FE1EAADBE200167F24 /* mmd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = mmd.h; path = ../mmd.h; sourceTree = "<group>"; };
 		272C00051E8C6664007EBCAC /* libmxml.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libmxml.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		272C000D1E8C66C8007EBCAC /* mxml-attr.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "mxml-attr.c"; path = "../mxml-attr.c"; sourceTree = "<group>"; };
 		272C000E1E8C66C8007EBCAC /* mxml-entity.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "mxml-entity.c"; path = "../mxml-entity.c"; sourceTree = "<group>"; };
@@ -121,13 +90,9 @@
 		272C00171E8C66C8007EBCAC /* mxml-string.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "mxml-string.c"; path = "../mxml-string.c"; sourceTree = "<group>"; };
 		272C00181E8C66C8007EBCAC /* mxml.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = mxml.h; path = ../mxml.h; sourceTree = "<group>"; };
 		272C00251E8C66CF007EBCAC /* config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = config.h; sourceTree = "<group>"; };
-		272C002B1E8C6A94007EBCAC /* mxmldoc */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = mxmldoc; sourceTree = BUILT_PRODUCTS_DIR; };
-		272C00331E8C6ADE007EBCAC /* mxmldoc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = mxmldoc.c; path = ../mxmldoc.c; sourceTree = "<group>"; };
 		272C00391E8C6AEB007EBCAC /* testmxml */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = testmxml; sourceTree = BUILT_PRODUCTS_DIR; };
 		272C00401E8C6B1B007EBCAC /* testmxml.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = testmxml.c; path = ../testmxml.c; sourceTree = "<group>"; };
 		272C00551E8EF972007EBCAC /* libarchive.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libarchive.tbd; path = usr/lib/libarchive.tbd; sourceTree = SDKROOT; };
-		272C00571E943266007EBCAC /* zipc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = zipc.c; path = ../zipc.c; sourceTree = "<group>"; };
-		272C00581E943266007EBCAC /* zipc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = zipc.h; path = ../zipc.h; sourceTree = "<group>"; };
 		272C005A1E943423007EBCAC /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -136,15 +101,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		272C00281E8C6A94007EBCAC /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				272C005B1E943423007EBCAC /* libz.tbd in Frameworks */,
-				272C00511E8C6B8E007EBCAC /* libmxml.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -163,7 +119,6 @@
 			isa = PBXGroup;
 			children = (
 				272C00051E8C6664007EBCAC /* libmxml.a */,
-				272C002B1E8C6A94007EBCAC /* mxmldoc */,
 				272C00391E8C6AEB007EBCAC /* testmxml */,
 			);
 			name = Products;
@@ -192,12 +147,7 @@
 		272C00321E8C6ABB007EBCAC /* tools */ = {
 			isa = PBXGroup;
 			children = (
-				271227FD1EAADBE200167F24 /* mmd.c */,
-				271227FE1EAADBE200167F24 /* mmd.h */,
-				272C00331E8C6ADE007EBCAC /* mxmldoc.c */,
 				272C00401E8C6B1B007EBCAC /* testmxml.c */,
-				272C00571E943266007EBCAC /* zipc.c */,
-				272C00581E943266007EBCAC /* zipc.h */,
 			);
 			name = tools;
 			sourceTree = "<group>";
@@ -254,24 +204,6 @@
 			productReference = 272C00051E8C6664007EBCAC /* libmxml.a */;
 			productType = "com.apple.product-type.library.static";
 		};
-		272C002A1E8C6A94007EBCAC /* mxmldoc */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 272C00311E8C6A94007EBCAC /* Build configuration list for PBXNativeTarget "mxmldoc" */;
-			buildPhases = (
-				272C00271E8C6A94007EBCAC /* Sources */,
-				272C00281E8C6A94007EBCAC /* Frameworks */,
-				272C00291E8C6A94007EBCAC /* CopyFiles */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				272C00531E8C6B91007EBCAC /* PBXTargetDependency */,
-			);
-			name = mxmldoc;
-			productName = mxmldoc;
-			productReference = 272C002B1E8C6A94007EBCAC /* mxmldoc */;
-			productType = "com.apple.product-type.tool";
-		};
 		272C00381E8C6AEB007EBCAC /* testmxml */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 272C003D1E8C6AEB007EBCAC /* Build configuration list for PBXNativeTarget "testmxml" */;
@@ -304,11 +236,6 @@
 						DevelopmentTeam = RU58A2256H;
 						ProvisioningStyle = Automatic;
 					};
-					272C002A1E8C6A94007EBCAC = {
-						CreatedOnToolsVersion = 8.3;
-						DevelopmentTeam = RU58A2256H;
-						ProvisioningStyle = Automatic;
-					};
 					272C00381E8C6AEB007EBCAC = {
 						CreatedOnToolsVersion = 8.3;
 						DevelopmentTeam = RU58A2256H;
@@ -335,7 +262,6 @@
 			targets = (
 				272C00441E8C6B5A007EBCAC /* All */,
 				272C00041E8C6664007EBCAC /* libmxml */,
-				272C002A1E8C6A94007EBCAC /* mxmldoc */,
 				272C00381E8C6AEB007EBCAC /* testmxml */,
 			);
 		};
@@ -359,16 +285,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		272C00271E8C6A94007EBCAC /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				271227FF1EAADBE200167F24 /* mmd.c in Sources */,
-				272C00431E8C6B34007EBCAC /* mxmldoc.c in Sources */,
-				272C00591E943266007EBCAC /* zipc.c in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		272C00351E8C6AEB007EBCAC /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -385,11 +301,6 @@
 			target = 272C00041E8C6664007EBCAC /* libmxml */;
 			targetProxy = 272C00481E8C6B61007EBCAC /* PBXContainerItemProxy */;
 		};
-		272C004B1E8C6B61007EBCAC /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 272C002A1E8C6A94007EBCAC /* mxmldoc */;
-			targetProxy = 272C004A1E8C6B61007EBCAC /* PBXContainerItemProxy */;
-		};
 		272C004D1E8C6B61007EBCAC /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 272C00381E8C6AEB007EBCAC /* testmxml */;
@@ -399,11 +310,6 @@
 			isa = PBXTargetDependency;
 			target = 272C00041E8C6664007EBCAC /* libmxml */;
 			targetProxy = 272C004E1E8C6B83007EBCAC /* PBXContainerItemProxy */;
-		};
-		272C00531E8C6B91007EBCAC /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 272C00041E8C6664007EBCAC /* libmxml */;
-			targetProxy = 272C00521E8C6B91007EBCAC /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -527,24 +433,6 @@
 			};
 			name = Release;
 		};
-		272C002F1E8C6A94007EBCAC /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				DEVELOPMENT_TEAM = RU58A2256H;
-				MACOSX_DEPLOYMENT_TARGET = 10.12;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-			};
-			name = Debug;
-		};
-		272C00301E8C6A94007EBCAC /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				DEVELOPMENT_TEAM = RU58A2256H;
-				MACOSX_DEPLOYMENT_TARGET = 10.12;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-			};
-			name = Release;
-		};
 		272C003E1E8C6AEB007EBCAC /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -596,15 +484,6 @@
 			buildConfigurations = (
 				272C000A1E8C6664007EBCAC /* Debug */,
 				272C000B1E8C6664007EBCAC /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		272C00311E8C6A94007EBCAC /* Build configuration list for PBXNativeTarget "mxmldoc" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				272C002F1E8C6A94007EBCAC /* Debug */,
-				272C00301E8C6A94007EBCAC /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

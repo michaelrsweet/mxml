@@ -1,7 +1,7 @@
 #
 # Makefile for Mini-XML, a small XML-like file parsing library.
 #
-# Copyright 2003-2018 by Michael R Sweet.
+# Copyright 2003-2019 by Michael R Sweet.
 #
 # These coded instructions, statements, and computer programs are the
 # property of Michael R Sweet and are protected by Federal copyright
@@ -82,9 +82,9 @@ DOCFILES	=	doc/mxml.html doc/mxmldoc.xsd README.md COPYING CHANGES.md
 PUBLIBOBJS	=	mxml-attr.o mxml-entity.o mxml-file.o mxml-get.o \
 			mxml-index.o mxml-node.o mxml-search.o mxml-set.o
 LIBOBJS		=	$(PUBLIBOBJS) mxml-private.o mxml-string.o
-OBJS		=	mmd.o mxmldoc.o testmxml.o zipc.o $(LIBOBJS)
-ALLTARGETS	=	$(LIBMXML) mxmldoc testmxml mxml.xml @MXML_EPUB@
-CROSSTARGETS	=	$(LIBMXML) mxmldoc
+OBJS		=	testmxml.o $(LIBOBJS)
+ALLTARGETS	=	$(LIBMXML) testmxml @MXML_EPUB@
+CROSSTARGETS	=	$(LIBMXML)
 TARGETS		=	$(@TARGETS@)
 
 
@@ -102,7 +102,6 @@ all:		$(TARGETS)
 clean:
 	echo Cleaning build files...
 	$(RM) $(OBJS) $(ALLTARGETS)
-	$(RM) mxmldoc-static
 	$(RM) mxml1.dll
 	$(RM) libmxml.a
 	$(RM) libmxml.so.1.6
@@ -142,9 +141,6 @@ clang-changes:
 #
 
 install:	$(TARGETS) install-$(LIBMXML) install-libmxml.a
-	echo Installing mxmldoc in $(BUILDROOT)$(bindir)...
-	$(INSTALL_DIR) $(BUILDROOT)$(bindir)
-	$(INSTALL_BIN) mxmldoc $(BUILDROOT)$(bindir)
 	echo Installing documentation in $(BUILDROOT)$(docdir)...
 	$(INSTALL_DIR) $(BUILDROOT)$(docdir)
 	for file in $(DOCFILES); do \
@@ -157,8 +153,6 @@ install:	$(TARGETS) install-$(LIBMXML) install-libmxml.a
 	$(INSTALL_DIR) $(BUILDROOT)$(libdir)/pkgconfig
 	$(INSTALL_DATA) mxml.pc $(BUILDROOT)$(libdir)/pkgconfig
 	echo Installing man pages in $(BUILDROOT)$(mandir)...
-	$(INSTALL_DIR) $(BUILDROOT)$(mandir)/man1
-	$(INSTALL_MAN) doc/mxmldoc.man $(BUILDROOT)$(mandir)/man1/mxmldoc.1
 	$(INSTALL_DIR) $(BUILDROOT)$(mandir)/man3
 	$(INSTALL_MAN) doc/mxml.man $(BUILDROOT)$(mandir)/man3/mxml.3
 
@@ -197,8 +191,6 @@ install-libmxml.1.dylib: libmxml.1.dylib
 #
 
 uninstall: uninstall-$(LIBMXML) uninstall-libmxml.a
-	echo Uninstalling mxmldoc from $(BUILDROOT)$(bindir)...
-	$(RM) $(BUILDROOT)$(bindir)/mxmldoc
 	echo Uninstalling documentation from $(BUILDROOT)$(docdir)...
 	$(RM) -r $(BUILDROOT)$(docdir)
 	echo Uninstalling headers from $(BUILDROOT)$(includedir)...
@@ -206,7 +198,6 @@ uninstall: uninstall-$(LIBMXML) uninstall-libmxml.a
 	echo Uninstalling pkgconfig files from $(BUILDROOT)$(libdir)/pkgconfig...
 	$(RM) $(BUILDROOT)$(libdir)/pkgconfig/mxml.pc
 	echo Uninstalling man pages from $(BUILDROOT)$(mandir)...
-	$(RM) $(BUILDROOT)$(mandir)/man1/mxmldoc.1
 	$(RM) $(BUILDROOT)$(mandir)/man3/mxml.3
 
 uninstall-libmxml.a:
@@ -304,23 +295,6 @@ libmxml.1.dylib:	$(LIBOBJS)
 
 
 #
-# mxmldoc
-#
-
-mxmldoc:	$(LIBMXML) mxmldoc.o mmd.o @ZIPC@
-	echo Linking $@...
-	$(CC) -L. $(LDFLAGS) -o $@ mxmldoc.o mmd.o @ZIPC@ -lmxml $(LIBS)
-
-mxmldoc-static:	libmxml.a mxmldoc.o mmd.o @ZIPC@
-	echo Linking $@...
-	$(CC) $(LDFLAGS) -o $@ mxmldoc.o mmd.o @ZIPC@ libmxml.a $(LIBS)
-
-mxmldoc.o:	mxml.h zipc.h mmd.h
-zipc.o:		zipc.h
-mmd.o:		mmd.h
-
-
-#
 # testmxml
 #
 
@@ -357,45 +331,33 @@ testmxml.o:	mxml.h
 
 
 #
-# mxml.xml
+# mxml.xml (depends on separate codedoc utility)
 #
 
-mxml.xml:	mxmldoc-static mxml.h $(PUBLIBOBJS:.o=.c) \
+mxml.xml:	mxml.h $(PUBLIBOBJS:.o=.c) \
 		doc/body.man doc/footer.man \
 		doc/reference.header
 	echo Generating API documentation...
 	$(RM) mxml.xml
-	./mxmldoc-static --header doc/reference.header \
+	codedoc --header doc/reference.header \
 		--docversion @VERSION@ --author "Michael R Sweet" \
-		--copyright "Copyright 2003-2018, All Rights Reserved." \
+		--copyright "Copyright 2003-2019, All Rights Reserved." \
 		--title "Mini-XML API Reference" \
 		mxml.xml mxml.h $(PUBLIBOBJS:.o=.c) >doc/reference.html
-	./mxmldoc-static --man mxml --title "Mini-XML API" \
+	codedoc --man mxml --title "Mini-XML API" \
 		--body doc/body.man --footer doc/footer.man \
 		mxml.xml >doc/mxml.man
 
 
 #
-# mxml.epub
+# mxml.epub (depends on separate codedoc utility)
 #
 
-mxml.epub:	mxml.xml mxmldoc-static doc/body.md doc/mxml-cover.png
+mxml.epub:	mxml.xml doc/body.md doc/mxml-cover.png
 	echo Generating EPUB API documentation...
-	./mxmldoc-static --body doc/body.md \
+	codedoc --body doc/body.md \
 		--coverimage doc/mxml-cover.png \
 		--epub mxml.epub mxml.xml
-
-
-#
-# Use Valgrind (http://valgrind.org) to check for problems in mxmldoc.
-#
-
-valgrind:	mxmldoc-static
-	echo Doing dynamic code analysis using Valgrind...
-	$(RM) valgrind.xml
-	valgrind --tool=memcheck --leak-check=yes ./mxmldoc-static \
-		valgrind.xml mxml.h $(PUBLIBOBJS:.o=.c) \
-		>valgrind.html 2>valgrind.out
 
 
 #

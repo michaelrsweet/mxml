@@ -1,7 +1,7 @@
 #
 # RPM "spec" file for Mini-XML, a small XML file parsing library.
 #
-# Copyright 2003-2017 by Michael R Sweet.
+# Copyright 2003-2019 by Michael R Sweet.
 #
 # These coded instructions, statements, and computer programs are the
 # property of Michael R Sweet and are protected by Federal copyright
@@ -14,7 +14,7 @@
 
 Summary: Small XML file parsing library
 Name: mxml
-Version: 2.11
+Version: 2.13
 Release: 1
 License: LGPL
 Group: Development/Libraries
@@ -66,8 +66,6 @@ rm -rf $RPM_BUILD_ROOT
 %files
 %defattr(-,root,root)
 
-%dir /usr/bin
-/usr/bin/*
 %dir /usr/include
 /usr/include/mxml.h
 %dir /usr/lib
@@ -76,7 +74,5 @@ rm -rf $RPM_BUILD_ROOT
 /usr/lib/pkgconfig/mxml.pc
 %dir /usr/share/doc/mxml
 /usr/share/doc/mxml/*
-%dir /usr/share/man/man1
-/usr/share/man/man1/*
 %dir /usr/share/man/man3
 /usr/share/man/man3/*

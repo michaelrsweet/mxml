@@ -45,13 +45,6 @@
 
 
 /*
- * Do we have <zlib.h>?
- */
-
-#undef HAVE_ZLIB_H
-
-
-/*
  * Do we have the *printf() functions?
  */
 

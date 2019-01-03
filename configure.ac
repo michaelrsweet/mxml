@@ -1,7 +1,7 @@
 dnl
 dnl Configuration script for Mini-XML, a small XML-like file parsing library.
 dnl
-dnl Copyright 2003-2018 by Michael R Sweet.
+dnl Copyright 2003-2019 by Michael R Sweet.
 dnl
 dnl These coded instructions, statements, and computer programs are the
 dnl property of Michael R Sweet and are protected by Federal copyright
@@ -123,17 +123,6 @@ AC_CACHE_CHECK(for long long int, ac_cv_c_long_long,
 if test $ac_cv_c_long_long = yes; then
 	AC_DEFINE(HAVE_LONG_LONG)
 fi
-
-dnl EPUB support (via libz and zipc)
-MXML_EPUB=""
-AC_SUBST(MXML_EPUB)
-ZIPC=""
-AC_SUBST(ZIPC)
-AC_SEARCH_LIBS(gzgets,z,[
-	AC_DEFINE(HAVE_ZLIB_H)
-	ZIPC="zipc.o"
-	MXML_EPUB="mxml.epub"
-	LIBS="-lz $LIBS"])
 
 dnl Threading support
 AC_ARG_ENABLE(threads, [  --enable-threads        enable multi-threading support])

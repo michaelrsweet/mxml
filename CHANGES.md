@@ -2,9 +2,8 @@
 
 - Fixed a potential buffer overflow when writing floating point data
   (Issue #233)
-- Fixed a potential crash bug in mxmldoc found by fuzzing (Issue #235,
-  Issue #236)
-- The `mxmldoc` program now sets the EPUB subject ("Programming").
+- Moved `mxmldoc` to a new `codedoc` project whose focus is on generating
+  code documentation (Issue #235, Issue #236, Issue #237)
 
 
 # Changes in Mini-XML 2.12

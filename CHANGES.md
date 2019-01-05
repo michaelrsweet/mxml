@@ -1,6 +1,6 @@
 # Changes in Mini-XML 3.0
 
-- Changed the license to Apache 2.0 with exceptions.
+- Changed the license to Apache 2.0 with exceptions (Issue #239)
 - All of the internal node structures are now moved out of the public header.
 - Fixed a potential buffer overflow when writing floating point data
   (Issue #233)

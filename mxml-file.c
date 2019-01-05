@@ -1,7 +1,7 @@
 /*
  * File loading code for Mini-XML, a small XML file parsing library.
  *
- * Copyright 2003-2018 by Michael R Sweet.
+ * Copyright © 2003-2019 by Michael R Sweet.
  *
  * These coded instructions, statements, and computer programs are the
  * property of Michael R Sweet and are protected by Federal copyright
@@ -2723,7 +2723,7 @@ mxml_write_node(mxml_node_t     *node,	/* I - Node to write */
 		*next;			/* Next node */
   int		i,			/* Looping var */
 		width;			/* Width of attr + value */
-  mxml_attr_t	*attr;			/* Current attribute */
+  _mxml_attr_t	*attr;			/* Current attribute */
   char		s[255];			/* Temporary string */
 
 

@@ -1,4 +1,4 @@
-# Mini-XML Version 2.12
+# Mini-XML Version 3.0
 
 Mini-XML is a small XML parsing library that you can use to read XML data files
 or strings in your application without requiring large non-standard libraries.
@@ -184,5 +184,5 @@ The Mini-XML project page provides access to the Github issue tracking page:
 
 ## Legal Stuff
 
-The Mini-XML library is Copyright 2003-2018 by Michael R Sweet.  License terms
+The Mini-XML library is Copyright 2003-2019 by Michael R Sweet.  License terms
 are described in the file "COPYING".

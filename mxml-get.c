@@ -17,7 +17,7 @@
  */
 
 #include "config.h"
-#include "mxml.h"
+#include "mxml-private.h"
 
 
 /*

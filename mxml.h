@@ -1,7 +1,7 @@
 /*
  * Header file for Mini-XML, a small XML file parsing library.
  *
- * Copyright 2003-2017 by Michael R Sweet.
+ * Copyright © 2003-2019 by Michael R Sweet.
  *
  * These coded instructions, statements, and computer programs are the
  * property of Michael R Sweet and are protected by Federal copyright
@@ -34,8 +34,8 @@
  * Constants...
  */
 
-#  define MXML_MAJOR_VERSION	2	/* Major version number */
-#  define MXML_MINOR_VERSION	12	/* Minor version number */
+#  define MXML_MAJOR_VERSION	3	/* Major version number */
+#  define MXML_MINOR_VERSION	0	/* Minor version number */
 
 #  define MXML_TAB		8	/* Tabs every N columns */
 
@@ -97,66 +97,9 @@ typedef void (*mxml_custom_destroy_cb_t)(void *);
 typedef void (*mxml_error_cb_t)(const char *);
 					/**** Error callback function ****/
 
-typedef struct mxml_attr_s		/**** An XML element attribute value. @private@ ****/
-{
-  char			*name;		/* Attribute name */
-  char			*value;		/* Attribute value */
-} mxml_attr_t;
+typedef struct _mxml_node_s mxml_node_t;	/**** An XML node. ****/
 
-typedef struct mxml_element_s		/**** An XML element value. @private@ ****/
-{
-  char			*name;		/* Name of element */
-  int			num_attrs;	/* Number of attributes */
-  mxml_attr_t		*attrs;		/* Attributes */
-} mxml_element_t;
-
-typedef struct mxml_text_s		/**** An XML text value. @private@ ****/
-{
-  int			whitespace;	/* Leading whitespace? */
-  char			*string;	/* Fragment string */
-} mxml_text_t;
-
-typedef struct mxml_custom_s		/**** An XML custom value. @private@ ****/
-{
-  void			*data;		/* Pointer to (allocated) custom data */
-  mxml_custom_destroy_cb_t destroy;	/* Pointer to destructor function */
-} mxml_custom_t;
-
-typedef union mxml_value_u		/**** An XML node value. @private@ ****/
-{
-  mxml_element_t	element;	/* Element */
-  int			integer;	/* Integer number */
-  char			*opaque;	/* Opaque string */
-  double		real;		/* Real number */
-  mxml_text_t		text;		/* Text fragment */
-  mxml_custom_t		custom;		/* Custom data @since Mini-XML 2.1@ */
-} mxml_value_t;
-
-struct mxml_node_s			/**** An XML node. @private@ ****/
-{
-  mxml_type_t		type;		/* Node type */
-  struct mxml_node_s	*next;		/* Next node under same parent */
-  struct mxml_node_s	*prev;		/* Previous node under same parent */
-  struct mxml_node_s	*parent;	/* Parent node */
-  struct mxml_node_s	*child;		/* First child node */
-  struct mxml_node_s	*last_child;	/* Last child node */
-  mxml_value_t		value;		/* Node value */
-  int			ref_count;	/* Use count */
-  void			*user_data;	/* User data */
-};
-
-typedef struct mxml_node_s mxml_node_t;	/**** An XML node. ****/
-
-struct mxml_index_s			 /**** An XML node index. @private@ ****/
-{
-  char			*attr;		/* Attribute used for indexing or NULL */
-  int			num_nodes;	/* Number of nodes in index */
-  int			alloc_nodes;	/* Allocated nodes in index */
-  int			cur_node;	/* Current node */
-  mxml_node_t		**nodes;	/* Node array */
-};
-
-typedef struct mxml_index_s mxml_index_t;
+typedef struct _mxml_index_s mxml_index_t;
 					/**** An XML node index. ****/
 
 typedef int (*mxml_custom_load_cb_t)(mxml_node_t *, const char *);

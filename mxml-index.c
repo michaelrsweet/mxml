@@ -1,7 +1,7 @@
 /*
  * Index support code for Mini-XML, a small XML file parsing library.
  *
- * Copyright 2003-2017 by Michael R Sweet.
+ * Copyright © 2003-2019 by Michael R Sweet.
  *
  * These coded instructions, statements, and computer programs are the
  * property of Michael R Sweet and are protected by Federal copyright
@@ -17,7 +17,7 @@
  */
 
 #include "config.h"
-#include "mxml.h"
+#include "mxml-private.h"
 
 
 /*

@@ -1,7 +1,7 @@
 /*
  * Attribute support code for Mini-XML, a small XML file parsing library.
  *
- * Copyright 2003-2017 by Michael R Sweet.
+ * Copyright © 2003-2019 by Michael R Sweet.
  *
  * These coded instructions, statements, and computer programs are the
  * property of Michael R Sweet and are protected by Federal copyright
@@ -17,15 +17,14 @@
  */
 
 #include "config.h"
-#include "mxml.h"
+#include "mxml-private.h"
 
 
 /*
  * Local functions...
  */
 
-static int	mxml_set_attr(mxml_node_t *node, const char *name,
-		              char *value);
+static int	mxml_set_attr(mxml_node_t *node, const char *name, char *value);
 
 
 /*
@@ -39,7 +38,7 @@ mxmlElementDeleteAttr(mxml_node_t *node,/* I - Element */
                       const char  *name)/* I - Attribute name */
 {
   int		i;			/* Looping var */
-  mxml_attr_t	*attr;			/* Cirrent attribute */
+  _mxml_attr_t	*attr;			/* Cirrent attribute */
 
 
 #ifdef DEBUG
@@ -77,7 +76,7 @@ mxmlElementDeleteAttr(mxml_node_t *node,/* I - Element */
 
       i --;
       if (i > 0)
-        memmove(attr, attr + 1, i * sizeof(mxml_attr_t));
+        memmove(attr, attr + 1, i * sizeof(_mxml_attr_t));
 
       node->value.element.num_attrs --;
 
@@ -101,7 +100,7 @@ mxmlElementGetAttr(mxml_node_t *node,	/* I - Element node */
                    const char  *name)	/* I - Name of attribute */
 {
   int		i;			/* Looping var */
-  mxml_attr_t	*attr;			/* Cirrent attribute */
+  _mxml_attr_t	*attr;			/* Cirrent attribute */
 
 
 #ifdef DEBUG
@@ -290,7 +289,7 @@ mxml_set_attr(mxml_node_t *node,	/* I - Element node */
               char        *value)	/* I - Attribute value */
 {
   int		i;			/* Looping var */
-  mxml_attr_t	*attr;			/* New attribute */
+  _mxml_attr_t	*attr;			/* New attribute */
 
 
  /*
@@ -319,10 +318,10 @@ mxml_set_attr(mxml_node_t *node,	/* I - Element node */
   */
 
   if (node->value.element.num_attrs == 0)
-    attr = malloc(sizeof(mxml_attr_t));
+    attr = malloc(sizeof(_mxml_attr_t));
   else
     attr = realloc(node->value.element.attrs,
-                   (node->value.element.num_attrs + 1) * sizeof(mxml_attr_t));
+                   (node->value.element.num_attrs + 1) * sizeof(_mxml_attr_t));
 
   if (!attr)
   {

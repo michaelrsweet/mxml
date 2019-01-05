@@ -179,7 +179,7 @@ or the entire tree:
 
 The Mini-XML project page provides access to the Github issue tracking page:
 
-    https://michaelrsweet.github.io/mxml
+    https://www.msweet.org/mxml
 
 
 ## Legal Stuff

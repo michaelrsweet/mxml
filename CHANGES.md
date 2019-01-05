@@ -7,6 +7,7 @@
   (Issue #233)
 - Moved `mxmldoc` to a new `codedoc` project whose focus is on generating
   code documentation (Issue #235, Issue #236, Issue #237)
+- Error messages now include the line number of the error (Issue #230)
 
 
 # Changes in Mini-XML 2.12

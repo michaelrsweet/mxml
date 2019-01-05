@@ -1,25 +1,22 @@
 #
 # RPM "spec" file for Mini-XML, a small XML file parsing library.
 #
-# Copyright 2003-2019 by Michael R Sweet.
+# https://www.msweet.org/mxml
 #
-# These coded instructions, statements, and computer programs are the
-# property of Michael R Sweet and are protected by Federal copyright
-# law.  Distribution and use rights are outlined in the file "COPYING"
-# which should have been included with this file.  If this file is
-# missing or damaged, see the license at:
+# Copyright © 2003-2019 by Michael R Sweet.
 #
-#     https://michaelrsweet.github.io/mxml
+# Licensed under Apache License v2.0.  See the file "LICENSE" for more
+# information.
 #
 
 Summary: Small XML file parsing library
 Name: mxml
-Version: 2.13
+Version: 3.0
 Release: 1
-License: LGPL
+License: Apache 2.0
 Group: Development/Libraries
 Source: https://github.com/michaelrsweet/mxml/releases/download/release-%{version}/mxml-%{version}.tar.gz
-Url: https://michaelrsweet.github.io/mxml
+Url: https://www.msweet.org/mxml
 Packager: John Doe <johndoe@example.com>
 Vendor: Michael R Sweet
 

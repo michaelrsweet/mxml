@@ -1,5 +1,7 @@
 # Changes in Mini-XML 3.0
 
+- Changed the license to Apache 2.0 with exceptions.
+- All of the internal node structures are now moved out of the public header.
 - Fixed a potential buffer overflow when writing floating point data
   (Issue #233)
 - Moved `mxmldoc` to a new `codedoc` project whose focus is on generating

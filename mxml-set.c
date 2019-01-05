@@ -1,15 +1,12 @@
 /*
  * Node set functions for Mini-XML, a small XML file parsing library.
  *
+ * https://www.msweet.org/mxml
+ *
  * Copyright © 2003-2019 by Michael R Sweet.
  *
- * These coded instructions, statements, and computer programs are the
- * property of Michael R Sweet and are protected by Federal copyright
- * law.  Distribution and use rights are outlined in the file "COPYING"
- * which should have been included with this file.  If this file is
- * missing or damaged, see the license at:
- *
- *     https://michaelrsweet.github.io/mxml
+ * Licensed under Apache License v2.0.  See the file "LICENSE" for more
+ * information.
  */
 
 /*

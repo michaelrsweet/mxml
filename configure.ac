@@ -1,15 +1,12 @@
 dnl
 dnl Configuration script for Mini-XML, a small XML-like file parsing library.
 dnl
-dnl Copyright 2003-2019 by Michael R Sweet.
+dnl https://www.msweet.org/mxml
 dnl
-dnl These coded instructions, statements, and computer programs are the
-dnl property of Michael R Sweet and are protected by Federal copyright
-dnl law.  Distribution and use rights are outlined in the file "COPYING"
-dnl which should have been included with this file.  If this file is
-dnl missing or damaged, see the license at:
+dnl Copyright © 2003-2019 by Michael R Sweet.
 dnl
-dnl     https://michaelrsweet.github.io/mxml
+dnl Licensed under Apache License v2.0.  See the file "LICENSE" for more
+dnl information.
 dnl
 
 dnl Package name and version...

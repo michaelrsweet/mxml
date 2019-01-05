@@ -184,5 +184,8 @@ The Mini-XML project page provides access to the Github issue tracking page:
 
 ## Legal Stuff
 
-The Mini-XML library is Copyright 2003-2019 by Michael R Sweet.  License terms
-are described in the file "COPYING".
+Copyright © 2003-2019 by Michael R Sweet
+
+The Mini-XML library is licensed under the Apache License Version 2.0 with an
+exception to allow linking against GPL2/LGPL2-only software.  See the files
+"LICENSE" and "NOTICE" for more information.

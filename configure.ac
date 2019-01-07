@@ -182,21 +182,6 @@ if test x$enable_shared != xno; then
 			LDFLAGS="$LDFLAGS -R\$(libdir)"
                 	;;
 
-		hp-ux)
-			AC_MSG_RESULT(yes)
-			LIBMXML="libmxml.sl.1"
-			DSO="ld"
-			DSOFLAGS="$DSOFLAGS -b -z +h libmxml.sl.1 +s +b \$(libdir)"
-			LDFLAGS="$LDFLAGS -Wl,+s,+b,\$(libdir)"
-			;;
-
-		irix)
-			AC_MSG_RESULT(yes)
-			LIBMXML="libmxml.so.1.6"
-			DSO="\$(CC)"
-			DSOFLAGS="$DSOFLAGS -Wl,-rpath,\$(libdir),-set_version,sgi1.0,-soname,libmxml.so.1 -shared \$(OPTIM)"
-			;;
-
 		linux*)
 			AC_MSG_RESULT(yes)
 			LIBMXML="libmxml.so.1.6"

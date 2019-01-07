@@ -4461,23 +4461,6 @@ $as_echo "yes" >&6; }
 			LDFLAGS="$LDFLAGS -R\$(libdir)"
                 	;;
 
-		hp-ux)
-			{ $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-$as_echo "yes" >&6; }
-			LIBMXML="libmxml.sl.1"
-			DSO="ld"
-			DSOFLAGS="$DSOFLAGS -b -z +h libmxml.sl.1 +s +b \$(libdir)"
-			LDFLAGS="$LDFLAGS -Wl,+s,+b,\$(libdir)"
-			;;
-
-		irix)
-			{ $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-$as_echo "yes" >&6; }
-			LIBMXML="libmxml.so.1.6"
-			DSO="\$(CC)"
-			DSOFLAGS="$DSOFLAGS -Wl,-rpath,\$(libdir),-set_version,sgi1.0,-soname,libmxml.so.1 -shared \$(OPTIM)"
-			;;
-
 		linux*)
 			{ $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 $as_echo "yes" >&6; }

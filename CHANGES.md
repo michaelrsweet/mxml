@@ -8,6 +8,9 @@
 - Moved `mxmldoc` to a new `codedoc` project whose focus is on generating
   code documentation (Issue #235, Issue #236, Issue #237)
 - Error messages now include the line number of the error (Issue #230)
+- The `mxmlSetCDATA`, `mxmlSetElement`, `mxmlSetOpaque`, `mxmlSetOpaquef`,
+  `mxmlSetText`, and `mxmlSetTextf` functions caused a use-after-free bug if
+  the value came from the same node (Issue #241)
 
 
 # Changes in Mini-XML 2.12

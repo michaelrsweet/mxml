@@ -15,4 +15,6 @@ git tag -m "Tag $version" v$version
 git push origin v$version
 
 echo Creating mxml-$version.tar.gz...
-git archive --format tar HEAD | gzip -v9 >mxml-$version.tar.gz
+git archive --format tar --prefix=mxml-$version/ HEAD | gzip -v9 >mxml-$version.tar.gz
+gpg --detach-sign mxml-$version.tar.gz
+

@@ -360,7 +360,7 @@ mxmlSetTextf(mxml_node_t *node,		/* I - Node to set */
   */
 
   va_start(ap, format);
-  s = _mxml_strdupf(format, ap);
+  s = _mxml_vstrdupf(format, ap);
   va_end(ap);
 
   if (node->value.text.string)

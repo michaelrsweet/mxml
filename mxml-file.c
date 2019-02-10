@@ -13,9 +13,9 @@
  * Include necessary headers...
  */
 
-#ifndef WIN32
+#ifndef _WIN32
 #  include <unistd.h>
-#endif /* !WIN32 */
+#endif /* !_WIN32 */
 #include "mxml-private.h"
 
 

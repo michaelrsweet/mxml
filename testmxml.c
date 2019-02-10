@@ -20,9 +20,9 @@
 
 #include "config.h"
 #include "mxml-private.h"
-#ifndef WIN32
+#ifndef _WIN32
 #  include <unistd.h>
-#endif /* !WIN32 */
+#endif /* !_WIN32 */
 #include <fcntl.h>
 #ifndef O_BINARY
 #  define O_BINARY 0
@@ -721,7 +721,7 @@ main(int  argc,				/* I - Number of command-line args */
     }
   }
 
-#ifndef WIN32
+#ifndef _WIN32
  /*
   * Debug hooks...
   */
@@ -738,7 +738,7 @@ main(int  argc,				/* I - Number of command-line args */
       puts("Unable to check for leaks.");
   }
 #  endif /* __APPLE__ */
-#endif /* !WIN32 */
+#endif /* !_WIN32 */
 
  /*
   * Return...

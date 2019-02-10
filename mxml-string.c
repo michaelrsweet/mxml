@@ -526,17 +526,14 @@ _mxml_vstrdupf(const char *format,	/* I - Printf-style format string */
   * needed...
   */
 
-#  ifdef WIN32
+#  ifdef _WIN32
   bytes = _vscprintf(format, ap);
 
 #  else
   va_list	apcopy;			/* Copy of argument list */
 
   va_copy(apcopy, ap);
-  bytes = vsnprintf(temp, sizeof(temp), format, apcopy);
-#  endif /* WIN32 */
-
-  if (bytes < sizeof(temp))
+  if ((bytes = vsnprintf(temp, sizeof(temp), format, apcopy)) < sizeof(temp))
   {
    /*
     * Hey, the formatted string fits in the tiny buffer, so just dup that...
@@ -544,10 +541,10 @@ _mxml_vstrdupf(const char *format,	/* I - Printf-style format string */
 
     return (strdup(temp));
   }
+#  endif /* _WIN32 */
 
  /*
-  * Allocate memory for the whole thing and reformat to the new, larger
-  * buffer...
+  * Allocate memory for the whole thing and reformat to the new buffer...
   */
 
   if ((buffer = calloc(1, bytes + 1)) != NULL)

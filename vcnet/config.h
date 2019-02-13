@@ -63,7 +63,7 @@
  * Version number...
  */
 
-#define MXML_VERSION "Mini-XML v2.13"
+#define MXML_VERSION "Mini-XML v3.0"
 
 
 /*
@@ -112,6 +112,11 @@
 extern char	*_mxml_strdup(const char *);
 #    define strdup _mxml_strdup
 #  endif /* !HAVE_STRDUP */
+
+#  ifndef HAVE_STRLCAT
+extern size_t	_mxml_strlcat(char *, const char *, size_t);
+#    define strlcat _mxml_strlcat
+#  endif /* !HAVE_STRLCAT */
 
 #  ifndef HAVE_STRLCPY
 extern size_t	_mxml_strlcpy(char *, const char *, size_t);

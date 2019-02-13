@@ -1,5 +1,5 @@
 /*
- * Configuration file for Mini-XML, a small XML file parsing library.
+ * Xcode configuration file for Mini-XML, a small XML file parsing library.
  *
  * https://www.msweet.org/mxml
  *

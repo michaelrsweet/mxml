@@ -3,90 +3,61 @@
   <head>
     <title>Mini-XML API Reference</title>
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
-    <meta name="creator" content="codedoc v3.1">
+    <meta name="creator" content="codedoc v3.2">
     <meta name="author" content="Michael R Sweet">
     <meta name="copyright" content="Copyright &#xa9; 2003-2019, All Rights Reserved.">
     <meta name="version" content="0.0">
     <style type="text/css"><!--
-body, p, h1, h2, h3, h4 {
+body, p, h1, h2, h3, h4, h5, h6 {
   font-family: sans-serif;
+  line-height: 1.4;
 }
-div.body h1 {
-  font-size: 250%;
+h1, h2, h3, h4, h5, h6 {
   font-weight: bold;
+  page-break-inside: avoid;
+}
+h1 {
+  font-size: 250%;
   margin: 0;
 }
-div.body h2 {
+h2 {
   font-size: 250%;
   margin-top: 1.5em;
 }
-div.body h3 {
+h3 {
+  font-size: 200%;
+  margin-bottom: 0.5em;
+  margin-top: 1.5em;
+}
+h4 {
   font-size: 150%;
   margin-bottom: 0.5em;
   margin-top: 1.5em;
 }
-div.body h4 {
+h5 {
+  font-size: 125%;
+  margin-bottom: 0.5em;
+  margin-top: 1.5em;
+}
+h6 {
   font-size: 110%;
   margin-bottom: 0.5em;
   margin-top: 1.5em;
 }
-div.body h5 {
-  font-size: 100%;
-  margin-bottom: 0.5em;
-  margin-top: 1.5em;
+div.header h1, div.header p {
+  text-align: center;
 }
-div.contents {
-  background: #e8e8e8;
-  border: solid thin black;
-  padding: 10px;
+div.contents, div.body, div.footer {
+  page-break-before: always;
 }
-div.contents h1 {
-  font-size: 110%;
-}
-div.contents h2 {
-  font-size: 100%;
-}
-div.contents ul.contents {
-  font-size: 80%;
-}
-.class {
+.class, .enumeration, .function, .struct, .typedef, .union {
   border-bottom: solid 2px gray;
-}
-.constants {
 }
 .description {
   margin-top: 0.5em;
 }
-.discussion {
-}
-.enumeration {
-  border-bottom: solid 2px gray;
-}
 .function {
-  border-bottom: solid 2px gray;
   margin-bottom: 0;
-}
-.members {
-}
-.method {
-}
-.parameters {
-}
-.returnvalue {
-}
-.struct {
-  border-bottom: solid 2px gray;
-}
-.typedef {
-  border-bottom: solid 2px gray;
-}
-.union {
-  border-bottom: solid 2px gray;
-}
-.variable {
-}
-h1, h2, h3, h4, h5, h6 {
-  page-break-inside: avoid;
 }
 blockquote {
   border: solid thin gray;
@@ -95,19 +66,15 @@ blockquote {
   page-break-inside: avoid;
 }
 p code, li code, p.code, pre, ul.code li {
-  background: rgba(127,127,127,0.1);
-  border: thin dotted gray;
   font-family: monospace;
-  font-size: 90%;
   hyphens: manual;
   -webkit-hyphens: manual;
-  page-break-inside: avoid;
 }
 p.code, pre, ul.code li {
+  background: rgba(127,127,127,0.1);
+  border: thin dotted gray;
   padding: 10px;
-}
-p code, li code {
-  padding: 2px 5px;
+  page-break-inside: avoid;
 }
 a:link, a:visited {
   text-decoration: none;
@@ -121,7 +88,7 @@ span.info {
   font-weight: bold;
   white-space: nowrap;
 }
-h3 span.info, h4 span.info {
+h1 span.info, h2 span.info, h3 span.info, h4 span.info {
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
   float: right;
@@ -141,13 +108,38 @@ ul.contents > li {
 ul.contents li ul.code, ul.contents li ul.subcontents {
   padding-left: 2em;
 }
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+td {
+  border: solid 1px #666;
+  padding: 5px 10px;
+  vertical-align: top;
+}
+td.left {
+  text-align: left;
+}
+td.center {
+  text-align: center;
+}
+td.right {
+  text-align: right;
+}
+th {
+  border-bottom: solid 2px #000;
+  padding: 1px 5px;
+  text-align: center;
+  vertical-align: bottom;
+}
+tr:nth-child(even) {
+  background: rgba(127,127,127,0.1);n}
 table.list {
   border-collapse: collapse;
   width: 100%;
 }
-table.list tr:nth-child(even) {
-  background: rgba(127,127,127,0.1);]n}
 table.list th {
+  border-bottom: none;
   border-right: 2px solid gray;
   font-family: monospace;
   padding: 5px 10px 5px 2px;
@@ -155,25 +147,23 @@ table.list th {
   vertical-align: top;
 }
 table.list td {
+  border: none;
   padding: 5px 2px 5px 10px;
   text-align: left;
   vertical-align: top;
 }
-h1.title {
-}
-h2.title {
-  border-bottom: solid 2px black;
-}
-h3.title {
+h2.title, h3.title {
   border-bottom: solid 2px black;
 }
 --></style>
   </head>
   <body>
-<p><img src="doc/mxml-cover.png" width="100%"></p>
-    <h1 class="title">Mini-XML API Reference</h1>
-    <p>Michael R Sweet</p>
-    <p>Copyright &#xa9; 2003-2019, All Rights Reserved.</p>
+    <div class="header">
+      <p><img src="doc/mxml-cover.png" width="100%"></p>
+      <h1 class="title">Mini-XML API Reference</h1>
+      <p>Michael R Sweet</p>
+      <p>Copyright &#xa9; 2003-2019, All Rights Reserved.</p>
+    </div>
     <div class="contents">
       <h2 class="title">Contents</h2>
       <ul class="contents">
@@ -302,7 +292,7 @@ h3.title {
       </ul>
     </div>
     <div class="body">
-    <h2><a id="introduction">Introduction</a></h2>
+    <h2 class="title" id="introduction">Introduction</h2>
     <p>Mini-XML is a small XML parsing library that you can use to read XML data files or strings in your application without requiring large non-standard libraries. Mini-XML provides the following functionality:</p>
     <ul>
     <li>Reading of UTF-8 and UTF-16 and writing of UTF-8 encoded XML files and strings.</li>
@@ -314,7 +304,7 @@ h3.title {
     <li>&quot;Find&quot; and &quot;walk&quot; functions for easily locating and navigating trees of data.</li>
 </ul>
     <p>Mini-XML doesn't do validation or other types of processing on the data based upon schema files or other sources of definition information.</p>
-    <h3><a id="history">History</a></h3>
+    <h3 class="title" id="history">History</h3>
     <p>Mini-XML was initially developed for the <a href="http://gutenprint.sf.net/">Gutenprint</a> project to replace the rather large and unwieldy <code>libxml2</code> library with something substantially smaller and easier-to-use. It all began one morning in June of 2003 when Robert posted the following sentence to the developer's list:</p>
     <blockquote>
     <p>It's bad enough that we require libxml2, but rolling our own XML parser is a bit more than we can handle.</p>
@@ -325,14 +315,14 @@ h3.title {
 </blockquote>
     <p>I took my own challenge and coded furiously for two days to produced the initial public release of Mini-XML, total lines of code: 696. Robert promptly integrated Mini-XML into Gutenprint and removed libxml2.</p>
     <p>Thanks to lots of feedback and support from various developers, Mini-XML has evolved since then to provide a more complete XML implementation and now stands at a whopping 4,115 lines of code, compared to 140,410 lines of code for libxml2 version 2.9.1.</p>
-    <h3><a id="resources">Resources</a></h3>
+    <h3 class="title" id="resources">Resources</h3>
     <p>The Mini-XML home page can be found at:</p>
     <pre><code>https://www.msweet.orgm/mxml
 </code></pre>
     <p>From here you can download the current version of Mini-XML, the issue tracker, and other resources.</p>
-    <h3><a id="legal-stuff">Legal Stuff</a></h3>
+    <h3 class="title" id="legal-stuff">Legal Stuff</h3>
     <p>The Mini-XML library is copyright &#xa9; 2003-2019 by Michael R Sweet and is provided under the Apache License Version 2.0 with an exception to allow linking against GPL2/LGPL2-only software. See the files &quot;LICENSE&quot; and &quot;NOTICE&quot; for more information.</p>
-    <h2><a id="using-mini-xml">Using Mini-XML</a></h2>
+    <h2 class="title" id="using-mini-xml">Using Mini-XML</h2>
     <p>Mini-XML provides a single header file which you include:</p>
     <pre><code>#include &lt;mxml.h&gt;
 </code></pre>
@@ -342,7 +332,7 @@ h3.title {
     <p>If you have the <code>pkg-config</code> software installed, you can use it to determine the proper compiler and linker options for your installation:</p>
     <pre><code>gcc `pkg-config --cflags mxml` -o myprogram myprogram.c `pkg-config --libs mxml`
 </code></pre>
-    <h3><a id="loading-an-xml-file">Loading an XML File</a></h3>
+    <h3 class="title" id="loading-an-xml-file">Loading an XML File</h3>
     <p>You load an XML file using the <code>mxmlLoadFile</code> function:</p>
     <pre><code>mxml_node_t *
 mxmlLoadFile(mxml_node_t *top, FILE *fp,
@@ -365,7 +355,7 @@ mxml_node_t *
 mxmlLoadString(mxml_node_t *top, const char *s,
                mxml_type_t (*cb)(mxml_node_t *));
 </code></pre>
-    <h4><a id="load-callbacks">Load Callbacks</a></h4>
+    <h4 id="load-callbacks">Load Callbacks</h4>
     <p>The last argument to the <code>mxmlLoad</code> functions is a callback function which is used to determine the value type of each data node in an XML document. Mini-XML defines several standard callbacks for simple XML data files:</p>
     <ul>
     <li><code>MXML_INTEGER_CALLBACK</code>: All data nodes contain whitespace-separated integers.</li>
@@ -407,7 +397,7 @@ fp = fopen(&quot;filename.xml&quot;, &quot;r&quot;);
 tree = mxmlLoadFile(NULL, fp, type_cb);
 fclose(fp);
 </code></pre>
-    <h3><a id="nodes">Nodes</a></h3>
+    <h3 class="title" id="nodes">Nodes</h3>
     <p>Every piece of information in an XML file is stored in memory in &quot;nodes&quot;. Nodes are defined by the <code>mxml_node_t</code> structure. Each node has a typed value, optional user data, a parent node, sibling nodes (previous and next), and potentially child nodes.</p>
     <p>For example, if you have an XML file like the following:</p>
     <pre><code>&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
@@ -437,11 +427,19 @@ val1   val2   val3     |     val7   val8
                        |      |      |
                      val4   val5   val6
 </code></pre>
-where &quot;-&quot; is a pointer to the sibling node and &quot;&quot; is a pointer to the first    <p>child or parent node.</p>
+    <p>where &quot;-&quot; is a pointer to the sibling node and &quot;|&quot; is a pointer to the first child or parent node.</p>
     <p>The <code>mxmlGetType</code> function gets the type of a node:</p>
     <pre><code>mxml_type_t
 mxmlGetType(mxml_node_t *node);
 </code></pre>
+    <ul>
+    <li><code>MXML_CUSTOM</code> : A custom value defined by your application,</li>
+    <li><code>MXML_ELEMENT</code> : An XML element, CDATA, comment, or processing instruction,</li>
+    <li><code>MXML_INTEGER</code> : A whitespace-delimited integer value,</li>
+    <li><code>MXML_OPAQUE</code> : An opaque string value that preserves all whitespace,</li>
+    <li><code>MXML_REAL</code> : A whitespace-delimited floating point value, or</li>
+    <li><code>MXML_TEXT</code> : A whitespace-delimited text (fragment) value.</li>
+</ul>
     <blockquote>
     <p>Note: CDATA, comment, and processing directive nodes are currently stored in memory as special elements. This will be changed in a future major release of Mini-XML.</p>
 </blockquote>
@@ -465,7 +463,7 @@ mxmlGetPrevSibling(mxml_node_t *node);
     <pre><code>void *
 mxmlGetUserData(mxml_node_t *node);
 </code></pre>
-    <h3><a id="creating-xml-documents">Creating XML Documents</a></h3>
+    <h3 class="title" id="creating-xml-documents">Creating XML Documents</h3>
     <p>You can create and update XML documents in memory using the various <code>mxmlNew</code> functions. The following code will create the XML document described in the previous section:</p>
     <pre><code>mxml_node_t *xml;    /* &lt;?xml ... ?&gt; */
 mxml_node_t *data;   /* &lt;data&gt; */
@@ -508,7 +506,7 @@ data = mxmlNewElement(xml, &quot;data&quot;);
 mxmlNewText(node, 0, &quot;val1&quot;);
 </code></pre>
     <p>The resulting in-memory XML document can then be saved or processed just like one loaded from disk or a string.</p>
-    <h3><a id="saving-an-xml-file">Saving an XML File</a></h3>
+    <h3 class="title" id="saving-an-xml-file">Saving an XML File</h3>
     <p>You save an XML file using the <code>mxmlSaveFile</code> function:</p>
     <pre><code>int
 mxmlSaveFile(mxml_node_t *node, FILE *fp,
@@ -532,7 +530,7 @@ int
 mxmlSaveString(mxml_node_t *node, char *buffer, int bufsize,
                mxml_save_cb_t cb);
 </code></pre>
-    <h4><a id="controlling-line-wrapping">Controlling Line Wrapping</a></h4>
+    <h4 id="controlling-line-wrapping">Controlling Line Wrapping</h4>
     <p>When saving XML documents, Mini-XML normally wraps output lines at column 75 so that the text is readable in terminal windows. The <code>mxmlSetWrapMargin</code> function overrides the default wrap margin for the current thread:</p>
     <pre><code>void mxmlSetWrapMargin(int column);
 </code></pre>
@@ -542,7 +540,7 @@ mxmlSaveString(mxml_node_t *node, char *buffer, int bufsize,
     <p>while the following code disables wrapping by setting the margin to 0:</p>
     <pre><code>mxmlSetWrapMargin(0);
 </code></pre>
-    <h4><a id="save-callbacks">Save Callbacks</a></h4>
+    <h4 id="save-callbacks">Save Callbacks</h4>
     <p>The last argument to the <code>mxmlSave</code> functions is a callback function which is used to automatically insert whitespace in an XML document. Your callback function will be called up to four times for each element node with a pointer to the node and a &quot;where&quot; value of <code>MXML_WS_BEFORE_OPEN</code>, <code>MXML_WS_AFTER_OPEN</code>, <code>MXML_WS_BEFORE_CLOSE</code>, or <code>MXML_WS_AFTER_CLOSE</code>. The callback function should return <code>NULL</code> if no whitespace should be added or the string to insert (spaces, tabs, carriage returns, and newlines) otherwise.</p>
     <p>The following whitespace callback can be used to add whitespace to XHTML output to make it more readable in a standard text editor:</p>
     <pre><code>const char *
@@ -617,14 +615,14 @@ fp = fopen(&quot;filename.xml&quot;, &quot;w&quot;);
 mxmlSaveFile(tree, fp, whitespace_cb);
 fclose(fp);
 </code></pre>
-    <h3><a id="memory-management">Memory Management</a></h3>
+    <h3 class="title" id="memory-management">Memory Management</h3>
     <p>Once you are done with the XML data, use the <code>mxmlDelete</code> function to recursively free the memory that is used for a particular node or the entire tree:</p>
     <pre><code>void
 mxmlDelete(mxml_node_t *tree);
 </code></pre>
     <p>You can also use reference counting to manage memory usage. The <code>mxmlRetain</code> and <code>mxmlRelease</code> functions increment and decrement a node's use count, respectively. When the use count goes to zero, <code>mxmlRelease</code> automatically calls <code>mxmlDelete</code> to actually free the memory used by the node tree. New nodes start with a use count of 1.</p>
-    <h2><a id="more-about-nodes">More About Nodes</a></h2>
-    <h3><a id="element-nodes">Element Nodes</a></h3>
+    <h2 class="title" id="more-about-nodes">More About Nodes</h2>
+    <h3 class="title" id="element-nodes">Element Nodes</h3>
     <p>Element (<code>MXML_ELEMENT</code>) nodes are created using the <code>mxmlNewElement</code> function. Element attributes are set using the <code>mxmlElementSetAttr</code> and <code>mxmlElementSetAttrf</code> functions and cleared using the <code>mxmlElementDeleteAttr</code> function:</p>
     <pre><code>mxml_node_t *
 mxmlNewElement(mxml_node_t *parent, const char *name);
@@ -658,14 +656,14 @@ mxmlElementGetAttrByIndex(mxml_node_t *node, int idx,
 int
 mxmlElementGetAttrCount(mxml_node_t *node);
 </code></pre>
-    <h3><a id="cdata-nodes">CDATA Nodes</a></h3>
+    <h3 class="title" id="cdata-nodes">CDATA Nodes</h3>
     <p>CDATA (<code>MXML_ELEMENT</code>) nodes are created using the <code>mxmlNewCDATA</code> function:</p>
     <pre><code>mxml_node_t *mxmlNewCDATA(mxml_node_t *parent, const char *string);
 </code></pre>
     <p>The <code>mxmlGetCDATA</code> function retrieves the CDATA string pointer for a node:</p>
     <pre><code>const char *mxmlGetCDATA(mxml_node_t *node);
 </code></pre>
-    <h3><a id="comment-nodes">Comment Nodes</a></h3>
+    <h3 class="title" id="comment-nodes">Comment Nodes</h3>
     <p>Because comments are currently stored as element nodes, comment (<code>MXML_ELEMENT</code>) nodes are created using the <code>mxmlNewElement</code> function by including the surrounding &quot;!--&quot; and &quot;--&quot; characters in the element name, for example:</p>
     <pre><code>mxml_node_t *node = mxmlNewElement(&quot;!-- This is a comment --&quot;);
 </code></pre>
@@ -673,7 +671,7 @@ mxmlElementGetAttrCount(mxml_node_t *node);
     <pre><code>const char *comment = mxmlGetElement(node);
 /* returns &quot;!-- This is a comment --&quot; */
 </code></pre>
-    <h3><a id="processing-instruction-nodes">Processing Instruction Nodes</a></h3>
+    <h3 class="title" id="processing-instruction-nodes">Processing Instruction Nodes</h3>
     <p>Because processing instructions are currently stored as element nodes, processing instruction (<code>MXML_ELEMENT</code>) nodes are created using the <code>mxmlNewElement</code> function including the surrounding &quot;?&quot; characters:</p>
     <pre><code>mxml_node_t *node = mxmlNewElement(&quot;?xml-stylesheet type=\&quot;text/css\&quot; href=\&quot;style.css\&quot;?&quot;);
 </code></pre>
@@ -681,7 +679,7 @@ mxmlElementGetAttrCount(mxml_node_t *node);
     <pre><code>const char *instr = mxmlGetElement(node);
 /* returned &quot;?xml-stylesheet type=\&quot;text/css\&quot; href=\&quot;style.css\&quot;?&quot; */
 </code></pre>
-    <h3><a id="integer-nodes">Integer Nodes</a></h3>
+    <h3 class="title" id="integer-nodes">Integer Nodes</h3>
     <p>Integer (<code>MXML_INTEGER</code>) nodes are created using the <code>mxmlNewInteger</code> function:</p>
     <pre><code>mxml_node_t *
 mxmlNewInteger(mxml_node_t *parent, int integer);
@@ -690,7 +688,7 @@ mxmlNewInteger(mxml_node_t *parent, int integer);
     <pre><code>int
 mxmlGetInteger(mxml_node_t *node);
 </code></pre>
-    <h3><a id="opaque-string-nodes">Opaque String Nodes</a></h3>
+    <h3 class="title" id="opaque-string-nodes">Opaque String Nodes</h3>
     <p>Opaque string (<code>MXML_OPAQUE</code>) nodes are created using the <code>mxmlNewOpaque</code> function:</p>
     <pre><code>mxml_node_t *
 mxmlNewOpaque(mxml_node_t *parent, const char *opaque);
@@ -699,7 +697,7 @@ mxmlNewOpaque(mxml_node_t *parent, const char *opaque);
     <pre><code>const char *
 mxmlGetOpaque(mxml_node_t *node);
 </code></pre>
-    <h3><a id="text-nodes">Text Nodes</a></h3>
+    <h3 class="title" id="text-nodes">Text Nodes</h3>
     <p>Whitespace-delimited text string (<code>MXML_TEXT</code>) nodes are created using the <code>mxmlNewText</code> and <code>mxmlNewTextf</code> functions. Each text node consists of a text string and (leading) whitespace flag value.</p>
     <pre><code>mxml_node_t *
 mxmlNewText(mxml_node_t *parent, int whitespace,
@@ -713,7 +711,7 @@ mxmlNewTextf(mxml_node_t *parent, int whitespace,
     <pre><code> const char *
  mxmlGetText(mxml_node_t *node, int *whitespace);
 </code></pre>
-    <h3><a id="real-number-nodes">Real Number Nodes</a></h3>
+    <h3 class="title" id="real-number-nodes">Real Number Nodes</h3>
     <p>Real number (<code>MXML_REAL</code>) nodes are created using the <code>mxmlNewReal</code> function:</p>
     <pre><code>mxml_node_t *
 mxmlNewReal(mxml_node_t *parent, double real);
@@ -722,9 +720,9 @@ mxmlNewReal(mxml_node_t *parent, double real);
     <pre><code>double
 mxmlGetReal(mxml_node_t *node);
 </code></pre>
-    <h2><a id="locating-data-in-an-xml-document">Locating Data in an XML Document</a></h2>
+    <h2 class="title" id="locating-data-in-an-xml-document">Locating Data in an XML Document</h2>
     <p>Mini-XML provides many functions for enumerating, searching, and indexing XML documents.</p>
-    <h3><a id="finding-nodes">Finding Nodes</a></h3>
+    <h3 class="title" id="finding-nodes">Finding Nodes</h3>
     <p>The <code>mxmlFindPath</code> function finds the (first) value node under a specific element using a &quot;path&quot;:</p>
     <pre><code>mxml_node_t *
 mxmlFindPath(mxml_node_t *node, const char *path);
@@ -780,7 +778,7 @@ for (node = mxmlFindElement(tree, tree, &quot;element&quot;, NULL,
     <li><code>MXML_DESCEND_FIRST</code>: start the search with the first child of the node, and then search siblings. You'll normally use this when iterating through direct children of a parent node, e.g. all of the &quot;node&quot; and &quot;group&quot; elements under the &quot;?xml&quot; parent node in the previous example.</li>
     <li><code>MXML_DESCEND</code>: search child nodes first, then sibling nodes, and then parent nodes.</li>
 </ul>
-    <h3><a id="iterating-nodes">Iterating Nodes</a></h3>
+    <h3 class="title" id="iterating-nodes">Iterating Nodes</h3>
     <p>While the <code>mxmlFindNode</code> and <code>mxmlFindPath</code> functions will find a particular element node, sometimes you need to iterate over all nodes. The <code>mxmlWalkNext</code> and <code>mxmlWalkPrev</code> functions can be used to iterate through the XML node tree:</p>
     <pre><code>mxml_node_t *
 mxmlWalkNext(mxml_node_t *node, mxml_node_t *top,
@@ -821,7 +819,7 @@ val7
 &lt;node&gt;
 val8
 </code></pre>
-    <h3><a id="indexing">Indexing</a></h3>
+    <h3 class="title" id="indexing">Indexing</h3>
     <p>The <code>mxmlIndexNew</code> function allows you to create an index of nodes for faster searching and enumeration:</p>
     <pre><code>mxml_index_t *
 mxmlIndexNew(mxml_node_t *node, const char *element,
@@ -864,7 +862,7 @@ mxmlIndexGetCount(mxml_index_t *ind);
     <pre><code>void
 mxmlIndexDelete(mxml_index_t *ind);
 </code></pre>
-    <h2><a id="custom-data-types">Custom Data Types</a></h2>
+    <h2 class="title" id="custom-data-types">Custom Data Types</h2>
     <p>Mini-XML supports custom data types via per-thread load and save callbacks. Only a single set of callbacks can be active at any time for the current thread, however your callbacks can store additional information in order to support multiple custom data types as needed. The <code>MXML_CUSTOM</code> node type identifies custom data nodes.</p>
     <p>The <code>mxmlGetCustom</code> function retrieves the custom value pointer for a node.</p>
     <pre><code>const void *
@@ -996,7 +994,7 @@ save_custom(mxml_node_t *node)
     <p>You register the callback functions using the <code>mxmlSetCustomHandlers</code> function:</p>
     <pre><code>mxmlSetCustomHandlers(load_custom, save_custom);
 </code></pre>
-    <h2><a id="sax-stream-loading-of-documents">SAX (Stream) Loading of Documents</a></h2>
+    <h2 class="title" id="sax-stream-loading-of-documents">SAX (Stream) Loading of Documents</h2>
     <p>Mini-XML supports an implementation of the Simple API for XML (SAX) which allows you to load and process an XML document as a stream of nodes. Aside from allowing you to process XML documents of any size, the Mini-XML implementation also allows you to retain portions of the document in memory for later processing.</p>
     <p>The <code>mxmlSAXLoadFd</code>, <code>mxmlSAXLoadFile</code>, and <code>mxmlSAXLoadString</code> functions provide the SAX loading APIs:</p>
     <pre><code>mxml_node_t *

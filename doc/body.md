@@ -1125,7 +1125,7 @@ The `print_children` function is:
            node != NULL;
            node = mxmlGetNextSibling(node))
       {
-        text = mxmlGettext(node, &whitespace);
+        text = mxmlGetText(node, &whitespace);
 
         if (whitespace)
           putchar(' ');

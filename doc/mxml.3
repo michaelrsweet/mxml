@@ -1,4 +1,4 @@
-.TH mxml 3 "Mini-XML API" "01/02/19" "Mini-XML API"
+.TH mxml 3 "Mini-XML API" "2019-02-20" "Mini-XML API"
 .SH NAME
 mxml \- Mini-XML API
 .SH INCLUDE FILE
@@ -1309,7 +1309,7 @@ typedef void(*)(const char *) mxml_error_cb_t;
 An XML node index.
 .PP
 .nf
-typedef struct mxml_index_s mxml_index_t;
+typedef struct _mxml_index_s mxml_index_t;
 .fi
 .SS mxml_load_cb_t
 Load callback function
@@ -1321,7 +1321,7 @@ typedef mxml_type_t(*)(mxml_node_t *) mxml_load_cb_t;
 An XML node.
 .PP
 .nf
-typedef struct mxml_node_s mxml_node_t;
+typedef struct _mxml_node_s mxml_node_t;
 .fi
 .SS mxml_save_cb_t
 Save callback function

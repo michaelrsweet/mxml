@@ -1,9 +1,9 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
   <head>
     <title>Mini-XML API Reference</title>
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
-    <meta name="creator" content="1.0">
+    <meta name="creator" content="codedoc v3.1">
     <meta name="author" content="Michael R Sweet">
     <meta name="copyright" content="Copyright &#xa9; 2003-2019, All Rights Reserved.">
     <meta name="version" content="0.0">
@@ -327,17 +327,11 @@ h3.title {
     <p>Thanks to lots of feedback and support from various developers, Mini-XML has evolved since then to provide a more complete XML implementation and now stands at a whopping 4,115 lines of code, compared to 140,410 lines of code for libxml2 version 2.9.1.</p>
     <h3><a id="resources">Resources</a></h3>
     <p>The Mini-XML home page can be found at:</p>
-    <pre><code>https://michaelrsweet.github.io/mxml
+    <pre><code>https://www.msweet.orgm/mxml
 </code></pre>
     <p>From here you can download the current version of Mini-XML, the issue tracker, and other resources.</p>
     <h3><a id="legal-stuff">Legal Stuff</a></h3>
-    <p>The Mini-XML library is copyright &#xa9; 2003-2017 by Michael R Sweet and is provided under version 2 of the GNU Library General Public License (LGPL2) with the following exceptions:</p>
-    <ol>
-    <li>Static linking of applications to the Mini-XML library does not constitute a derivative work and does not require the author to provide source code for the application, use the shared Mini-XML libraries, or link their applications against a user-supplied version of Mini-XML.</li>
-    <p>If you link the application to a modified version of Mini-XML, then the changes to Mini-XML must be provided under the terms of the LGPL2 in sections 1, 2, and 4.</p>
-    <li>You do not have to provide a copy of the Mini-XML license with programs that are linked to the Mini-XML library, nor do you have to identify the Mini-XML license in your program or documentation as required by section 6 of the LGPL2.</li>
-</ol>
-    <p>A copy of the complete license is available in the file <code>COPYING</code> provided with the source code.</p>
+    <p>The Mini-XML library is copyright &#xa9; 2003-2019 by Michael R Sweet and is provided under the Apache License Version 2.0 with an exception to allow linking against GPL2/LGPL2-only software. See the files &quot;LICENSE&quot; and &quot;NOTICE&quot; for more information.</p>
     <h2><a id="using-mini-xml">Using Mini-XML</a></h2>
     <p>Mini-XML provides a single header file which you include:</p>
     <pre><code>#include &lt;mxml.h&gt;
@@ -1122,7 +1116,7 @@ print_children(mxml_node_t *parent)
        node != NULL;
        node = mxmlGetNextSibling(node))
   {
-    text = mxmlGettext(node, &amp;whitespace);
+    text = mxmlGetText(node, &amp;whitespace);
 
     if (whitespace)
       putchar(' ');
@@ -2476,7 +2470,7 @@ typedef void (*mxml_error_cb_t)(const char *);
       <h3 class="typedef"><a id="mxml_index_t">mxml_index_t</a></h3>
         <p class="description">An XML node index.</p>
       <p class="code">
-typedef struct mxml_index_s mxml_index_t;
+typedef struct _mxml_index_s mxml_index_t;
 </p>
       <h3 class="typedef"><a id="mxml_load_cb_t">mxml_load_cb_t</a></h3>
         <p class="description">Load callback function</p>
@@ -2486,7 +2480,7 @@ typedef <a href="#mxml_type_t">mxml_type_t</a> (*mxml_load_cb_t)(<a href="#mxml_
       <h3 class="typedef"><a id="mxml_node_t">mxml_node_t</a></h3>
         <p class="description">An XML node.</p>
       <p class="code">
-typedef struct mxml_node_s mxml_node_t;
+typedef struct _mxml_node_s mxml_node_t;
 </p>
       <h3 class="typedef"><a id="mxml_save_cb_t">mxml_save_cb_t</a></h3>
         <p class="description">Save callback function</p>

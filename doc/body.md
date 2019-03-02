@@ -1,8 +1,8 @@
 ---
-title: Mini-XML API Reference
+title: Mini-XML 3.0 API Reference
 author: Michael R Sweet
 copyright: Copyright © 2003-2019, All Rights Reserved.
-docversion: 3.0
+version: 3.0
 ...
 
 # Introduction
@@ -49,18 +49,15 @@ integrated Mini-XML into Gutenprint and removed libxml2.
 
 Thanks to lots of feedback and support from various developers, Mini-XML has
 evolved since then to provide a more complete XML implementation and now stands
-at a whopping 4,115 lines of code, compared to 140,410 lines of code for libxml2
-version 2.9.1.
+at a whopping 4,186 lines of code, compared to 196,141 lines of code for libxml2
+version 2.9.9.
 
 
 ## Resources
 
-The Mini-XML home page can be found at:
-
-    https://www.msweet.orgm/mxml
-
-From here you can download the current version of Mini-XML, the issue tracker,
-and other resources.
+The Mini-XML home page can be found at <https://www.msweet.org/mxml>.  From
+there you can download the current version of Mini-XML, access the issue
+tracker, and find other resources.
 
 
 ## Legal Stuff

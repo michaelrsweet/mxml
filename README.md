@@ -21,6 +21,10 @@ Mini-XML provides the following functionality:
 Mini-XML doesn't do validation or other types of processing on the data
 based upon schema files or other sources of definition information.
 
+> Note: Version 3.0 hides the definition of the `mxml_node_t` structure,
+> requiring the use of the various accessor functions that were introduced in
+> version 2.0.
+
 
 ## Building Mini-XML
 
@@ -62,19 +66,19 @@ against it.
 ## Documentation
 
 The documentation is available in the `doc` subdirectory in the files
-`mxml.html` (HTML) and `mxml.pdf` (PDF). You can also look at the
-`testmxml.c` and `mxmldoc.c` source files for examples of using Mini-XML.
+`mxml.html` (HTML) and `mxml.epub` (EPUB).  You can also look at the
+`testmxml.c` source file for examples of using Mini-XML.
 
 Mini-XML provides a single header file which you include:
 
     #include <mxml.h>
 
-Nodes are defined by the `mxml_node_t` structure; the `type` member defines the
-node type (`element`, `integer`, `opaque`, `real`, or `text`) which determines
-which value you want to look at in the `value` union.  New nodes can be created
-using the `mxmlNewElement()`, `mxmlNewInteger()`, `mxmlNewOpaque()`,
-`mxmlNewReal()`, and `mxmlNewText()` functions.  Only elements can have child
-nodes, and the top node must be an element, usually "?xml".
+Nodes (elements, comments, processing directives, integers, opaque strings, real
+numbers, and text strings) are represented by `mxml_node_t` objects.  New nodes
+can be created using the `mxmlNewElement()`, `mxmlNewInteger()`,
+`mxmlNewOpaque()`, `mxmlNewReal()`, and `mxmlNewText()` functions.  Only
+elements can have child nodes, and the top node must be the "?xml" processing
+directive.
 
 You load an XML file using the `mxmlLoadFile()` function:
 
@@ -155,7 +159,7 @@ element using an XPath:
     mxml_node_t *value = mxmlFindPath(tree, "path/to/*/foo/bar");
 
 The `mxmlGetInteger()`, `mxmlGetOpaque()`, `mxmlGetReal()`, and
-`mxmlGetText()` functions retrieve the value from a node:
+`mxmlGetText()` functions retrieve the corresponding value from a node:
 
     mxml_node_t *node;
 
@@ -177,9 +181,8 @@ or the entire tree:
 
 ## Getting Help And Reporting Problems
 
-The Mini-XML project page provides access to the Github issue tracking page:
-
-    https://www.msweet.org/mxml
+The [Mini-XML project page](https://www.msweet.org/mxml) provides access to the
+current version of this software, documentation, and Github issue tracking page.
 
 
 ## Legal Stuff

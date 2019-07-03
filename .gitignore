@@ -4,8 +4,6 @@ autom4te.cache
 /config.h
 config.log
 config.status
-doc/mxml.d
-doc/mxml-160.png
 libmxml.1.dylib
 libmxml.a
 libmxml.dylib
@@ -13,7 +11,7 @@ libmxml.sl
 libmxml.sl.1
 libmxml.so
 libmxml.so.1
-libmxml.so.1.5
+libmxml.so.1.6
 mxml.pc
 scratch
 temp1.xmlfd

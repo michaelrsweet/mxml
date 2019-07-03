@@ -10,7 +10,7 @@ dnl information.
 dnl
 
 dnl Package name and version...
-AC_INIT([Mini-XML], [3.0], [https://github.com/michaelrsweet/mxml/issues], [mxml], [https://michaelrsweet.github.io/mxml])
+AC_INIT([Mini-XML], [3.1], [https://github.com/michaelrsweet/mxml/issues], [mxml], [https://michaelrsweet.github.io/mxml])
 
 dnl This line is provided to ensure that you don't run the autoheader program
 dnl against this project.  Doing so is completely unsupported and WILL cause
@@ -79,6 +79,7 @@ fi
 AC_PROG_RANLIB
 AC_CHECK_TOOL(AR,ar)
 AC_PATH_PROG(CP,cp)
+AC_PATH_PROGS(LDCONFIG,ldconfig false)
 AC_PATH_PROG(LN,ln)
 AC_PATH_PROG(MKDIR,mkdir)
 AC_PATH_PROG(RM,rm)

@@ -75,7 +75,8 @@ INSTALL_SCRIPT	=	$(INSTALL) -m 755
 # Targets...
 #
 
-DOCFILES	=	doc/mxml.html doc/mxmldoc.xsd README.md COPYING CHANGES.md
+DOCFILES	=	doc/mxml.epub doc/mxml.html doc/mxml-cover.png \
+			CHANGES.md LICENSE NOTICE README.md
 PUBLIBOBJS	=	mxml-attr.o mxml-entity.o mxml-file.o mxml-get.o \
 			mxml-index.o mxml-node.o mxml-search.o mxml-set.o
 LIBOBJS		=	$(PUBLIBOBJS) mxml-private.o mxml-string.o
@@ -120,20 +121,6 @@ distclean:	clean
 
 
 #
-# Run the clang.llvm.org static code analysis tool on the C sources.
-#
-
-.PHONY: clang clang-changes
-clang:
-	echo Doing static code analysis of all code using CLANG...
-	$(RM) -r clang
-	scan-build -V -k -o `pwd`/clang $(MAKE) $(MFLAGS) clean all
-clang-changes:
-	echo Doing static code analysis of changed code using CLANG...
-	scan-build -V -k -o `pwd`/clang $(MAKE) $(MFLAGS) all
-
-
-#
 # Install everything...
 #
 
@@ -167,6 +154,7 @@ install-libmxml.so.1.6:	libmxml.so.1.6
 	$(LN) libmxml.so.1.6 $(BUILDROOT)$(libdir)/libmxml.so
 	$(RM) $(BUILDROOT)$(libdir)/libmxml.so.1
 	$(LN) libmxml.so.1.6 $(BUILDROOT)$(libdir)/libmxml.so.1
+	$(LDCONFIG)
 
 install-libmxml.1.dylib: libmxml.1.dylib
 	echo Installing libmxml.dylib to $(BUILDROOT)$(libdir)...
@@ -198,7 +186,8 @@ uninstall-libmxml.so.1.6:
 	echo Uninstalling libmxml.so from $(BUILDROOT)$(libdir)...
 	$(RM) $(BUILDROOT)$(libdir)/libmxml.so
 	$(RM) $(BUILDROOT)$(libdir)/libmxml.so.1
-	$(RM) $(BUILDROOT)$(libdir)/libmxml.so.1.4
+	$(RM) $(BUILDROOT)$(libdir)/libmxml.so.1.6
+	$(LDCONFIG)
 
 uninstall-libmxml.1.dylib:
 	echo Uninstalling libmxml.dylib from $(BUILDROOT)$(libdir)...

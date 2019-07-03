@@ -1,3 +1,9 @@
+# Changes in Mini-XML 3.1
+
+- Fixed an issue with "make install" trying to install old files (Issue #257)
+- Fixed some DSO installation issues on Linux.
+
+
 # Changes in Mini-XML 3.0
 
 - Changed the license to Apache 2.0 with exceptions (Issue #239)

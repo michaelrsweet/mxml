@@ -1,5 +1,7 @@
 # Changes in Mini-XML 3.1
 
+- The `mxmlLoad*` functions now print an error when the XML does not start with
+  `<?xml ... ?>` and no parent node is supplied (Issue #256)
 - Fixed an issue with "make install" trying to install old files (Issue #257)
 - Fixed some DSO installation issues on Linux.
 

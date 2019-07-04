@@ -1416,7 +1416,17 @@ mxml_load_data(
   else
     type = MXML_IGNORE;
 
-  while ((ch = (*getc_cb)(p, &encoding)) != EOF)
+  if ((ch = (*getc_cb)(p, &encoding)) == EOF)
+  {
+    return (NULL);
+  }
+  else if (ch != '<' && !top)
+  {
+    mxml_error("XML does not start with '<?xml' (saw '%c').", ch);
+    return (NULL);
+  }
+
+  do
   {
     if ((ch == '<' ||
          (mxml_isspace(ch) && type != MXML_OPAQUE && type != MXML_CUSTOM)) &&
@@ -1575,7 +1585,12 @@ mxml_load_data(
 
       *bufptr = '\0';
 
-      if (!strcmp(buffer, "!--"))
+      if (!top && !parent && buffer[0] != '?')
+      {
+	mxml_error("XML does not start with '<?xml' (saw '<%s').", buffer);
+	return (NULL);
+      }
+      else if (!strcmp(buffer, "!--"))
       {
        /*
         * Gather rest of comment...
@@ -1758,7 +1773,12 @@ mxml_load_data(
 
 	*bufptr = '\0';
 
-        if (!parent && first)
+	if (!top && !parent && strncmp(buffer, "?xml ", 5))
+	{
+	  mxml_error("XML does not start with '<?xml' (saw '<%s>').", buffer);
+	  return (NULL);
+	}
+        else if (!parent && first)
 	{
 	 /*
 	  * There can only be one root element!
@@ -1782,7 +1802,7 @@ mxml_load_data(
         {
           (*sax_cb)(node, MXML_SAX_DIRECTIVE, sax_data);
 
-          if (!mxmlRelease(node))
+          if (strncmp(node->value.element.name, "?xml ", 5) && !mxmlRelease(node))
             node = NULL;
         }
 
@@ -2032,6 +2052,7 @@ mxml_load_data(
 	goto error;
     }
   }
+  while ((ch = (*getc_cb)(p, &encoding)) != EOF);
 
  /*
   * Free the string buffer - we don't need it anymore...

@@ -56,7 +56,8 @@ main(int  argc,				/* I - Number of command-line args */
   int			i;		/* Looping var */
   FILE			*fp;		/* File to read */
   int			fd;		/* File descriptor */
-  mxml_node_t		*tree,		/* XML tree */
+  mxml_node_t		*xml,		/* <?xml ...?> node */
+			*tree,		/* Element tree */
 			*node;		/* Node which should be in test.xml */
   mxml_index_t		*ind;		/* XML index */
   char			buffer[16384];	/* Save string */
@@ -84,7 +85,8 @@ main(int  argc,				/* I - Number of command-line args */
   * Test the basic functionality...
   */
 
-  tree = mxmlNewElement(MXML_NO_PARENT, "element");
+  xml  = mxmlNewXML("1.0");
+  tree = mxmlNewElement(xml, "element");
 
   if (!tree)
   {
@@ -459,14 +461,14 @@ main(int  argc,				/* I - Number of command-line args */
     return (1);
   }
 
-  mxmlDelete(tree);
+  mxmlDelete(xml);
 
  /*
   * Open the file/string using the default (MXML_NO_CALLBACK) callback...
   */
 
   if (argv[1][0] == '<')
-    tree = mxmlLoadString(NULL, argv[1], MXML_NO_CALLBACK);
+    xml = mxmlLoadString(NULL, argv[1], MXML_NO_CALLBACK);
   else if ((fp = fopen(argv[1], "rb")) == NULL)
   {
     perror(argv[1]);
@@ -478,12 +480,12 @@ main(int  argc,				/* I - Number of command-line args */
     * Read the file...
     */
 
-    tree = mxmlLoadFile(NULL, fp, MXML_NO_CALLBACK);
+    xml = mxmlLoadFile(NULL, fp, MXML_NO_CALLBACK);
 
     fclose(fp);
   }
 
-  if (!tree)
+  if (!xml)
   {
     fputs("Unable to read XML file with default callback.\n", stderr);
     return (1);
@@ -498,7 +500,7 @@ main(int  argc,				/* I - Number of command-line args */
     * properly...
     */
 
-    if ((node = mxmlFindPath(tree, "group/option/keyword")) == NULL)
+    if ((node = mxmlFindPath(xml, "group/option/keyword")) == NULL)
     {
       fputs("Unable to find group/option/keyword element in XML tree.\n", stderr);
       mxmlDelete(tree);
@@ -508,27 +510,27 @@ main(int  argc,				/* I - Number of command-line args */
     if (node->type != MXML_TEXT)
     {
       fputs("No child node of group/option/keyword.\n", stderr);
-      mxmlSaveFile(tree, stderr, MXML_NO_CALLBACK);
-      mxmlDelete(tree);
+      mxmlSaveFile(xml, stderr, MXML_NO_CALLBACK);
+      mxmlDelete(xml);
       return (1);
     }
 
     if ((text = mxmlGetText(node, NULL)) == NULL || strcmp(text, "InputSlot"))
     {
       fprintf(stderr, "Child node of group/option/value has value \"%s\" instead of \"InputSlot\".\n", text ? text : "(null)");
-      mxmlDelete(tree);
+      mxmlDelete(xml);
       return (1);
     }
   }
 
-  mxmlDelete(tree);
+  mxmlDelete(xml);
 
  /*
   * Open the file...
   */
 
   if (argv[1][0] == '<')
-    tree = mxmlLoadString(NULL, argv[1], type_cb);
+    xml = mxmlLoadString(NULL, argv[1], type_cb);
   else if ((fp = fopen(argv[1], "rb")) == NULL)
   {
     perror(argv[1]);
@@ -540,12 +542,12 @@ main(int  argc,				/* I - Number of command-line args */
     * Read the file...
     */
 
-    tree = mxmlLoadFile(NULL, fp, type_cb);
+    xml = mxmlLoadFile(NULL, fp, type_cb);
 
     fclose(fp);
   }
 
-  if (!tree)
+  if (!xml)
   {
     fputs("Unable to read XML file.\n", stderr);
     return (1);
@@ -558,7 +560,7 @@ main(int  argc,				/* I - Number of command-line args */
     * properly...
     */
 
-    if ((node = mxmlFindElement(tree, tree, "choice", NULL, NULL,
+    if ((node = mxmlFindElement(xml, xml, "choice", NULL, NULL,
                                 MXML_DESCEND)) == NULL)
     {
       fputs("Unable to find first <choice> element in XML tree.\n", stderr);
@@ -566,7 +568,7 @@ main(int  argc,				/* I - Number of command-line args */
       return (1);
     }
 
-    if (!mxmlFindElement(node, tree, "choice", NULL, NULL, MXML_NO_DESCEND))
+    if (!mxmlFindElement(node, xml, "choice", NULL, NULL, MXML_NO_DESCEND))
     {
       fputs("Unable to find second <choice> element in XML tree.\n", stderr);
       mxmlDelete(tree);
@@ -578,13 +580,13 @@ main(int  argc,				/* I - Number of command-line args */
   * Print the XML tree...
   */
 
-  mxmlSaveFile(tree, stdout, whitespace_cb);
+  mxmlSaveFile(xml, stdout, whitespace_cb);
 
  /*
   * Save the XML tree to a string and print it...
   */
 
-  if (mxmlSaveString(tree, buffer, sizeof(buffer), whitespace_cb) > 0)
+  if (mxmlSaveString(xml, buffer, sizeof(buffer), whitespace_cb) > 0)
   {
     if (argc == 3)
     {
@@ -598,7 +600,7 @@ main(int  argc,				/* I - Number of command-line args */
   * Delete the tree...
   */
 
-  mxmlDelete(tree);
+  mxmlDelete(xml);
 
  /*
   * Read from/write to file descriptors...
@@ -620,7 +622,7 @@ main(int  argc,				/* I - Number of command-line args */
     * Read the file...
     */
 
-    tree = mxmlLoadFd(NULL, fd, type_cb);
+    xml = mxmlLoadFd(NULL, fd, type_cb);
 
     close(fd);
 
@@ -641,7 +643,7 @@ main(int  argc,				/* I - Number of command-line args */
     * Write the file...
     */
 
-    mxmlSaveFd(tree, fd, whitespace_cb);
+    mxmlSaveFd(xml, fd, whitespace_cb);
 
     close(fd);
 
@@ -649,7 +651,7 @@ main(int  argc,				/* I - Number of command-line args */
     * Delete the tree...
     */
 
-    mxmlDelete(tree);
+    mxmlDelete(xml);
   }
 
  /*
@@ -692,9 +694,9 @@ main(int  argc,				/* I - Number of command-line args */
       return (1);
     }
 
-    if (event_counts[MXML_SAX_DATA] != 60)
+    if (event_counts[MXML_SAX_DATA] != 61)
     {
-      fprintf(stderr, "MXML_SAX_DATA seen %d times, expected 60 times.\n",
+      fprintf(stderr, "MXML_SAX_DATA seen %d times, expected 61 times.\n",
               event_counts[MXML_SAX_DATA]);
       return (1);
     }

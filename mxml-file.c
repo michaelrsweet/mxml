@@ -1418,11 +1418,13 @@ mxml_load_data(
 
   if ((ch = (*getc_cb)(p, &encoding)) == EOF)
   {
+    free(buffer);
     return (NULL);
   }
   else if (ch != '<' && !top)
   {
-    mxml_error("XML does not start with '<?xml' (saw '%c').", ch);
+    free(buffer);
+    mxml_error("XML does not start with '<' (saw '%c').", ch);
     return (NULL);
   }
 
@@ -1585,12 +1587,7 @@ mxml_load_data(
 
       *bufptr = '\0';
 
-      if (!top && !parent && buffer[0] != '?')
-      {
-	mxml_error("XML does not start with '<?xml' (saw '<%s').", buffer);
-	return (NULL);
-      }
-      else if (!strcmp(buffer, "!--"))
+      if (!strcmp(buffer, "!--"))
       {
        /*
         * Gather rest of comment...
@@ -1773,12 +1770,7 @@ mxml_load_data(
 
 	*bufptr = '\0';
 
-	if (!top && !parent && strncmp(buffer, "?xml ", 5))
-	{
-	  mxml_error("XML does not start with '<?xml' (saw '<%s>').", buffer);
-	  return (NULL);
-	}
-        else if (!parent && first)
+        if (!parent && first)
 	{
 	 /*
 	  * There can only be one root element!

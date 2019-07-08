@@ -1,4 +1,5 @@
-# Mini-XML Version 3.0
+Mini-XML Version 3.1
+====================
 
 Mini-XML is a small XML parsing library that you can use to read XML data files
 or strings in your application without requiring large non-standard libraries.
@@ -26,7 +27,8 @@ based upon schema files or other sources of definition information.
 > version 2.0.
 
 
-## Building Mini-XML
+Building Mini-XML
+-----------------
 
 Mini-XML comes with an autoconf-based configure script; just type the
 following command to get things going:
@@ -63,7 +65,8 @@ Once you have installed it, use the `-lmxml` option to link your application
 against it.
 
 
-## Documentation
+Documentation
+-------------
 
 The documentation is available in the `doc` subdirectory in the files
 `mxml.html` (HTML) and `mxml.epub` (EPUB).  You can also look at the
@@ -179,13 +182,15 @@ or the entire tree:
     mxmlDelete(tree);
 
 
-## Getting Help And Reporting Problems
+Getting Help And Reporting Problems
+-----------------------------------
 
 The [Mini-XML project page](https://www.msweet.org/mxml) provides access to the
 current version of this software, documentation, and Github issue tracking page.
 
 
-## Legal Stuff
+Legal Stuff
+-----------
 
 Copyright © 2003-2019 by Michael R Sweet
 

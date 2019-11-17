@@ -1,3 +1,8 @@
+# Changes in Mini-XML CURRENT
+
+- Fixed some minor issues identified by the LGTM security scanner.
+
+
 # Changes in Mini-XML 3.1
 
 - The `mxmlLoad*` functions now print an error when the XML does not start with

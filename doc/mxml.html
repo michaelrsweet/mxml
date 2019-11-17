@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html>
+<html lang="en-US">
   <head>
     <title>Mini-XML 3.1 API Reference</title>
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
-    <meta name="creator" content="codedoc v3.2">
+    <meta name="generator" content="codedoc v3.3">
     <meta name="author" content="Michael R Sweet">
+    <meta name="language" content="en-US">
     <meta name="copyright" content="Copyright &#xa9; 2003-2019, All Rights Reserved.">
     <meta name="version" content="3.1">
     <style type="text/css"><!--
@@ -295,13 +296,20 @@ h2.title, h3.title {
     <h2 class="title" id="introduction">Introduction</h2>
     <p>Mini-XML is a small XML parsing library that you can use to read XML data files or strings in your application without requiring large non-standard libraries. Mini-XML provides the following functionality:</p>
     <ul>
-    <li>Reading of UTF-8 and UTF-16 and writing of UTF-8 encoded XML files and strings.</li>
-    <li>Data is stored in a linked-list tree structure, preserving the XML data hierarchy.</li>
-    <li>SAX (streamed) reading of XML files and strings to minimize memory usage.</li>
-    <li>Supports arbitrary element names, attributes, and attribute values with no preset limits, just available memory.</li>
-    <li>Supports integer, real, opaque (&quot;cdata&quot;), and text data types in &quot;leaf&quot; nodes.</li>
-    <li>Functions for creating and managing trees of data.</li>
-    <li>&quot;Find&quot; and &quot;walk&quot; functions for easily locating and navigating trees of data.</li>
+    <li>    <p>Reading of UTF-8 and UTF-16 and writing of UTF-8 encoded XML files and strings.</p>
+</li>
+    <li>    <p>Data is stored in a linked-list tree structure, preserving the XML data hierarchy.</p>
+</li>
+    <li>    <p>SAX (streamed) reading of XML files and strings to minimize memory usage.</p>
+</li>
+    <li>    <p>Supports arbitrary element names, attributes, and attribute values with no preset limits, just available memory.</p>
+</li>
+    <li>    <p>Supports integer, real, opaque (&quot;cdata&quot;), and text data types in &quot;leaf&quot; nodes.</p>
+</li>
+    <li>    <p>Functions for creating and managing trees of data.</p>
+</li>
+    <li>    <p>&quot;Find&quot; and &quot;walk&quot; functions for easily locating and navigating trees of data.</p>
+</li>
 </ul>
     <p>Mini-XML doesn't do validation or other types of processing on the data based upon schema files or other sources of definition information.</p>
     <h3 class="title" id="history">History</h3>
@@ -355,10 +363,14 @@ mxmlLoadString(mxml_node_t *top, const char *s,
     <h4 id="load-callbacks">Load Callbacks</h4>
     <p>The last argument to the <code>mxmlLoad</code> functions is a callback function which is used to determine the value type of each data node in an XML document. Mini-XML defines several standard callbacks for simple XML data files:</p>
     <ul>
-    <li><code>MXML_INTEGER_CALLBACK</code>: All data nodes contain whitespace-separated integers.</li>
-    <li><code>MXML_OPAQUE_CALLBACK</code>: All data nodes contain opaque strings with whitespace preserved.</li>
-    <li><code>MXML_REAL_CALLBACK</code> - All data nodes contain whitespace-separated floating-point numbers.</li>
-    <li><code>MXML_TEXT_CALLBACK</code> - All data nodes contain whitespace-separated strings.</li>
+    <li>    <p><code>MXML_INTEGER_CALLBACK</code>: All data nodes contain whitespace-separated integers.</p>
+</li>
+    <li>    <p><code>MXML_OPAQUE_CALLBACK</code>: All data nodes contain opaque strings with whitespace preserved.</p>
+</li>
+    <li>    <p><code>MXML_REAL_CALLBACK</code> - All data nodes contain whitespace-separated floating-point numbers.</p>
+</li>
+    <li>    <p><code>MXML_TEXT_CALLBACK</code> - All data nodes contain whitespace-separated strings.</p>
+</li>
 </ul>
     <p>You can provide your own callback functions for more complex XML documents. Your callback function will receive a pointer to the current element node and must return the value type of the immediate children for that element node: <code>MXML_CUSTOM</code>, <code>MXML_INTEGER</code>, <code>MXML_OPAQUE</code>, <code>MXML_REAL</code>, or <code>MXML_TEXT</code>. The function is called <em>after</em> the element and its attributes have been read, so you can look at the element name, attributes, and attribute values to determine the proper value type to return.</p>
     <p>The following callback function looks for an attribute named &quot;type&quot; or the element name to determine the value type for its child nodes:</p>
@@ -430,12 +442,18 @@ val1   val2   val3     |     val7   val8
 mxmlGetType(mxml_node_t *node);
 </code></pre>
     <ul>
-    <li><code>MXML_CUSTOM</code> : A custom value defined by your application,</li>
-    <li><code>MXML_ELEMENT</code> : An XML element, CDATA, comment, or processing instruction,</li>
-    <li><code>MXML_INTEGER</code> : A whitespace-delimited integer value,</li>
-    <li><code>MXML_OPAQUE</code> : An opaque string value that preserves all whitespace,</li>
-    <li><code>MXML_REAL</code> : A whitespace-delimited floating point value, or</li>
-    <li><code>MXML_TEXT</code> : A whitespace-delimited text (fragment) value.</li>
+    <li>    <p><code>MXML_CUSTOM</code> : A custom value defined by your application,</p>
+</li>
+    <li>    <p><code>MXML_ELEMENT</code> : An XML element, CDATA, comment, or processing instruction,</p>
+</li>
+    <li>    <p><code>MXML_INTEGER</code> : A whitespace-delimited integer value,</p>
+</li>
+    <li>    <p><code>MXML_OPAQUE</code> : An opaque string value that preserves all whitespace,</p>
+</li>
+    <li>    <p><code>MXML_REAL</code> : A whitespace-delimited floating point value, or</p>
+</li>
+    <li>    <p><code>MXML_TEXT</code> : A whitespace-delimited text (fragment) value.</p>
+</li>
 </ul>
     <blockquote>
     <p>Note: CDATA, comment, and processing directive nodes are currently stored in memory as special elements. This will be changed in a future major release of Mini-XML.</p>
@@ -724,7 +742,7 @@ mxmlGetReal(mxml_node_t *node);
     <pre><code>mxml_node_t *
 mxmlFindPath(mxml_node_t *node, const char *path);
 </code></pre>
-    <p>The <code>path</code> string can contain the &quot;<em>&quot;</em> <em>wildcard</em> <em>to</em> <em>match</em> <em>a</em> <em>single</em> <em>element</em> <em>node</em> <em>in</em> the hierarchy. For example, the following code will find the first &quot;node&quot; element under the &quot;group&quot; element, first using an explicit path and then using a wildcard:</p>
+    <p>The <code>path</code> string can contain the &quot;*&quot; wildcard to match a single element node in the hierarchy. For example, the following code will find the first &quot;node&quot; element under the &quot;group&quot; element, first using an explicit path and then using a wildcard:</p>
     <pre><code>mxml_node_t *value = mxmlFindPath(xml, &quot;data/group/node&quot;);
 
 mxml_node_t *value = mxmlFindPath(xml, &quot;data/*/node&quot;);
@@ -771,9 +789,12 @@ for (node = mxmlFindElement(tree, tree, &quot;element&quot;, NULL,
 </code></pre>
     <p>The <code>descend</code> argument (<code>MXML_DESCEND</code> in the examples above) can be one of three constants:</p>
     <ul>
-    <li><code>MXML_NO_DESCEND</code>: ignore child nodes in the element hierarchy, instead using siblings (same level) or parent nodes (above) until the top (root) node is reached.</li>
-    <li><code>MXML_DESCEND_FIRST</code>: start the search with the first child of the node, and then search siblings. You'll normally use this when iterating through direct children of a parent node, e.g. all of the &quot;node&quot; and &quot;group&quot; elements under the &quot;?xml&quot; parent node in the previous example.</li>
-    <li><code>MXML_DESCEND</code>: search child nodes first, then sibling nodes, and then parent nodes.</li>
+    <li>    <p><code>MXML_NO_DESCEND</code>: ignore child nodes in the element hierarchy, instead using siblings (same level) or parent nodes (above) until the top (root) node is reached.</p>
+</li>
+    <li>    <p><code>MXML_DESCEND_FIRST</code>: start the search with the first child of the node, and then search siblings. You'll normally use this when iterating through direct children of a parent node, e.g. all of the &quot;node&quot; and &quot;group&quot; elements under the &quot;?xml&quot; parent node in the previous example.</p>
+</li>
+    <li>    <p><code>MXML_DESCEND</code>: search child nodes first, then sibling nodes, and then parent nodes.</p>
+</li>
 </ul>
     <h3 class="title" id="iterating-nodes">Iterating Nodes</h3>
     <p>While the <code>mxmlFindNode</code> and <code>mxmlFindPath</code> functions will find a particular element node, sometimes you need to iterate over all nodes. The <code>mxmlWalkNext</code> and <code>mxmlWalkPrev</code> functions can be used to iterate through the XML node tree:</p>
@@ -978,6 +999,7 @@ save_custom(mxml_node_t *node)
   char data[255];
   iso_date_time_t *dt;
 
+
   dt = (iso_date_time_t *)mxmlGetCustom(node);
 
   snprintf(data, sizeof(data),
@@ -1019,12 +1041,18 @@ sax_cb(mxml_node_t *node, mxml_sax_event_t event,
 </code></pre>
     <p>The event will be one of the following:</p>
     <ul>
-    <li><code>MXML_SAX_CDATA</code>: CDATA was just read.</li>
-    <li><code>MXML_SAX_COMMENT</code>: A comment was just read.</li>
-    <li><code>MXML_SAX_DATA</code>: Data (custom, integer, opaque, real, or text) was just read.</li>
-    <li><code>MXML_SAX_DIRECTIVE</code>: A processing directive/instruction was just read.</li>
-    <li><code>MXML_SAX_ELEMENT_CLOSE</code> - A close element was just read (<code>&lt;/element&gt;</code>)</li>
-    <li><code>MXML_SAX_ELEMENT_OPEN</code> - An open element was just read (<code>&lt;element&gt;</code>)</li>
+    <li>    <p><code>MXML_SAX_CDATA</code>: CDATA was just read.</p>
+</li>
+    <li>    <p><code>MXML_SAX_COMMENT</code>: A comment was just read.</p>
+</li>
+    <li>    <p><code>MXML_SAX_DATA</code>: Data (custom, integer, opaque, real, or text) was just read.</p>
+</li>
+    <li>    <p><code>MXML_SAX_DIRECTIVE</code>: A processing directive/instruction was just read.</p>
+</li>
+    <li>    <p><code>MXML_SAX_ELEMENT_CLOSE</code> - A close element was just read (<code>&lt;/element&gt;</code>)</p>
+</li>
+    <li>    <p><code>MXML_SAX_ELEMENT_OPEN</code> - An open element was just read (<code>&lt;element&gt;</code>)</p>
+</li>
 </ul>
     <p>Elements are <em>released</em> after the close element is processed. All other nodes are released after they are processed. The SAX callback can <em>retain</em> the node using the <code>mxmlRetain</code> function. For example, the following SAX callback will retain all nodes, effectively simulating a normal in-memory load:</p>
     <pre><code>void
@@ -1346,9 +1374,9 @@ constrains the search to a particular node's children.</p>
 <h4 class="returnvalue">Return Value</h4>
         <p class="description">Found node or <code>NULL</code></p>
 <h4 class="discussion">Discussion</h4>
-        <p class="discussion">The &quot;path&quot; is a slash-separated list of element names. The name &quot;*&quot; is
+        <p class="discussion">The &quot;path&quot; is a slash-separated list of element names. The name &quot;<em>" is
 considered a wildcard for one or more levels of elements.  For example,
-&quot;foo/one/two&quot;, &quot;bar/two/one&quot;, &quot;*/one&quot;, and so forth.<br>
+"foo/one/two", "bar/two/one", "</em>/one&quot;, and so forth.<br>
 <br>
 The first child node of the found node is returned if the given node has
 children and the first child is a value node.
@@ -1699,7 +1727,7 @@ return the first node in the index.</p>
 <h4 class="discussion">Discussion</h4>
         <p class="discussion">The nodes in the specified file are added to the specified top node.
 If no top node is provided, the XML file MUST be well-formed with a
-single parent node like &lt;?xml&gt; for the entire file. The callback
+single parent node like <a href="?xml">?xml</a> for the entire file. The callback
 function returns the value type that should be used for child nodes.
 The constants <code>MXML_INTEGER_CALLBACK</code>, <code>MXML_OPAQUE_CALLBACK</code>,
 <code>MXML_REAL_CALLBACK</code>, and <code>MXML_TEXT_CALLBACK</code> are defined for
@@ -1728,7 +1756,7 @@ text as a series of whitespace-delimited words, instead of using the
 <h4 class="discussion">Discussion</h4>
         <p class="discussion">The nodes in the specified file are added to the specified top node.
 If no top node is provided, the XML file MUST be well-formed with a
-single parent node like &lt;?xml&gt; for the entire file. The callback
+single parent node like <a href="?xml">?xml</a> for the entire file. The callback
 function returns the value type that should be used for child nodes.
 The constants <code>MXML_INTEGER_CALLBACK</code>, <code>MXML_OPAQUE_CALLBACK</code>,
 <code>MXML_REAL_CALLBACK</code>, and <code>MXML_TEXT_CALLBACK</code> are defined for
@@ -1757,7 +1785,7 @@ text as a series of whitespace-delimited words, instead of using the
 <h4 class="discussion">Discussion</h4>
         <p class="discussion">The nodes in the specified string are added to the specified top node.
 If no top node is provided, the XML string MUST be well-formed with a
-single parent node like &lt;?xml&gt; for the entire string. The callback
+single parent node like <a href="?xml">?xml</a> for the entire string. The callback
 function returns the value type that should be used for child nodes.
 The constants <code>MXML_INTEGER_CALLBACK</code>, <code>MXML_OPAQUE_CALLBACK</code>,
 <code>MXML_REAL_CALLBACK</code>, and <code>MXML_TEXT_CALLBACK</code> are defined for
@@ -2022,7 +2050,7 @@ using a SAX callback.</p>
 <h4 class="discussion">Discussion</h4>
         <p class="discussion">The nodes in the specified file are added to the specified top node.
 If no top node is provided, the XML file MUST be well-formed with a
-single parent node like &lt;?xml&gt; for the entire file. The callback
+single parent node like <a href="?xml">?xml</a> for the entire file. The callback
 function returns the value type that should be used for child nodes.
 The constants <code>MXML_INTEGER_CALLBACK</code>, <code>MXML_OPAQUE_CALLBACK</code>,
 <code>MXML_REAL_CALLBACK</code>, and <code>MXML_TEXT_CALLBACK</code> are defined for
@@ -2056,7 +2084,7 @@ using a SAX callback.</p>
 <h4 class="discussion">Discussion</h4>
         <p class="discussion">The nodes in the specified file are added to the specified top node.
 If no top node is provided, the XML file MUST be well-formed with a
-single parent node like &lt;?xml&gt; for the entire file. The callback
+single parent node like <a href="?xml">?xml</a> for the entire file. The callback
 function returns the value type that should be used for child nodes.
 The constants <code>MXML_INTEGER_CALLBACK</code>, <code>MXML_OPAQUE_CALLBACK</code>,
 <code>MXML_REAL_CALLBACK</code>, and <code>MXML_TEXT_CALLBACK</code> are defined for
@@ -2090,7 +2118,7 @@ using a SAX callback.</p>
 <h4 class="discussion">Discussion</h4>
         <p class="discussion">The nodes in the specified string are added to the specified top node.
 If no top node is provided, the XML string MUST be well-formed with a
-single parent node like &lt;?xml&gt; for the entire string. The callback
+single parent node like <a href="?xml">?xml</a> for the entire string. The callback
 function returns the value type that should be used for child nodes.
 The constants <code>MXML_INTEGER_CALLBACK</code>, <code>MXML_OPAQUE_CALLBACK</code>,
 <code>MXML_REAL_CALLBACK</code>, and <code>MXML_TEXT_CALLBACK</code> are defined for

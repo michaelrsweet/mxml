@@ -2249,7 +2249,7 @@ mxml_parse_element(
 
     if (mxmlElementGetAttr(node, name))
     {
-      mxml_error("Duplicate attribute '%s' in element %s on line %d.", name, node->value.element.name, name, *line);
+      mxml_error("Duplicate attribute '%s' in element %s on line %d.", name, node->value.element.name, *line);
       goto error;
     }
 

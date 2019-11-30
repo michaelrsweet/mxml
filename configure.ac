@@ -198,7 +198,7 @@ if test x$enable_shared != xno; then
                         LDFLAGS="$LDFLAGS -Wl,-rpath,\$(libdir)"
 			;;
 
-		*bsd)
+		*bsd | haiku*)
 			AC_MSG_RESULT(yes)
 			LIBMXML="libmxml.so.1.6"
 			DSO="\$(CC)"

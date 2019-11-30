@@ -1,6 +1,6 @@
 # Changes in Mini-XML CURRENT
 
-- Added support for shared libraries on Kaiku (Issue #262)
+- Added support for shared libraries on Haiku (Issue #262)
 - Fixed some minor issues identified by the LGTM security scanner.
 
 

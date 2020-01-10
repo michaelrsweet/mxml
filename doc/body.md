@@ -1,8 +1,8 @@
 ---
-title: Mini-XML 3.1 API Reference
+title: Mini-XML 3.2 API Reference
 author: Michael R Sweet
-copyright: Copyright © 2003-2019, All Rights Reserved.
-version: 3.1
+copyright: Copyright © 2003-2020, All Rights Reserved.
+version: 3.2
 ...
 
 # Introduction

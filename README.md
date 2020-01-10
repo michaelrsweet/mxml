@@ -1,4 +1,4 @@
-Mini-XML Version 3.1
+Mini-XML Version 3.2
 ====================
 
 Mini-XML is a small XML parsing library that you can use to read XML data files
@@ -192,7 +192,7 @@ current version of this software, documentation, and Github issue tracking page.
 Legal Stuff
 -----------
 
-Copyright © 2003-2019 by Michael R Sweet
+Copyright © 2003-2020 by Michael R Sweet
 
 The Mini-XML library is licensed under the Apache License Version 2.0 with an
 exception to allow linking against GPL2/LGPL2-only software.  See the files

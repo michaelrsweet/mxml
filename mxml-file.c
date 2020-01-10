@@ -3,7 +3,7 @@
  *
  * https://www.msweet.org/mxml
  *
- * Copyright © 2003-2019 by Michael R Sweet.
+ * Copyright © 2003-2020 by Michael R Sweet.
  *
  * Licensed under Apache License v2.0.  See the file "LICENSE" for more
  * information.
@@ -2317,8 +2317,9 @@ mxml_parse_element(
         * Read unquoted value...
 	*/
 
-	value[0] = ch;
-	ptr      = value + 1;
+	ptr      = value;
+	if (mxml_add_char(ch, &ptr, &value, &valsize))
+	  goto error;
 
 	while ((ch = (*getc_cb)(p, encoding)) != EOF)
 	{

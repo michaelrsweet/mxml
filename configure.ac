@@ -3,14 +3,14 @@ dnl Configuration script for Mini-XML, a small XML-like file parsing library.
 dnl
 dnl https://www.msweet.org/mxml
 dnl
-dnl Copyright © 2003-2019 by Michael R Sweet.
+dnl Copyright © 2003-2020 by Michael R Sweet.
 dnl
 dnl Licensed under Apache License v2.0.  See the file "LICENSE" for more
 dnl information.
 dnl
 
 dnl Package name and version...
-AC_INIT([Mini-XML], [3.1], [https://github.com/michaelrsweet/mxml/issues], [mxml], [https://michaelrsweet.github.io/mxml])
+AC_INIT([Mini-XML], [3.2], [https://github.com/michaelrsweet/mxml/issues], [mxml], [https://michaelrsweet.github.io/mxml])
 
 dnl This line is provided to ensure that you don't run the autoheader program
 dnl against this project.  Doing so is completely unsupported and WILL cause

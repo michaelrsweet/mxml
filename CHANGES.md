@@ -1,6 +1,8 @@
-# Changes in Mini-XML CURRENT
+# Changes in Mini-XML 3.2
 
 - Added support for shared libraries on Haiku (Issue #262)
+- Fixed handling of unquoted attribute values that start with a Unicode
+  character (Issue #264)
 - Fixed some minor issues identified by the LGTM security scanner.
 
 

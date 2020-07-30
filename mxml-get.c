@@ -15,6 +15,7 @@
 
 #include "config.h"
 #include "mxml-private.h"
+#include <assert.h>
 
 
 /*
@@ -28,11 +29,12 @@
 const char *				/* O - CDATA value or @code NULL@ */
 mxmlGetCDATA(mxml_node_t *node)		/* I - Node to get */
 {
+  assert(node);
  /*
   * Range check input...
   */
 
-  if (!node || node->type != MXML_ELEMENT ||
+  if (node->type != MXML_ELEMENT ||
       strncmp(node->value.element.name, "![CDATA[", 8))
     return (NULL);
 
@@ -56,12 +58,7 @@ mxmlGetCDATA(mxml_node_t *node)		/* I - Node to get */
 const void *				/* O - Custom value or @code NULL@ */
 mxmlGetCustom(mxml_node_t *node)	/* I - Node to get */
 {
- /*
-  * Range check input...
-  */
-
-  if (!node)
-    return (NULL);
+  assert(node);
 
  /*
   * Return the integer value...
@@ -89,11 +86,12 @@ mxmlGetCustom(mxml_node_t *node)	/* I - Node to get */
 const char *				/* O - Element name or @code NULL@ */
 mxmlGetElement(mxml_node_t *node)	/* I - Node to get */
 {
+  assert(node);
  /*
   * Range check input...
   */
 
-  if (!node || node->type != MXML_ELEMENT)
+  if (node->type != MXML_ELEMENT)
     return (NULL);
 
  /*
@@ -116,11 +114,12 @@ mxmlGetElement(mxml_node_t *node)	/* I - Node to get */
 mxml_node_t *				/* O - First child or @code NULL@ */
 mxmlGetFirstChild(mxml_node_t *node)	/* I - Node to get */
 {
+  assert(node);
  /*
   * Range check input...
   */
 
-  if (!node || node->type != MXML_ELEMENT)
+  if (node->type != MXML_ELEMENT)
     return (NULL);
 
  /*
@@ -143,13 +142,7 @@ mxmlGetFirstChild(mxml_node_t *node)	/* I - Node to get */
 int					/* O - Integer value or 0 */
 mxmlGetInteger(mxml_node_t *node)	/* I - Node to get */
 {
- /*
-  * Range check input...
-  */
-
-  if (!node)
-    return (0);
-
+  assert(node);
  /*
   * Return the integer value...
   */
@@ -177,11 +170,12 @@ mxmlGetInteger(mxml_node_t *node)	/* I - Node to get */
 mxml_node_t *				/* O - Last child or @code NULL@ */
 mxmlGetLastChild(mxml_node_t *node)	/* I - Node to get */
 {
+  assert(node);
  /*
   * Range check input...
   */
 
-  if (!node || node->type != MXML_ELEMENT)
+  if (node->type != MXML_ELEMENT)
     return (NULL);
 
  /*
@@ -203,12 +197,7 @@ mxmlGetLastChild(mxml_node_t *node)	/* I - Node to get */
 mxml_node_t *
 mxmlGetNextSibling(mxml_node_t *node)	/* I - Node to get */
 {
- /*
-  * Range check input...
-  */
-
-  if (!node)
-    return (NULL);
+  assert(node);
 
  /*
   * Return the node type...
@@ -230,12 +219,7 @@ mxmlGetNextSibling(mxml_node_t *node)	/* I - Node to get */
 const char *				/* O - Opaque string or @code NULL@ */
 mxmlGetOpaque(mxml_node_t *node)	/* I - Node to get */
 {
- /*
-  * Range check input...
-  */
-
-  if (!node)
-    return (NULL);
+  assert(node);
 
  /*
   * Return the integer value...
@@ -263,12 +247,7 @@ mxmlGetOpaque(mxml_node_t *node)	/* I - Node to get */
 mxml_node_t *				/* O - Parent node or @code NULL@ */
 mxmlGetParent(mxml_node_t *node)	/* I - Node to get */
 {
- /*
-  * Range check input...
-  */
-
-  if (!node)
-    return (NULL);
+  assert(node);
 
  /*
   * Return the node type...
@@ -289,12 +268,7 @@ mxmlGetParent(mxml_node_t *node)	/* I - Node to get */
 mxml_node_t *				/* O - Previous node or @code NULL@ */
 mxmlGetPrevSibling(mxml_node_t *node)	/* I - Node to get */
 {
- /*
-  * Range check input...
-  */
-
-  if (!node)
-    return (NULL);
+  assert(node);
 
  /*
   * Return the node type...
@@ -315,12 +289,7 @@ mxmlGetPrevSibling(mxml_node_t *node)	/* I - Node to get */
 double					/* O - Real value or 0.0 */
 mxmlGetReal(mxml_node_t *node)		/* I - Node to get */
 {
- /*
-  * Range check input...
-  */
-
-  if (!node)
-    return (0.0);
+  assert(node);
 
  /*
   * Return the integer value...
@@ -356,17 +325,7 @@ const char *				/* O - Text string or @code NULL@ */
 mxmlGetText(mxml_node_t *node,		/* I - Node to get */
             int         *whitespace)	/* O - 1 if string is preceded by whitespace, 0 otherwise */
 {
- /*
-  * Range check input...
-  */
-
-  if (!node)
-  {
-    if (whitespace)
-      *whitespace = 0;
-
-    return (NULL);
-  }
+  assert(node);
 
  /*
   * Return the integer value...
@@ -409,12 +368,7 @@ mxmlGetText(mxml_node_t *node,		/* I - Node to get */
 mxml_type_t				/* O - Type of node */
 mxmlGetType(mxml_node_t *node)		/* I - Node to get */
 {
- /*
-  * Range check input...
-  */
-
-  if (!node)
-    return (MXML_IGNORE);
+  assert(node);
 
  /*
   * Return the node type...
@@ -433,12 +387,7 @@ mxmlGetType(mxml_node_t *node)		/* I - Node to get */
 void *					/* O - User data pointer */
 mxmlGetUserData(mxml_node_t *node)	/* I - Node to get */
 {
- /*
-  * Range check input...
-  */
-
-  if (!node)
-    return (NULL);
+  assert(node);
 
  /*
   * Return the user data pointer...

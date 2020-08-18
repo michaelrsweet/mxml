@@ -195,5 +195,14 @@ Legal Stuff
 Copyright © 2003-2020 by Michael R Sweet
 
 The Mini-XML library is licensed under the Apache License Version 2.0 with an
-exception to allow linking against GPL2/LGPL2-only software.  See the files
-"LICENSE" and "NOTICE" for more information.
+*optional* exception to allow linking against GPL2/LGPL2-only software.  See the
+files "LICENSE" and "NOTICE" for more information.
+
+> Note: The exception listed in the NOTICE file only applies when linking
+> against GPL2/LGPL2-only software.  Some Apache License purists have objected
+> to linking Apache Licensed code against Mini-XML with these exceptions on the
+> grounds that it makes Mini-XML somehow incompatible with the Apache License.
+> For that reason, people wishing to retain their Apache License purity may
+> omit the exception from their copy of Mini-XML.
+
+> Note 2: IANAL, but I am beginning to dislike them!

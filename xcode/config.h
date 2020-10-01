@@ -3,7 +3,7 @@
  *
  * https://www.msweet.org/mxml
  *
- * Copyright © 2003-2019 by Michael R Sweet.
+ * Copyright © 2003-2020 by Michael R Sweet.
  *
  * Licensed under Apache License v2.0.  See the file "LICENSE" for more
  * information.

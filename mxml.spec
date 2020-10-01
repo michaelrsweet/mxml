@@ -11,7 +11,7 @@
 
 Summary: Small XML file parsing library
 Name: mxml
-Version: 3.0
+Version: 3.2
 Release: 1
 License: Apache 2.0
 Group: Development/Libraries

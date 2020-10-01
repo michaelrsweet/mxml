@@ -101,10 +101,13 @@ clean:
 	echo Cleaning build files...
 	$(RM) $(OBJS) $(ALLTARGETS)
 	$(RM) mxml1.dll
+	$(RM) mxml1.lib
 	$(RM) libmxml.a
+	$(RM) libmxml.so
+	$(RM) libmxml.so.1
 	$(RM) libmxml.so.1.6
-	$(RM) libmxml.sl.1
 	$(RM) libmxml.1.dylib
+	$(RM) libmxml.dylib
 
 
 #
@@ -114,7 +117,10 @@ clean:
 distclean:	clean
 	echo Cleaning distribution files...
 	$(RM) config.cache config.log config.status
-	$(RM) Makefile config.h
+	$(RM) Makefile config.h mxml.pc
+	$(RM) test.xmlfd
+	$(RM) temp1.xml temp1.xmlfd temp1s.xml
+	$(RM) temp2.xml temp2s.xml
 	$(RM) -r autom4te*.cache
 	$(RM) *.bck *.bak
 	$(RM) -r clang
@@ -281,7 +287,7 @@ testmxml:	libmxml.a testmxml.o
 	fi
 	@if cmp test.xml test.xmlfd; then \
 		echo File descriptor test passed!; \
-		$(RM) test.xmlfd; \
+		$(RM) test.xmlfd temp1.xmlfd; \
 	else \
 		echo File descriptor test failed!; \
 	fi

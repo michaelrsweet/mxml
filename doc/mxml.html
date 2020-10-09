@@ -3,12 +3,27 @@
   <head>
     <title>Mini-XML 3.2 API Reference</title>
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
-    <meta name="generator" content="codedoc v3.3">
+    <meta name="generator" content="codedoc v3.5">
     <meta name="author" content="Michael R Sweet">
     <meta name="language" content="en-US">
-    <meta name="copyright" content="Copyright &#xa9; 2003-2020, All Rights Reserved.">
+    <meta name="copyright" content="Copyright © 2003-2020, All Rights Reserved.">
     <meta name="version" content="3.2">
     <style type="text/css"><!--
+body {
+  background: white;
+  color: black;
+  font-family: sans-serif;
+  font-size: 12pt;
+}
+a {
+  color: black;
+}
+a:link, a:visited {
+  color: #00f;
+}
+a:link:hover, a:visited:hover, a:active {
+  color: #c0c;
+}
 body, p, h1, h2, h3, h4, h5, h6 {
   font-family: sans-serif;
   line-height: 1.4;
@@ -45,6 +60,9 @@ h6 {
   margin-bottom: 0.5em;
   margin-top: 1.5em;
 }
+img.title {
+  width: 256px;
+}
 div.header h1, div.header p {
   text-align: center;
 }
@@ -62,7 +80,7 @@ div.contents, div.body, div.footer {
 }
 blockquote {
   border: solid thin gray;
-  box-shadow: 3px 3px 5px rgba(0,0,0,0.5);
+  box-shadow: 3px 3px 5px rgba(127,127,127,0.25);
   padding: 0px 10px;
   page-break-inside: avoid;
 }
@@ -72,7 +90,7 @@ p code, li code, p.code, pre, ul.code li {
   -webkit-hyphens: manual;
 }
 p.code, pre, ul.code li {
-  background: rgba(127,127,127,0.1);
+  background: rgba(127,127,127,0.25);
   border: thin dotted gray;
   padding: 10px;
   page-break-inside: avoid;
@@ -114,7 +132,7 @@ table {
   border-spacing: 0;
 }
 td {
-  border: solid 1px #666;
+  border: solid 1px gray;
   padding: 5px 10px;
   vertical-align: top;
 }
@@ -128,13 +146,14 @@ td.right {
   text-align: right;
 }
 th {
-  border-bottom: solid 2px #000;
+  border-bottom: solid 2px gray;
   padding: 1px 5px;
   text-align: center;
   vertical-align: bottom;
 }
 tr:nth-child(even) {
-  background: rgba(127,127,127,0.1);n}
+  background: rgba(127,127,127,0.25);
+}
 table.list {
   border-collapse: collapse;
   width: 100%;
@@ -143,6 +162,7 @@ table.list th {
   border-bottom: none;
   border-right: 2px solid gray;
   font-family: monospace;
+  font-weight: normal;
   padding: 5px 10px 5px 2px;
   text-align: right;
   vertical-align: top;
@@ -154,16 +174,60 @@ table.list td {
   vertical-align: top;
 }
 h2.title, h3.title {
-  border-bottom: solid 2px black;
+  border-bottom: solid 2px gray;
+}
+/* Dark mode overrides */
+@media (prefers-color-scheme: dark) {
+  body {
+    background: black;
+    color: #ccc;
+  }
+  a {
+    color: #ccc;
+  }
+  a:link, a:visited {
+    color: #66f;
+  }
+  a:link:hover, a:visited:hover, a:active {
+    color: #f06;
+  }
+}
+/* Show contents on left side in web browser */
+@media screen and (min-width: 800px) {
+  div.contents {
+    border-right: solid thin gray;
+    bottom: 0px;
+    box-shadow: 3px 3px 5px rgba(127,127,127,0.5);
+    font-size: 10pt;
+    left: 0px;
+    overflow: scroll;
+    padding: 1%;
+    position: fixed;
+    top: 0px;
+    width: 18%;
+  }
+  div.contents h2.title {
+    margin-top: 0px;
+  }
+  div.header, div.body, div.footer {
+    margin-left: 20%;
+    padding: 1% 2%;
+  }
+}
+/* Center title page content vertically */
+@media print {
+  div.header {
+    padding-top: 33%;
+  }
 }
 --></style>
   </head>
   <body>
     <div class="header">
-      <p><img src="mxml-cover.png" width="100%"></p>
+      <p><img class="title" src="mxml-cover.png"></p>
       <h1 class="title">Mini-XML 3.2 API Reference</h1>
       <p>Michael R Sweet</p>
-      <p>Copyright &#xa9; 2003-2020, All Rights Reserved.</p>
+      <p>Copyright © 2003-2020, All Rights Reserved.</p>
     </div>
     <div class="contents">
       <h2 class="title">Contents</h2>
@@ -326,7 +390,7 @@ h2.title, h3.title {
     <h3 class="title" id="resources">Resources</h3>
     <p>The Mini-XML home page can be found at <a href="https://www.msweet.org/mxml">https://www.msweet.org/mxml</a>. From there you can download the current version of Mini-XML, access the issue tracker, and find other resources.</p>
     <h3 class="title" id="legal-stuff">Legal Stuff</h3>
-    <p>The Mini-XML library is copyright &#xa9; 2003-2019 by Michael R Sweet and is provided under the Apache License Version 2.0 with an exception to allow linking against GPL2/LGPL2-only software. See the files &quot;LICENSE&quot; and &quot;NOTICE&quot; for more information.</p>
+    <p>The Mini-XML library is copyright © 2003-2019 by Michael R Sweet and is provided under the Apache License Version 2.0 with an exception to allow linking against GPL2/LGPL2-only software. See the files &quot;LICENSE&quot; and &quot;NOTICE&quot; for more information.</p>
     <h2 class="title" id="using-mini-xml">Using Mini-XML</h2>
     <p>Mini-XML provides a single header file which you include:</p>
     <pre><code>#include &lt;mxml.h&gt;

@@ -114,7 +114,7 @@ _mxml_strdupf(const char *format,	/* I - Printf-style format string */
 size_t					/* O - Number of bytes copied */
 _mxml_strlcat(char       *dst,		/* I - Destination buffer */
               const char *src,		/* I - Source string */
-              size_t     dstsize)	/* I - Size of destinatipon buffer */
+              size_t     dstsize)	/* I - Size of destination buffer */
 {
   size_t	srclen;			/* Length of source string */
   size_t	dstlen;			/* Length of destination string */
@@ -160,7 +160,7 @@ _mxml_strlcat(char       *dst,		/* I - Destination buffer */
 size_t					/* O - Number of bytes copied */
 _mxml_strlcpy(char       *dst,		/* I - Destination buffer */
               const char *src,		/* I - Source string */
-              size_t     dstsize)	/* I - Size of destinatipon buffer */
+              size_t     dstsize)	/* I - Size of destination buffer */
 {
   size_t        srclen;                 /* Length of source string */
 

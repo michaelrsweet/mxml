@@ -660,8 +660,9 @@ main(int  argc,				/* I - Number of command-line args */
 
   memset(event_counts, 0, sizeof(event_counts));
 
+  mxml_node_t *root;
   if (argv[1][0] == '<')
-    mxmlSAXLoadString(NULL, argv[1], type_cb, sax_cb, NULL);
+    root = mxmlSAXLoadString(NULL, argv[1], type_cb, sax_cb, NULL);
   else if ((fp = fopen(argv[1], "rb")) == NULL)
   {
     perror(argv[1]);
@@ -673,10 +674,11 @@ main(int  argc,				/* I - Number of command-line args */
     * Read the file...
     */
 
-    mxmlSAXLoadFile(NULL, fp, type_cb, sax_cb, NULL);
+    root = mxmlSAXLoadFile(NULL, fp, type_cb, sax_cb, NULL);
 
     fclose(fp);
   }
+  mxmlRelease(root);
 
   if (!strcmp(argv[1], "test.xml"))
   {

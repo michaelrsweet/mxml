@@ -7,6 +7,24 @@ project(
   VERSION ${VERSION}
   LANGUAGES C)
 
+if(NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE Release)
+endif()
+
+include(CheckTypeSize)
+check_type_size("long long" HAVE_LONG_LONG)
+include(CheckFunctionExists)
+check_function_exists(snprintf HAVE_SNPRINTF)
+check_function_exists(vasprintf HAVE_VASPRINTF)
+check_function_exists(vsnprintf HAVE_VSNPRINTF)
+check_function_exists(strdup HAVE_STRDUP)
+check_function_exists(strlcat HAVE_STRLCAT)
+check_function_exists(strlcpy HAVE_STRLCPY)
+set(MXML_VERSION "Mini-XML v${VERSION}")
+
+configure_file(cmake/config.h.in config.h)
+set(HEADERS mxml-private.h ${CMAKE_CURRENT_BINARY_DIR}/config.h)
+
 set(SOURCES
     mxml-attr.c
     mxml-entity.c
@@ -18,9 +36,6 @@ set(SOURCES
     mxml-search.c
     mxml-set.c
     mxml-string.c)
-
-#configure_file(config.h.in config.h)
-set(HEADERS mxml-private.h cmake/config.h)
 
 add_library(${PROJECT_NAME} ${SOURCES} ${HEADERS})
 target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_BINARY_DIR})

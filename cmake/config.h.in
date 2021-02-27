@@ -24,7 +24,7 @@
  * Version number...
  */
 
-#define MXML_VERSION "Mini-XML v3.2"
+#cmakedefine MXML_VERSION "@MXML_VERSION@"
 
 
 /*
@@ -38,25 +38,25 @@
  * Long long support...
  */
 
-#define HAVE_LONG_LONG 1
+#cmakedefine HAVE_LONG_LONG 1
 
 
 /*
  * Do we have the *printf() functions?
  */
 
-#define HAVE_SNPRINTF 1
-#define HAVE_VASPRINTF 1
-#define HAVE_VSNPRINTF 1
+#cmakedefine HAVE_SNPRINTF 1
+#cmakedefine HAVE_VASPRINTF 1
+#cmakedefine HAVE_VSNPRINTF 1
 
 
 /*
  * Do we have the strXXX() functions?
  */
 
-#define HAVE_STRDUP 1
-#define HAVE_STRLCAT 1
-#define HAVE_STRLCPY 1
+#cmakedefine HAVE_STRDUP 1
+#cmakedefine HAVE_STRLCAT 1
+#cmakedefine HAVE_STRLCPY 1
 
 
 /*

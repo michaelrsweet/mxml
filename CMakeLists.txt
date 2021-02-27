@@ -19,14 +19,11 @@ set(SOURCES
     mxml-set.c
     mxml-string.c)
 
-set(HEADERS mxml-private.h)
-
 configure_file(config.h.in config.h)
+set(HEADERS mxml-private.h ${CMAKE_CURRENT_BINARY_DIR}/config.h)
 
 add_library(${PROJECT_NAME} ${SOURCES} ${HEADERS})
-target_include_directories(
-  ${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-                         $<INSTALL_INTERFACE:include>)
+target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 add_library(MSweet::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 
 # install library

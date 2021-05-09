@@ -1,5 +1,5 @@
-Mini-XML Version 3.2
-====================
+Mini-XML
+========
 
 Mini-XML is a small XML parsing library that you can use to read XML data files
 or strings in your application without requiring large non-standard libraries.

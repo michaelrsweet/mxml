@@ -1,3 +1,8 @@
+# Changes in Mini-XML 3.2.1
+
+- Fixed `MXML_MINOR_VERSION` value in "mxml.h" (Issue #285)
+
+
 # Changes in Mini-XML 3.2
 
 - Added support for shared libraries on Haiku (Issue #262)

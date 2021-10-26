@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="en-US">
 <head>
-<title>Mini-XML 3.2 API Reference</title>
+<title>Mini-XML 3.3 Programming Manual</title>
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
 <meta name="generator" content="codedoc v3.7">
 <meta name="author" content="Michael R Sweet">
 <meta name="language" content="en-US">
 <meta name="copyright" content="Copyright © 2003-2021, All Rights Reserved.">
-<meta name="version" content="3.2">
+<meta name="version" content="3.3">
 <style type="text/css"><!--
 body {
   background: white;
@@ -245,7 +245,7 @@ span.string {
 <body>
 <div class="header">
 <p><img class="title" src="mxml-cover.png"></p>
-<h1 class="title">Mini-XML 3.2 API Reference</h1>
+<h1 class="title">Mini-XML 3.3 Programming Manual</h1>
 <p>Michael R Sweet</p>
 <p>Copyright © 2003-2021, All Rights Reserved.</p>
 </div>
@@ -406,11 +406,11 @@ span.string {
 <p>Given the limited scope of what you use in XML, it should be trivial to code a mini-XML API in a few hundred lines of code.</p>
 </blockquote>
 <p>I took my own challenge and coded furiously for two days to produced the initial public release of Mini-XML, total lines of code: 696. Robert promptly integrated Mini-XML into Gutenprint and removed libxml2.</p>
-<p>Thanks to lots of feedback and support from various developers, Mini-XML has evolved since then to provide a more complete XML implementation and now stands at a whopping 4,186 lines of code, compared to 196,141 lines of code for libxml2 version 2.9.9.</p>
+<p>Thanks to lots of feedback and support from various developers, Mini-XML has evolved since then to provide a more complete XML implementation and now stands at a whopping 4,300 lines of code, compared to 196,141 lines of code for libxml2 version 2.9.9.</p>
 <h3 class="title" id="resources">Resources</h3>
 <p>The Mini-XML home page can be found at <a href="https://www.msweet.org/mxml">https://www.msweet.org/mxml</a>. From there you can download the current version of Mini-XML, access the issue tracker, and find other resources.</p>
 <h3 class="title" id="legal-stuff">Legal Stuff</h3>
-<p>The Mini-XML library is copyright © 2003-2019 by Michael R Sweet and is provided under the Apache License Version 2.0 with an exception to allow linking against GPL2/LGPL2-only software. See the files &quot;LICENSE&quot; and &quot;NOTICE&quot; for more information.</p>
+<p>The Mini-XML library is copyright © 2003-2021 by Michael R Sweet and is provided under the Apache License Version 2.0 with an exception to allow linking against GPL2/LGPL2-only software. See the files &quot;LICENSE&quot; and &quot;NOTICE&quot; for more information.</p>
 <h2 class="title" id="using-mini-xml">Using Mini-XML</h2>
 <p>Mini-XML provides a single header file which you include:</p>
 <pre><code>#include &lt;mxml.h&gt;
@@ -2229,12 +2229,11 @@ char *mxmlSaveAllocString(<a href="#mxml_node_t">mxml_node_t</a> *node, <a href=
 <h4 class="discussion">Discussion</h4>
 <p class="discussion">This function returns a pointer to a string containing the textual
 representation of the XML node tree.  The string should be freed
-using the free() function when you are done with it.  <code>NULL</code> is returned
-if the node would produce an empty string or if the string cannot be
-allocated.<br>
+using <code>free()</code> when you are done with it.  <code>NULL</code> is returned if the node
+would produce an empty string or if the string cannot be allocated.<br>
 <br>
 The callback argument specifies a function that returns a whitespace
-string or NULL before and after each element.  If <code>MXML_NO_CALLBACK</code>
+string or <code>NULL</code> before and after each element.  If <code>MXML_NO_CALLBACK</code>
 is specified, whitespace will only be added before <code>MXML_TEXT</code> nodes
 with leading whitespace and before attribute names inside opening
 element tags.</p>

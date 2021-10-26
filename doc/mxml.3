@@ -1,4 +1,4 @@
-.TH mxml 3 "Mini-XML API" "2021-05-30" "Mini-XML API"
+.TH mxml 3 "Mini-XML API" "2021-10-26" "Mini-XML API"
 .SH NAME
 mxml \- Mini-XML API
 .SH INCLUDE FILE
@@ -1040,12 +1040,11 @@ char * mxmlSaveAllocString (
 .PP
 This function returns a pointer to a string containing the textual
 representation of the XML node tree.  The string should be freed
-using the free() function when you are done with it.  \fBNULL\fR is returned
-if the node would produce an empty string or if the string cannot be
-allocated.
+using \fBfree()\fR when you are done with it.  \fBNULL\fR is returned if the node
+would produce an empty string or if the string cannot be allocated.
 .PP
 The callback argument specifies a function that returns a whitespace
-string or NULL before and after each element.  If \fBMXML_NO_CALLBACK\fR
+string or \fBNULL\fR before and after each element.  If \fBMXML_NO_CALLBACK\fR
 is specified, whitespace will only be added before \fBMXML_TEXT\fR nodes
 with leading whitespace and before attribute names inside opening
 element tags.
@@ -1362,4 +1361,4 @@ typedef enum mxml_type_e mxml_type_t;
 .SH SEE ALSO
 Mini-XML Programmers Manual, https://www.msweet.org/mxml
 .SH COPYRIGHT
-Copyright \[co] 2003-2019 by Michael R Sweet.
+Copyright \[co] 2003-2021 by Michael R Sweet.

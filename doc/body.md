@@ -1,8 +1,8 @@
 ---
-title: Mini-XML 3.2 API Reference
+title: Mini-XML 3.3 Programming Manual
 author: Michael R Sweet
 copyright: Copyright © 2003-2021, All Rights Reserved.
-version: 3.2
+version: 3.3
 ...
 
 # Introduction
@@ -49,7 +49,7 @@ integrated Mini-XML into Gutenprint and removed libxml2.
 
 Thanks to lots of feedback and support from various developers, Mini-XML has
 evolved since then to provide a more complete XML implementation and now stands
-at a whopping 4,186 lines of code, compared to 196,141 lines of code for libxml2
+at a whopping 4,300 lines of code, compared to 196,141 lines of code for libxml2
 version 2.9.9.
 
 
@@ -62,7 +62,7 @@ tracker, and find other resources.
 
 ## Legal Stuff
 
-The Mini-XML library is copyright © 2003-2019 by Michael R Sweet and is provided
+The Mini-XML library is copyright © 2003-2021 by Michael R Sweet and is provided
 under the Apache License Version 2.0 with an exception to allow linking against
 GPL2/LGPL2-only software.  See the files "LICENSE" and "NOTICE" for more
 information.

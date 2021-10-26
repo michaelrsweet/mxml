@@ -376,7 +376,10 @@ mxmlSaveString(mxml_node_t    *node,	/* I - Node to write */
   */
 
   if (ptr[0] >= ptr[1])
-    buffer[bufsize - 1] = '\0';
+  {
+    if (bufsize > 0)
+      buffer[bufsize - 1] = '\0';
+  }
   else
     ptr[0][0] = '\0';
 

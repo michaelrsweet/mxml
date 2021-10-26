@@ -1,6 +1,7 @@
 # Changes in Mini-XML 3.2.1
 
 - Fixed potential memory leak in `mxmlLoad*` functions (Issue #278, Issue #279)
+- Fixed `mxmlSaveString` with a buffer size of 0 (Issue #284)
 - Fixed `MXML_MINOR_VERSION` value in "mxml.h" (Issue #285)
 - Fixed POSIX threading support for MingW (Issue #287)
 - Fixed some minor memory leaks found by Coverity.

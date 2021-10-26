@@ -1366,9 +1366,9 @@ mxml_load_data(
     mxml_sax_cb_t   sax_cb,		/* I - SAX callback or MXML_NO_CALLBACK */
     void            *sax_data)		/* I - SAX user data */
 {
-  mxml_node_t	*node,			/* Current node */
-		*first,			/* First node added */
-		*parent;		/* Current parent node */
+  mxml_node_t	*node = NULL,		/* Current node */
+		*first = NULL,		/* First node added */
+		*parent = NULL;		/* Current parent node */
   int		line = 1,		/* Current line number */
 		ch,			/* Character from file */
 		whitespace;		/* Non-zero if whitespace seen */
@@ -1933,8 +1933,13 @@ mxml_load_data(
         {
           (*sax_cb)(node, MXML_SAX_ELEMENT_CLOSE, sax_data);
 
-          if (!mxmlRelease(node) && first == node)
-	    first = NULL;
+          if (!mxmlRelease(node))
+          {
+            if (first == node)
+	      first = NULL;
+
+	    node = NULL;
+	  }
         }
 
        /*
@@ -1981,6 +1986,7 @@ mxml_load_data(
 	  {
 	    mxml_error("Expected > but got '%c' instead for element <%s/> on line %d.", ch, buffer, line);
             mxmlDelete(node);
+            node = NULL;
             goto error;
 	  }
 
@@ -2013,8 +2019,13 @@ mxml_load_data(
         {
           (*sax_cb)(node, MXML_SAX_ELEMENT_CLOSE, sax_data);
 
-          if (!mxmlRelease(node) && first == node)
-            first = NULL;
+          if (!mxmlRelease(node))
+          {
+            if (first == node)
+	      first = NULL;
+
+	    node = NULL;
+	  }
         }
       }
 

@@ -1,4 +1,4 @@
-# Changes in Mini-XML 3.2.1
+# Changes in Mini-XML 3.3
 
 - Cleaned up usage of `free` throughout the library (Issue #276)
 - Added more error handling to the library (Issue #277)

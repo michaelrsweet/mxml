@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+    <metadata>
+        <id>libmxml1_native</id>
+        <title>Small XML File Parsing Library for VS2019+</title>
+        <version>3.3.0</version>
+        <authors>Michael R Sweet</authors>
+        <owners>michaelrsweet</owners>
+        <projectUrl>https://github.com/michaelrsweet/mxml</projectUrl>
+        <license type="expression">Apache-2.0</license>
+        <icon>build/native/mxml-128.png</icon>
+	<readme>build/native/README.md</readme>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>Small XML File Parsing Library</description>
+        <summary>Mini-XML is a small XML parsing library that you can use to read XML data files or strings in your application without requiring large non-standard libraries.</summary>
+        <copyright>Copyright © 2003-2021 by Michael R Sweet</copyright>
+        <tags>xml</tags>
+	<dependencies>
+	    <dependency id="libmxml1_native.redist" version="3.3.0" />
+	</dependencies>
+    </metadata>
+    <files>
+        <file src="..\doc\mxml-128.png" target="build\native" />
+        <file src="..\README.md" target="build\native" />
+        <file src="libmxml1_native.props" target="build\native" />
+        <file src="..\mxml.h" target="build\native\include" />
+        <!--<file src="Win32\**\libmxml1.lib" target="build\native\lib\Win32" />-->
+        <file src="x64\**\libmxml1.lib" target="build\native\lib\x64" />
+    </files>
+</package>

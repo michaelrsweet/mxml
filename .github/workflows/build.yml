@@ -1,0 +1,59 @@
+name: Build
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build-linux:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: update build environment
+      run: sudo apt-get update --fix-missing -y
+    - name: install prerequisites
+      run: sudo apt-get install -y cppcheck
+    - name: configure
+      env:
+        CC: /usr/bin/gcc
+      run: ./configure --enable-debug --enable-maintainer
+    - name: make
+      run: make
+    - name: test
+      env:
+        ASAN_OPTIONS: leak_check_at_exit=false
+      run: make test
+    - name: clang static analyzer
+      run: make CC=clang "GHA_ERROR=::error::" clang
+    - name: cppcheck
+      run: make "GHA_ERROR=::error::" cppcheck
+
+  build-macos:
+
+    runs-on: macos-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: configure
+      run: ./configure --enable-debug --enable-maintainer
+    - name: make
+      run: make
+    - name: test
+      run: make test
+    - name: clang static analyzer
+      run: make CC=clang "GHA_ERROR=::error::" clang
+
+  build-windows:
+
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: setup-msbuild
+      uses: microsoft/setup-msbuild@v1.0.2
+    - name: msbuild
+      run: msbuild vcnet\mxml.sln

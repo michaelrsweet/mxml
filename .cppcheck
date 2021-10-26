@@ -1,0 +1,20 @@
+// Bad CERT recommendation: C memory layout not determined by variable locations
+cert-API01-C
+
+// Cppcheck doesn't know enough about variables to know whether they are 
+// uninitialized...
+uninitvar
+
+// Don't report non-const casts.  Inline suppression comments are not working,
+// otherwise we'd be more selective...
+cert-EXP05-C
+
+// Not handling "(unsigned)~CONSTANT" properly...
+cert-INT31-c
+
+// fopen_s is NOT supported on POSIX platforms and DOES NOT APPLY for reading
+// of files!
+cert-MSC24-C
+
+// Not sure why this is a thing...
+preprocessorErrorDirective

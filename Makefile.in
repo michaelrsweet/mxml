@@ -3,7 +3,7 @@
 #
 # https://www.msweet.org/mxml
 #
-# Copyright © 2003-2019 by Michael R Sweet.
+# Copyright © 2003-2021 by Michael R Sweet.
 #
 # Licensed under Apache License v2.0.  See the file "LICENSE" for more
 # information.
@@ -17,20 +17,22 @@ AR		=	@AR@
 ARFLAGS		=	@ARFLAGS@
 ARCHFLAGS	=	@ARCHFLAGS@
 CC		=	@CC@
-CFLAGS		=	$(OPTIM) $(ARCHFLAGS) @CFLAGS@ @CPPFLAGS@ @PTHREAD_FLAGS@
+CFLAGS		=	$(OPTIM) $(ARCHFLAGS) @CFLAGS@ $(CPPFLAGS) $(WARNINGS)
 CP		=	@CP@
+CPPFLAGS	=	@CPPFLAGS@
 DSO		=	@DSO@
 DSOFLAGS	=	@DSOFLAGS@
 LDFLAGS		=	$(OPTIM) $(ARCHFLAGS) @LDFLAGS@
 INSTALL		=	@INSTALL@
 LIBMXML		=	@LIBMXML@
-LIBS		=	@LIBS@ @PTHREAD_LIBS@
+LIBS		=	@LIBS@
 LN		=	@LN@ -s
 MKDIR		=	@MKDIR@
 OPTIM		=	@OPTIM@
 RANLIB		=	@RANLIB@
 RM		=	@RM@ -f
 SHELL		=	/bin/sh
+WARNINGS	=	@WARNINGS@
 
 
 #
@@ -202,6 +204,34 @@ uninstall-libmxml.1.dylib:
 
 
 #
+# Test everything...
+#
+
+test:	testmxml
+	@echo Testing library...
+	./testmxml test.xml temp1s.xml >temp1.xml
+	./testmxml temp1.xml temp2s.xml >temp2.xml
+	@if cmp temp1.xml temp2.xml; then \
+		echo Stdio file test passed!; \
+		$(RM) temp2.xml temp2s.xml; \
+	else \
+		echo Stdio file test failed!; \
+	fi
+	@if cmp temp1.xml temp1s.xml; then \
+		echo String test passed!; \
+		$(RM) temp1.xml temp1s.xml; \
+	else \
+		echo String test failed!; \
+	fi
+	@if cmp test.xml test.xmlfd; then \
+		echo File descriptor test passed!; \
+		$(RM) test.xmlfd temp1.xmlfd; \
+	else \
+		echo File descriptor test failed!; \
+	fi
+
+
+#
 # Figure out lines-of-code...
 #
 
@@ -270,33 +300,33 @@ libmxml.1.dylib:	$(LIBOBJS)
 testmxml:	libmxml.a testmxml.o
 	echo Linking $@...
 	$(CC) $(LDFLAGS) -o $@ testmxml.o libmxml.a $(LIBS)
-	@echo Testing library...
-	./testmxml test.xml temp1s.xml >temp1.xml
-	./testmxml temp1.xml temp2s.xml >temp2.xml
-	@if cmp temp1.xml temp2.xml; then \
-		echo Stdio file test passed!; \
-		$(RM) temp2.xml temp2s.xml; \
-	else \
-		echo Stdio file test failed!; \
-	fi
-	@if cmp temp1.xml temp1s.xml; then \
-		echo String test passed!; \
-		$(RM) temp1.xml temp1s.xml; \
-	else \
-		echo String test failed!; \
-	fi
-	@if cmp test.xml test.xmlfd; then \
-		echo File descriptor test passed!; \
-		$(RM) test.xmlfd temp1.xmlfd; \
-	else \
-		echo File descriptor test failed!; \
-	fi
 
 testmxml-vg:	$(LIBOBJS) testmxml.o
 	echo Linking $@...
 	$(CC) $(LDFLAGS) -o $@ testmxml.o $(LIBOBJS) $(LIBS)
 
 testmxml.o:	mxml.h
+
+
+#
+# Analyze code with the Clang static analyzer <https://clang-analyzer.llvm.org>
+#
+
+.PHONY: clang
+clang:
+	clang $(CPPFLAGS) --analyze $(OBJS:.o=.c) 2>clang.log
+	rm -rf $(OBJS:.o=.plist)
+	test -s clang.log && (echo "$(GHA_ERROR)Clang detected issues."; echo ""; cat clang.log; exit 1) || exit 0
+
+
+#
+# Analyze code using Cppcheck <http://cppcheck.sourceforge.net>
+#
+
+.PHONY: cppcheck
+cppcheck:
+	cppcheck $(CPPFLAGS) --template=gcc --addon=cert.py --suppressions-list=.cppcheck $(OBJS:.o=.c) 2>cppcheck.log
+	test -s cppcheck.log && (echo "$(GHA_ERROR)Cppcheck detected issues."; echo ""; cat cppcheck.log; exit 1) || exit 0
 
 
 #

@@ -3,7 +3,7 @@
  *
  * https://www.msweet.org/mxml
  *
- * Copyright © 2003-2019 by Michael R Sweet.
+ * Copyright © 2003-2021 by Michael R Sweet.
  *
  * Licensed under Apache License v2.0.  See the file "LICENSE" for more
  * information.
@@ -29,9 +29,6 @@ int					/* O - 0 on success, -1 on failure */
 mxmlSetCDATA(mxml_node_t *node,		/* I - Node to set */
              const char  *data)		/* I - New data string */
 {
-  char	*s;				/* String pointer */
-
-
  /*
   * Range check input...
   */
@@ -53,12 +50,8 @@ mxmlSetCDATA(mxml_node_t *node,		/* I - Node to set */
   * Allocate the new value, free any old element value, and set the new value...
   */
 
-  s = _mxml_strdupf("![CDATA[%s", data);
-
-  if (node->value.element.name)
-    free(node->value.element.name);
-
-  node->value.element.name = s;
+  free(node->value.element.name);
+  node->value.element.name = _mxml_strdupf("![CDATA[%s", data);
 
   return (0);
 }

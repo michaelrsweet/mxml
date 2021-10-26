@@ -1,6 +1,7 @@
 # Changes in Mini-XML 3.2.1
 
 - Fixed `MXML_MINOR_VERSION` value in "mxml.h" (Issue #285)
+- Fixed some minor memory leaks found by Coverity.
 
 
 # Changes in Mini-XML 3.2

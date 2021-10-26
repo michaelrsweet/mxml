@@ -1,5 +1,12 @@
-Mini-XML
-========
+Mini-XML - Tiny XML Parsing Library
+===================================
+
+![Version](https://img.shields.io/github/v/release/michaelrsweet/mxml?include_prereleases)
+![Apache 2.0](https://img.shields.io/github/license/michaelrsweet/mxml)
+![Build](https://github.com/michaelrsweet/mxml/workflows/Build/badge.svg)
+[![Coverity Scan Status](https://img.shields.io/coverity/scan/23959.svg)](https://scan.coverity.com/projects/michaelrsweet-mxml)
+[![LGTM Grade](https://img.shields.io/lgtm/grade/cpp/github/michaelrsweet/mxml)](https://lgtm.com/projects/g/michaelrsweet/mxml/context:cpp)
+[![LGTM Alerts](https://img.shields.io/lgtm/alerts/github/michaelrsweet/mxml)](https://lgtm.com/projects/g/michaelrsweet/mxml/)
 
 Mini-XML is a small XML parsing library that you can use to read XML data files
 or strings in your application without requiring large non-standard libraries.
@@ -192,7 +199,7 @@ current version of this software, documentation, and Github issue tracking page.
 Legal Stuff
 -----------
 
-Copyright © 2003-2020 by Michael R Sweet
+Copyright © 2003-2021 by Michael R Sweet
 
 The Mini-XML library is licensed under the Apache License Version 2.0 with an
 *optional* exception to allow linking against GPL2/LGPL2-only software.  See the

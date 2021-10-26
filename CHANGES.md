@@ -1,5 +1,6 @@
 # Changes in Mini-XML 3.2.1
 
+- Cleaned up usage of `free` throughout the library (Issue #276)
 - Fixed potential memory leak in `mxmlLoad*` functions (Issue #278, Issue #279)
 - Fixed `mxmlSaveString` with a buffer size of 0 (Issue #284)
 - Fixed `MXML_MINOR_VERSION` value in "mxml.h" (Issue #285)

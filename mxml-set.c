@@ -126,9 +126,7 @@ mxmlSetElement(mxml_node_t *node,	/* I - Node to set */
   * Free any old element value and set the new value...
   */
 
-  if (node->value.element.name)
-    free(node->value.element.name);
-
+  free(node->value.element.name);
   node->value.element.name = strdup(name);
 
   return (0);
@@ -194,9 +192,7 @@ mxmlSetOpaque(mxml_node_t *node,	/* I - Node to set */
   * Free any old opaque value and set the new value...
   */
 
-  if (node->value.opaque)
-    free(node->value.opaque);
-
+  free(node->value.opaque);
   node->value.opaque = strdup(opaque);
 
   return (0);
@@ -239,9 +235,7 @@ mxmlSetOpaquef(mxml_node_t *node,	/* I - Node to set */
   s = _mxml_vstrdupf(format, ap);
   va_end(ap);
 
-  if (node->value.opaque)
-    free(node->value.opaque);
-
+  free(node->value.opaque);
   node->value.opaque = s;
 
   return (0);
@@ -311,8 +305,7 @@ mxmlSetText(mxml_node_t *node,		/* I - Node to set */
   * Free any old string value and set the new value...
   */
 
-  if (node->value.text.string)
-    free(node->value.text.string);
+  free(node->value.text.string);
 
   node->value.text.whitespace = whitespace;
   node->value.text.string     = strdup(string);
@@ -356,8 +349,7 @@ mxmlSetTextf(mxml_node_t *node,		/* I - Node to set */
   s = _mxml_vstrdupf(format, ap);
   va_end(ap);
 
-  if (node->value.text.string)
-    free(node->value.text.string);
+  free(node->value.text.string);
 
   node->value.text.whitespace = whitespace;
   node->value.text.string     = s;

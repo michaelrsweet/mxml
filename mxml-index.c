@@ -3,7 +3,7 @@
  *
  * https://www.msweet.org/mxml
  *
- * Copyright © 2003-2019 by Michael R Sweet.
+ * Copyright © 2003-2021 by Michael R Sweet.
  *
  * Licensed under Apache License v2.0.  See the file "LICENSE" for more
  * information.
@@ -46,12 +46,8 @@ mxmlIndexDelete(mxml_index_t *ind)	/* I - Index to delete */
   * Free memory...
   */
 
-  if (ind->attr)
-    free(ind->attr);
-
-  if (ind->alloc_nodes)
-    free(ind->nodes);
-
+  free(ind->attr);
+  free(ind->nodes);
   free(ind);
 }
 

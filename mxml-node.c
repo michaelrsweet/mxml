@@ -3,7 +3,7 @@
  *
  * https://www.msweet.org/mxml
  *
- * Copyright © 2003-2019 by Michael R Sweet.
+ * Copyright © 2003-2021 by Michael R Sweet.
  *
  * Licensed under Apache License v2.0.  See the file "LICENSE" for more
  * information.
@@ -772,17 +772,14 @@ mxml_free(mxml_node_t *node)		/* I - Node */
   switch (node->type)
   {
     case MXML_ELEMENT :
-        if (node->value.element.name)
-	  free(node->value.element.name);
+	free(node->value.element.name);
 
 	if (node->value.element.num_attrs)
 	{
 	  for (i = 0; i < node->value.element.num_attrs; i ++)
 	  {
-	    if (node->value.element.attrs[i].name)
-	      free(node->value.element.attrs[i].name);
-	    if (node->value.element.attrs[i].value)
-	      free(node->value.element.attrs[i].value);
+	    free(node->value.element.attrs[i].name);
+	    free(node->value.element.attrs[i].value);
 	  }
 
           free(node->value.element.attrs);
@@ -792,15 +789,13 @@ mxml_free(mxml_node_t *node)		/* I - Node */
        /* Nothing to do */
         break;
     case MXML_OPAQUE :
-        if (node->value.opaque)
-	  free(node->value.opaque);
+	free(node->value.opaque);
         break;
     case MXML_REAL :
        /* Nothing to do */
         break;
     case MXML_TEXT :
-        if (node->value.text.string)
-	  free(node->value.text.string);
+	free(node->value.text.string);
         break;
     case MXML_CUSTOM :
         if (node->value.custom.data &&

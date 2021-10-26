@@ -187,13 +187,12 @@ mxmlLoadString(mxml_node_t    *top,	/* I - Top node */
  *
  * This function returns a pointer to a string containing the textual
  * representation of the XML node tree.  The string should be freed
- * using the free() function when you are done with it.  @code NULL@ is returned
- * if the node would produce an empty string or if the string cannot be
- * allocated.
+ * using `free()` when you are done with it.  `NULL` is returned if the node
+ * would produce an empty string or if the string cannot be allocated.
  *
  * The callback argument specifies a function that returns a whitespace
- * string or NULL before and after each element.  If @code MXML_NO_CALLBACK@
- * is specified, whitespace will only be added before @code MXML_TEXT@ nodes
+ * string or `NULL` before and after each element.  If `MXML_NO_CALLBACK`
+ * is specified, whitespace will only be added before `MXML_TEXT` nodes
  * with leading whitespace and before attribute names inside opening
  * element tags.
  */

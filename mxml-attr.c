@@ -3,7 +3,7 @@
  *
  * https://www.msweet.org/mxml
  *
- * Copyright © 2003-2019 by Michael R Sweet.
+ * Copyright © 2003-2021 by Michael R Sweet.
  *
  * Licensed under Apache License v2.0.  See the file "LICENSE" for more
  * information.
@@ -302,9 +302,7 @@ mxml_set_attr(mxml_node_t *node,	/* I - Element node */
       * Free the old value as needed...
       */
 
-      if (attr->value)
-        free(attr->value);
-
+      free(attr->value);
       attr->value = value;
 
       return (0);

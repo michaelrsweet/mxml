@@ -517,8 +517,10 @@ _mxml_vstrdupf(const char *format,	/* I - Printf-style format string */
 
 #else
   int		bytes;			/* Number of bytes required */
-  char		*buffer,		/* String buffer */
-		temp[256];		/* Small buffer for first vsnprintf */
+  char		*buffer;		/* String buffer */
+#  ifndef _WIN32
+  char		temp[256];		/* Small buffer for first vsnprintf */
+#  endif /* !_WIN32 */
 
 
  /*

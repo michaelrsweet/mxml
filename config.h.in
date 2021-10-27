@@ -38,7 +38,7 @@
  * Long long support...
  */
 
-#undef HAVE_LONG_LONG
+#undef HAVE_LONG_LONG_INT
 
 
 /*

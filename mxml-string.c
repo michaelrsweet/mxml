@@ -374,11 +374,11 @@ _mxml_vsnprintf(char       *buffer,	/* O - Output buffer */
 	    if ((width + 2) > sizeof(temp))
 	      break;
 
-#ifdef HAVE_LONG_LONG
+#ifdef HAVE_LONG_LONG_INT
 	    if (size == 'L')
 	      sprintf(temp, tformat, va_arg(ap, long long));
 	    else
-#endif /* HAVE_LONG_LONG */
+#endif /* HAVE_LONG_LONG_INT */
 	    sprintf(temp, tformat, va_arg(ap, int));
 
             bytes += strlen(temp);

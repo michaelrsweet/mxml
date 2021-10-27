@@ -77,7 +77,7 @@
  * Long long support...
  */
 
-#define HAVE_LONG_LONG 1
+#define HAVE_LONG_LONG_INT 1
 
 
 /*

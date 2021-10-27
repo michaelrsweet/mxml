@@ -130,23 +130,7 @@ AS_IF([test "x$use_vsnprintf" != xyes], [
 
 
 dnl Check for "long long" support...
-AC_CACHE_CHECK([for long long int], [ac_cv_c_long_long], [
-    AS_IF([test "$GCC" = yes], [
-	ac_cv_c_long_long=yes
-    ], [
-	AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[
-	    long long int i;]])
-	], [
-	    ac_cv_c_long_long=yes
-	], [
-	    ac_cv_c_long_long=no
-	])
-    ])
-])
-
-AS_IF([test $ac_cv_c_long_long = yes], [
-    AC_DEFINE([HAVE_LONG_LONG], [Have the long long type?])
-])
+AC_TYPE_LONG_LONG_INT
 
 
 dnl Threading support

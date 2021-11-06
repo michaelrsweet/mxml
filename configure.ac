@@ -1,5 +1,5 @@
 dnl
-dnl Configuration script for Mini-XML, a small XML-like file parsing library.
+dnl Configuration script for Mini-XML, a small XML file parsing library.
 dnl
 dnl https://www.msweet.org/mxml
 dnl

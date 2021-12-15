@@ -14,7 +14,7 @@ AC_PREREQ([2.70])
 
 
 dnl Package name and version...
-AC_INIT([Mini-XML], [3.3], [https://github.com/michaelrsweet/mxml/issues], [mxml], [https://www.msweet.org/mxml])
+AC_INIT([Mini-XML], [3.3.1], [https://github.com/michaelrsweet/mxml/issues], [mxml], [https://www.msweet.org/mxml])
 
 
 dnl This line is provided to ensure that you don't run the autoheader program

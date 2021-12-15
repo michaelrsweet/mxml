@@ -165,12 +165,6 @@ _mxml_destructor(void *g)		/* I - Global data */
 static void
 _MXML_FINI(void)
 {
-  _mxml_global_t	*global;	/* Global data */
-
-
-  if ((global = (_mxml_global_t *)pthread_getspecific(_mxml_key)) != NULL)
-    _mxml_destructor(global);
-
   pthread_key_delete(_mxml_key);
 }
 

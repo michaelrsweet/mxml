@@ -1,3 +1,9 @@
+# Changes in Mini-XML 3.3.1
+
+- Fixed a POSIX thread cleanup bug on macOS - per-thread data destructor called
+  twice.
+
+
 # Changes in Mini-XML 3.3
 
 - Cleaned up usage of `free` throughout the library (Issue #276)

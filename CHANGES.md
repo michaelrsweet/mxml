@@ -1,7 +1,6 @@
 # Changes in Mini-XML 3.3.1
 
-- Fixed a POSIX thread cleanup bug on macOS - per-thread data destructor called
-  twice.
+- Fixed POSIX thread cleanup bugs (Issue #293)
 
 
 # Changes in Mini-XML 3.3

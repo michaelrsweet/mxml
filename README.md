@@ -199,7 +199,7 @@ current version of this software, documentation, and Github issue tracking page.
 Legal Stuff
 -----------
 
-Copyright © 2003-2021 by Michael R Sweet
+Copyright © 2003-2022 by Michael R Sweet
 
 The Mini-XML library is licensed under the Apache License Version 2.0 with an
 *optional* exception to allow linking against GPL2/LGPL2-only software.  See the

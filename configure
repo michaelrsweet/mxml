@@ -2824,7 +2824,14 @@ case $host_os in *\ *) host_os=`echo "$host_os" | sed 's/ /-/g'`;; esac
 
 
 host_os_name=`echo $host_os | sed -e '1,$s/[0-9.]*$//g'`
-host_os_version=`echo $host_os | sed -e '1,$s/^[^0-9.]*//g'`
+host_os_version="$(echo $host_os | sed -e '1,$s/^[^0-9.]*//g' | awk -F. '{print $1 $2}')"
+# Linux often does not yield an OS version we can use...
+if test "x$host_os_version" = x
+then :
+
+    host_os_version="0"
+
+fi
 
 
 ac_config_headers="$ac_config_headers config.h"
@@ -2867,7 +2874,29 @@ then :
 
 else $as_nop
 
-    ARCHFLAGS=""
+    case "$host_os_name" in #(
+  darwin*) :
+
+        if test "$host_os_version" -ge 200 -a x$enable_debug != xyes
+then :
+
+            # macOS 11.0 and higher support the Apple Silicon (arm64) CPUs
+	    ARCHFLAGS="-mmacosx-version-min=10.14 -arch x86_64 -arch arm64"
+
+elif test x$enable_debug != xyes
+then :
+
+	    ARCHFLAGS="-mmacosx-version-min=10.14 -arch x86_64"
+
+fi
+     ;; #(
+  *) :
+
+	ARCHFLAGS=""
+     ;; #(
+  *) :
+     ;;
+esac
 
 fi
 

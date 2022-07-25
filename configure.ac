@@ -3,7 +3,7 @@ dnl Configuration script for Mini-XML, a small XML file parsing library.
 dnl
 dnl https://www.msweet.org/mxml
 dnl
-dnl Copyright © 2003-2021 by Michael R Sweet.
+dnl Copyright © 2003-2022 by Michael R Sweet.
 dnl
 dnl Licensed under Apache License v2.0.  See the file "LICENSE" for more
 dnl information.
@@ -28,7 +28,11 @@ AC_CANONICAL_BUILD
 AC_CANONICAL_HOST
 
 [host_os_name=`echo $host_os | sed -e '1,$s/[0-9.]*$//g'`]
-[host_os_version=`echo $host_os | sed -e '1,$s/^[^0-9.]*//g'`]
+[host_os_version="$(echo $host_os | sed -e '1,$s/^[^0-9.]*//g' | awk -F. '{print $1 $2}')"]
+# Linux often does not yield an OS version we can use...
+AS_IF([test "x$host_os_version" = x], [
+    host_os_version="0"
+])
 
 
 dnl Set the name of the config header file...
@@ -60,7 +64,16 @@ AC_ARG_WITH([ansi], AS_HELP_STRING([--with-ansi], [set full ANSI C mode, default
 AC_ARG_WITH([archflags], AS_HELP_STRING([--with-archflags], [set additional architecture flags, default=none]), [
     ARCHFLAGS="$withval"
 ], [
-    ARCHFLAGS=""
+    AS_CASE(["$host_os_name"], [darwin*], [
+        AS_IF([test "$host_os_version" -ge 200 -a x$enable_debug != xyes], [
+            # macOS 11.0 and higher support the Apple Silicon (arm64) CPUs
+	    ARCHFLAGS="-mmacosx-version-min=10.14 -arch x86_64 -arch arm64"
+	], [test x$enable_debug != xyes], [
+	    ARCHFLAGS="-mmacosx-version-min=10.14 -arch x86_64"
+	])
+    ], [*], [
+	ARCHFLAGS=""
+    ])
 ])
 AC_SUBST([ARCHFLAGS])
 

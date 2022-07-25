@@ -1,7 +1,7 @@
 ---
 title: Mini-XML 3.3 Programming Manual
 author: Michael R Sweet
-copyright: Copyright © 2003-2021, All Rights Reserved.
+copyright: Copyright © 2003-2022, All Rights Reserved.
 version: 3.3
 ...
 

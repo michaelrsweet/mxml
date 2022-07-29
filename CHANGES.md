@@ -1,3 +1,9 @@
+# Changes in Mini-XML 3.3.2
+
+- Updated the autoconf `config.guess` and `config.sub` scripts to support cross
+  compilation for newer platforms (Issue #296)
+
+
 # Changes in Mini-XML 3.3.1
 
 - Fixed POSIX thread cleanup bugs (Issue #293)

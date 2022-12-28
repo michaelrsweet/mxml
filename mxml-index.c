@@ -349,10 +349,7 @@ mxmlIndexNew(mxml_node_t *node,		/* I - XML node tree */
   {
     if (ind->num_nodes >= ind->alloc_nodes)
     {
-      if (!ind->alloc_nodes)
-        temp = malloc(64 * sizeof(mxml_node_t *));
-      else
-        temp = realloc(ind->nodes, (ind->alloc_nodes + 64) * sizeof(mxml_node_t *));
+      temp = realloc(ind->nodes, (ind->alloc_nodes + 64) * sizeof(mxml_node_t *));
 
       if (!temp)
       {
@@ -500,7 +497,7 @@ index_compare(mxml_index_t *ind,	/* I - Index */
               mxml_node_t  *second)	/* I - Second node */
 {
   int	diff;				/* Difference */
-
+  const char *str1 = NULL, *str2 = NULL;
 
  /*
   * Check the element name...
@@ -516,8 +513,16 @@ index_compare(mxml_index_t *ind,	/* I - Index */
 
   if (ind->attr)
   {
-    if ((diff = strcmp(mxmlElementGetAttr(first, ind->attr),
-                       mxmlElementGetAttr(second, ind->attr))) != 0)
+    str1 = mxmlElementGetAttr(first, ind->attr);
+    str2 = mxmlElementGetAttr(second, ind->attr);
+
+    if (!str1 && !str2)
+      return (0); /* both null */
+
+    if (!str1 || !str2)
+      return (str1 ? 1 : -1); /* one of them is null */
+
+    if ((diff = strcmp(str1, str2)) != 0)
       return (diff);
   }
 
@@ -540,7 +545,7 @@ index_find(mxml_index_t *ind,		/* I - Index */
            mxml_node_t  *node)		/* I - Node */
 {
   int	diff;				/* Difference */
-
+  const char *str = NULL;
 
  /*
   * Check the element name...
@@ -558,7 +563,12 @@ index_find(mxml_index_t *ind,		/* I - Index */
 
   if (value)
   {
-    if ((diff = strcmp(value, mxmlElementGetAttr(node, ind->attr))) != 0)
+    str = mxmlElementGetAttr(node, ind->attr);
+
+    if (!str)
+      return 1;
+
+    if ((diff = strcmp(value, str)) != 0)
       return (diff);
   }
 

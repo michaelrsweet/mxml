@@ -26,6 +26,8 @@ mxmlEntityAddCallback(
 {
   _mxml_global_t *global = _mxml_global();
 					/* Global data */
+  if (!global)
+    return (-1);
 
 
   if (global->num_entity_cbs < (int)(sizeof(global->entity_cbs) / sizeof(global->entity_cbs[0])))
@@ -87,6 +89,8 @@ mxmlEntityGetValue(const char *name)	/* I - Entity name */
   int		ch;			/* Character value */
   _mxml_global_t *global = _mxml_global();
 					/* Global data */
+  if (!global)
+    return (-1);
 
 
   for (i = 0; i < global->num_entity_cbs; i ++)
@@ -108,7 +112,8 @@ mxmlEntityRemoveCallback(
   int		i;			/* Looping var */
   _mxml_global_t *global = _mxml_global();
 					/* Global data */
-
+  if (!global)
+    return;
 
   for (i = 0; i < global->num_entity_cbs; i ++)
     if (cb == global->entity_cbs[i])

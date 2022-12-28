@@ -263,6 +263,8 @@ mxmlSaveFd(mxml_node_t    *node,	/* I - Node to write */
   _mxml_fdbuf_t	buf;			/* File descriptor buffer */
   _mxml_global_t *global = _mxml_global();
 					/* Global data */
+  if (!global)
+    return (-1);
 
 
  /*
@@ -310,6 +312,8 @@ mxmlSaveFile(mxml_node_t    *node,	/* I - Node to write */
   int	col;				/* Final column */
   _mxml_global_t *global = _mxml_global();
 					/* Global data */
+  if (!global)
+    return (-1);
 
 
  /*
@@ -355,6 +359,8 @@ mxmlSaveString(mxml_node_t    *node,	/* I - Node to write */
   char	*ptr[2];			/* Pointers for putc_cb */
   _mxml_global_t *global = _mxml_global();
 					/* Global data */
+  if (!global)
+    return (-1);
 
 
  /*
@@ -523,6 +529,8 @@ mxmlSetCustomHandlers(
 {
   _mxml_global_t *global = _mxml_global();
 					/* Global data */
+  if (!global)
+    return;
 
 
   global->custom_load_cb = load;
@@ -539,6 +547,8 @@ mxmlSetErrorCallback(mxml_error_cb_t cb)/* I - Error callback function */
 {
   _mxml_global_t *global = _mxml_global();
 					/* Global data */
+  if (!global)
+    return;
 
 
   global->error_cb = cb;
@@ -558,6 +568,8 @@ mxmlSetWrapMargin(int column)		/* I - Column for wrapping, 0 to disable wrapping
 {
   _mxml_global_t *global = _mxml_global();
 					/* Global data */
+  if (!global)
+    return;
 
 
   global->wrap = column;
@@ -1459,6 +1471,11 @@ mxml_load_data(
 	    break;
 
 	case MXML_CUSTOM :
+	    if (!global)
+	    {
+	      return NULL;
+	    }
+
 	    if (global->custom_load_cb)
 	    {
 	     /*

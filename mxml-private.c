@@ -61,7 +61,7 @@ mxml_error(const char *format,		/* I - Printf-style format string */
   * Range check input...
   */
 
-  if (!format)
+  if (!format || !global)
     return;
 
  /*
@@ -186,7 +186,9 @@ _mxml_global(void)
 
   if ((global = (_mxml_global_t *)pthread_getspecific(_mxml_key)) == NULL)
   {
-    global = (_mxml_global_t *)calloc(1, sizeof(_mxml_global_t));
+    if ((global = (_mxml_global_t *)calloc(1, sizeof(_mxml_global_t))) == NULL)
+      return NULL;
+
     pthread_setspecific(_mxml_key, global);
 
     global->num_entity_cbs = 1;
@@ -270,7 +272,8 @@ _mxml_global(void)
 
   if ((global = (_mxml_global_t *)TlsGetValue(_mxml_tls_index)) == NULL)
   {
-    global = (_mxml_global_t *)calloc(1, sizeof(_mxml_global_t));
+    if ((global = (_mxml_global_t *)calloc(1, sizeof(_mxml_global_t))) == NULL)
+      return NULL;
 
     global->num_entity_cbs = 1;
     global->entity_cbs[0]  = _mxml_entity_cb;

@@ -85,7 +85,7 @@ _mxml_strdupf(const char *format,	/* I - Printf-style format string */
               ...)			/* I - Additional arguments as needed */
 {
   va_list	ap;			/* Pointer to additional arguments */
-  char		*s;			/* Pointer to formatted string */
+  char		*s = NULL;		/* Pointer to formatted string */
 
 
  /*
@@ -508,7 +508,7 @@ _mxml_vstrdupf(const char *format,	/* I - Printf-style format string */
                va_list    ap)		/* I - Pointer to additional arguments */
 {
 #ifdef HAVE_VASPRINTF
-  char		*s;			/* String */
+  char		*s = NULL;		/* String */
 
   if (vasprintf(&s, format, ap) < 0)
     s = NULL;

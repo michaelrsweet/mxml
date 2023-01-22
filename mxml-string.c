@@ -202,7 +202,9 @@ _mxml_vsnprintf(char       *buffer,	/* O - Output buffer */
   char		*bufptr,		/* Pointer to position in buffer */
 		*bufend,		/* Pointer to end of buffer */
 		sign,			/* Sign of format width */
+#ifdef HAVE_LONG_LONG_INT
 		size,			/* Size character (h, l, L) */
+#endif
 		type;			/* Format type character */
   int		width,			/* Width of field */
 		prec;			/* Number of characters of precision */
@@ -307,7 +309,9 @@ _mxml_vsnprintf(char       *buffer,	/* O - Output buffer */
 
       if (*format == 'l' && format[1] == 'l')
       {
+#ifdef HAVE_LONG_LONG_INT
         size = 'L';
+#endif
 
 	if (tptr < (tformat + sizeof(tformat) - 2))
 	{
@@ -322,7 +326,9 @@ _mxml_vsnprintf(char       *buffer,	/* O - Output buffer */
 	if (tptr < (tformat + sizeof(tformat) - 1))
 	  *tptr++ = *format;
 
+#ifdef HAVE_LONG_LONG_INT
         size = *format++;
+#endif
       }
 
       if (!*format)

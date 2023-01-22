@@ -341,7 +341,7 @@ _mxml_vsnprintf(char       *buffer,	/* O - Output buffer */
 	case 'e' :
 	case 'f' :
 	case 'g' :
-	    if ((width + 2) > sizeof(temp))
+	    if ((width + 2) > (int)sizeof(temp))
 	      break;
 
 	    sprintf(temp, tformat, va_arg(ap, double));
@@ -371,7 +371,7 @@ _mxml_vsnprintf(char       *buffer,	/* O - Output buffer */
 	case 'o' :
 	case 'u' :
 	case 'x' :
-	    if ((width + 2) > sizeof(temp))
+	    if ((width + 2) > (int)sizeof(temp))
 	      break;
 
 #ifdef HAVE_LONG_LONG_INT
@@ -399,7 +399,7 @@ _mxml_vsnprintf(char       *buffer,	/* O - Output buffer */
 	    break;
 
 	case 'p' : /* Pointer value */
-	    if ((width + 2) > sizeof(temp))
+	    if ((width + 2) > (int)sizeof(temp))
 	      break;
 
 	    sprintf(temp, tformat, va_arg(ap, void *));

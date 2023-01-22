@@ -3017,8 +3017,8 @@ mxml_write_node(mxml_node_t     *node,	/* I - Node to write */
 	      col = (int)strlen(newline);
 
 	    free(data);
-	    break;
 	  }
+	  break;
 
       default : /* Should never happen */
 	  return (-1);

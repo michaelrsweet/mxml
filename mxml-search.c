@@ -160,7 +160,7 @@ mxmlFindPath(mxml_node_t *top,		/* I - Top node */
     if ((pathsep = strchr(path, '/')) == NULL)
       pathsep = path + strlen(path);
 
-    if (pathsep == path || (pathsep - path) >= sizeof(element))
+    if (pathsep == path || (pathsep - path) >= (long int)sizeof(element))
       return (NULL);
 
     memcpy(element, path, pathsep - path);

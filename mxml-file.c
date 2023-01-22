@@ -1473,8 +1473,8 @@ mxml_load_data(
 		mxmlDelete(node);
 		node = NULL;
 	      }
-	      break;
 	    }
+	    break;
 
         default : /* Ignore... */
 	    node = NULL;

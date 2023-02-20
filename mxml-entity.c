@@ -409,8 +409,8 @@ _mxml_entity_cb(const char *name)	/* I - Entity name */
   * Do a binary search for the named entity...
   */
 
-  first = 0;
-  last  = (int)(sizeof(entities) / sizeof(entities[0]) - 1);
+  first = -1;
+  last  = (int)(sizeof(entities) / sizeof(entities[0]));
 
   while ((last - first) > 1)
   {
@@ -423,16 +423,6 @@ _mxml_entity_cb(const char *name)	/* I - Entity name */
     else
       first = current;
   }
-
- /*
-  * If we get here, there is a small chance that there is still
-  * a match; check first and last...
-  */
-
-  if (!strcmp(name, entities[first].name))
-    return (entities[first].val);
-  else if (!strcmp(name, entities[last].name))
-    return (entities[last].val);
-  else
-    return (-1);
+	
+  return (-1);
 }

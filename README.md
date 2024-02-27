@@ -5,8 +5,12 @@ Mini-XML - Tiny XML Parsing Library
 ![Apache 2.0](https://img.shields.io/github/license/michaelrsweet/mxml)
 ![Build](https://github.com/michaelrsweet/mxml/workflows/Build/badge.svg)
 [![Coverity Scan Status](https://img.shields.io/coverity/scan/23959.svg)](https://scan.coverity.com/projects/michaelrsweet-mxml)
-[![LGTM Grade](https://img.shields.io/lgtm/grade/cpp/github/michaelrsweet/mxml)](https://lgtm.com/projects/g/michaelrsweet/mxml/context:cpp)
-[![LGTM Alerts](https://img.shields.io/lgtm/alerts/github/michaelrsweet/mxml)](https://lgtm.com/projects/g/michaelrsweet/mxml/)
+
+> Note: The master branch contains what will become Mini-XML v4.0.  See the
+> v3.x branch for the Mini-XML v3.x source code.  Version 4.0 is not 100% source
+> compatible with earlier versions of Mini-XML.  Changes will be documented in
+> the near future...
+
 
 Mini-XML is a small XML parsing library that you can use to read XML data files
 or strings in your application without requiring large non-standard libraries.
@@ -28,10 +32,6 @@ Mini-XML provides the following functionality:
 
 Mini-XML doesn't do validation or other types of processing on the data
 based upon schema files or other sources of definition information.
-
-> Note: Version 3.0 hides the definition of the `mxml_node_t` structure,
-> requiring the use of the various accessor functions that were introduced in
-> version 2.0.
 
 
 Building Mini-XML
@@ -61,12 +61,13 @@ included project files in the `vcnet` subdirectory to build the library
 instead.  Note: The static library on Windows is NOT thread-safe.
 
 
-## Installing Mini-XML
+Installing Mini-XML
+-------------------
 
 The `install` target will install Mini-XML in the lib and include
 directories:
 
-    make install
+    sudo make install
 
 Once you have installed it, use the `-lmxml` option to link your application
 against it.
@@ -199,7 +200,7 @@ current version of this software, documentation, and Github issue tracking page.
 Legal Stuff
 -----------
 
-Copyright © 2003-2022 by Michael R Sweet
+Copyright © 2003-2024 by Michael R Sweet
 
 The Mini-XML library is licensed under the Apache License Version 2.0 with an
 *optional* exception to allow linking against GPL2/LGPL2-only software.  See the

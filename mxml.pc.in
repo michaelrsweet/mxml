@@ -5,6 +5,6 @@ includedir=@includedir@
 
 Name: Mini-XML
 Description: Lightweight XML support library
-Version: @VERSION@
-Libs: @PC_LIBS@
-Cflags: @PC_CFLAGS@
+Version: @MXML_VERSION@
+Libs: @PKGCONFIG_LIBS@
+Cflags: @PKGCONFIG_CFLAGS@

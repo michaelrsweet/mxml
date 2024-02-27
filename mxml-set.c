@@ -1,49 +1,36 @@
-/*
- * Node set functions for Mini-XML, a small XML file parsing library.
- *
- * https://www.msweet.org/mxml
- *
- * Copyright © 2003-2021 by Michael R Sweet.
- *
- * Licensed under Apache License v2.0.  See the file "LICENSE" for more
- * information.
- */
+//
+// Node set functions for Mini-XML, a small XML file parsing library.
+//
+// https://www.msweet.org/mxml
+//
+// Copyright © 2003-2024 by Michael R Sweet.
+//
+// Licensed under Apache License v2.0.  See the file "LICENSE" for more
+// information.
+//
 
-/*
- * Include necessary headers...
- */
-
-#include "config.h"
 #include "mxml-private.h"
 
 
-/*
- * 'mxmlSetCDATA()' - Set the element name of a CDATA node.
- *
- * The node is not changed if it (or its first child) is not a CDATA element node.
- *
- * @since Mini-XML 2.3@
- */
+//
+// 'mxmlSetCDATA()' - Set the element name of a CDATA node.
+//
+// The node is not changed if it (or its first child) is not a CDATA element node.
+//
 
-int					/* O - 0 on success, -1 on failure */
-mxmlSetCDATA(mxml_node_t *node,		/* I - Node to set */
-             const char  *data)		/* I - New data string */
+int					// O - 0 on success, -1 on failure
+mxmlSetCDATA(mxml_node_t *node,		// I - Node to set
+             const char  *data)		// I - New data string
 {
-  char	*s;				/* New element name */
+  size_t	datalen;		// Length of data string
+  char		*s;			// New element name
 
 
- /*
-  * Range check input...
-  */
-
-  if (node && node->type == MXML_ELEMENT &&
-      strncmp(node->value.element.name, "![CDATA[", 8) &&
-      node->child && node->child->type == MXML_ELEMENT &&
-      !strncmp(node->child->value.element.name, "![CDATA[", 8))
+  // Range check input...
+  if (node && node->type == MXML_TYPE_ELEMENT && strncmp(node->value.element.name, "![CDATA[", 8) && node->child && node->child->type == MXML_TYPE_ELEMENT && !strncmp(node->child->value.element.name, "![CDATA[", 8))
     node = node->child;
 
-  if (!node || node->type != MXML_ELEMENT ||
-      strncmp(node->value.element.name, "![CDATA[", 8))
+  if (!node || node->type != MXML_TYPE_ELEMENT || strncmp(node->value.element.name, "![CDATA[", 8))
   {
     mxml_error("Wrong node type.");
     return (-1);
@@ -56,18 +43,14 @@ mxmlSetCDATA(mxml_node_t *node,		/* I - Node to set */
 
   if (data == (node->value.element.name + 8))
   {
-   /*
-    * Don't change the value...
-    */
-
+    // Don't change the value...
     return (0);
   }
 
- /*
-  * Allocate the new value, free any old element value, and set the new value...
-  */
+  // Allocate the new value, free any old element value, and set the new value...
+  datalen = strlen(data);
 
-  if ((s = _mxml_strdupf("![CDATA[%s", data)) == NULL)
+  if ((s = malloc(datalen + 9)) == NULL)
   {
     mxml_error("Unable to allocate memory for CDATA.");
     return (-1);
@@ -75,34 +58,29 @@ mxmlSetCDATA(mxml_node_t *node,		/* I - Node to set */
 
   free(node->value.element.name);
   node->value.element.name = s;
+  snprintf(node->value.element.name, datalen + 9, "![CDATA[%s", data);
 
   return (0);
 }
 
 
-/*
- * 'mxmlSetCustom()' - Set the data and destructor of a custom data node.
- *
- * The node is not changed if it (or its first child) is not a custom node.
- *
- * @since Mini-XML 2.1@
- */
+//
+// 'mxmlSetCustom()' - Set the data and destructor of a custom data node.
+//
+// The node is not changed if it (or its first child) is not a custom node.
+//
 
-int					/* O - 0 on success, -1 on failure */
+int					// O - 0 on success, -1 on failure
 mxmlSetCustom(
-    mxml_node_t              *node,	/* I - Node to set */
-    void                     *data,	/* I - New data pointer */
-    mxml_custom_destroy_cb_t destroy)	/* I - New destructor function */
+    mxml_node_t              *node,	// I - Node to set
+    void                     *data,	// I - New data pointer
+    mxml_custom_destroy_cb_t destroy)	// I - New destructor function
 {
- /*
-  * Range check input...
-  */
-
-  if (node && node->type == MXML_ELEMENT &&
-      node->child && node->child->type == MXML_CUSTOM)
+  // Range check input...
+  if (node && node->type == MXML_TYPE_ELEMENT && node->child && node->child->type == MXML_TYPE_CUSTOM)
     node = node->child;
 
-  if (!node || node->type != MXML_CUSTOM)
+  if (!node || node->type != MXML_TYPE_CUSTOM)
   {
     mxml_error("Wrong node type.");
     return (-1);
@@ -114,10 +92,7 @@ mxmlSetCustom(
     return (0);
   }
 
- /*
-  * Free any old element value and set the new value...
-  */
-
+  // Free any old element value and set the new value...
   if (node->value.custom.data && node->value.custom.destroy)
     (*(node->value.custom.destroy))(node->value.custom.data);
 
@@ -128,24 +103,21 @@ mxmlSetCustom(
 }
 
 
-/*
- * 'mxmlSetElement()' - Set the name of an element node.
- *
- * The node is not changed if it is not an element node.
- */
+//
+// 'mxmlSetElement()' - Set the name of an element node.
+//
+// The node is not changed if it is not an element node.
+//
 
-int					/* O - 0 on success, -1 on failure */
-mxmlSetElement(mxml_node_t *node,	/* I - Node to set */
-               const char  *name)	/* I - New name string */
+int					// O - 0 on success, -1 on failure
+mxmlSetElement(mxml_node_t *node,	// I - Node to set
+               const char  *name)	// I - New name string
 {
-  char *s;				/* New name string */
+  char *s;				// New name string
 
 
- /*
-  * Range check input...
-  */
-
-  if (!node || node->type != MXML_ELEMENT)
+  // Range check input...
+  if (!node || node->type != MXML_TYPE_ELEMENT)
   {
     mxml_error("Wrong node type.");
     return (-1);
@@ -159,10 +131,7 @@ mxmlSetElement(mxml_node_t *node,	/* I - Node to set */
   if (name == node->value.element.name)
     return (0);
 
- /*
-  * Free any old element value and set the new value...
-  */
-
+  // Free any old element value and set the new value...
   if ((s = strdup(name)) == NULL)
   {
     mxml_error("Unable to allocate memory for element name.");
@@ -176,62 +145,51 @@ mxmlSetElement(mxml_node_t *node,	/* I - Node to set */
 }
 
 
-/*
- * 'mxmlSetInteger()' - Set the value of an integer node.
- *
- * The node is not changed if it (or its first child) is not an integer node.
- */
+//
+// 'mxmlSetInteger()' - Set the value of an integer node.
+//
+// The node is not changed if it (or its first child) is not an integer node.
+//
 
-int					/* O - 0 on success, -1 on failure */
-mxmlSetInteger(mxml_node_t *node,	/* I - Node to set */
-               int         integer)	/* I - Integer value */
+int					// O - 0 on success, -1 on failure
+mxmlSetInteger(mxml_node_t *node,	// I - Node to set
+               int         integer)	// I - Integer value
 {
- /*
-  * Range check input...
-  */
-
-  if (node && node->type == MXML_ELEMENT &&
-      node->child && node->child->type == MXML_INTEGER)
+  // Range check input...
+  if (node && node->type == MXML_TYPE_ELEMENT && node->child && node->child->type == MXML_TYPE_INTEGER)
     node = node->child;
 
-  if (!node || node->type != MXML_INTEGER)
+  if (!node || node->type != MXML_TYPE_INTEGER)
   {
     mxml_error("Wrong node type.");
     return (-1);
   }
 
- /*
-  * Set the new value and return...
-  */
-
+  // Set the new value and return...
   node->value.integer = integer;
 
   return (0);
 }
 
 
-/*
- * 'mxmlSetOpaque()' - Set the value of an opaque node.
- *
- * The node is not changed if it (or its first child) is not an opaque node.
- */
+//
+// 'mxmlSetOpaque()' - Set the value of an opaque node.
+//
+// The node is not changed if it (or its first child) is not an opaque node.
+//
 
-int					/* O - 0 on success, -1 on failure */
-mxmlSetOpaque(mxml_node_t *node,	/* I - Node to set */
-              const char  *opaque)	/* I - Opaque string */
+int					// O - 0 on success, -1 on failure
+mxmlSetOpaque(mxml_node_t *node,	// I - Node to set
+              const char  *opaque)	// I - Opaque string
 {
-  char *s;				/* New opaque string */
+  char *s;				// New opaque string
 
 
- /*
-  * Range check input...
-  */
-
-  if (node && node->type == MXML_ELEMENT &&
-      node->child && node->child->type == MXML_OPAQUE)
+  // Range check input...
+  if (node && node->type == MXML_TYPE_ELEMENT && node->child && node->child->type == MXML_TYPE_OPAQUE)
     node = node->child;
 
-  if (!node || node->type != MXML_OPAQUE)
+  if (!node || node->type != MXML_TYPE_OPAQUE)
   {
     mxml_error("Wrong node type.");
     return (-1);
@@ -245,10 +203,7 @@ mxmlSetOpaque(mxml_node_t *node,	/* I - Node to set */
   if (node->value.opaque == opaque)
     return (0);
 
- /*
-  * Free any old opaque value and set the new value...
-  */
-
+  // Free any old opaque value and set the new value...
   if ((s = strdup(opaque)) == NULL)
   {
     mxml_error("Unable to allocate memory for opaque string.");
@@ -262,32 +217,27 @@ mxmlSetOpaque(mxml_node_t *node,	/* I - Node to set */
 }
 
 
-/*
- * 'mxmlSetOpaquef()' - Set the value of an opaque string node to a formatted string.
- *
- * The node is not changed if it (or its first child) is not an opaque node.
- *
- * @since Mini-XML 2.11@
- */
+//
+// 'mxmlSetOpaquef()' - Set the value of an opaque string node to a formatted string.
+//
+// The node is not changed if it (or its first child) is not an opaque node.
+//
 
-int					/* O - 0 on success, -1 on failure */
-mxmlSetOpaquef(mxml_node_t *node,	/* I - Node to set */
-               const char  *format,	/* I - Printf-style format string */
-	       ...)			/* I - Additional arguments as needed */
+int					// O - 0 on success, -1 on failure
+mxmlSetOpaquef(mxml_node_t *node,	// I - Node to set
+               const char  *format,	// I - Printf-style format string
+	       ...)			// I - Additional arguments as needed
 {
-  va_list	ap;			/* Pointer to arguments */
-  char		*s;			/* Temporary string */
+  va_list	ap;			// Pointer to arguments
+  char		buffer[16384];		// Format buffer
+  char		*s;			// Temporary string
 
 
- /*
-  * Range check input...
-  */
-
-  if (node && node->type == MXML_ELEMENT &&
-      node->child && node->child->type == MXML_OPAQUE)
+  // Range check input...
+  if (node && node->type == MXML_TYPE_ELEMENT && node->child && node->child->type == MXML_TYPE_OPAQUE)
     node = node->child;
 
-  if (!node || node->type != MXML_OPAQUE)
+  if (!node || node->type != MXML_TYPE_OPAQUE)
   {
     mxml_error("Wrong node type.");
     return (-1);
@@ -298,15 +248,12 @@ mxmlSetOpaquef(mxml_node_t *node,	/* I - Node to set */
     return (-1);
   }
 
- /*
-  * Format the new string, free any old string value, and set the new value...
-  */
-
+  // Format the new string, free any old string value, and set the new value...
   va_start(ap, format);
-  s = _mxml_vstrdupf(format, ap);
+  vsnprintf(buffer, sizeof(buffer), format, ap);
   va_end(ap);
 
-  if (!s)
+  if ((s = strdup(buffer)) == NULL)
   {
     mxml_error("Unable to allocate memory for opaque string.");
     return (-1);
@@ -319,63 +266,55 @@ mxmlSetOpaquef(mxml_node_t *node,	/* I - Node to set */
 }
 
 
-/*
- * 'mxmlSetReal()' - Set the value of a real number node.
- *
- * The node is not changed if it (or its first child) is not a real number node.
- */
+//
+// 'mxmlSetReal()' - Set the value of a real number node.
+//
+// The node is not changed if it (or its first child) is not a real number node.
+//
 
-int					/* O - 0 on success, -1 on failure */
-mxmlSetReal(mxml_node_t *node,		/* I - Node to set */
-            double      real)		/* I - Real number value */
+int					// O - 0 on success, -1 on failure
+mxmlSetReal(mxml_node_t *node,		// I - Node to set
+            double      real)		// I - Real number value
 {
  /*
   * Range check input...
   */
 
-  if (node && node->type == MXML_ELEMENT &&
-      node->child && node->child->type == MXML_REAL)
+  if (node && node->type == MXML_TYPE_ELEMENT && node->child && node->child->type == MXML_TYPE_REAL)
     node = node->child;
 
-  if (!node || node->type != MXML_REAL)
+  if (!node || node->type != MXML_TYPE_REAL)
   {
     mxml_error("Wrong node type.");
     return (-1);
   }
 
- /*
-  * Set the new value and return...
-  */
-
+  // Set the new value and return...
   node->value.real = real;
 
   return (0);
 }
 
 
-/*
- * 'mxmlSetText()' - Set the value of a text node.
- *
- * The node is not changed if it (or its first child) is not a text node.
- */
+//
+// 'mxmlSetText()' - Set the value of a text node.
+//
+// The node is not changed if it (or its first child) is not a text node.
+//
 
-int					/* O - 0 on success, -1 on failure */
-mxmlSetText(mxml_node_t *node,		/* I - Node to set */
-            int         whitespace,	/* I - 1 = leading whitespace, 0 = no whitespace */
-	    const char  *string)	/* I - String */
+int					// O - 0 on success, -1 on failure
+mxmlSetText(mxml_node_t *node,		// I - Node to set
+            int         whitespace,	// I - 1 = leading whitespace, 0 = no whitespace
+	    const char  *string)	// I - String
 {
-  char *s;				/* New string */
+  char *s;				// New string
 
 
- /*
-  * Range check input...
-  */
-
-  if (node && node->type == MXML_ELEMENT &&
-      node->child && node->child->type == MXML_TEXT)
+  // Range check input...
+  if (node && node->type == MXML_TYPE_ELEMENT && node->child && node->child->type == MXML_TYPE_TEXT)
     node = node->child;
 
-  if (!node || node->type != MXML_TEXT)
+  if (!node || node->type != MXML_TYPE_TEXT)
   {
     mxml_error("Wrong node type.");
     return (-1);
@@ -392,10 +331,7 @@ mxmlSetText(mxml_node_t *node,		/* I - Node to set */
     return (0);
   }
 
- /*
-  * Free any old string value and set the new value...
-  */
-
+  // Free any old string value and set the new value...
   if ((s = strdup(string)) == NULL)
   {
     mxml_error("Unable to allocate memory for text string.");
@@ -411,31 +347,28 @@ mxmlSetText(mxml_node_t *node,		/* I - Node to set */
 }
 
 
-/*
- * 'mxmlSetTextf()' - Set the value of a text node to a formatted string.
- *
- * The node is not changed if it (or its first child) is not a text node.
- */
+//
+// 'mxmlSetTextf()' - Set the value of a text node to a formatted string.
+//
+// The node is not changed if it (or its first child) is not a text node.
+//
 
-int					/* O - 0 on success, -1 on failure */
-mxmlSetTextf(mxml_node_t *node,		/* I - Node to set */
-             int         whitespace,	/* I - 1 = leading whitespace, 0 = no whitespace */
-             const char  *format,	/* I - Printf-style format string */
-	     ...)			/* I - Additional arguments as needed */
+int					// O - 0 on success, -1 on failure
+mxmlSetTextf(mxml_node_t *node,		// I - Node to set
+             int         whitespace,	// I - 1 = leading whitespace, 0 = no whitespace
+             const char  *format,	// I - Printf-style format string
+	     ...)			// I - Additional arguments as needed
 {
-  va_list	ap;			/* Pointer to arguments */
-  char		*s;			/* Temporary string */
+  va_list	ap;			// Pointer to arguments
+  char		buffer[16384];		// Format buffer
+  char		*s;			// Temporary string
 
 
- /*
-  * Range check input...
-  */
-
-  if (node && node->type == MXML_ELEMENT &&
-      node->child && node->child->type == MXML_TEXT)
+  // Range check input...
+  if (node && node->type == MXML_TYPE_ELEMENT && node->child && node->child->type == MXML_TYPE_TEXT)
     node = node->child;
 
-  if (!node || node->type != MXML_TEXT)
+  if (!node || node->type != MXML_TYPE_TEXT)
   {
     mxml_error("Wrong node type.");
     return (-1);
@@ -451,10 +384,10 @@ mxmlSetTextf(mxml_node_t *node,		/* I - Node to set */
   */
 
   va_start(ap, format);
-  s = _mxml_vstrdupf(format, ap);
+  vsnprintf(buffer, sizeof(buffer), format, ap);
   va_end(ap);
 
-  if (!s)
+  if ((s = strdup(buffer)) == NULL)
   {
     mxml_error("Unable to allocate memory for text string.");
     return (-1);
@@ -469,27 +402,19 @@ mxmlSetTextf(mxml_node_t *node,		/* I - Node to set */
 }
 
 
-/*
- * 'mxmlSetUserData()' - Set the user data pointer for a node.
- *
- * @since Mini-XML 2.7@
- */
+//
+// 'mxmlSetUserData()' - Set the user data pointer for a node.
+//
 
-int					/* O - 0 on success, -1 on failure */
-mxmlSetUserData(mxml_node_t *node,	/* I - Node to set */
-                void        *data)	/* I - User data pointer */
+int					// O - 0 on success, -1 on failure
+mxmlSetUserData(mxml_node_t *node,	// I - Node to set
+                void        *data)	// I - User data pointer
 {
- /*
-  * Range check input...
-  */
-
+  // Range check input...
   if (!node)
     return (-1);
 
- /*
-  * Set the user data pointer and return...
-  */
-
+  // Set the user data pointer and return...
   node->user_data = data;
   return (0);
 }

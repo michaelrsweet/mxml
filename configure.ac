@@ -3,7 +3,7 @@ dnl Configuration script for Mini-XML, a small XML file parsing library.
 dnl
 dnl https://www.msweet.org/mxml
 dnl
-dnl Copyright © 2003-2022 by Michael R Sweet.
+dnl Copyright © 2003-2024 by Michael R Sweet.
 dnl
 dnl Licensed under Apache License v2.0.  See the file "LICENSE" for more
 dnl information.
@@ -14,8 +14,12 @@ AC_PREREQ([2.70])
 
 
 dnl Package name and version...
-AC_INIT([Mini-XML], [3.3.1], [https://github.com/michaelrsweet/mxml/issues], [mxml], [https://www.msweet.org/mxml])
+AC_INIT([Mini-XML], [4.0b1], [https://github.com/michaelrsweet/mxml/issues], [mxml], [https://www.msweet.org/mxml])
+AC_CONFIG_HEADERS([config.h])
 
+MXML_VERSION="AC_PACKAGE_VERSION"
+AC_SUBST([MXML_VERSION])
+AC_DEFINE_UNQUOTED([MXML_VERSION], "Mini-XML v$MXML_VERSION", [Version number])
 
 dnl This line is provided to ensure that you don't run the autoheader program
 dnl against this project.  Doing so is completely unsupported and WILL cause
@@ -35,111 +39,48 @@ AS_IF([test "x$host_os_version" = x], [
 ])
 
 
-dnl Set the name of the config header file...
-AC_CONFIG_HEADERS([config.h])
-
-
-dnl Version number...
-VERSION="AC_PACKAGE_VERSION"
-AC_SUBST(VERSION)
-AC_DEFINE_UNQUOTED(MXML_VERSION, "Mini-XML v$VERSION")
-
-
-dnl Clear default debugging options and set normal optimization by
-dnl default unless the user asks for debugging specifically.
+dnl Compiler options...
 CFLAGS="${CFLAGS:=}"
 CPPFLAGS="${CPPFLAGS:=}"
+DSO=""
+DSOFLAGS="${DSOFLAGS:=}"
 LDFLAGS="${LDFLAGS:=}"
-AC_SUBST([LDFLAGS])
 LIBS="${LIBS:=}"
+OPTIM="${OPTIM:=}"
 
-
-dnl Options...
-AC_ARG_WITH([ansi], AS_HELP_STRING([--with-ansi], [set full ANSI C mode, default=no]), [
-    use_ansi="$withval"
-], [
-    use_ansi="no"
-])
-
-AC_ARG_WITH([archflags], AS_HELP_STRING([--with-archflags], [set additional architecture flags, default=none]), [
-    ARCHFLAGS="$withval"
-], [
-    AS_CASE(["$host_os_name"], [darwin*], [
-        AS_IF([test "$host_os_version" -ge 200 -a x$enable_debug != xyes], [
-            # macOS 11.0 and higher support the Apple Silicon (arm64) CPUs
-	    ARCHFLAGS="-mmacosx-version-min=10.14 -arch x86_64 -arch arm64"
-	], [test x$enable_debug != xyes], [
-	    ARCHFLAGS="-mmacosx-version-min=10.14 -arch x86_64"
-	])
-    ], [*], [
-	ARCHFLAGS=""
-    ])
-])
-AC_SUBST([ARCHFLAGS])
-
-AC_ARG_WITH([optim], AS_HELP_STRING([--with-optim], [set additional optimization flags, default=none]), [
-    OPTIM="$withval"
-], [
-    OPTIM=""
-])
+AC_SUBST([DSO])
+AC_SUBST([DSOFLAGS])
+AC_SUBST([LDFLAGS])
 AC_SUBST([OPTIM])
 
-AC_ARG_ENABLE([debug], AS_HELP_STRING([--enable-debug], [turn on debugging, default=no]))
-AC_ARG_ENABLE([maintainer], AS_HELP_STRING([--enable-maintainer], [turn on maintainer mode, default=no]))
-AC_ARG_ENABLE([sanitizer], AS_HELP_STRING([--enable-sanitizer], [build with AddressSanitizer, default=no]))
 
-AC_ARG_WITH([docdir], AS_HELP_STRING([--with-docdir], [set directory for documentation, default=${prefix}/share/doc/mxml]), [
-    docdir="$withval"
-], [
-    docdir="NONE"
-])
-AC_SUBST(docdir)
-
-AC_ARG_WITH([vsnprintf], AS_HELP_STRING([--with-vsnprintf], [use vsnprintf emulation functions, default=auto]), [
-    use_vsnprintf="$withval"
-], [
-    use_vsnprintf="no"
-])
-
-
-dnl Checks for programs...
+dnl Standard programs...
 AC_PROG_CC
-AC_PROG_CXX
-AC_PROG_INSTALL
-AS_IF([test "$INSTALL" = "$ac_install_sh"], [
-    # Use full path to install-sh script...
-    INSTALL="`pwd`/install-sh -c"
-])
 AC_PROG_RANLIB
-AC_CHECK_TOOL(AR,ar)
-AC_PATH_PROG(CP,cp)
-AC_PATH_PROGS(LDCONFIG,ldconfig false)
-AC_PATH_PROG(LN,ln)
-AC_PATH_PROG(MKDIR,mkdir)
-AC_PATH_PROG(RM,rm)
+AC_PATH_PROG([AR], [ar])
+AC_PATH_PROGS([CODE_SIGN], [codesign true])
+AC_MSG_CHECKING([for install-sh script])
+INSTALL="`pwd`/install-sh"
+AC_SUBST([INSTALL])
+AC_MSG_RESULT([using $INSTALL])
+AC_PATH_PROGS([LDCONFIG],ldconfig true)
+AC_PATH_PROG([MKDIR], [mkdir])
+AC_PATH_PROG([RM], [rm])
+AC_PATH_PROG([RMDIR], [rmdir])
+AC_PATH_PROG([LN], [ln])
 
 
-dnl Flags for "ar" command...
-AS_CASE(["$host_os_name"], [darwin* | *bsd], [
-    ARFLAGS="-rcv"
-], [*], [
-    ARFLAGS="crvs"
+dnl Figure out the correct "ar" command flags...
+AS_IF([test "$ac_cv_prog_ranlib" = ":"], [
+    ARFLAGS="crs"
+], [
+    ARFLAGS="cr"
 ])
-AC_SUBST(ARFLAGS)
+AC_SUBST([ARFLAGS])
 
 
 dnl Inline functions...
 AC_C_INLINE
-
-
-dnl Checks for string functions.
-AS_IF([test "x$use_ansi" != xyes], [
-    AC_CHECK_FUNCS([strdup strlcat strlcpy])
-])
-
-AS_IF([test "x$use_vsnprintf" != xyes], [
-    AC_CHECK_FUNCS([snprintf vasprintf vsnprintf])
-])
 
 
 dnl Check for "long long" support...
@@ -180,111 +121,113 @@ AS_IF([test "x$enable_threads" != xno], [
 ])
 
 
-dnl Shared library support...
-DSO="${DSO:=:}"
-DSOFLAGS="${DSOFLAGS:=}"
+dnl Library targets...
+AC_ARG_ENABLE([static], AS_HELP_STRING([--disable-static], [do not install static library]))
+AC_ARG_ENABLE([shared], AS_HELP_STRING([--disable-shared], [do not install shared library]))
 
-AC_ARG_ENABLE([shared], AS_HELP_STRING([--disable-shared], [turn off shared libraries, default=no]))
-
+LIBMXML_STATIC="libmxml.a"
 AS_IF([test x$enable_shared != xno], [
-    AC_MSG_CHECKING([for shared library support])
-    PICFLAG=1
-
-    AS_CASE(["$host_os_name"], [sunos | unix_s], [
-	AC_MSG_RESULT([yes])
-	LIBMXML="libmxml.so.1.6"
+    AS_CASE(["$host_os_name"], [linux* | gnu*], [
+	LIBMXML="libmxml.so.2"
 	DSO="\$(CC)"
-	DSOFLAGS="$DSOFLAGS -Wl,-h,libmxml.so.1 -G -R\$(libdir) \$(OPTIM)"
-	LDFLAGS="$LDFLAGS -R\$(libdir)"
-    ], [linux*], [
-	AC_MSG_RESULT([yes])
-	LIBMXML="libmxml.so.1.6"
+	DSOFLAGS="$DSOFLAGS -Wl,-soname,\`basename \$@\` -shared"
+    ], [*bsd*], [
+	LIBMXML="libmxml.so.2"
 	DSO="\$(CC)"
-	DSOFLAGS="$DSOFLAGS -Wl,-soname,libmxml.so.1 -shared \$(OPTIM)"
-    ], [osf | gnu], [
-	AC_MSG_RESULT([yes])
-	LIBMXML="libmxml.so.1.6"
+	DSOFLAGS="$DSOFLAGS -Wl,-soname,\`basename \$@\` -shared -lc"
+    ], [darwin*], [
+	LIBMXML="libmxml.2.dylib"
 	DSO="\$(CC)"
-	DSOFLAGS="$DSOFLAGS -Wl,-soname,libmxml.so.1,-rpath,\$(libdir) -shared \$(OPTIM)"
-	LDFLAGS="$LDFLAGS -Wl,-rpath,\$(libdir)"
-    ], [*bsd | haiku*], [
-	AC_MSG_RESULT([yes])
-	LIBMXML="libmxml.so.1.6"
+	DSOFLAGS="$DSOFLAGS -Wl,-no_warn_inits -dynamiclib -lc"
+    ], [sunos*], [
+	LIBMXML="libmxml.so.2"
 	DSO="\$(CC)"
-	DSOFLAGS="$DSOFLAGS -Wl,-soname,libmxml.so.1,-R\$(libdir) -shared \$(OPTIM)"
-	LDFLAGS="$LDFLAGS -Wl,-R\$(libdir)"
-    ], [darwin], [
-	AC_MSG_RESULT([yes])
-	LIBMXML="libmxml.1.dylib"
-	DSO="\$(CC)"
-	DSOFLAGS="$DSOFLAGS \$(RC_CFLAGS) -dynamiclib -lc"
+	DSOFLAGS="$DSOFLAGS -Wl,-h,\`basename \$@\` -G"
     ], [mingw], [
 	AC_MSG_RESULT([yes])
-	LIBMXML="mxml1.dll"
+	LIBMXML="libmxml2.dll"
 	DSO="\$(CC)"
-	DSOFLAGS="$DSOFLAGS -shared -Wl,--out-implib,libmxml1.a,--no-undefined,--enable-runtime-pseudo-reloc"
+	DSOFLAGS="$DSOFLAGS -shared -Wl,--out-implib,libmxml2.a,--no-undefined,--enable-runtime-pseudo-reloc"
     ], [*], [
-	AC_MSG_RESULT([no])
-	AC_MSG_WARN([shared libraries not supported on this platform.])
-	PICFLAG=0
-	LIBMXML="libmxml.a"
+	AC_MSG_NOTICE([Warning: Shared libraries may not work, trying -shared option.])
+	LIBMXML="libmxml.so.2"
+	DSO="\$(CC)"
+	DSOFLAGS="$DSOFLAGS -Wl,-soname,\`basename \$@\` -shared"
+    ])
+
+    AS_IF([test x$enable_static != xno], [
+	AC_MSG_NOTICE([Installing static libraries...])
+	INSTALL_STATIC="install-libmxml.a"
+	UNINSTALL_STATIC="uninstall-libmxml.a"
+    ], [
+	INSTALL_STATIC=""
+	UNINSTALL_STATIC=""
     ])
 ], [
-    PICFLAG=0
+    INSTALL_STATIC=""
     LIBMXML="libmxml.a"
+    UNINSTALL_STATIC=""
 ])
 
-AC_SUBST([DSO])
-AC_SUBST([DSOFLAGS])
+AC_SUBST([INSTALL_STATIC])
 AC_SUBST([LIBMXML])
-AC_SUBST([PICFLAG])
+AC_SUBST([LIBMXML_STATIC])
+AC_SUBST([UNINSTALL_STATIC])
 
 
-dnl Compiler options...
+dnl Extra compiler options...
+AC_ARG_ENABLE([debug], AS_HELP_STRING([--enable-debug], [turn on debugging, default=no]))
+AC_ARG_ENABLE([maintainer], AS_HELP_STRING([--enable-maintainer], [turn on maintainer mode, default=no]))
+AC_ARG_WITH([sanitizer], AS_HELP_STRING([--with-sanitizer], [build with address, leak, memory, thread, or undefined sanitizer, default=no]), [], [with_sanitizer=no])
+AS_IF([test "x$with_sanitizer" = xyes], [
+    with_sanitizer="address"
+], [test "$with_sanitizer" != address -a "$with_sanitizer" != leak -a "$with_sanitizer" != memory -a "$with_sanitizer" != no -a "$with_sanitizer" != thread -a "$with_sanitizer" != undefined], [
+    AC_MSG_ERROR([Unsupported --with-sanitizer value "$with_sanitizer" specified.])
+])
+
+AS_IF([test x$enable_debug = xyes], [
+    CSFLAGS=""
+    OPTIM="$OPTIM -g"
+    OPTIONS="-DDEBUG -DDEBUG_GUARDS"
+], [
+    CSFLAGS="-o runtime"
+    OPTIM="$OPTIM -g -Os"
+    OPTIONS=""
+])
+
+AC_SUBST([CSFLAGS])
+AC_SUBST([OPTIONS])
+
 WARNINGS=""
 AC_SUBST([WARNINGS])
 
 AS_IF([test -n "$GCC"], [
-    CFLAGS="-D_GNU_SOURCE $CFLAGS"
-
-    AS_IF([test "x$OPTIM" = x], [
-	AS_IF([test x$enable_debug = xyes], [
-	    OPTIM="-g"
-	], [
-	    OPTIM="-g -Os"
-	])
-    ], [test x$enable_debug = xyes], [
-	OPTIM="$OPTIM -g"
-    ])
-
-    AS_IF([test x$enable_sanitizer = xyes], [
-	# Use -fsanitize=address with debugging...
-	OPTIM="$OPTIM -fsanitize=address"
+    AS_IF([test x$with_sanitizer != xno], [
+	# Use -fsanitize=FOO with debugging...
+	OPTIM="$OPTIM -fsanitize=$with_sanitizer"
+    ], [echo "$CPPFLAGS $CFLAGS" | grep -q _FORTIFY_SOURCE], [
+        # Don't add _FORTIFY_SOURCE if it is already there
     ], [
 	# Otherwise use the Fortify enhancements to catch any unbounded
 	# string operations...
-	CPPFLAGS="$CPPFLAGS -D_FORTIFY_SOURCE=2"
-    ])
-
-    AS_IF([test "x$use_ansi" = xyes], [
-	CFLAGS="-ansi -pedantic $CFLAGS"
+	CPPFLAGS="$CPPFLAGS -D_FORTIFY_SOURCE=3"
     ])
 
     dnl Show all standard warnings + unused variables when compiling...
     WARNINGS="-Wall -Wunused"
 
     dnl Drop some not-useful/unreliable warnings...
-    for warning in char-subscripts format-truncation format-y2k switch unused-result; do
+    for warning in char-subscripts deprecated-declarations format-truncation format-y2k switch unused-result; do
 	AC_MSG_CHECKING([whether compiler supports -Wno-$warning])
 
 	OLDCFLAGS="$CFLAGS"
 	CFLAGS="$CFLAGS -Wno-$warning -Werror"
 
 	AC_COMPILE_IFELSE([AC_LANG_PROGRAM()], [
-	    AC_MSG_RESULT(yes)
+	    AC_MSG_RESULT([yes])
 	    WARNINGS="$WARNINGS -Wno-$warning"
         ], [
-	    AC_MSG_RESULT(no)
+	    AC_MSG_RESULT([no])
 	])
 
 	CFLAGS="$OLDCFLAGS"
@@ -295,32 +238,111 @@ AS_IF([test -n "$GCC"], [
 	WARNINGS="$WARNINGS -Werror"
     ])
 
-    AS_IF([test $PICFLAG = 1 -a "$host_os_name" != aix], [
-	OPTIM="-fPIC $OPTIM"
+    dnl See if PIE options are supported...
+    AC_MSG_CHECKING(whether compiler supports -fPIE)
+    OLDCFLAGS="$CFLAGS"
+    AS_CASE(["$host_os_name"],
+    [darwin*], [
+	CFLAGS="$CFLAGS -fPIC -fPIE -Wl,-pie"
+	AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[]])],[
+	    OLDCFLAGS="-fPIC $OLDCFLAGS"
+	    LDFLAGS="-fPIE -Wl,-pie $LDFLAGS"
+	    AC_MSG_RESULT([yes])
+	],[
+	    AC_MSG_RESULT([no])
+	])
+    ], [*], [
+	CFLAGS="$CFLAGS -fPIC -fPIE -pie"
+	AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[]])],[
+	    OLDCFLAGS="-fPIC $OLDCFLAGS"
+	    LDFLAGS="-fPIE -pie $LDFLAGS"
+	    AC_MSG_RESULT([yes])
+	],[
+	    AC_MSG_RESULT([no])
+	])
     ])
-], [
-    AS_IF([test "x$OPTIM" = x], [
-	AS_IF([test x$enable_debug = xyes], [
-	    OPTIM="-g"
+    CFLAGS="$OLDCFLAGS"
+
+    dnl OS-specific compiler options...
+    AC_MSG_CHECKING([for OS-specific compiler options])
+    AS_CASE(["$host_os_name"], [linux*], [
+    	# Make sure we get the full set of Linux APIs from the headers...
+	CPPFLAGS="$CPPFLAGS -D__USE_MISC -D_GNU_SOURCE"
+
+	# Mark read-only sections as relocatable to random addresses...
+	LDFLAGS="$LDFLAGS -Wl,-z,relro,-z,now"
+
+        AC_MSG_RESULT([-D__USE_MISC -D_GNU_SOURCE -Wl,-z,relro,-z,now])
+    ], [darwin*], [
+        # When not building for debug, target macOS 11 or later, "universal"
+        # binaries when possible...
+        AS_IF([echo "$CPPFLAGS $CFLAGS $LDFLAGS $OPTIM" | grep -q "\\-arch "], [
+            # Don't add architecture/min-version flags if they are already present
+            AC_MSG_RESULT([none])
+        ], [echo "$CPPFLAGS $CFLAGS $LDFLAGS $OPTIM" | grep -q "\\-mmacosx-version-"], [
+            # Don't add architecture/min-version flags if they are already present
+            AC_MSG_RESULT([none])
+        ], [test "$host_os_version" -ge 200 -a x$enable_debug != xyes], [
+	    # macOS 11.0 and higher support the Apple Silicon (arm64) CPUs
+	    OPTIM="$OPTIM -mmacosx-version-min=11.0 -arch x86_64 -arch arm64"
+            AC_MSG_RESULT([-mmacosx-version-min=11.0 -arch x86_64 -arch arm64])
 	], [
-	    OPTIM="-O"
+	    # Don't add architecture/min-version flags if debug enabled
+            AC_MSG_RESULT([none])
 	])
-    ])
-
-    AS_CASE(["$host_os_name"], [hp-ux], [
-	CFLAGS="-Ae $CFLAGS"
-
-	OPTIM="+DAportable $OPTIM"
-
-	AS_IF([test $PICFLAG = 1], [
-	    OPTIM="+z $OPTIM"
-	])
-    ], [unix_svr | sunos], [
-	AS_IF([test $PICFLAG = 1], [
-	    OPTIM="-KPIC $OPTIM"
-	])
+    ], [*], [
+        AC_MSG_RESULT([none])
     ])
 ])
+
+
+dnl Extra linker options...
+AC_ARG_WITH([dsoflags], AS_HELP_STRING([--with-dsoflags=...], [Specify additional DSOFLAGS]), [
+    DSOFLAGS="$withval $DSOFLAGS"
+])
+AC_ARG_WITH([ldflags], AS_HELP_STRING([--with-ldflags=...], [Specify additional LDFLAGS]), [
+    LDFLAGS="$withval $LDFLAGS"
+])
+
+
+dnl Directories...
+AC_ARG_WITH([docdir], AS_HELP_STRING([--with-docdir], [set directory for documentation, default=${prefix}/share/doc/mxml]), [
+    docdir="$withval"
+], [
+    docdir="NONE"
+])
+AC_SUBST(docdir)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 dnl Determine whether we are cross-compiling...
@@ -333,39 +355,44 @@ AC_SUBST([TARGETS])
 
 
 dnl Fix installation directories...
-AS_IF([test "$prefix" = "NONE"], [
-    prefix="/usr/local"
-])
-
-AS_IF([test "$exec_prefix" = "NONE"], [
-    exec_prefix="$prefix"
-])
-
-AS_IF([test "$docdir" = "NONE"], [
-    docdir="$datadir/doc/mxml"
-])
-
-AS_IF([test "$mandir" = "\${prefix}/man" -a "$prefix" = "/usr"], [
-    mandir="/usr/share/man"
-])
-
-
-dnl pkg-config stuff...
-AS_IF([test "$includedir" != /usr/include], [
-    PC_CFLAGS="-I$includedir"
+AS_IF([test "$prefix" = NONE], [
+    # Default prefix isn't bound until AC_OUTPUT...
+    realprefix="/usr/local"
 ], [
-    PC_CFLAGS=""
+    realprefix="$prefix"
 ])
-AC_SUBST([PC_CFLAGS])
 
-AS_IF([test "$libdir" != /usr/lib], [
-    PC_LIBS="-L$libdir -lmxml"
-], [
-    PC_LIBS="-lmxml"
+AS_IF([test "$datarootdir" = "\${prefix}/share"], [
+    AS_IF([test "$prefix" = "/"], [
+	datarootdir="/usr/share"
+    ], [
+	datarootdir="$realprefix/share"
+    ])
 ])
-AC_SUBST([PC_LIBS])
+
+AS_IF([test "$datadir" = "\${prefix}/share"], [
+    AS_IF([test "$prefix" = "/"], [
+	datadir="/usr/share"
+    ], [
+	datadir="$realprefix/share"
+    ])
+], [test "$datadir" = "\${datarootdir}"], [
+    datadir="$datarootdir"
+])
 
 
-dnl Output the makefile, etc...
+dnl pkg-config flags...
+PKGCONFIG_CFLAGS=""
+PKGCONFIG_LIBS="-lmxml"
+AS_IF([test "$realprefix" != "/usr" -a "$realprefix" != "/usr/local"], [
+    PKGCONFIG_CFLAGS="-I\${includedir}"
+    PKGCONFIG_LIBS="-L\${libdir} $PKGCONFIG_LIBS"
+])
+
+AC_SUBST([PKGCONFIG_CFLAGS])
+AC_SUBST([PKGCONFIG_LIBS])
+
+
+dnl Output generated files...
 AC_CONFIG_FILES([Makefile mxml.pc])
 AC_OUTPUT

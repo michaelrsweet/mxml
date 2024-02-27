@@ -1,31 +1,27 @@
-/*
- * Character entity support code for Mini-XML, a small XML file parsing library.
- *
- * https://www.msweet.org/mxml
- *
- * Copyright © 2003-2019 by Michael R Sweet.
- *
- * Licensed under Apache License v2.0.  See the file "LICENSE" for more
- * information.
- */
-
-/*
- * Include necessary headers...
- */
+//
+// Character entity support code for Mini-XML, a small XML file parsing library.
+//
+// https://www.msweet.org/mxml
+//
+// Copyright © 2003-2024 by Michael R Sweet.
+//
+// Licensed under Apache License v2.0.  See the file "LICENSE" for more
+// information.
+//
 
 #include "mxml-private.h"
 
 
-/*
- * 'mxmlEntityAddCallback()' - Add a callback to convert entities to Unicode.
- */
+//
+// 'mxmlEntityAddCallback()' - Add a callback to convert entities to Unicode.
+//
 
-int					/* O - 0 on success, -1 on failure */
+int					// O - 0 on success, -1 on failure
 mxmlEntityAddCallback(
-    mxml_entity_cb_t cb)		/* I - Callback function to add */
+    mxml_entity_cb_t cb)		// I - Callback function to add
 {
   _mxml_global_t *global = _mxml_global();
-					/* Global data */
+					// Global data
 
 
   if (global->num_entity_cbs < (int)(sizeof(global->entity_cbs) / sizeof(global->entity_cbs[0])))
@@ -44,14 +40,14 @@ mxmlEntityAddCallback(
 }
 
 
-/*
- * 'mxmlEntityGetName()' - Get the name that corresponds to the character value.
- *
- * If val does not need to be represented by a named entity, @code NULL@ is returned.
- */
+//
+// 'mxmlEntityGetName()' - Get the name that corresponds to the character value.
+//
+// If val does not need to be represented by a named entity, @code NULL@ is returned.
+//
 
-const char *				/* O - Entity name or @code NULL@ */
-mxmlEntityGetName(int val)		/* I - Character value */
+const char *				// O - Entity name or @code NULL@
+mxmlEntityGetName(int val)		// I - Character value
 {
   switch (val)
   {
@@ -73,76 +69,76 @@ mxmlEntityGetName(int val)		/* I - Character value */
 }
 
 
-/*
- * 'mxmlEntityGetValue()' - Get the character corresponding to a named entity.
- *
- * The entity name can also be a numeric constant. -1 is returned if the
- * name is not known.
- */
+//
+// 'mxmlEntityGetValue()' - Get the character corresponding to a named entity.
+//
+// The entity name can also be a numeric constant. -1 is returned if the
+// name is not known.
+//
 
-int					/* O - Character value or -1 on error */
-mxmlEntityGetValue(const char *name)	/* I - Entity name */
+int					// O - Character value or -1 on error
+mxmlEntityGetValue(const char *name)	// I - Entity name
 {
-  int		i;			/* Looping var */
-  int		ch;			/* Character value */
+  int		i;			// Looping var
+  int		ch;			// Character value
   _mxml_global_t *global = _mxml_global();
-					/* Global data */
+					// Global data
 
 
   for (i = 0; i < global->num_entity_cbs; i ++)
+  {
     if ((ch = (global->entity_cbs[i])(name)) >= 0)
       return (ch);
+  }
 
   return (-1);
 }
 
 
-/*
- * 'mxmlEntityRemoveCallback()' - Remove a callback.
- */
+//
+// 'mxmlEntityRemoveCallback()' - Remove a callback.
+//
 
 void
 mxmlEntityRemoveCallback(
-    mxml_entity_cb_t cb)		/* I - Callback function to remove */
+    mxml_entity_cb_t cb)		// I - Callback function to remove
 {
-  int		i;			/* Looping var */
+  int		i;			// Looping var
   _mxml_global_t *global = _mxml_global();
-					/* Global data */
+					// Global data
 
 
   for (i = 0; i < global->num_entity_cbs; i ++)
+  {
     if (cb == global->entity_cbs[i])
     {
-     /*
-      * Remove the callback...
-      */
-
+      // Remove the callback...
       global->num_entity_cbs --;
 
       if (i < global->num_entity_cbs)
-        memmove(global->entity_cbs + i, global->entity_cbs + i + 1,
-	        (global->num_entity_cbs - i) * sizeof(global->entity_cbs[0]));
+        memmove(global->entity_cbs + i, global->entity_cbs + i + 1, (global->num_entity_cbs - i) * sizeof(global->entity_cbs[0]));
 
       return;
     }
+  }
 }
 
 
-/*
- * '_mxml_entity_cb()' - Lookup standard (X)HTML entities.
- */
+//
+// '_mxml_entity_cb()' - Lookup standard (X)HTML entities.
+//
 
-int					/* O - Unicode value or -1 */
-_mxml_entity_cb(const char *name)	/* I - Entity name */
+int					// O - Unicode value or -1
+_mxml_entity_cb(const char *name)	// I - Entity name
 {
-  int	diff,				/* Difference between names */
-	current,			/* Current entity in search */
-	first,				/* First entity in search */
-	last;				/* Last entity in search */
+  int	diff,				// Difference between names
+	current,			// Current entity in search
+	first,				// First entity in search
+	last;				// Last entity in search
   static const struct
   {
-    const char	*name;			/* Entity name */
-    int		val;			/* Character value */
+    const char	*name;			// Entity name
+    int		val;			// Character value
   }	entities[] =
   {
     { "AElig",		198 },
@@ -405,10 +401,7 @@ _mxml_entity_cb(const char *name)	/* I - Entity name */
   };
 
 
- /*
-  * Do a binary search for the named entity...
-  */
-
+  // Do a binary search for the named entity...
   first = 0;
   last  = (int)(sizeof(entities) / sizeof(entities[0]) - 1);
 
@@ -424,11 +417,7 @@ _mxml_entity_cb(const char *name)	/* I - Entity name */
       first = current;
   }
 
- /*
-  * If we get here, there is a small chance that there is still
-  * a match; check first and last...
-  */
-
+  // If we get here, there is a small chance that there is still a match; check first and last...
   if (!strcmp(name, entities[first].name))
     return (entities[first].val);
   else if (!strcmp(name, entities[last].name))

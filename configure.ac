@@ -14,7 +14,7 @@ AC_PREREQ([2.70])
 
 
 dnl Package name and version...
-AC_INIT([Mini-XML], [4.0b1], [https://github.com/michaelrsweet/mxml/issues], [mxml], [https://www.msweet.org/mxml])
+AC_INIT([Mini-XML], [4.0.0], [https://github.com/michaelrsweet/mxml/issues], [mxml], [https://www.msweet.org/mxml])
 AC_CONFIG_HEADERS([config.h])
 
 MXML_VERSION="AC_PACKAGE_VERSION"
@@ -93,7 +93,7 @@ AC_ARG_ENABLE([threads], AS_HELP_STRING([--disable-threads], [disable multi-thre
 have_pthread=no
 AS_IF([test "x$enable_threads" != xno], [
     AC_CHECK_HEADER([pthread.h], [
-        AC_DEFINE([HAVE_PTHREAD_H], [Have <pthread.h>?])
+        AC_DEFINE([HAVE_PTHREAD_H], [1], [Have <pthread.h>?])
     ])
 
     AS_IF([test x$ac_cv_header_pthread_h = xyes], [

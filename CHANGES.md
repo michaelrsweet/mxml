@@ -1,3 +1,9 @@
+# Changes in Mini-XML 4.0.0
+
+- Now require C99 support.
+- Renamed `mxml_type_t` enumerations to `MXML_TYPE_xxx`.
+
+
 # Changes in Mini-XML 3.3.2
 
 - Updated the autoconf `config.guess` and `config.sub` scripts to support cross

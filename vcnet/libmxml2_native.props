@@ -5,7 +5,7 @@
       <AdditionalIncludeDirectories>$(MSBuildThisFileDirectory)\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>$(MSBuildThisFileDirectory)\lib\$(Platform)\$(Configuration)\libmxml1.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(MSBuildThisFileDirectory)\lib\$(Platform)\$(Configuration)\libmxml2.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
 </Project>

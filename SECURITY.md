@@ -5,6 +5,25 @@ This file describes how security issues are reported and handled, and what the
 expectations are for security issues reported to this project.
 
 
+Reporting a Security Bug
+------------------------
+
+For the purposes of this project, a security bug is a software defect that
+allows a *local or remote user* to gain unauthorized access or privileges on the
+host computer or to cause the software to crash.  Such defects should be
+reported to the project security advisory page at
+<https://github.com/michaelrsweet/mxml/security/advisories>.
+
+Alternately, security bugs can be reported to "security AT msweet.org" using the
+PGP public key below.  Expect a response within 5 business days.  Any proposed
+embargo date should be at least 30 days and no more than 90 days in the future.
+
+> *Note:* If you've found a software defect that allows a *program* to gain
+> unauthorized access or privileges on the host computer or causes the program
+> to crash, that defect should be reported as an ordinary project issue at
+> <https://github.com/michaelrsweet/mxml/issues>.
+
+
 Responsible Disclosure
 ----------------------
 
@@ -35,7 +54,7 @@ starting at 0.  A feature release has a "PATCH" value of 0, for example:
     1.1.0
     2.0.0
 
-Beta releases and release candidates are *not* prodution releases and use
+Beta releases and release candidates are *not* production releases and use
 semantic version numbers of the form:
 
     MAJOR.MINORbNUMBER
@@ -48,14 +67,6 @@ example:
     1.0b1
     1.0b2
     1.0rc1
-
-
-Reporting a Vulnerability
--------------------------
-
-Report all security issues to "security AT msweet.org".  Expect a response
-within 5 business days.  Any proposed embargo date should be at least 30 days
-and no more than 90 days in the future.
 
 
 PGP Public Key

@@ -1,6 +1,13 @@
 #!/bin/sh
 #
-# makesrcdist - make a source distribution of mxml.
+# makesrcdist - make a source distribution of Mini-XML.
+#
+# https://www.msweet.org/mxml
+#
+# Copyright © 2003-2024 by Michael R Sweet.
+#
+# Licensed under Apache License v2.0.  See the file "LICENSE" for more
+# information.
 #
 
 if test $# != 1; then
@@ -8,8 +15,60 @@ if test $# != 1; then
 	exit 1
 fi
 
+
+# Check that various files are up-to-date...
 version=$1
 
+version_major=$(echo $version | awk -F. '{print $1}')
+version_minor=$(echo $version | awk -F. '{print $2}')
+
+status=0
+
+if ! grep -q "Changes in Mini-XML $version" CHANGES.md; then
+	echo "Update CHANGES.md."
+	status=1
+fi
+
+if test "$(grep AC_INIT configure.ac | awk '{print $2}')" != "[$version],"; then
+	echo "Update configure.ac."
+	status=1
+fi
+
+if test "$(grep MXML_MAJOR_VERSION mxml.h | awk '{print $4}')" != "$version_major"; then
+	echo "Update MXML_MAJOR_VERSION in mxml.h."
+	status=1
+fi
+
+if test "$(grep MXML_MINOR_VERSION mxml.h | awk '{print $4}')" != "$version_minor"; then
+	echo "Update MXML_MINOR_VERSION in mxml.h."
+	status=1
+fi
+
+if ! grep -q "Version: $version" mxml.spec; then
+	echo "Update mxml.spec."
+	status=1
+fi
+
+if ! grep -q "<version>$version</version>" vcnet/libmxml2_native.nuspec; then
+	echo "Update vcnet/libmxml2_native.nuspec."
+	status=1
+fi
+if ! grep -q "version=\"$version\" />" vcnet/libmxml2_native.nuspec; then
+	echo "Update vcnet/libmxml2_native.nuspec."
+	status=1
+fi
+
+if ! grep -q "<version>$version</version>" vcnet/libmxml2_native.redist.nuspec; then
+	echo "Update vcnet/libmxml2_native.redist.nuspec."
+	status=1
+fi
+
+if test $status = 1; then
+	exit 1
+fi
+
+
+# Create tag and archives...
 echo Creating tag for release...
 git tag -m "Tag $version" v$version
 git push origin v$version

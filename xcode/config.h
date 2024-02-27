@@ -1,74 +1,49 @@
-/*
- * Xcode configuration file for Mini-XML, a small XML file parsing library.
- *
- * https://www.msweet.org/mxml
- *
- * Copyright © 2003-2021 by Michael R Sweet.
- *
- * Licensed under Apache License v2.0.  See the file "LICENSE" for more
- * information.
- */
+//
+// Xcode configuration file for Mini-XML, a small XML file parsing library.
+//
+// https://www.msweet.org/mxml
+//
+// Copyright © 2003-2024 by Michael R Sweet.
+//
+// Licensed under Apache License v2.0.  See the file "LICENSE" for more
+// information.
+//
 
-/*
- * Include necessary headers...
- */
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <stdarg.h>
-#include <ctype.h>
+#ifndef MXML_CONFIG_H
+#  define MXML_CONFIG_H
+#  include <stdio.h>
+#  include <stdlib.h>
+#  include <string.h>
+#  include <stdarg.h>
+#  include <ctype.h>
 
 
-/*
- * Version number...
- */
+//
+// Version number
+//
 
-#define MXML_VERSION "Mini-XML v3.3.1"
-
-
-/*
- * Inline function support...
- */
-
-#define inline
+#  define MXML_VERSION "Mini-XML v4.0b1"
 
 
-/*
- * Long long support...
- */
+//
+// Inline function support
+//
 
-#define HAVE_LONG_LONG_INT 1
-
-
-/*
- * Do we have the *printf() functions?
- */
-
-#define HAVE_SNPRINTF 1
-#define HAVE_VASPRINTF 1
-#define HAVE_VSNPRINTF 1
+#  define inline
 
 
-/*
- * Do we have the strXXX() functions?
- */
+//
+// Long long support
+//
 
-#define HAVE_STRDUP 1
-#define HAVE_STRLCAT 1
-#define HAVE_STRLCPY 1
+#  define HAVE_LONG_LONG_INT 1
 
 
-/*
- * Do we have threading support?
- */
+//
+// Have <pthread.h>?
+//
 
-#define HAVE_PTHREAD_H 1
+#  define HAVE_PTHREAD_H
 
 
-/*
- * Define prototypes for string functions as needed...
- */
-
-extern char	*_mxml_strdupf(const char *, ...);
-extern char	*_mxml_vstrdupf(const char *, va_list);
+#endif // !MXML_CONFIG_H

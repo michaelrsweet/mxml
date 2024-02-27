@@ -208,7 +208,7 @@ files "LICENSE" and "NOTICE" for more information.
 
 > Note: The exception listed in the NOTICE file only applies when linking
 > against GPL2/LGPL2-only software.  Some Apache License purists have objected
-> to linking Apache Licensed code against Mini-XML with these exceptions on the
+> to linking Apa/che Licensed code against Mini-XML with these exceptions on the
 > grounds that it makes Mini-XML somehow incompatible with the Apache License.
 > For that reason, people wishing to retain their Apache License purity may
 > omit the exception from their copy of Mini-XML.

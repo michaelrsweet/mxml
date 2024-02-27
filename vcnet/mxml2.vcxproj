@@ -100,15 +100,15 @@
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
     </ClCompile>
     <Link>
-      <OutputFile>$(Platform)\$(Configuration)\$(ProductName)\mxml1.dll</OutputFile>
+      <OutputFile>$(Platform)\$(Configuration)\$(ProductName)\mxml2.dll</OutputFile>
       <IgnoreSpecificDefaultLibraries>oldnames.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <ModuleDefinitionFile>.\mxml1.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>.\mxml2.def</ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ProgramDatabaseFile>$(OutDir)mxml1.pdb</ProgramDatabaseFile>
+      <ProgramDatabaseFile>$(OutDir)mxml2.pdb</ProgramDatabaseFile>
       <SubSystem>Windows</SubSystem>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <DataExecutionPrevention />
-      <ImportLibrary>$(Configuration)\$(Platform)\$(ProductName)\mxml1.lib</ImportLibrary>
+      <ImportLibrary>$(Configuration)\$(Platform)\$(ProductName)\mxml2.lib</ImportLibrary>
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
   </ItemDefinitionGroup>
@@ -122,16 +122,16 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
-      <OutputFile>$(Platform)\$(Configuration)\$(ProductName)\mxml1.dll</OutputFile>
+      <OutputFile>$(Platform)\$(Configuration)\$(ProductName)\mxml2.dll</OutputFile>
       <IgnoreSpecificDefaultLibraries>oldnames.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <ModuleDefinitionFile>.\mxml1.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>.\mxml2.def</ModuleDefinitionFile>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <DataExecutionPrevention />
-      <ImportLibrary>$(Configuration)\$(Platform)\$(ProductName)\mxml1.lib</ImportLibrary>
+      <ImportLibrary>$(Configuration)\$(Platform)\$(ProductName)\mxml2.lib</ImportLibrary>
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
   </ItemDefinitionGroup>
@@ -151,15 +151,15 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
-      <OutputFile>$(Platform)\$(Configuration)\$(ProductName)\mxml1.dll</OutputFile>
+      <OutputFile>$(Platform)\$(Configuration)\$(ProductName)\mxml2.dll</OutputFile>
       <IgnoreSpecificDefaultLibraries>oldnames.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <ModuleDefinitionFile>.\mxml1.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>.\mxml2.def</ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ProgramDatabaseFile>$(OutDir)mxml1.pdb</ProgramDatabaseFile>
+      <ProgramDatabaseFile>$(OutDir)mxml2.pdb</ProgramDatabaseFile>
       <SubSystem>Windows</SubSystem>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <DataExecutionPrevention />
-      <ImportLibrary>$(Configuration)\$(Platform)\$(ProductName)\mxml1.lib</ImportLibrary>
+      <ImportLibrary>$(Configuration)\$(Platform)\$(ProductName)\mxml2.lib</ImportLibrary>
       <TargetMachine>MachineX64</TargetMachine>
     </Link>
   </ItemDefinitionGroup>
@@ -176,16 +176,16 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
-      <OutputFile>$(Platform)\$(Configuration)\$(ProductName)\mxml1.dll</OutputFile>
+      <OutputFile>$(Platform)\$(Configuration)\$(ProductName)\mxml2.dll</OutputFile>
       <IgnoreSpecificDefaultLibraries>oldnames.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <ModuleDefinitionFile>.\mxml1.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>.\mxml2.def</ModuleDefinitionFile>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <DataExecutionPrevention />
-      <ImportLibrary>$(Configuration)\$(Platform)\$(ProductName)\mxml1.lib</ImportLibrary>
+      <ImportLibrary>$(Configuration)\$(Platform)\$(ProductName)\mxml2.lib</ImportLibrary>
       <TargetMachine>MachineX64</TargetMachine>
     </Link>
   </ItemDefinitionGroup>
@@ -199,7 +199,6 @@
     <ClCompile Include="..\mxml-private.c" />
     <ClCompile Include="..\mxml-search.c" />
     <ClCompile Include="..\mxml-set.c" />
-    <ClCompile Include="..\mxml-string.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\mxml-private.h" />
@@ -207,7 +206,7 @@
     <ClInclude Include="config.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="mxml1.def" />
+    <None Include="mxml2.def" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

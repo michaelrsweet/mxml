@@ -32,7 +32,6 @@
     <ClCompile Include="..\mxml-private.c" />
     <ClCompile Include="..\mxml-search.c" />
     <ClCompile Include="..\mxml-set.c" />
-    <ClCompile Include="..\mxml-string.c" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>

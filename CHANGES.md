@@ -1,7 +1,7 @@
 # Changes in Mini-XML 4.0.0
 
 - Now require C99 support.
-- Renamed `mxml_type_t` enumerations to `MXML_TYPE_xxx`.
+- Renamed `mxml_type_t` enumerations to `MXML_TYPE_xxx` (Issue #251)
 
 
 # Changes in Mini-XML 3.3.2

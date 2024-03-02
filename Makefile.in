@@ -281,18 +281,21 @@ test:	testmxml
 		$(RM) temp2.xml temp2s.xml; \
 	else \
 		echo Stdio file test failed!; \
+		exit 1; \
 	fi
 	@if cmp temp1.xml temp1s.xml; then \
 		echo String test passed!; \
 		$(RM) temp1.xml temp1s.xml; \
 	else \
 		echo String test failed!; \
+		exit 1; \
 	fi
 	@if cmp test.xml test.xmlfd; then \
 		echo File descriptor test passed!; \
 		$(RM) test.xmlfd temp1.xmlfd; \
 	else \
 		echo File descriptor test failed!; \
+		exit 1; \
 	fi
 
 

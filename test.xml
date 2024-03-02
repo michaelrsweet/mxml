@@ -8,7 +8,7 @@
 		<choice>
 			<keyword type="opaque">Auto</keyword>
 			<text>Auto Tray Selection</text>
-			<code type="opaque" />
+			<code type="opaque"/>
 		</choice>
 		<choice>
 			<keyword type="opaque">Upper</keyword>

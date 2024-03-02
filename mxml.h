@@ -13,6 +13,7 @@
 #  define MXML_H
 #  include <stdio.h>
 #  include <stdlib.h>
+#  include <stdbool.h>
 #  include <string.h>
 #  include <ctype.h>
 #  include <errno.h>
@@ -72,7 +73,8 @@ typedef enum mxml_sax_event_e		// SAX event type.
   MXML_SAX_EVENT_CDATA,			// CDATA node
   MXML_SAX_EVENT_COMMENT,		// Comment node
   MXML_SAX_EVENT_DATA,			// Data node
-  MXML_SAX_EVENT_DIRECTIVE,		// Processing directive node
+  MXML_SAX_EVENT_DECLARATION,		// Declaration node
+  MXML_SAX_EVENT_DIRECTIVE,		// Processing instruction node
   MXML_SAX_EVENT_ELEMENT_CLOSE,		// Element closed
   MXML_SAX_EVENT_ELEMENT_OPEN		// Element opened
 } mxml_sax_event_t;
@@ -80,6 +82,10 @@ typedef enum mxml_sax_event_e		// SAX event type.
 typedef enum mxml_type_e		// The XML node type.
 {
   MXML_TYPE_IGNORE = -1,		// Ignore/throw away node
+  MXML_TYPE_CDATA,			// CDATA value ("<[CDATA[...]]>")
+  MXML_TYPE_COMMENT,			// Comment ("<!--...-->")
+  MXML_TYPE_DECLARATION,		// Declaration ("<!...>")
+  MXML_TYPE_DIRECTIVE,			// Processing instruction ("<?...?>")
   MXML_TYPE_ELEMENT,			// XML element with attributes
   MXML_TYPE_INTEGER,			// Integer value
   MXML_TYPE_OPAQUE,			// Opaque string
@@ -127,10 +133,10 @@ extern void		mxmlDelete(mxml_node_t *node);
 extern void		mxmlElementDeleteAttr(mxml_node_t *node, const char *name);
 extern const char	*mxmlElementGetAttr(mxml_node_t *node, const char *name);
 extern const char       *mxmlElementGetAttrByIndex(mxml_node_t *node, int idx, const char **name);
-extern int              mxmlElementGetAttrCount(mxml_node_t *node);
+extern size_t		mxmlElementGetAttrCount(mxml_node_t *node);
 extern void		mxmlElementSetAttr(mxml_node_t *node, const char *name, const char *value);
 extern void		mxmlElementSetAttrf(mxml_node_t *node, const char *name, const char *format, ...) MXML_FORMAT(3,4);
-extern int		mxmlEntityAddCallback(mxml_entity_cb_t cb);
+extern bool		mxmlEntityAddCallback(mxml_entity_cb_t cb);
 extern const char	*mxmlEntityGetName(int val);
 extern int		mxmlEntityGetValue(const char *name);
 extern void		mxmlEntityRemoveCallback(mxml_entity_cb_t cb);
@@ -140,15 +146,15 @@ extern const char	*mxmlGetCDATA(mxml_node_t *node);
 extern const void	*mxmlGetCustom(mxml_node_t *node);
 extern const char	*mxmlGetElement(mxml_node_t *node);
 extern mxml_node_t	*mxmlGetFirstChild(mxml_node_t *node);
-extern int		mxmlGetInteger(mxml_node_t *node);
+extern long		mxmlGetInteger(mxml_node_t *node);
 extern mxml_node_t	*mxmlGetLastChild(mxml_node_t *node);
 extern mxml_node_t	*mxmlGetNextSibling(mxml_node_t *node);
 extern const char	*mxmlGetOpaque(mxml_node_t *node);
 extern mxml_node_t	*mxmlGetParent(mxml_node_t *node);
 extern mxml_node_t	*mxmlGetPrevSibling(mxml_node_t *node);
 extern double		mxmlGetReal(mxml_node_t *node);
-extern int		mxmlGetRefCount(mxml_node_t *node);
-extern const char	*mxmlGetText(mxml_node_t *node, int *whitespace);
+extern size_t		mxmlGetRefCount(mxml_node_t *node);
+extern const char	*mxmlGetText(mxml_node_t *node, bool *whitespace);
 extern mxml_type_t	mxmlGetType(mxml_node_t *node);
 extern void		*mxmlGetUserData(mxml_node_t *node);
 extern void		mxmlIndexDelete(mxml_index_t *ind);
@@ -160,14 +166,21 @@ extern mxml_node_t	*mxmlIndexReset(mxml_index_t *ind);
 extern mxml_node_t	*mxmlLoadFd(mxml_node_t *top, int fd, mxml_load_cb_t cb); extern mxml_node_t	*mxmlLoadFile(mxml_node_t *top, FILE *fp, mxml_load_cb_t cb);
 extern mxml_node_t	*mxmlLoadString(mxml_node_t *top, const char *s, mxml_load_cb_t cb);
 extern mxml_node_t	*mxmlNewCDATA(mxml_node_t *parent, const char *string);
+extern mxml_node_t	*mxmlNewCDATAf(mxml_node_t *parent, const char *format, ...) MXML_FORMAT(2,3);
+extern mxml_node_t	*mxmlNewComment(mxml_node_t *parent, const char *comment);
+extern mxml_node_t	*mxmlNewCommentf(mxml_node_t *parent, const char *format, ...) MXML_FORMAT(2,3);
 extern mxml_node_t	*mxmlNewCustom(mxml_node_t *parent, void *data, mxml_custom_destroy_cb_t destroy);
+extern mxml_node_t	*mxmlNewDeclaration(mxml_node_t *parent, const char *declaration);
+extern mxml_node_t	*mxmlNewDeclarationf(mxml_node_t *parent, const char *format, ...) MXML_FORMAT(2,3);
+extern mxml_node_t	*mxmlNewDirective(mxml_node_t *parent, const char *directive);
+extern mxml_node_t	*mxmlNewDirectivef(mxml_node_t *parent, const char *format, ...) MXML_FORMAT(2,3);
 extern mxml_node_t	*mxmlNewElement(mxml_node_t *parent, const char *name);
-extern mxml_node_t	*mxmlNewInteger(mxml_node_t *parent, int integer);
+extern mxml_node_t	*mxmlNewInteger(mxml_node_t *parent, long integer);
 extern mxml_node_t	*mxmlNewOpaque(mxml_node_t *parent, const char *opaque);
 extern mxml_node_t	*mxmlNewOpaquef(mxml_node_t *parent, const char *format, ...) MXML_FORMAT(2,3);
 extern mxml_node_t	*mxmlNewReal(mxml_node_t *parent, double real);
-extern mxml_node_t	*mxmlNewText(mxml_node_t *parent, int whitespace, const char *string);
-extern mxml_node_t	*mxmlNewTextf(mxml_node_t *parent, int whitespace, const char *format, ...) MXML_FORMAT(3,4);
+extern mxml_node_t	*mxmlNewText(mxml_node_t *parent, bool whitespace, const char *string);
+extern mxml_node_t	*mxmlNewTextf(mxml_node_t *parent, bool whitespace, const char *format, ...) MXML_FORMAT(3,4);
 extern mxml_node_t	*mxmlNewXML(const char *version);
 extern int		mxmlRelease(mxml_node_t *node);
 extern void		mxmlRemove(mxml_node_t *node);
@@ -179,18 +192,25 @@ extern int		mxmlSaveString(mxml_node_t *node, char *buffer, int bufsize, mxml_sa
 extern mxml_node_t	*mxmlSAXLoadFd(mxml_node_t *top, int fd, mxml_load_cb_t cb, mxml_sax_cb_t sax, void *sax_data);
 extern mxml_node_t	*mxmlSAXLoadFile(mxml_node_t *top, FILE *fp, mxml_load_cb_t cb, mxml_sax_cb_t sax, void *sax_data);
 extern mxml_node_t	*mxmlSAXLoadString(mxml_node_t *top, const char *s, mxml_load_cb_t cb, mxml_sax_cb_t sax, void *sax_data);
-extern int		mxmlSetCDATA(mxml_node_t *node, const char *data);
-extern int		mxmlSetCustom(mxml_node_t *node, void *data, mxml_custom_destroy_cb_t destroy);
+extern bool		mxmlSetCDATA(mxml_node_t *node, const char *data);
+extern bool		mxmlSetCDATAf(mxml_node_t *node, const char *format, ...) MXML_FORMAT(2,3);
+extern bool		mxmlSetComment(mxml_node_t *node, const char *comment);
+extern bool		mxmlSetCommentf(mxml_node_t *node, const char *format, ...) MXML_FORMAT(2,3);
+extern bool		mxmlSetDeclaration(mxml_node_t *node, const char *declaration);
+extern bool		mxmlSetDeclarationf(mxml_node_t *node, const char *format, ...) MXML_FORMAT(2,3);
+extern bool		mxmlSetDirective(mxml_node_t *node, const char *directive);
+extern bool		mxmlSetDirectivef(mxml_node_t *node, const char *format, ...) MXML_FORMAT(2,3);
+extern bool		mxmlSetCustom(mxml_node_t *node, void *data, mxml_custom_destroy_cb_t destroy);
 extern void		mxmlSetCustomHandlers(mxml_custom_load_cb_t load, mxml_custom_save_cb_t save);
-extern int		mxmlSetElement(mxml_node_t *node, const char *name);
+extern bool		mxmlSetElement(mxml_node_t *node, const char *name);
 extern void		mxmlSetErrorCallback(mxml_error_cb_t cb);
-extern int		mxmlSetInteger(mxml_node_t *node, int integer);
-extern int		mxmlSetOpaque(mxml_node_t *node, const char *opaque);
-extern int		mxmlSetOpaquef(mxml_node_t *node, const char *format, ...) MXML_FORMAT(2,3);
-extern int		mxmlSetReal(mxml_node_t *node, double real);
-extern int		mxmlSetText(mxml_node_t *node, int whitespace, const char *string);
-extern int		mxmlSetTextf(mxml_node_t *node, int whitespace, const char *format, ...) MXML_FORMAT(3,4);
-extern int		mxmlSetUserData(mxml_node_t *node, void *data);
+extern bool		mxmlSetInteger(mxml_node_t *node, long integer);
+extern bool		mxmlSetOpaque(mxml_node_t *node, const char *opaque);
+extern bool		mxmlSetOpaquef(mxml_node_t *node, const char *format, ...) MXML_FORMAT(2,3);
+extern bool		mxmlSetReal(mxml_node_t *node, double real);
+extern bool		mxmlSetText(mxml_node_t *node, bool whitespace, const char *string);
+extern bool		mxmlSetTextf(mxml_node_t *node, bool whitespace, const char *format, ...) MXML_FORMAT(3,4);
+extern bool		mxmlSetUserData(mxml_node_t *node, void *data);
 extern void		mxmlSetWrapMargin(int column);
 extern mxml_node_t	*mxmlWalkNext(mxml_node_t *node, mxml_node_t *top, int descend);
 extern mxml_node_t	*mxmlWalkPrev(mxml_node_t *node, mxml_node_t *top, int descend);

@@ -109,7 +109,7 @@ mxmlIndexFind(mxml_index_t *ind,	// I - Index to search
     first = 0;
     last  = ind->num_nodes - 1;
 
-    MXML_DEBUG("mxmlIndexFind: Find first time, num_nodes=%d...\n", ind->num_nodes);
+    MXML_DEBUG("mxmlIndexFind: Find first time, num_nodes=%lu...\n", (unsigned long)ind->num_nodes);
 
     while ((last - first) > 1)
     {
@@ -165,7 +165,7 @@ mxmlIndexFind(mxml_index_t *ind,	// I - Index to search
   else if (ind->cur_node < ind->num_nodes && !index_find(ind, element, value, ind->nodes[ind->cur_node]))
   {
     // Return the next matching node...
-    MXML_DEBUG("mxmlIndexFind: Returning next match %d...\n", ind->cur_node);
+    MXML_DEBUG("mxmlIndexFind: Returning next match %lu...\n", (unsigned long)ind->cur_node);
     return (ind->nodes[ind->cur_node ++]);
   }
 

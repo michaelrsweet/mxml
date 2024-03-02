@@ -16,7 +16,7 @@
 // Local functions...
 //
 
-static int	mxml_set_attr(mxml_node_t *node, const char *name, char *value);
+static bool	mxml_set_attr(mxml_node_t *node, const char *name, char *value);
 
 
 //
@@ -27,7 +27,7 @@ void
 mxmlElementDeleteAttr(mxml_node_t *node,// I - Element
                       const char  *name)// I - Attribute name
 {
-  int		i;			// Looping var
+  size_t	i;			// Looping var
   _mxml_attr_t	*attr;			// Cirrent attribute
 
 
@@ -73,7 +73,7 @@ const char *				// O - Attribute value or @code NULL@
 mxmlElementGetAttr(mxml_node_t *node,	// I - Element node
                    const char  *name)	// I - Name of attribute
 {
-  int		i;			// Looping var
+  size_t	i;			// Looping var
   _mxml_attr_t	*attr;			// Cirrent attribute
 
 
@@ -129,9 +129,9 @@ mxmlElementGetAttrByIndex(
 // 'mxmlElementGetAttrCount()' - Get the number of element attributes.
 //
 
-int                                     // O - Number of attributes
+size_t					// O - Number of attributes
 mxmlElementGetAttrCount(
-    mxml_node_t *node)                  // I - Node
+    mxml_node_t *node)			// I - Node
 {
   if (node && node->type == MXML_TYPE_ELEMENT)
     return (node->value.element.num_attrs);
@@ -176,7 +176,7 @@ mxmlElementSetAttr(mxml_node_t *node,	// I - Element node
     valuec = NULL;
   }
 
-  if (mxml_set_attr(node, name, valuec))
+  if (!mxml_set_attr(node, name, valuec))
     free(valuec);
 }
 
@@ -214,7 +214,7 @@ mxmlElementSetAttrf(mxml_node_t *node,	// I - Element node
 
   if ((value = strdup(buffer)) == NULL)
     mxml_error("Unable to allocate memory for attribute '%s' in element %s.", name, node->value.element.name);
-  else if (mxml_set_attr(node, name, value))
+  else if (!mxml_set_attr(node, name, value))
     free(value);
 }
 
@@ -223,7 +223,7 @@ mxmlElementSetAttrf(mxml_node_t *node,	// I - Element node
 // 'mxml_set_attr()' - Set or add an attribute name/value pair.
 //
 
-static int				// O - 0 on success, -1 on failure
+static bool				// O - `true` on success, `false` on failure
 mxml_set_attr(mxml_node_t *node,	// I - Element node
               const char  *name,	// I - Attribute name
               char        *value)	// I - Attribute value
@@ -241,7 +241,7 @@ mxml_set_attr(mxml_node_t *node,	// I - Element node
       free(attr->value);
       attr->value = value;
 
-      return (0);
+      return (true);
     }
   }
 
@@ -251,7 +251,7 @@ mxml_set_attr(mxml_node_t *node,	// I - Element node
   if (!attr)
   {
     mxml_error("Unable to allocate memory for attribute '%s' in element %s.", name, node->value.element.name);
-    return (-1);
+    return (false);
   }
 
   node->value.element.attrs = attr;
@@ -260,12 +260,12 @@ mxml_set_attr(mxml_node_t *node,	// I - Element node
   if ((attr->name = strdup(name)) == NULL)
   {
     mxml_error("Unable to allocate memory for attribute '%s' in element %s.", name, node->value.element.name);
-    return (-1);
+    return (false);
   }
 
   attr->value = value;
 
   node->value.element.num_attrs ++;
 
-  return (0);
+  return (true);
 }

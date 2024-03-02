@@ -1220,8 +1220,8 @@ mxml_load_data(
 		*first = NULL,		// First node added
 		*parent = NULL;		// Current parent node
   int		line = 1,		// Current line number
-		ch,			// Character from file
-		whitespace;		// Non-zero if whitespace seen
+		ch;			// Character from file
+  bool		whitespace;		// Whitespace seen?
   char		*buffer,		// String buffer
 		*bufptr;		// Pointer into buffer
   int		bufsize;		// Size of buffer
@@ -1231,6 +1231,10 @@ mxml_load_data(
 					// Global data
   static const char * const types[] =	// Type strings...
 		{
+		  "MXML_TYPE_CDATA",	// CDATA
+		  "MXML_TYPE_COMMENT",	// Comment
+		  "MXML_TYPE_DECLARATION",// Declaration
+		  "MXML_TYPE_DIRECTIVE",// Processing instruction/directive
 		  "MXML_TYPE_ELEMENT",	// XML element with attributes
 		  "MXML_TYPE_INTEGER",	// Integer value
 		  "MXML_TYPE_OPAQUE",	// Opaque string
@@ -1251,7 +1255,7 @@ mxml_load_data(
   bufptr     = buffer;
   parent     = top;
   first      = NULL;
-  whitespace = 0;
+  whitespace = false;
   encoding   = ENCODE_UTF8;
 
   if (cb && parent)
@@ -1275,9 +1279,7 @@ mxml_load_data(
 
   do
   {
-    if ((ch == '<' ||
-         (mxml_isspace(ch) && type != MXML_TYPE_OPAQUE && type != MXML_TYPE_CUSTOM)) &&
-        bufptr > buffer)
+    if ((ch == '<' || (mxml_isspace(ch) && type != MXML_TYPE_OPAQUE && type != MXML_TYPE_CUSTOM)) && bufptr > buffer)
     {
       // Add a new value node...
       *bufptr = '\0';
@@ -1285,7 +1287,7 @@ mxml_load_data(
       switch (type)
       {
 	case MXML_TYPE_INTEGER :
-            node = mxmlNewInteger(parent, (int)strtol(buffer, &bufptr, 0));
+            node = mxmlNewInteger(parent, strtol(buffer, &bufptr, 0));
 	    break;
 
 	case MXML_TYPE_OPAQUE :
@@ -1350,7 +1352,7 @@ mxml_load_data(
     }
     else if (mxml_isspace(ch) && type == MXML_TYPE_TEXT)
     {
-      whitespace = 1;
+      whitespace = true;
     }
 
     if (ch == '\n')
@@ -1375,7 +1377,7 @@ mxml_load_data(
 	  first = node;
       }
 
-      whitespace = 0;
+      whitespace = false;
     }
 
     if (ch == '<')
@@ -1444,16 +1446,16 @@ mxml_load_data(
 	}
 
         // Otherwise add this as an element under the current parent...
-	*bufptr = '\0';
+	bufptr[-2] = '\0';
 
         if (!parent && first)
 	{
 	  // There can only be one root element!
-	  mxml_error("<%s> cannot be a second root node after <%s> on line %d.", buffer, first->value.element.name, line);
+	  mxml_error("<%s--> cannot be a second root node after <%s> on line %d.", buffer, first->value.element.name, line);
           goto error;
 	}
 
-	if ((node = mxmlNewElement(parent, buffer)) == NULL)
+	if ((node = mxmlNewComment(parent, buffer + 3)) == NULL)
 	{
 	  // Just print error for now...
 	  mxml_error("Unable to add comment node to parent <%s> on line %d.", parent ? parent->value.element.name : "null", line);
@@ -1500,16 +1502,16 @@ mxml_load_data(
 	}
 
         // Otherwise add this as an element under the current parent...
-	*bufptr = '\0';
+	bufptr[-2] = '\0';
 
         if (!parent && first)
 	{
 	  // There can only be one root element!
-	  mxml_error("<%s> cannot be a second root node after <%s> on line %d.", buffer, first->value.element.name, line);
+	  mxml_error("<%s]]> cannot be a second root node after <%s> on line %d.", buffer, first->value.element.name, line);
           goto error;
 	}
 
-	if ((node = mxmlNewElement(parent, buffer)) == NULL)
+	if ((node = mxmlNewCDATA(parent, buffer + 8)) == NULL)
 	{
 	  // Print error and return...
 	  mxml_error("Unable to add CDATA node to parent <%s> on line %d.", parent ? parent->value.element.name : "null", line);
@@ -1550,16 +1552,16 @@ mxml_load_data(
 	}
 
         // Otherwise add this as an element under the current parent...
-	*bufptr = '\0';
+	bufptr[-1] = '\0';
 
         if (!parent && first)
 	{
 	  // There can only be one root element!
-	  mxml_error("<%s> cannot be a second root node after <%s> on line %d.", buffer, first->value.element.name, line);
+	  mxml_error("<%s?> cannot be a second root node after <%s> on line %d.", buffer, first->value.element.name, line);
           goto error;
 	}
 
-	if ((node = mxmlNewElement(parent, buffer)) == NULL)
+	if ((node = mxmlNewDirective(parent, buffer + 1)) == NULL)
 	{
 	  // Print error and return...
 	  mxml_error("Unable to add processing instruction node to parent <%s> on line %d.", parent ? parent->value.element.name : "null", line);
@@ -1570,7 +1572,7 @@ mxml_load_data(
         {
           (*sax_cb)(node, MXML_SAX_EVENT_DIRECTIVE, sax_data);
 
-          if (strncmp(node->value.element.name, "?xml ", 5) && !mxmlRelease(node))
+          if (strncmp(node->value.directive, "xml ", 4) && !mxmlRelease(node))
             node = NULL;
         }
 
@@ -1634,7 +1636,7 @@ mxml_load_data(
           goto error;
 	}
 
-	if ((node = mxmlNewElement(parent, buffer)) == NULL)
+	if ((node = mxmlNewDeclaration(parent, buffer + 1)) == NULL)
 	{
 	  // Print error and return...
 	  mxml_error("Unable to add declaration node to parent <%s> on line %d.", parent ? parent->value.element.name : "null", line);
@@ -1643,7 +1645,7 @@ mxml_load_data(
 
         if (sax_cb)
         {
-          (*sax_cb)(node, MXML_SAX_EVENT_DIRECTIVE, sax_data);
+          (*sax_cb)(node, MXML_SAX_EVENT_DECLARATION, sax_data);
 
           if (!mxmlRelease(node))
             node = NULL;
@@ -2394,6 +2396,7 @@ mxml_write_node(mxml_node_t     *node,	// I - Node to write
 		width;			// Width of attr + value
   _mxml_attr_t	*attr;			// Current attribute
   char		s[255];			// Temporary string
+  const char	*ptr;			// Pointer into string
 
 
   // Loop through this node and all of its children...
@@ -2402,39 +2405,181 @@ mxml_write_node(mxml_node_t     *node,	// I - Node to write
     // Print the node value...
     switch (current->type)
     {
+      case MXML_TYPE_CDATA :
+	  col = mxml_write_ws(current, p, cb, MXML_WS_BEFORE_OPEN, col, putc_cb);
+
+	  if ((*putc_cb)('<', p) < 0)
+	    return (-1);
+	  else
+	    col ++;
+	  if ((*putc_cb)('!', p) < 0)
+	    return (-1);
+	  else
+	    col ++;
+	  if ((*putc_cb)('[', p) < 0)
+	    return (-1);
+	  else
+	    col ++;
+	  if ((*putc_cb)('C', p) < 0)
+	    return (-1);
+	  else
+	    col ++;
+	  if ((*putc_cb)('D', p) < 0)
+	    return (-1);
+	  else
+	    col ++;
+	  if ((*putc_cb)('A', p) < 0)
+	    return (-1);
+	  else
+	    col ++;
+	  if ((*putc_cb)('T', p) < 0)
+	    return (-1);
+	  else
+	    col ++;
+	  if ((*putc_cb)('A', p) < 0)
+	    return (-1);
+	  else
+	    col ++;
+	  if ((*putc_cb)('[', p) < 0)
+	    return (-1);
+	  else
+	    col ++;
+	  for (ptr = current->value.cdata; *ptr; ptr ++)
+	  {
+	    if ((*putc_cb)(*ptr, p) < 0)
+	      return (-1);
+	    else if (*ptr == '\n')
+	      col = 0;
+	    else
+	      col ++;
+	  }
+	  if ((*putc_cb)(']', p) < 0)
+	    return (-1);
+	  else
+	    col ++;
+	  if ((*putc_cb)(']', p) < 0)
+	    return (-1);
+	  else
+	    col ++;
+	  if ((*putc_cb)('>', p) < 0)
+	    return (-1);
+	  else
+	    col ++;
+
+	  col = mxml_write_ws(current, p, cb, MXML_WS_AFTER_OPEN, col, putc_cb);
+          break;
+
+      case MXML_TYPE_COMMENT :
+	  col = mxml_write_ws(current, p, cb, MXML_WS_BEFORE_OPEN, col, putc_cb);
+
+	  if ((*putc_cb)('<', p) < 0)
+	    return (-1);
+	  else
+	    col ++;
+	  if ((*putc_cb)('!', p) < 0)
+	    return (-1);
+	  else
+	    col ++;
+	  if ((*putc_cb)('-', p) < 0)
+	    return (-1);
+	  else
+	    col ++;
+	  if ((*putc_cb)('-', p) < 0)
+	    return (-1);
+	  else
+	    col ++;
+	  for (ptr = current->value.comment; *ptr; ptr ++)
+	  {
+	    if ((*putc_cb)(*ptr, p) < 0)
+	      return (-1);
+	    else if (*ptr == '\n')
+	      col = 0;
+	    else
+	      col ++;
+	  }
+	  if ((*putc_cb)('-', p) < 0)
+	    return (-1);
+	  else
+	    col ++;
+	  if ((*putc_cb)('-', p) < 0)
+	    return (-1);
+	  else
+	    col ++;
+	  if ((*putc_cb)('>', p) < 0)
+	    return (-1);
+	  else
+	    col ++;
+
+	  col = mxml_write_ws(current, p, cb, MXML_WS_AFTER_OPEN, col, putc_cb);
+          break;
+
+      case MXML_TYPE_DECLARATION :
+	  col = mxml_write_ws(current, p, cb, MXML_WS_BEFORE_OPEN, col, putc_cb);
+
+	  if ((*putc_cb)('<', p) < 0)
+	    return (-1);
+	  else
+	    col ++;
+	  if ((*putc_cb)('!', p) < 0)
+	    return (-1);
+	  else
+	    col ++;
+	  for (ptr = current->value.declaration; *ptr; ptr ++)
+	  {
+	    if ((*putc_cb)(*ptr, p) < 0)
+	      return (-1);
+	    else if (*ptr == '\n')
+	      col = 0;
+	    else
+	      col ++;
+	  }
+	  if ((*putc_cb)('>', p) < 0)
+	    return (-1);
+	  else
+	    col ++;
+
+	  col = mxml_write_ws(current, p, cb, MXML_WS_AFTER_OPEN, col, putc_cb);
+          break;
+
+      case MXML_TYPE_DIRECTIVE :
+	  col = mxml_write_ws(current, p, cb, MXML_WS_BEFORE_OPEN, col, putc_cb);
+
+	  if ((*putc_cb)('<', p) < 0)
+	    return (-1);
+	  else
+	    col ++;
+	  if ((*putc_cb)('?', p) < 0)
+	    return (-1);
+	  else
+	    col ++;
+	  for (ptr = current->value.directive; *ptr; ptr ++)
+	  {
+	    if ((*putc_cb)(*ptr, p) < 0)
+	      return (-1);
+	    else if (*ptr == '\n')
+	      col = 0;
+	    else
+	      col ++;
+	  }
+	  if ((*putc_cb)('?', p) < 0)
+	    return (-1);
+	  else
+	    col ++;
+	  if ((*putc_cb)('>', p) < 0)
+	    return (-1);
+	  else
+	    col ++;
+
+	  col = mxml_write_ws(current, p, cb, MXML_WS_AFTER_OPEN, col, putc_cb);
+          break;
+
       case MXML_TYPE_ELEMENT :
 	  col = mxml_write_ws(current, p, cb, MXML_WS_BEFORE_OPEN, col, putc_cb);
 
 	  if ((*putc_cb)('<', p) < 0)
 	    return (-1);
-	  if (current->value.element.name[0] == '?' || !strncmp(current->value.element.name, "!--", 3))
-	  {
-	    // Comments and processing instructions do not use character entities.
-	    const char	*ptr;		// Pointer into name
-
-	    for (ptr = current->value.element.name; *ptr; ptr ++)
-	      if ((*putc_cb)(*ptr, p) < 0)
-		return (-1);
-	  }
-	  else if (!strncmp(current->value.element.name, "![CDATA[", 8))
-	  {
-	    // CDATA elements do not use character entities, but also need the
-	    // "]]" terminator added at the end.
-	    const char	*ptr;		// Pointer into name
-
-	    for (ptr = current->value.element.name; *ptr; ptr ++)
-	      if ((*putc_cb)(*ptr, p) < 0)
-		return (-1);
-
-            if ((*putc_cb)(']', p) < 0)
-              return (-1);
-            if ((*putc_cb)(']', p) < 0)
-              return (-1);
-	  }
 	  else if (mxml_write_name(current->value.element.name, p, putc_cb) < 0)
-	  {
 	    return (-1);
-	  }
 
 	  col += strlen(current->value.element.name) + 1;
 
@@ -2488,27 +2633,14 @@ mxml_write_node(mxml_node_t     *node,	// I - Node to write
 
 	    col = mxml_write_ws(current, p, cb, MXML_WS_AFTER_OPEN, col, putc_cb);
 	  }
-	  else if (current->value.element.name[0] == '!' || current->value.element.name[0] == '?')
-	  {
-	    // The ? and ! elements are special-cases...
-	    if ((*putc_cb)('>', p) < 0)
-	      return (-1);
-	    else
-	      col ++;
-
-	    col = mxml_write_ws(current, p, cb, MXML_WS_AFTER_OPEN, col, putc_cb);
-	  }
 	  else
 	  {
-	    if ((*putc_cb)(' ', p) < 0)
-	      return (-1);
 	    if ((*putc_cb)('/', p) < 0)
 	      return (-1);
 	    if ((*putc_cb)('>', p) < 0)
 	      return (-1);
 
-	    col += 3;
-
+	    col += 2;
 	    col = mxml_write_ws(current, p, cb, MXML_WS_AFTER_OPEN, col, putc_cb);
 	  }
 	  break;
@@ -2533,7 +2665,7 @@ mxml_write_node(mxml_node_t     *node,	// I - Node to write
 	    }
 	  }
 
-	  snprintf(s, sizeof(s), "%d", current->value.integer);
+	  snprintf(s, sizeof(s), "%ld", current->value.integer);
 	  if (mxml_write_string(s, p, putc_cb) < 0)
 	    return (-1);
 
@@ -2643,10 +2775,10 @@ mxml_write_node(mxml_node_t     *node,	// I - Node to write
 	  if (current == node || !current->parent)
 	    break;
 
-	  // The ? and ! elements are special-cases and have no end tags...
+	  // Declarations and directives have no end tags...
 	  current = current->parent;
 
-	  if (current->value.element.name[0] != '!' && current->value.element.name[0] != '?')
+	  if (current->type == MXML_TYPE_ELEMENT)
 	  {
 	    col = mxml_write_ws(current, p, cb, MXML_WS_BEFORE_CLOSE, col, putc_cb);
 

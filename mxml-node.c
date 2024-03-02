@@ -170,7 +170,7 @@ mxmlDelete(mxml_node_t *node)		// I - Node to delete
 // reference count.
 //
 
-int					// O - Reference count
+size_t					// O - Reference count
 mxmlGetRefCount(mxml_node_t *node)	// I - Node
 {
   // Range check input...
@@ -206,18 +206,129 @@ mxmlNewCDATA(mxml_node_t *parent,	// I - Parent node or `MXML_NO_PARENT`
     return (NULL);
 
   // Create the node and set the name value...
-  if ((node = mxml_new(parent, MXML_TYPE_ELEMENT)) != NULL)
+  if ((node = mxml_new(parent, MXML_TYPE_CDATA)) != NULL)
   {
-    size_t	datalen = strlen(data);	// Length of data
-
-    if ((node->value.element.name = malloc(datalen + 9)) == NULL)
+    if ((node->value.cdata = strdup(data)) == NULL)
     {
       mxml_error("Unable to allocate memory for CDATA.");
       mxmlDelete(node);
       return (NULL);
     }
+  }
 
-    snprintf(node->value.element.name, datalen + 9, "![CDATA[%s", data);
+  return (node);
+}
+
+
+//
+// 'mxmlNewCDATAf()' - Create a new formatted CDATA node.
+//
+// The new CDATA node is added to the end of the specified parent's
+// child list.  The constant `MXML_NO_PARENT` can be used to specify that
+// the new opaque string node has no parent.  The format string must be
+// nul-terminated and is formatted into the new node.
+//
+
+mxml_node_t *				// O - New node
+mxmlNewCDATAf(mxml_node_t *parent,	// I - Parent node or `MXML_NO_PARENT`
+              const char  *format,	// I - Printf-style format string
+	      ...)			// I - Additional args as needed
+{
+  mxml_node_t	*node;			// New node
+  va_list	ap;			// Pointer to arguments
+  char		buffer[16384];		// Format buffer
+
+
+  MXML_DEBUG("mxmlNewCDATAf(parent=%p, format=\"%s\", ...)\n", parent, format ? format : "(null)");
+
+  // Range check input...
+  if (!format)
+    return (NULL);
+
+  // Create the node and set the text value...
+  if ((node = mxml_new(parent, MXML_TYPE_CDATA)) != NULL)
+  {
+    va_start(ap, format);
+    vsnprintf(buffer, sizeof(buffer), format, ap);
+    va_end(ap);
+
+    node->value.cdata = strdup(buffer);
+  }
+
+  return (node);
+}
+
+
+//
+// 'mxmlNewComment()' - Create a new comment node.
+//
+// The new comment node is added to the end of the specified parent's child
+// list.  The constant `MXML_NO_PARENT` can be used to specify that the new
+// comment node has no parent.  The comment string must be nul-terminated and
+// is copied into the new node.
+//
+
+mxml_node_t *				// O - New node
+mxmlNewComment(mxml_node_t *parent,	// I - Parent node or `MXML_NO_PARENT`
+	       const char  *comment)	// I - Comment string
+{
+  mxml_node_t	*node;			// New node
+
+
+  MXML_DEBUG("mxmlNewComment(parent=%p, comment=\"%s\")\n", parent, comment ? comment : "(null)");
+
+  // Range check input...
+  if (!comment)
+    return (NULL);
+
+  // Create the node and set the name value...
+  if ((node = mxml_new(parent, MXML_TYPE_COMMENT)) != NULL)
+  {
+    if ((node->value.comment = strdup(comment)) == NULL)
+    {
+      mxml_error("Unable to allocate memory for comment.");
+      mxmlDelete(node);
+      return (NULL);
+    }
+  }
+
+  return (node);
+}
+
+
+//
+// 'mxmlNewCommentf()' - Create a new formatted comment string node.
+//
+// The new comment string node is added to the end of the specified parent's
+// child list.  The constant `MXML_NO_PARENT` can be used to specify that
+// the new opaque string node has no parent.  The format string must be
+// nul-terminated and is formatted into the new node.
+//
+
+mxml_node_t *				// O - New node
+mxmlNewCommentf(mxml_node_t *parent,	// I - Parent node or `MXML_NO_PARENT`
+                const char  *format,	// I - Printf-style format string
+	        ...)			// I - Additional args as needed
+{
+  mxml_node_t	*node;			// New node
+  va_list	ap;			// Pointer to arguments
+  char		buffer[16384];		// Format buffer
+
+
+  MXML_DEBUG("mxmlNewCommentf(parent=%p, format=\"%s\", ...)\n", parent, format ? format : "(null)");
+
+  // Range check input...
+  if (!format)
+    return (NULL);
+
+  // Create the node and set the text value...
+  if ((node = mxml_new(parent, MXML_TYPE_COMMENT)) != NULL)
+  {
+    va_start(ap, format);
+    vsnprintf(buffer, sizeof(buffer), format, ap);
+    va_end(ap);
+
+    node->value.comment = strdup(buffer);
   }
 
   return (node);
@@ -249,6 +360,160 @@ mxmlNewCustom(
   {
     node->value.custom.data    = data;
     node->value.custom.destroy = destroy;
+  }
+
+  return (node);
+}
+
+
+//
+// 'mxmlNewDeclaration()' - Create a new declaraction node.
+//
+// The new declaration node is added to the end of the specified parent's child
+// list.  The constant `MXML_NO_PARENT` can be used to specify that the new
+// declaration node has no parent.  The declaration string must be nul-
+// terminated and is copied into the new node.
+//
+
+mxml_node_t *				// O - New node
+mxmlNewDeclaration(
+    mxml_node_t *parent,		// I - Parent node or `MXML_NO_PARENT`
+    const char  *declaration)		// I - Declaration string
+{
+  mxml_node_t	*node;			// New node
+
+
+  MXML_DEBUG("mxmlNewDeclaration(parent=%p, declaration=\"%s\")\n", parent, declaration ? declaration : "(null)");
+
+  // Range check input...
+  if (!declaration)
+    return (NULL);
+
+  // Create the node and set the name value...
+  if ((node = mxml_new(parent, MXML_TYPE_DECLARATION)) != NULL)
+  {
+    if ((node->value.declaration = strdup(declaration)) == NULL)
+    {
+      mxml_error("Unable to allocate memory for declaration.");
+      mxmlDelete(node);
+      return (NULL);
+    }
+  }
+
+  return (node);
+}
+
+
+//
+// 'mxmlNewDeclarationf()' - Create a new formatted declaration node.
+//
+// The new declaration node is added to the end of the specified parent's
+// child list.  The constant `MXML_NO_PARENT` can be used to specify that
+// the new opaque string node has no parent.  The format string must be
+// nul-terminated and is formatted into the new node.
+//
+
+mxml_node_t *				// O - New node
+mxmlNewDeclarationf(
+    mxml_node_t *parent,		// I - Parent node or `MXML_NO_PARENT`
+    const char  *format,		// I - Printf-style format string
+    ...)				// I - Additional args as needed
+{
+  mxml_node_t	*node;			// New node
+  va_list	ap;			// Pointer to arguments
+  char		buffer[16384];		// Format buffer
+
+
+  MXML_DEBUG("mxmlNewDeclarationf(parent=%p, format=\"%s\", ...)\n", parent, format ? format : "(null)");
+
+  // Range check input...
+  if (!format)
+    return (NULL);
+
+  // Create the node and set the text value...
+  if ((node = mxml_new(parent, MXML_TYPE_DECLARATION)) != NULL)
+  {
+    va_start(ap, format);
+    vsnprintf(buffer, sizeof(buffer), format, ap);
+    va_end(ap);
+
+    node->value.declaration = strdup(buffer);
+  }
+
+  return (node);
+}
+
+
+//
+// 'mxmlNewDirective()' - Create a new processing instruction node.
+//
+// The new processing instruction node is added to the end of the specified
+// parent's child list.  The constant `MXML_NO_PARENT` can be used to specify
+// that the new processing instruction node has no parent.  The data string must
+// be nul-terminated and is copied into the new node.
+//
+
+mxml_node_t *				// O - New node
+mxmlNewDirective(mxml_node_t *parent,	// I - Parent node or `MXML_NO_PARENT`
+	         const char  *directive)// I - Directive string
+{
+  mxml_node_t	*node;			// New node
+
+
+  MXML_DEBUG("mxmlNewDirective(parent=%p, directive=\"%s\")\n", parent, directive ? directive : "(null)");
+
+  // Range check input...
+  if (!directive)
+    return (NULL);
+
+  // Create the node and set the name value...
+  if ((node = mxml_new(parent, MXML_TYPE_DIRECTIVE)) != NULL)
+  {
+    if ((node->value.directive = strdup(directive)) == NULL)
+    {
+      mxml_error("Unable to allocate memory for processing instruction.");
+      mxmlDelete(node);
+      return (NULL);
+    }
+  }
+
+  return (node);
+}
+
+
+//
+// 'mxmlNewDirectivef()' - Create a new formatted processing instruction node.
+//
+// The new processing instruction node is added to the end of the specified parent's
+// child list.  The constant `MXML_NO_PARENT` can be used to specify that
+// the new opaque string node has no parent.  The format string must be
+// nul-terminated and is formatted into the new node.
+//
+
+mxml_node_t *				// O - New node
+mxmlNewDirectivef(mxml_node_t *parent,	// I - Parent node or `MXML_NO_PARENT`
+                  const char  *format,	// I - Printf-style format string
+	          ...)			// I - Additional args as needed
+{
+  mxml_node_t	*node;			// New node
+  va_list	ap;			// Pointer to arguments
+  char		buffer[16384];		// Format buffer
+
+
+  MXML_DEBUG("mxmlNewDirectivef(parent=%p, format=\"%s\", ...)\n", parent, format ? format : "(null)");
+
+  // Range check input...
+  if (!format)
+    return (NULL);
+
+  // Create the node and set the text value...
+  if ((node = mxml_new(parent, MXML_TYPE_DIRECTIVE)) != NULL)
+  {
+    va_start(ap, format);
+    vsnprintf(buffer, sizeof(buffer), format, ap);
+    va_end(ap);
+
+    node->value.directive = strdup(buffer);
   }
 
   return (node);
@@ -294,12 +559,12 @@ mxmlNewElement(mxml_node_t *parent,	// I - Parent node or `MXML_NO_PARENT`
 
 mxml_node_t *				// O - New node
 mxmlNewInteger(mxml_node_t *parent,	// I - Parent node or `MXML_NO_PARENT`
-               int         integer)	// I - Integer value
+               long        integer)	// I - Integer value
 {
   mxml_node_t	*node;			// New node
 
 
-  MXML_DEBUG("mxmlNewInteger(parent=%p, integer=%d)\n", parent, integer);
+  MXML_DEBUG("mxmlNewInteger(parent=%p, integer=%ld)\n", parent, integer);
 
   // Create the node and set the element name...
   if ((node = mxml_new(parent, MXML_TYPE_INTEGER)) != NULL)
@@ -415,13 +680,13 @@ mxmlNewReal(mxml_node_t *parent,	// I - Parent node or `MXML_NO_PARENT`
 
 mxml_node_t *				// O - New node
 mxmlNewText(mxml_node_t *parent,	// I - Parent node or `MXML_NO_PARENT`
-            int         whitespace,	// I - 1 = leading whitespace, 0 = no whitespace
+            bool        whitespace,	// I - `true` = leading whitespace, `false` = no whitespace
 	    const char  *string)	// I - String
 {
   mxml_node_t	*node;			// New node
 
 
-  MXML_DEBUG("mxmlNewText(parent=%p, whitespace=%d, string=\"%s\")\n", parent, whitespace, string ? string : "(null)");
+  MXML_DEBUG("mxmlNewText(parent=%p, whitespace=%s, string=\"%s\")\n", parent, whitespace ? "true" : "false", string ? string : "(null)");
 
   // Range check input...
   if (!string)
@@ -450,7 +715,7 @@ mxmlNewText(mxml_node_t *parent,	// I - Parent node or `MXML_NO_PARENT`
 
 mxml_node_t *				// O - New node
 mxmlNewTextf(mxml_node_t *parent,	// I - Parent node or `MXML_NO_PARENT`
-             int         whitespace,	// I - 1 = leading whitespace, 0 = no whitespace
+             bool        whitespace,	// I - `true` = leading whitespace, `false` = no whitespace
 	     const char  *format,	// I - Printf-style format string
 	     ...)			// I - Additional args as needed
 {
@@ -459,7 +724,7 @@ mxmlNewTextf(mxml_node_t *parent,	// I - Parent node or `MXML_NO_PARENT`
   char		buffer[16384];		// Format buffer
 
 
-  MXML_DEBUG("mxmlNewTextf(parent=%p, whitespace=%d, format=\"%s\", ...)\n", parent, whitespace, format ? format : "(null)");
+  MXML_DEBUG("mxmlNewTextf(parent=%p, whitespace=%s, format=\"%s\", ...)\n", parent, whitespace ? "true" : "false", format ? format : "(null)");
 
   // Range check input...
   if (!format)
@@ -517,18 +782,18 @@ mxmlRemove(mxml_node_t *node)		// I - Node to remove
 // 'mxmlNewXML()' - Create a new XML document tree.
 //
 // The "version" argument specifies the version number to put in the
-// ?xml element node. If `NULL`, version "1.0" is assumed.
+// ?xml directive node. If `NULL`, version "1.0" is assumed.
 //
 
 mxml_node_t *				// O - New ?xml node
 mxmlNewXML(const char *version)		// I - Version number to use
 {
-  char	element[1024];			// Element text
+  char	directive[1024];		// Directive text
 
 
-  snprintf(element, sizeof(element), "?xml version=\"%s\" encoding=\"utf-8\"?", version ? version : "1.0");
+  snprintf(directive, sizeof(directive), "xml version=\"%s\" encoding=\"utf-8\"", version ? version : "1.0");
 
-  return (mxmlNewElement(NULL, element));
+  return (mxmlNewDirective(NULL, directive));
 }
 
 
@@ -589,6 +854,18 @@ mxml_free(mxml_node_t *node)		// I - Node
 
   switch (node->type)
   {
+    case MXML_TYPE_CDATA :
+	free(node->value.cdata);
+        break;
+    case MXML_TYPE_COMMENT :
+	free(node->value.comment);
+        break;
+    case MXML_TYPE_DECLARATION :
+	free(node->value.declaration);
+        break;
+    case MXML_TYPE_DIRECTIVE :
+	free(node->value.directive);
+        break;
     case MXML_TYPE_ELEMENT :
 	free(node->value.element.name);
 

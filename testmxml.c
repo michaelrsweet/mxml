@@ -28,7 +28,7 @@
 // Globals...
 //
 
-int		event_counts[6];
+int		event_counts[7];
 
 
 //
@@ -99,7 +99,7 @@ main(int  argc,				// I - Number of command-line args
 
   mxmlNewInteger(tree, 123);
   mxmlNewOpaque(tree, "opaque");
-  mxmlNewReal(tree, 123.4f);
+  mxmlNewReal(tree, 123.4);
   mxmlNewText(tree, 1, "text");
 
   mxmlLoadString(tree, "<group type='string'>string string string</group>", MXML_NO_CALLBACK);
@@ -141,7 +141,7 @@ main(int  argc,				// I - Number of command-line args
 
   if (node->value.integer != 123)
   {
-    fprintf(stderr, "ERROR: First child value is %d, expected 123.\n", node->value.integer);
+    fprintf(stderr, "ERROR: First child value is %ld, expected 123.\n", node->value.integer);
     mxmlDelete(tree);
     return (1);
   }
@@ -185,7 +185,7 @@ main(int  argc,				// I - Number of command-line args
     return (1);
   }
 
-  if (node->value.real != 123.4f)
+  if (node->value.real != 123.4)
   {
     fprintf(stderr, "ERROR: Third child value is %f, expected 123.4.\n", node->value.real);
     mxmlDelete(tree);
@@ -286,9 +286,9 @@ main(int  argc,				// I - Number of command-line args
     return (1);
   }
 
-  if (ind->num_nodes != 13)
+  if (ind->num_nodes != 10)
   {
-    fprintf(stderr, "ERROR: Index of all nodes contains %d nodes; expected 13.\n", ind->num_nodes);
+    fprintf(stderr, "ERROR: Index of all nodes contains %lu nodes; expected 10.\n", (unsigned long)ind->num_nodes);
     mxmlIndexDelete(ind);
     mxmlDelete(tree);
     return (1);
@@ -315,7 +315,7 @@ main(int  argc,				// I - Number of command-line args
 
   if (ind->num_nodes != 4)
   {
-    fprintf(stderr, "ERROR: Index of groups contains %d nodes; expected 4.\n", ind->num_nodes);
+    fprintf(stderr, "ERROR: Index of groups contains %lu nodes; expected 4.\n", (unsigned long)ind->num_nodes);
     mxmlIndexDelete(ind);
     mxmlDelete(tree);
     return (1);
@@ -342,7 +342,7 @@ main(int  argc,				// I - Number of command-line args
 
   if (ind->num_nodes != 3)
   {
-    fprintf(stderr, "ERROR: Index of type attributes contains %d nodes; expected 3.\n", ind->num_nodes);
+    fprintf(stderr, "ERROR: Index of type attributes contains %lu nodes; expected 3.\n", (unsigned long)ind->num_nodes);
     mxmlIndexDelete(ind);
     mxmlDelete(tree);
     return (1);
@@ -369,7 +369,7 @@ main(int  argc,				// I - Number of command-line args
 
   if (ind->num_nodes != 3)
   {
-    fprintf(stderr, "ERROR: Index of elements and attributes contains %d nodes; expected 3.\n", ind->num_nodes);
+    fprintf(stderr, "ERROR: Index of elements and attributes contains %lu nodes; expected 3.\n", (unsigned long)ind->num_nodes);
     mxmlIndexDelete(ind);
     mxmlDelete(tree);
     return (1);
@@ -602,6 +602,12 @@ main(int  argc,				// I - Number of command-line args
       return (1);
     }
 
+    if (event_counts[MXML_SAX_EVENT_DECLARATION] != 0)
+    {
+      fprintf(stderr, "MXML_SAX_EVENT_DECLARATION seen %d times, expected 0 times.\n", event_counts[MXML_SAX_EVENT_DECLARATION]);
+      return (1);
+    }
+
     if (event_counts[MXML_SAX_EVENT_DIRECTIVE] != 1)
     {
       fprintf(stderr, "MXML_SAX_EVENT_DIRECTIVE seen %d times, expected 1 times.\n", event_counts[MXML_SAX_EVENT_DIRECTIVE]);
@@ -657,7 +663,8 @@ sax_cb(mxml_node_t      *node,		// I - Current node
     "MXML_SAX_EVENT_CDATA",			// CDATA node
     "MXML_SAX_EVENT_COMMENT",			// Comment node
     "MXML_SAX_EVENT_DATA",			// Data node
-    "MXML_SAX_EVENT_DIRECTIVE",		// Processing directive node
+    "MXML_SAX_EVENT_DECLARATION",		// Declaration node
+    "MXML_SAX_EVENT_DIRECTIVE",			// Processing directive node
     "MXML_SAX_EVENT_ELEMENT_CLOSE",		// Element closed
     "MXML_SAX_EVENT_ELEMENT_OPEN"		// Element opened
   };
@@ -716,7 +723,8 @@ whitespace_cb(mxml_node_t *node,	// I - Element node
 
   // We can conditionally break to a new line before or after any element.
   // These are just common HTML elements...
-  name = node->value.element.name;
+  if ((name = mxmlGetElement(node)) == NULL)
+    name = "";
 
   if (!strcmp(name, "html") || !strcmp(name, "head") || !strcmp(name, "body") || !strcmp(name, "pre") || !strcmp(name, "p") || !strcmp(name, "h1") || !strcmp(name, "h2") || !strcmp(name, "h3") || !strcmp(name, "h4") || !strcmp(name, "h5") || !strcmp(name, "h6"))
   {
@@ -737,7 +745,7 @@ whitespace_cb(mxml_node_t *node,	// I - Element node
     else if (where == MXML_WS_AFTER_CLOSE)
       return ("\n");
   }
-  else if (!strncmp(name, "?xml", 4))
+  else if (mxmlGetType(node) == MXML_TYPE_DIRECTIVE)
   {
     if (where == MXML_WS_AFTER_OPEN)
       return ("\n");
@@ -757,7 +765,7 @@ whitespace_cb(mxml_node_t *node,	// I - Element node
   }
   else if (where == MXML_WS_AFTER_CLOSE || ((!strcmp(name, "group") || !strcmp(name, "option") || !strcmp(name, "choice")) && where == MXML_WS_AFTER_OPEN))
     return ("\n");
-  else if (where == MXML_WS_AFTER_OPEN && !node->child)
+  else if (where == MXML_WS_AFTER_OPEN && !mxmlGetFirstChild(node))
     return ("\n");
 
   // Return NULL for no added whitespace...

@@ -1,7 +1,10 @@
 # Changes in Mini-XML 4.0.0
 
 - Now require C99 support.
+- Added new `MXML_TYPE_CDATA`, `MXML_TYPE_COMMENT`, `MXML_TYPE_DECLARATION`, and
+  `MXML_TYPE_DIRECTIVE` node types (Issue #250)
 - Renamed `mxml_type_t` enumerations to `MXML_TYPE_xxx` (Issue #251)
+- Updated APIs to use bool type instead of an int representing a boolean value.
 
 
 # Changes in Mini-XML 3.3.2

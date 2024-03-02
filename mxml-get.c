@@ -22,11 +22,29 @@ const char *				// O - CDATA value or `NULL`
 mxmlGetCDATA(mxml_node_t *node)		// I - Node to get
 {
   // Range check input...
-  if (!node || node->type != MXML_TYPE_ELEMENT || strncmp(node->value.element.name, "![CDATA[", 8))
+  if (!node || node->type != MXML_TYPE_CDATA)
     return (NULL);
 
-  // Return the text following the CDATA declaration...
-  return (node->value.element.name + 8);
+  // Return the CDATA string...
+  return (node->value.cdata);
+}
+
+
+//
+// 'mxmlGetComment()' - Get the value for a comment node.
+//
+// `NULL` is returned if the node is not a comment.
+//
+
+const char *				// O - Comment value or `NULL`
+mxmlGetComment(mxml_node_t *node)	// I - Node to get
+{
+  // Range check input...
+  if (!node || node->type != MXML_TYPE_COMMENT)
+    return (NULL);
+
+  // Return the comment string...
+  return (node->value.comment);
 }
 
 
@@ -51,6 +69,42 @@ mxmlGetCustom(mxml_node_t *node)	// I - Node to get
     return (node->child->value.custom.data);
   else
     return (NULL);
+}
+
+
+//
+// 'mxmlGetDeclaration()' - Get the value for a declaration node.
+//
+// `NULL` is returned if the node is not a declaration.
+//
+
+const char *				// O - Declaraction value or `NULL`
+mxmlGetDeclaration(mxml_node_t *node)	// I - Node to get
+{
+  // Range check input...
+  if (!node || node->type != MXML_TYPE_DECLARATION)
+    return (NULL);
+
+  // Return the comment string...
+  return (node->value.declaration);
+}
+
+
+//
+// 'mxmlGetDirective()' - Get the value for a processing instruction node.
+//
+// `NULL` is returned if the node is not a processing instruction.
+//
+
+const char *				// O - Comment value or `NULL`
+mxmlGetDirective(mxml_node_t *node)	// I - Node to get
+{
+  // Range check input...
+  if (!node || node->type != MXML_TYPE_DIRECTIVE)
+    return (NULL);
+
+  // Return the comment string...
+  return (node->value.directive);
 }
 
 
@@ -95,10 +149,10 @@ mxmlGetFirstChild(mxml_node_t *node)	// I - Node to get
 // 'mxmlGetInteger()' - Get the integer value from the specified node or its
 //                      first child.
 //
-// 0 is returned if the node (or its first child) is not an integer value node.
+// `0` is returned if the node (or its first child) is not an integer value node.
 //
 
-int					// O - Integer value or 0
+long					// O - Integer value or `0`
 mxmlGetInteger(mxml_node_t *node)	// I - Node to get
 {
   // Range check input...
@@ -250,13 +304,13 @@ mxmlGetReal(mxml_node_t *node)		// I - Node to get
 
 const char *				// O - Text string or `NULL`
 mxmlGetText(mxml_node_t *node,		// I - Node to get
-            int         *whitespace)	// O - 1 if string is preceded by whitespace, 0 otherwise
+            bool        *whitespace)	// O - `true` if string is preceded by whitespace, `false` otherwise
 {
   // Range check input...
   if (!node)
   {
     if (whitespace)
-      *whitespace = 0;
+      *whitespace = false;
 
     return (NULL);
   }
@@ -279,7 +333,7 @@ mxmlGetText(mxml_node_t *node,		// I - Node to get
   else
   {
     if (whitespace)
-      *whitespace = 0;
+      *whitespace = false;
 
     return (NULL);
   }

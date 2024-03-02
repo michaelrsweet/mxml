@@ -16,7 +16,7 @@
 // 'mxmlEntityAddCallback()' - Add a callback to convert entities to Unicode.
 //
 
-int					// O - 0 on success, -1 on failure
+bool					// O - `true` on success, `false` on failure
 mxmlEntityAddCallback(
     mxml_entity_cb_t cb)		// I - Callback function to add
 {
@@ -24,18 +24,18 @@ mxmlEntityAddCallback(
 					// Global data
 
 
-  if (global->num_entity_cbs < (int)(sizeof(global->entity_cbs) / sizeof(global->entity_cbs[0])))
+  if (global->num_entity_cbs < (sizeof(global->entity_cbs) / sizeof(global->entity_cbs[0])))
   {
     global->entity_cbs[global->num_entity_cbs] = cb;
     global->num_entity_cbs ++;
 
-    return (0);
+    return (true);
   }
   else
   {
     mxml_error("Unable to add entity callback!");
 
-    return (-1);
+    return (false);
   }
 }
 
@@ -72,14 +72,14 @@ mxmlEntityGetName(int val)		// I - Character value
 //
 // 'mxmlEntityGetValue()' - Get the character corresponding to a named entity.
 //
-// The entity name can also be a numeric constant. -1 is returned if the
+// The entity name can also be a numeric constant. `-1` is returned if the
 // name is not known.
 //
 
-int					// O - Character value or -1 on error
+int					// O - Character value or `-1` on error
 mxmlEntityGetValue(const char *name)	// I - Entity name
 {
-  int		i;			// Looping var
+  size_t	i;			// Looping var
   int		ch;			// Character value
   _mxml_global_t *global = _mxml_global();
 					// Global data
@@ -103,7 +103,7 @@ void
 mxmlEntityRemoveCallback(
     mxml_entity_cb_t cb)		// I - Callback function to remove
 {
-  int		i;			// Looping var
+  size_t	i;			// Looping var
   _mxml_global_t *global = _mxml_global();
 					// Global data
 
@@ -131,10 +131,10 @@ mxmlEntityRemoveCallback(
 int					// O - Unicode value or -1
 _mxml_entity_cb(const char *name)	// I - Entity name
 {
-  int	diff,				// Difference between names
-	current,			// Current entity in search
-	first,				// First entity in search
-	last;				// Last entity in search
+  int		diff;			// Difference between names
+  size_t	current,		// Current entity in search
+		first,			// First entity in search
+		last;			// Last entity in search
   static const struct
   {
     const char	*name;			// Entity name
@@ -403,7 +403,7 @@ _mxml_entity_cb(const char *name)	// I - Entity name
 
   // Do a binary search for the named entity...
   first = 0;
-  last  = (int)(sizeof(entities) / sizeof(entities[0]) - 1);
+  last  = sizeof(entities) / sizeof(entities[0]) - 1;
 
   while ((last - first) > 1)
   {

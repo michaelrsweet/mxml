@@ -19,7 +19,10 @@ EXPORTS
  mxmlFindElement
  mxmlFindPath
  mxmlGetCDATA
+ mxmlGetComment
  mxmlGetCustom
+ mxmlGetDeclaration
+ mxmlGetDirective
  mxmlGetElement
  mxmlGetFirstChild
  mxmlGetInteger
@@ -43,10 +46,18 @@ EXPORTS
  mxmlLoadFile
  mxmlLoadString
  mxmlNewCDATA
+ mxmlNewCDATAf
+ mxmlNewComment
+ mxmlNewCommentf
  mxmlNewCustom
+ mxmlNewDeclaration
+ mxmlNewDeclarationf
+ mxmlNewDirective
+ mxmlNewDirectivef
  mxmlNewElement
  mxmlNewInteger
  mxmlNewOpaque
+ mxmlNewOpaquef
  mxmlNewReal
  mxmlNewText
  mxmlNewTextf
@@ -62,12 +73,20 @@ EXPORTS
  mxmlSAXLoadFile
  mxmlSAXLoadString
  mxmlSetCDATA
+ mxmlSetCDATAf
+ mxmlSetComment
+ mxmlSetCommentf
  mxmlSetCustom
  mxmlSetCustomHandlers
+ mxmlSetDeclaration
+ mxmlSetDeclarationf
+ mxmlSetDirective
+ mxmlSetDirectivef
  mxmlSetElement
  mxmlSetErrorCallback
  mxmlSetInteger
  mxmlSetOpaque
+ mxmlSetOpaquef
  mxmlSetReal
  mxmlSetText
  mxmlSetTextf

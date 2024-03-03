@@ -105,7 +105,7 @@ typedef struct _mxml_node_s mxml_node_t;// An XML node.
 typedef struct _mxml_index_s mxml_index_t;
 					// An XML node index.
 
-typedef int (*mxml_custom_load_cb_t)(mxml_node_t *, const char *);
+typedef bool (*mxml_custom_load_cb_t)(mxml_node_t *, const char *);
 					// Custom data load callback function
 
 typedef char *(*mxml_custom_save_cb_t)(mxml_node_t *);
@@ -186,9 +186,9 @@ extern int		mxmlRelease(mxml_node_t *node);
 extern void		mxmlRemove(mxml_node_t *node);
 extern int		mxmlRetain(mxml_node_t *node);
 extern char		*mxmlSaveAllocString(mxml_node_t *node, mxml_save_cb_t cb);
-extern int		mxmlSaveFd(mxml_node_t *node, int fd, mxml_save_cb_t cb);
-extern int		mxmlSaveFile(mxml_node_t *node, FILE *fp, mxml_save_cb_t cb);
-extern int		mxmlSaveString(mxml_node_t *node, char *buffer, int bufsize, mxml_save_cb_t cb);
+extern bool		mxmlSaveFd(mxml_node_t *node, int fd, mxml_save_cb_t cb);
+extern bool		mxmlSaveFile(mxml_node_t *node, FILE *fp, mxml_save_cb_t cb);
+extern size_t		mxmlSaveString(mxml_node_t *node, char *buffer, size_t bufsize, mxml_save_cb_t cb);
 extern mxml_node_t	*mxmlSAXLoadFd(mxml_node_t *top, int fd, mxml_load_cb_t cb, mxml_sax_cb_t sax, void *sax_data);
 extern mxml_node_t	*mxmlSAXLoadFile(mxml_node_t *top, FILE *fp, mxml_load_cb_t cb, mxml_sax_cb_t sax, void *sax_data);
 extern mxml_node_t	*mxmlSAXLoadString(mxml_node_t *top, const char *s, mxml_load_cb_t cb, mxml_sax_cb_t sax, void *sax_data);

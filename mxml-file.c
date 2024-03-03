@@ -223,7 +223,7 @@ mxmlSaveAllocString(
 // element tags.
 //
 
-int					// O - 0 on success, -1 on error.
+bool					// O - `true` on success, `false` on error.
 mxmlSaveFd(mxml_node_t    *node,	// I - Node to write
            int            fd,		// I - File descriptor to write to
 	   mxml_save_cb_t cb)		// I - Whitespace callback or `MXML_NO_CALLBACK`
@@ -264,7 +264,7 @@ mxmlSaveFd(mxml_node_t    *node,	// I - Node to write
 // element tags.
 //
 
-int					// O - 0 on success, -1 on error.
+bool					// O - `true` on success, `false` on error.
 mxmlSaveFile(mxml_node_t    *node,	// I - Node to write
              FILE           *fp,	// I - File to write to
 	     mxml_save_cb_t cb)		// I - Whitespace callback or `MXML_NO_CALLBACK`
@@ -303,10 +303,10 @@ mxmlSaveFile(mxml_node_t    *node,	// I - Node to write
 // element tags.
 //
 
-int					// O - Size of string
+size_t					// O - Size of string
 mxmlSaveString(mxml_node_t    *node,	// I - Node to write
                char           *buffer,	// I - String buffer
-               int            bufsize,	// I - Size of string buffer
+               size_t         bufsize,	// I - Size of string buffer
                mxml_save_cb_t cb)	// I - Whitespace callback or `MXML_NO_CALLBACK`
 {
   int	col;				// Final column
@@ -337,7 +337,7 @@ mxmlSaveString(mxml_node_t    *node,	// I - Node to write
   }
 
   // Return the number of characters...
-  return ((int)(ptr[0] - buffer));
+  return ((size_t)(ptr[0] - buffer));
 }
 
 
@@ -1308,7 +1308,7 @@ mxml_load_data(
 	      // Use the callback to fill in the custom data...
               node = mxmlNewCustom(parent, NULL, NULL);
 
-	      if ((*global->custom_load_cb)(node, buffer))
+	      if (!(*global->custom_load_cb)(node, buffer))
 	      {
 	        mxml_error("Bad custom value '%s' in parent <%s> on line %d.", buffer, parent ? parent->value.element.name : "null", line);
 		mxmlDelete(node);

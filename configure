@@ -659,6 +659,8 @@ UNINSTALL_STATIC
 LIBMXML_STATIC
 LIBMXML
 INSTALL_STATIC
+MXML_PC
+LIBMXML_BASE
 ARFLAGS
 LN
 RMDIR
@@ -730,6 +732,7 @@ SHELL'
 ac_subst_files=''
 ac_user_opts='
 enable_option_checking
+enable_libmxml4_prefix
 enable_threads
 enable_static
 enable_shared
@@ -1370,6 +1373,8 @@ Optional Features:
   --disable-option-checking  ignore unrecognized --enable/--with options
   --disable-FEATURE       do not include FEATURE (same as --enable-FEATURE=no)
   --enable-FEATURE[=ARG]  include FEATURE [ARG=yes]
+  --disable-libmxml4-prefix
+                          do not add libmxml4 prefix to header/library files
   --disable-threads       disable multi-threading support, default=no
   --disable-static        do not install static library
   --disable-shared        do not install shared library
@@ -1379,7 +1384,7 @@ Optional Features:
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
   --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
-  --with-sanitizer        build with address, leak, memory, thread, or
+  --with-sanitizer=...    build with address, leak, memory, thread, or
                           undefined sanitizer, default=no
   --with-dsoflags=...     Specify additional DSOFLAGS
   --with-ldflags=...      Specify additional LDFLAGS
@@ -3974,6 +3979,33 @@ fi
 
 
 
+# Check whether --enable-libmxml4-prefix was given.
+if test ${enable_libmxml4_prefix+y}
+then :
+  enableval=$enable_libmxml4_prefix;
+fi
+
+
+if test x$enable_libmxml4_prefix != xno
+then :
+
+    MXML_PC="mxml4.pc"
+    INCLUDE_PREFIX="/libmxml4"
+    LIBMXML_BASE="libmxml4"
+    LINK_MXML="-lmxml4"
+
+else $as_nop
+
+    MXML_PC="mxml.pc"
+    INCLUDE_PREFIX=""
+    LIBMXML_BASE="libmxml"
+    LINK_MXML="-lmxml"
+
+fi
+
+
+
+
 
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for inline" >&5
 printf %s "checking for inline... " >&6; }
@@ -4272,32 +4304,32 @@ then :
 fi
 
 
-LIBMXML_STATIC="libmxml.a"
+LIBMXML_STATIC="$LIBMXML_BASE.a"
 if test x$enable_shared != xno
 then :
 
     case "$host_os_name" in #(
   linux* | gnu*) :
 
-	LIBMXML="libmxml.so.2"
+	LIBMXML="$LIBMXML_BASE.so.2"
 	DSO="\$(CC)"
 	DSOFLAGS="$DSOFLAGS -Wl,-soname,\`basename \$@\` -shared"
      ;; #(
   *bsd*) :
 
-	LIBMXML="libmxml.so.2"
+	LIBMXML="$LIBMXML_BASE.so.2"
 	DSO="\$(CC)"
 	DSOFLAGS="$DSOFLAGS -Wl,-soname,\`basename \$@\` -shared -lc"
      ;; #(
   darwin*) :
 
-	LIBMXML="libmxml.2.dylib"
+	LIBMXML="$LIBMXML_BASE.2.dylib"
 	DSO="\$(CC)"
 	DSOFLAGS="$DSOFLAGS -Wl,-no_warn_inits -dynamiclib -lc"
      ;; #(
   sunos*) :
 
-	LIBMXML="libmxml.so.2"
+	LIBMXML="$LIBMXML_BASE.so.2"
 	DSO="\$(CC)"
 	DSOFLAGS="$DSOFLAGS -Wl,-h,\`basename \$@\` -G"
      ;; #(
@@ -4305,15 +4337,15 @@ then :
 
 	{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 printf "%s\n" "yes" >&6; }
-	LIBMXML="libmxml2.dll"
+	LIBMXML="$LIBMXML_BASE.dll"
 	DSO="\$(CC)"
-	DSOFLAGS="$DSOFLAGS -shared -Wl,--out-implib,libmxml2.a,--no-undefined,--enable-runtime-pseudo-reloc"
+	DSOFLAGS="$DSOFLAGS -shared -Wl,--out-implib,$LIBMXML_BASE.a,--no-undefined,--enable-runtime-pseudo-reloc"
      ;; #(
   *) :
 
 	{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: Warning: Shared libraries may not work, trying -shared option." >&5
 printf "%s\n" "$as_me: Warning: Shared libraries may not work, trying -shared option." >&6;}
-	LIBMXML="libmxml.so.2"
+	LIBMXML="$LIBMXML_BASE.so.2"
 	DSO="\$(CC)"
 	DSOFLAGS="$DSOFLAGS -Wl,-soname,\`basename \$@\` -shared"
      ;; #(
@@ -4326,8 +4358,8 @@ then :
 
 	{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: Installing static libraries..." >&5
 printf "%s\n" "$as_me: Installing static libraries..." >&6;}
-	INSTALL_STATIC="install-libmxml.a"
-	UNINSTALL_STATIC="uninstall-libmxml.a"
+	INSTALL_STATIC="install-$LIBMXML_BASE.a"
+	UNINSTALL_STATIC="uninstall-$LIBMXML_BASE.a"
 
 else $as_nop
 
@@ -4339,7 +4371,7 @@ fi
 else $as_nop
 
     INSTALL_STATIC=""
-    LIBMXML="libmxml.a"
+    LIBMXML="$LIBMXML_BASE.a"
     UNINSTALL_STATIC=""
 
 fi
@@ -4635,36 +4667,24 @@ fi
 
 
 
+if test "$prefix" = NONE
+then :
 
+    # Default prefix isn't bound until AC_OUTPUT...
+    realprefix="/usr/local"
 
+else $as_nop
 
+    realprefix="$prefix"
 
+fi
 
+if test "$includedir" = NONE -o "$includedir" = "\${prefix}/include"
+then :
 
+    includedir="\${prefix}/include$INCLUDE_PREFIX"
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+fi
 
 
 if test "$build" = "$host"
@@ -4680,62 +4700,20 @@ fi
 
 
 
-if test "$prefix" = NONE
+if test "$includedir" != "/usr/include" -a "$includedir" != "/usr/local/include"
 then :
 
-    # Default prefix isn't bound until AC_OUTPUT...
-    realprefix="/usr/local"
+    PKGCONFIG_CFLAGS="-I\${includedir} $PKGCONFIG_CFLAGS"
 
 else $as_nop
 
-    realprefix="$prefix"
+    PKGCONFIG_CFLAGS=""
 
 fi
-
-if test "$datarootdir" = "\${prefix}/share"
-then :
-
-    if test "$prefix" = "/"
-then :
-
-	datarootdir="/usr/share"
-
-else $as_nop
-
-	datarootdir="$realprefix/share"
-
-fi
-
-fi
-
-if test "$datadir" = "\${prefix}/share"
-then :
-
-    if test "$prefix" = "/"
-then :
-
-	datadir="/usr/share"
-
-else $as_nop
-
-	datadir="$realprefix/share"
-
-fi
-
-elif test "$datadir" = "\${datarootdir}"
-then :
-
-    datadir="$datarootdir"
-
-fi
-
-
-PKGCONFIG_CFLAGS=""
-PKGCONFIG_LIBS="-lmxml"
+PKGCONFIG_LIBS="$LINK_MXML"
 if test "$realprefix" != "/usr" -a "$realprefix" != "/usr/local"
 then :
 
-    PKGCONFIG_CFLAGS="-I\${includedir}"
     PKGCONFIG_LIBS="-L\${libdir} $PKGCONFIG_LIBS"
 
 fi
@@ -4744,7 +4722,7 @@ fi
 
 
 
-ac_config_files="$ac_config_files Makefile mxml.pc"
+ac_config_files="$ac_config_files Makefile mxml4.pc"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -5433,7 +5411,7 @@ do
   case $ac_config_target in
     "config.h") CONFIG_HEADERS="$CONFIG_HEADERS config.h" ;;
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
-    "mxml.pc") CONFIG_FILES="$CONFIG_FILES mxml.pc" ;;
+    "mxml4.pc") CONFIG_FILES="$CONFIG_FILES mxml4.pc" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
   esac

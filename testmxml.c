@@ -35,7 +35,7 @@ int		event_counts[7];
 // Local functions...
 //
 
-void		sax_cb(mxml_node_t *node, mxml_sax_event_t event, void *data);
+bool		sax_cb(mxml_node_t *node, mxml_sax_event_t event, void *data);
 mxml_type_t	type_cb(mxml_node_t *node);
 const char	*whitespace_cb(mxml_node_t *node, int where);
 
@@ -653,7 +653,7 @@ main(int  argc,				// I - Number of command-line args
 // 'sax_cb()' - Process nodes via SAX.
 //
 
-void
+bool					// O - `true` to continue, `false` to stop
 sax_cb(mxml_node_t      *node,		// I - Current node
        mxml_sax_event_t event,		// I - SAX event
        void             *data)		// I - SAX user data
@@ -677,6 +677,8 @@ sax_cb(mxml_node_t      *node,		// I - Current node
     fprintf(stderr, "ERROR: SAX callback for event %s has NULL node.\n", events[event]);
 
   event_counts[event] ++;
+
+  return (true);
 }
 
 

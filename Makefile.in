@@ -55,7 +55,9 @@ INSTALL_MAN	=	$(INSTALL) -c -m 444
 #
 
 LIBMXML		=	@LIBMXML@
+LIBMXML_BASE	=	@LIBMXML_BASE@
 LIBMXML_STATIC	=	@LIBMXML_STATIC@
+MXML_PC		=	@MXML_PC@
 
 
 #
@@ -171,13 +173,13 @@ all:		$(TARGETS)
 clean:
 	echo Cleaning build files...
 	$(RM) $(OBJS) $(ALLTARGETS)
-	$(RM) mxml2.dll
-	$(RM) mxml2.lib
-	$(RM) libmxml.a
-	$(RM) libmxml.so
-	$(RM) libmxml.so.2
-	$(RM) libmxml.2.dylib
-	$(RM) libmxml.dylib
+	$(RM) mxml4.dll
+	$(RM) mxml4.lib
+	$(RM) libmxml4.a
+	$(RM) libmxml4.so
+	$(RM) libmxml4.so.1
+	$(RM) libmxml4.1.dylib
+	$(RM) libmxml4.dylib
 
 
 #
@@ -211,7 +213,7 @@ install:	$(TARGETS) install-$(LIBMXML) @INSTALL_STATIC@
 	$(INSTALL_DATA) mxml.h $(BUILDROOT)$(includedir)
 	echo Installing pkgconfig files in $(BUILDROOT)$(libdir)/pkgconfig...
 	$(INSTALL_DIR) $(BUILDROOT)$(libdir)/pkgconfig
-	$(INSTALL_DATA) mxml.pc $(BUILDROOT)$(libdir)/pkgconfig
+	$(INSTALL_DATA) mxml4.pc $(BUILDROOT)$(libdir)/pkgconfig/$(MXML_PC)
 	echo Installing man pages in $(BUILDROOT)$(mandir)...
 	$(INSTALL_DIR) $(BUILDROOT)$(mandir)/man3
 	$(INSTALL_MAN) doc/mxml.3 $(BUILDROOT)$(mandir)/man3/mxml.3
@@ -236,6 +238,27 @@ install-libmxml.2.dylib: libmxml.2.dylib
 	$(INSTALL_LIB) libmxml.2.dylib $(BUILDROOT)$(libdir)
 	$(RM) $(BUILDROOT)$(libdir)/libmxml.dylib
 	$(LN) libmxml.2.dylib $(BUILDROOT)$(libdir)/libmxml.dylib
+
+install-libmxml4.a:	libmxml4.a
+	echo Installing libmxml4.a to $(BUILDROOT)$(libdir)...
+	$(INSTALL_DIR) $(BUILDROOT)$(libdir)
+	$(INSTALL_LIB) libmxml4.a $(BUILDROOT)$(libdir)
+	$(RANLIB) $(BUILDROOT)$(libdir)/libmxml4.a
+
+install-libmxml4.so.2:	libmxml4.so.2
+	echo Installing libmxml4.so to $(BUILDROOT)$(libdir)...
+	$(INSTALL_DIR) $(BUILDROOT)$(libdir)
+	$(INSTALL_LIB) libmxml4.so.2 $(BUILDROOT)$(libdir)
+	$(RM) $(BUILDROOT)$(libdir)/libmxml4.so
+	$(LN) libmxml4.so.2 $(BUILDROOT)$(libdir)/libmxml4.so
+	$(LDCONFIG)
+
+install-libmxml4.2.dylib: libmxml4.2.dylib
+	echo Installing libmxml4.dylib to $(BUILDROOT)$(libdir)...
+	$(INSTALL_DIR) $(BUILDROOT)$(libdir)
+	$(INSTALL_LIB) libmxml4.2.dylib $(BUILDROOT)$(libdir)
+	$(RM) $(BUILDROOT)$(libdir)/libmxml4.dylib
+	$(LN) libmxml4.2.dylib $(BUILDROOT)$(libdir)/libmxml4.dylib
 
 
 #
@@ -266,6 +289,21 @@ uninstall-libmxml.2.dylib:
 	echo Uninstalling libmxml.dylib from $(BUILDROOT)$(libdir)...
 	$(RM) $(BUILDROOT)$(libdir)/libmxml.dylib
 	$(RM) $(BUILDROOT)$(libdir)/libmxml.2.dylib
+
+uninstall-libmxml4.a:
+	echo Uninstalling libmxml4.a from $(BUILDROOT)$(libdir)...
+	$(RM) $(BUILDROOT)$(libdir)/libmxml4.a
+
+uninstall-libmxml4.so.2:
+	echo Uninstalling libmxml4.so from $(BUILDROOT)$(libdir)...
+	$(RM) $(BUILDROOT)$(libdir)/libmxml4.so
+	$(RM) $(BUILDROOT)$(libdir)/libmxml4.so.2
+	$(LDCONFIG)
+
+uninstall-libmxml4.2.dylib:
+	echo Uninstalling libmxml4.dylib from $(BUILDROOT)$(libdir)...
+	$(RM) $(BUILDROOT)$(libdir)/libmxml4.dylib
+	$(RM) $(BUILDROOT)$(libdir)/libmxml4.2.dylib
 
 
 #
@@ -315,7 +353,7 @@ sloc:
 # libmxml.a
 #
 
-libmxml.a:	$(LIBOBJS)
+libmxml.a libmxml4.a:	$(LIBOBJS)
 	echo Creating $@...
 	$(RM) $@
 	$(AR) $(ARFLAGS) $@ $(LIBOBJS)
@@ -328,7 +366,7 @@ $(LIBOBJS):	mxml.h mxml-private.h
 # libmxml2.dll
 #
 
-libmxml2.dll:	$(LIBOBJS)
+libmxml.dll libmxml4.dll:	$(LIBOBJS)
 	echo Creating $@...
 	$(DSO) $(DSOFLAGS) -o $@ $(LIBOBJS) $(LIBS)
 
@@ -337,35 +375,35 @@ libmxml2.dll:	$(LIBOBJS)
 # libmxml.so.2
 #
 
-libmxml.so.2:	$(LIBOBJS)
+libmxml.so.2 libmxml4.so.2:	$(LIBOBJS)
 	echo Creating $@...
-	$(DSO) $(DSOFLAGS) -o libmxml.so.2 $(LIBOBJS) $(LIBS)
-	$(RM) libmxml.so
-	$(LN) libmxml.so.2 libmxml.so
+	$(DSO) $(DSOFLAGS) -o $@ $(LIBOBJS) $(LIBS)
+	$(RM) `basename $@ .2`
+	$(LN) $@ `basename $@ .2`
 
 
 #
 # libmxml.2.dylib
 #
 
-libmxml.2.dylib:	$(LIBOBJS)
+libmxml.2.dylib libmxml4.2.dylib:	$(LIBOBJS)
 	echo Creating $@...
-	$(DSO) $(DSOFLAGS) -o libmxml.2.dylib \
-		-install_name $(libdir)/libmxml.dylib \
+	$(DSO) $(DSOFLAGS) -o $@ \
+		-install_name $(libdir)/`basename $@ .2.dylib`.dylib  \
 		-current_version 2.0.0 \
 		-compatibility_version 2.0.0 \
 		$(LIBOBJS) $(LIBS)
-	$(RM) libmxml.dylib
-	$(LN) libmxml.2.dylib libmxml.dylib
+	$(RM) `basename $@ .2.dylib`.dylib
+	$(LN) $@ `basename $@ .2.dylib`.dylib
 
 
 #
 # testmxml
 #
 
-testmxml:	libmxml.a testmxml.o
+testmxml:	$(LIBMXML_STATIC) testmxml.o
 	echo Linking $@...
-	$(CC) $(LDFLAGS) -o $@ testmxml.o libmxml.a $(LIBS)
+	$(CC) $(LDFLAGS) -o $@ testmxml.o $(LIBMXML_STATIC) $(LIBS)
 
 testmxml-vg:	$(LIBOBJS) testmxml.o
 	echo Linking $@...

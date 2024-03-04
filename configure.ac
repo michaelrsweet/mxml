@@ -79,6 +79,24 @@ AS_IF([test "$ac_cv_prog_ranlib" = ":"], [
 AC_SUBST([ARFLAGS])
 
 
+dnl Library prefix...
+AC_ARG_ENABLE([libmxml4-prefix], AS_HELP_STRING([--disable-libmxml4-prefix], [do not add libmxml4 prefix to header/library files]))
+
+AS_IF([test x$enable_libmxml4_prefix != xno], [
+    MXML_PC="mxml4.pc"
+    INCLUDE_PREFIX="/libmxml4"
+    LIBMXML_BASE="libmxml4"
+    LINK_MXML="-lmxml4"
+], [
+    MXML_PC="mxml.pc"
+    INCLUDE_PREFIX=""
+    LIBMXML_BASE="libmxml"
+    LINK_MXML="-lmxml"
+])
+AC_SUBST([LIBMXML_BASE])
+AC_SUBST([MXML_PC])
+
+
 dnl Inline functions...
 AC_C_INLINE
 
@@ -125,47 +143,47 @@ dnl Library targets...
 AC_ARG_ENABLE([static], AS_HELP_STRING([--disable-static], [do not install static library]))
 AC_ARG_ENABLE([shared], AS_HELP_STRING([--disable-shared], [do not install shared library]))
 
-LIBMXML_STATIC="libmxml.a"
+LIBMXML_STATIC="$LIBMXML_BASE.a"
 AS_IF([test x$enable_shared != xno], [
     AS_CASE(["$host_os_name"], [linux* | gnu*], [
-	LIBMXML="libmxml.so.2"
+	LIBMXML="$LIBMXML_BASE.so.2"
 	DSO="\$(CC)"
 	DSOFLAGS="$DSOFLAGS -Wl,-soname,\`basename \$@\` -shared"
     ], [*bsd*], [
-	LIBMXML="libmxml.so.2"
+	LIBMXML="$LIBMXML_BASE.so.2"
 	DSO="\$(CC)"
 	DSOFLAGS="$DSOFLAGS -Wl,-soname,\`basename \$@\` -shared -lc"
     ], [darwin*], [
-	LIBMXML="libmxml.2.dylib"
+	LIBMXML="$LIBMXML_BASE.2.dylib"
 	DSO="\$(CC)"
 	DSOFLAGS="$DSOFLAGS -Wl,-no_warn_inits -dynamiclib -lc"
     ], [sunos*], [
-	LIBMXML="libmxml.so.2"
+	LIBMXML="$LIBMXML_BASE.so.2"
 	DSO="\$(CC)"
 	DSOFLAGS="$DSOFLAGS -Wl,-h,\`basename \$@\` -G"
     ], [mingw], [
 	AC_MSG_RESULT([yes])
-	LIBMXML="libmxml2.dll"
+	LIBMXML="$LIBMXML_BASE.dll"
 	DSO="\$(CC)"
-	DSOFLAGS="$DSOFLAGS -shared -Wl,--out-implib,libmxml2.a,--no-undefined,--enable-runtime-pseudo-reloc"
+	DSOFLAGS="$DSOFLAGS -shared -Wl,--out-implib,$LIBMXML_BASE.a,--no-undefined,--enable-runtime-pseudo-reloc"
     ], [*], [
 	AC_MSG_NOTICE([Warning: Shared libraries may not work, trying -shared option.])
-	LIBMXML="libmxml.so.2"
+	LIBMXML="$LIBMXML_BASE.so.2"
 	DSO="\$(CC)"
 	DSOFLAGS="$DSOFLAGS -Wl,-soname,\`basename \$@\` -shared"
     ])
 
     AS_IF([test x$enable_static != xno], [
 	AC_MSG_NOTICE([Installing static libraries...])
-	INSTALL_STATIC="install-libmxml.a"
-	UNINSTALL_STATIC="uninstall-libmxml.a"
+	INSTALL_STATIC="install-$LIBMXML_BASE.a"
+	UNINSTALL_STATIC="uninstall-$LIBMXML_BASE.a"
     ], [
 	INSTALL_STATIC=""
 	UNINSTALL_STATIC=""
     ])
 ], [
     INSTALL_STATIC=""
-    LIBMXML="libmxml.a"
+    LIBMXML="$LIBMXML_BASE.a"
     UNINSTALL_STATIC=""
 ])
 
@@ -178,7 +196,7 @@ AC_SUBST([UNINSTALL_STATIC])
 dnl Extra compiler options...
 AC_ARG_ENABLE([debug], AS_HELP_STRING([--enable-debug], [turn on debugging, default=no]))
 AC_ARG_ENABLE([maintainer], AS_HELP_STRING([--enable-maintainer], [turn on maintainer mode, default=no]))
-AC_ARG_WITH([sanitizer], AS_HELP_STRING([--with-sanitizer], [build with address, leak, memory, thread, or undefined sanitizer, default=no]), [], [with_sanitizer=no])
+AC_ARG_WITH([sanitizer], AS_HELP_STRING([--with-sanitizer=...], [build with address, leak, memory, thread, or undefined sanitizer, default=no]), [], [with_sanitizer=no])
 AS_IF([test "x$with_sanitizer" = xyes], [
     with_sanitizer="address"
 ], [test "$with_sanitizer" != address -a "$with_sanitizer" != leak -a "$with_sanitizer" != memory -a "$with_sanitizer" != no -a "$with_sanitizer" != thread -a "$with_sanitizer" != undefined], [
@@ -313,36 +331,16 @@ AC_ARG_WITH([docdir], AS_HELP_STRING([--with-docdir], [set directory for documen
 ])
 AC_SUBST(docdir)
 
+AS_IF([test "$prefix" = NONE], [
+    # Default prefix isn't bound until AC_OUTPUT...
+    realprefix="/usr/local"
+], [
+    realprefix="$prefix"
+])
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+AS_IF([test "$includedir" = NONE -o "$includedir" = "\${prefix}/include"], [
+    includedir="\${prefix}/include$INCLUDE_PREFIX"
+])
 
 
 dnl Determine whether we are cross-compiling...
@@ -354,38 +352,14 @@ AS_IF([test "$build" = "$host"], [
 AC_SUBST([TARGETS])
 
 
-dnl Fix installation directories...
-AS_IF([test "$prefix" = NONE], [
-    # Default prefix isn't bound until AC_OUTPUT...
-    realprefix="/usr/local"
-], [
-    realprefix="$prefix"
-])
-
-AS_IF([test "$datarootdir" = "\${prefix}/share"], [
-    AS_IF([test "$prefix" = "/"], [
-	datarootdir="/usr/share"
-    ], [
-	datarootdir="$realprefix/share"
-    ])
-])
-
-AS_IF([test "$datadir" = "\${prefix}/share"], [
-    AS_IF([test "$prefix" = "/"], [
-	datadir="/usr/share"
-    ], [
-	datadir="$realprefix/share"
-    ])
-], [test "$datadir" = "\${datarootdir}"], [
-    datadir="$datarootdir"
-])
-
-
 dnl pkg-config flags...
-PKGCONFIG_CFLAGS=""
-PKGCONFIG_LIBS="-lmxml"
+AS_IF([test "$includedir" != "/usr/include" -a "$includedir" != "/usr/local/include"], [
+    PKGCONFIG_CFLAGS="-I\${includedir} $PKGCONFIG_CFLAGS"
+], [
+    PKGCONFIG_CFLAGS=""
+])
+PKGCONFIG_LIBS="$LINK_MXML"
 AS_IF([test "$realprefix" != "/usr" -a "$realprefix" != "/usr/local"], [
-    PKGCONFIG_CFLAGS="-I\${includedir}"
     PKGCONFIG_LIBS="-L\${libdir} $PKGCONFIG_LIBS"
 ])
 
@@ -394,5 +368,5 @@ AC_SUBST([PKGCONFIG_LIBS])
 
 
 dnl Output generated files...
-AC_CONFIG_FILES([Makefile mxml.pc])
+AC_CONFIG_FILES([Makefile mxml4.pc])
 AC_OUTPUT

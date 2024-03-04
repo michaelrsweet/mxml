@@ -1341,7 +1341,8 @@ mxml_load_data(
 
       if (sax_cb)
       {
-        (*sax_cb)(node, MXML_SAX_EVENT_DATA, sax_data);
+        if (!(*sax_cb)(node, MXML_SAX_EVENT_DATA, sax_data))
+          goto error;
 
         if (!mxmlRelease(node))
           node = NULL;
@@ -1367,7 +1368,8 @@ mxml_load_data(
 
 	if (sax_cb)
 	{
-	  (*sax_cb)(node, MXML_SAX_EVENT_DATA, sax_data);
+	  if (!(*sax_cb)(node, MXML_SAX_EVENT_DATA, sax_data))
+	    goto error;
 
 	  if (!mxmlRelease(node))
 	    node = NULL;
@@ -1464,7 +1466,8 @@ mxml_load_data(
 
         if (sax_cb)
         {
-          (*sax_cb)(node, MXML_SAX_EVENT_COMMENT, sax_data);
+          if (!(*sax_cb)(node, MXML_SAX_EVENT_COMMENT, sax_data))
+	    goto error;
 
           if (!mxmlRelease(node))
             node = NULL;
@@ -1520,7 +1523,8 @@ mxml_load_data(
 
         if (sax_cb)
         {
-          (*sax_cb)(node, MXML_SAX_EVENT_CDATA, sax_data);
+          if (!(*sax_cb)(node, MXML_SAX_EVENT_CDATA, sax_data))
+	    goto error;
 
           if (!mxmlRelease(node))
             node = NULL;
@@ -1570,7 +1574,8 @@ mxml_load_data(
 
         if (sax_cb)
         {
-          (*sax_cb)(node, MXML_SAX_EVENT_DIRECTIVE, sax_data);
+          if (!(*sax_cb)(node, MXML_SAX_EVENT_DIRECTIVE, sax_data))
+	    goto error;
 
           if (strncmp(node->value.directive, "xml ", 4) && !mxmlRelease(node))
             node = NULL;
@@ -1645,7 +1650,8 @@ mxml_load_data(
 
         if (sax_cb)
         {
-          (*sax_cb)(node, MXML_SAX_EVENT_DECLARATION, sax_data);
+          if (!(*sax_cb)(node, MXML_SAX_EVENT_DECLARATION, sax_data))
+	    goto error;
 
           if (!mxmlRelease(node))
             node = NULL;
@@ -1686,7 +1692,8 @@ mxml_load_data(
 
         if (sax_cb)
         {
-          (*sax_cb)(node, MXML_SAX_EVENT_ELEMENT_CLOSE, sax_data);
+          if (!(*sax_cb)(node, MXML_SAX_EVENT_ELEMENT_CLOSE, sax_data))
+	    goto error;
 
           if (!mxmlRelease(node))
           {
@@ -1737,7 +1744,10 @@ mxml_load_data(
 	}
 
         if (sax_cb)
-          (*sax_cb)(node, MXML_SAX_EVENT_ELEMENT_OPEN, sax_data);
+        {
+          if (!(*sax_cb)(node, MXML_SAX_EVENT_ELEMENT_OPEN, sax_data))
+	    goto error;
+	}
 
         if (!first)
 	  first = node;
@@ -1757,7 +1767,8 @@ mxml_load_data(
 	}
         else if (sax_cb)
         {
-          (*sax_cb)(node, MXML_SAX_EVENT_ELEMENT_CLOSE, sax_data);
+          if (!(*sax_cb)(node, MXML_SAX_EVENT_ELEMENT_CLOSE, sax_data))
+	    goto error;
 
           if (!mxmlRelease(node))
           {

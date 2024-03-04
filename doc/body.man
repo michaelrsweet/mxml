@@ -154,13 +154,13 @@ functions retrieve the value from a node:
 
     mxml_node_t *node;
 
-    int intvalue = mxmlGetInteger(node);
+    long intvalue = mxmlGetInteger(node);
 
     const char *opaquevalue = mxmlGetOpaque(node);
 
     double realvalue = mxmlGetReal(node);
 
-    int whitespacevalue;
+    bool whitespacevalue;
     const char *textvalue = mxmlGetText(node, &whitespacevalue);
 .fi
 .PP

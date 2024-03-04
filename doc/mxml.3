@@ -1,4 +1,4 @@
-.TH mxml 3 "Mini-XML API" "2024-03-02" "Mini-XML API"
+.TH mxml 3 "Mini-XML API" "2024-03-04" "Mini-XML API"
 .SH NAME
 mxml \- Mini-XML API
 .SH INCLUDE FILE
@@ -157,13 +157,13 @@ functions retrieve the value from a node:
 
     mxml_node_t *node;
 
-    int intvalue = mxmlGetInteger(node);
+    long intvalue = mxmlGetInteger(node);
 
     const char *opaquevalue = mxmlGetOpaque(node);
 
     double realvalue = mxmlGetReal(node);
 
-    int whitespacevalue;
+    bool whitespacevalue;
     const char *textvalue = mxmlGetText(node, &whitespacevalue);
 .fi
 .PP
@@ -1505,7 +1505,7 @@ typedef const char *(*)(mxml_node_t *, int) mxml_save_cb_t;
 SAX callback function
 .PP
 .nf
-typedef void(*)(mxml_node_t *, mxml_sax_event_t, void *) mxml_sax_cb_t;
+typedef bool(*)(mxml_node_t *, mxml_sax_event_t, void *) mxml_sax_cb_t;
 .fi
 .SS mxml_sax_event_t
 SAX event type.

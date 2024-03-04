@@ -5,6 +5,8 @@
   `MXML_TYPE_DIRECTIVE` node types (Issue #250)
 - Renamed `mxml_type_t` enumerations to `MXML_TYPE_xxx` (Issue #251)
 - Updated APIs to use bool type instead of an int representing a boolean value.
+- Updated the SAX callback to return a `bool` value to control processing
+  (Issue #51)
 
 
 # Changes in Mini-XML 3.3.2

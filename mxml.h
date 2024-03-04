@@ -120,7 +120,7 @@ typedef mxml_type_t (*mxml_load_cb_t)(mxml_node_t *);
 typedef const char *(*mxml_save_cb_t)(mxml_node_t *, int);
 					// Save callback function
 
-typedef void (*mxml_sax_cb_t)(mxml_node_t *, mxml_sax_event_t, void *);
+typedef bool (*mxml_sax_cb_t)(mxml_node_t *, mxml_sax_event_t, void *);
 					// SAX callback function
 
 

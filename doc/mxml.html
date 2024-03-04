@@ -437,7 +437,7 @@ span.string {
 <pre><code>gcc -o myprogram myprogram.c -lmxml
 </code></pre>
 <p>If you have the <code>pkg-config</code> software installed, you can use it to determine the proper compiler and linker options for your installation:</p>
-<pre><code>gcc `pkg-config --cflags mxml` -o myprogram myprogram.c `pkg-config --libs mxml`
+<pre><code>gcc `pkg-config --cflags mxml4` -o myprogram myprogram.c `pkg-config --libs mxml4`
 </code></pre>
 <h3 class="title" id="loading-an-xml-file">Loading an XML File</h3>
 <p>You load an XML file using the <code>mxmlLoadFile</code> function:</p>
@@ -1151,12 +1151,15 @@ mxmlSAXLoadString(mxml_node_t *top, <span class="reserved">const</span> <span cl
                   mxml_type_t (*cb)(mxml_node_t *),
                   mxml_sax_cb_t sax, <span class="reserved">void</span> *sax_data);
 </code></pre>
-<p>Each function works like the corresponding <code>mxmlLoad</code> function but uses a callback to process each node as it is read. The callback function receives the node, an event code, and a user data pointer you supply:</p>
-<pre><code class="language-c"><span class="reserved">void</span>
+<p>Each function works like the corresponding <code>mxmlLoad</code> function but uses a callback to process each node as it is read. The callback function receives the node, an event code, and a user data pointer you supply and returns <code>true</code> to continue processing or <code>false</code> to stop:</p>
+<pre><code class="language-c"><span class="reserved">bool</span>
 sax_cb(mxml_node_t *node, mxml_sax_event_t event,
        <span class="reserved">void</span> *data)
 {
   ... <span class="reserved">do</span> something ...
+
+  <span class="comment">// Continue processing...</span>
+  <span class="reserved">return</span> (<span class="reserved">true</span>);
 }
 </code></pre>
 <p>The event will be one of the following:</p>
@@ -1165,7 +1168,7 @@ sax_cb(mxml_node_t *node, mxml_sax_event_t event,
 </li>
 <li><p><code>MXML_SAX_EVENT_COMMENT</code>: A comment was just read.</p>
 </li>
-<li><p><code>MXML_SAX_EVENT_DATA</code>: Data ( --------------------, integer, opaque, real, or text) was just read.</p>
+<li><p><code>MXML_SAX_EVENT_DATA</code>: Data (integer, opaque, real, or text) was just read.</p>
 </li>
 <li><p><code>MXML_SAX_EVENT_DECLARATION</code>: A declaration was just read.</p>
 </li>
@@ -1177,16 +1180,18 @@ sax_cb(mxml_node_t *node, mxml_sax_event_t event,
 </li>
 </ul>
 <p>Elements are <em>released</em> after the close element is processed. All other nodes are released after they are processed. The SAX callback can <em>retain</em> the node using the <code>mxmlRetain</code> function. For example, the following SAX callback will retain all nodes, effectively simulating a normal in-memory load:</p>
-<pre><code class="language-c"><span class="reserved">void</span>
+<pre><code class="language-c"><span class="reserved">bool</span>
 sax_cb(mxml_node_t *node, mxml_sax_event_t event,
        <span class="reserved">void</span> *data)
 {
   <span class="reserved">if</span> (event != MXML_SAX_ELEMENT_CLOSE)
     mxmlRetain(node);
+
+  <span class="reserved">return</span> (<span class="reserved">true</span>);
 }
 </code></pre>
 <p>More typically the SAX callback will only retain a small portion of the document that is needed for post-processing. For example, the following SAX callback will retain the title and headings in an XHTML file. It also retains the (parent) elements like <code>&lt;html&gt;</code>, <code>&lt;head&gt;</code>, and <code>&lt;body&gt;</code>, and processing directives like <code>&lt;?xml ... ?&gt;</code> and declarations like <code>&lt;!DOCTYPE ... &gt;</code>:</p>
-<pre><code class="language-c"><span class="reserved">void</span>
+<pre><code class="language-c"><span class="reserved">bool</span>
 sax_cb(mxml_node_t *node, mxml_sax_event_t event,
        <span class="reserved">void</span> *data)
 {
@@ -1226,6 +1231,8 @@ sax_cb(mxml_node_t *node, mxml_sax_event_t event,
       mxmlRetain(node);
     }
   }
+
+  <span class="reserved">return</span> (<span class="reserved">true</span>);
 }
 </code></pre>
 <p>The resulting skeleton document tree can then be searched just like one loaded using the <code>mxmlLoad</code> functions. For example, a filter that reads an XHTML document from stdin and then shows the title and headings in the document would look like:</p>
@@ -1277,7 +1284,9 @@ print_children(mxml_node_t *parent)
 <h2 class="title" id="migrating-from-mini-xml-v3.x">Migrating from Mini-XML v3.x</h2>
 <p>The following incompatible API changes were made in Mini-XML v4.0:</p>
 <ul>
-<li><p>SAX events are not named <code>MXML_SAX_EVENT_foo</code> instead of <code>MXML_SAX_foo</code>.</p>
+<li><p>SAX events are now named <code>MXML_SAX_EVENT_foo</code> instead of <code>MXML_SAX_foo</code>.</p>
+</li>
+<li><p>SAX callbacks now return a boolean value.</p>
 </li>
 <li><p>Node types are now named <code>MXML_TYPE_foo</code> instead of <code>MXML_foo</code>.</p>
 </li>
@@ -2874,7 +2883,7 @@ typedef const char *(*mxml_save_cb_t)(<a href="#mxml_node_t">mxml_node_t</a> *, 
 <h3 class="typedef"><a id="mxml_sax_cb_t">mxml_sax_cb_t</a></h3>
 <p class="description">SAX callback function</p>
 <p class="code">
-typedef void (*mxml_sax_cb_t)(<a href="#mxml_node_t">mxml_node_t</a> *, mxml_sax_event_t, void *);
+typedef bool (*mxml_sax_cb_t)(<a href="#mxml_node_t">mxml_node_t</a> *, mxml_sax_event_t, void *);
 </p>
 <h3 class="typedef"><a id="mxml_sax_event_t">mxml_sax_event_t</a></h3>
 <p class="description">SAX event type.</p>

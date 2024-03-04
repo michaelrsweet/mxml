@@ -88,7 +88,7 @@ The Mini-XML library is included with your program using the `-lmxml` option:
 If you have the `pkg-config` software installed, you can use it to determine the
 proper compiler and linker options for your installation:
 
-    gcc `pkg-config --cflags mxml` -o myprogram myprogram.c `pkg-config --libs mxml`
+    gcc `pkg-config --cflags mxml4` -o myprogram myprogram.c `pkg-config --libs mxml4`
 
 
 Loading an XML File
@@ -1172,14 +1172,18 @@ mxmlSAXLoadString(mxml_node_t *top, const char *s,
 
 Each function works like the corresponding `mxmlLoad` function but uses a
 callback to process each node as it is read.  The callback function receives the
-node, an event code, and a user data pointer you supply:
+node, an event code, and a user data pointer you supply and returns `true` to
+continue processing or `false` to stop:
 
 ```c
-void
+bool
 sax_cb(mxml_node_t *node, mxml_sax_event_t event,
        void *data)
 {
   ... do something ...
+
+  // Continue processing...
+  return (true);
 }
 ```
 
@@ -1187,8 +1191,7 @@ The event will be one of the following:
 
 - `MXML_SAX_EVENT_CDATA`: CDATA was just read.
 - `MXML_SAX_EVENT_COMMENT`: A comment was just read.
-- `MXML_SAX_EVENT_DATA`: Data (
---------------------, integer, opaque, real, or text) was just read.
+- `MXML_SAX_EVENT_DATA`: Data (integer, opaque, real, or text) was just read.
 - `MXML_SAX_EVENT_DECLARATION`: A declaration was just read.
 - `MXML_SAX_EVENT_DIRECTIVE`: A processing directive/instruction was just read.
 - `MXML_SAX_EVENT_ELEMENT_CLOSE` - A close element was just read \(`</element>`)
@@ -1200,12 +1203,14 @@ using the `mxmlRetain` function.  For example, the following SAX callback will
 retain all nodes, effectively simulating a normal in-memory load:
 
 ```c
-void
+bool
 sax_cb(mxml_node_t *node, mxml_sax_event_t event,
        void *data)
 {
   if (event != MXML_SAX_ELEMENT_CLOSE)
     mxmlRetain(node);
+
+  return (true);
 }
 ```
 
@@ -1216,7 +1221,7 @@ will retain the title and headings in an XHTML file.  It also retains the
 directives like  `<?xml ... ?>` and declarations like `<!DOCTYPE ... >`:
 
 ```c
-void
+bool
 sax_cb(mxml_node_t *node, mxml_sax_event_t event,
        void *data)
 {
@@ -1256,6 +1261,8 @@ sax_cb(mxml_node_t *node, mxml_sax_event_t event,
       mxmlRetain(node);
     }
   }
+
+  return (true);
 }
 ```
 
@@ -1320,7 +1327,8 @@ Migrating from Mini-XML v3.x
 
 The following incompatible API changes were made in Mini-XML v4.0:
 
-- SAX events are not named `MXML_SAX_EVENT_foo` instead of `MXML_SAX_foo`.
+- SAX events are now named `MXML_SAX_EVENT_foo` instead of `MXML_SAX_foo`.
+- SAX callbacks now return a boolean value.
 - Node types are now named `MXML_TYPE_foo` instead of `MXML_foo`.
 - Functions that returned `0` on success and `-1` on error now return `true` on
   success and `false` on error.

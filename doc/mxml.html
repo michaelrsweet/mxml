@@ -433,8 +433,8 @@ span.string {
 <p>Mini-XML provides a single header file which you include:</p>
 <pre><code class="language-c"><span class="directive">#include &lt;mxml.h&gt;</span>
 </code></pre>
-<p>The Mini-XML library is included with your program using the <code>-lmxml</code> option:</p>
-<pre><code>gcc -o myprogram myprogram.c -lmxml
+<p>The Mini-XML library is included with your program using the <code>-lmxml4</code> option:</p>
+<pre><code>gcc -o myprogram myprogram.c -lmxml4
 </code></pre>
 <p>If you have the <code>pkg-config</code> software installed, you can use it to determine the proper compiler and linker options for your installation:</p>
 <pre><code>gcc `pkg-config --cflags mxml4` -o myprogram myprogram.c `pkg-config --libs mxml4`

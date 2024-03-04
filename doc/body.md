@@ -81,9 +81,9 @@ Mini-XML provides a single header file which you include:
 #include <mxml.h>
 ```
 
-The Mini-XML library is included with your program using the `-lmxml` option:
+The Mini-XML library is included with your program using the `-lmxml4` option:
 
-    gcc -o myprogram myprogram.c -lmxml
+    gcc -o myprogram myprogram.c -lmxml4
 
 If you have the `pkg-config` software installed, you can use it to determine the
 proper compiler and linker options for your installation:

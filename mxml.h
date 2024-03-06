@@ -17,6 +17,14 @@
 #  include <string.h>
 #  include <ctype.h>
 #  include <errno.h>
+#  include <sys/types.h>
+#  include <limits.h>
+#  if defined(_WIN32) && !defined(__CUPS_SSIZE_T_DEFINED)
+#    define __CUPS_SSIZE_T_DEFINED
+// Windows does not provide the ssize_t type, so map it to int64_t... */
+typedef int64_t ssize_t;			// @private@
+#    define SSIZE_MAX	INT64_MAX
+#  endif // _WIN32 && !__CUPS_SSIZE_T_DEFINED
 #  ifdef __cplusplus
 extern "C" {
 #  endif // __cplusplus

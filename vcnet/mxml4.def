@@ -1,9 +1,5 @@
-LIBRARY "MXML2"
+LIBRARY "MXML4"
 EXPORTS
- mxml_ignore_cb
- mxml_integer_cb
- mxml_opaque_cb
- mxml_real_cb
  mxmlAdd
  mxmlDelete
  mxmlElementDeleteAttr
@@ -44,6 +40,8 @@ EXPORTS
  mxmlIndexReset
  mxmlLoadFd
  mxmlLoadFile
+ mxmlLoadFilename
+ mxmlLoadIO
  mxmlLoadString
  mxmlNewCDATA
  mxmlNewCDATAf
@@ -68,10 +66,9 @@ EXPORTS
  mxmlSaveAllocString
  mxmlSaveFd
  mxmlSaveFile
+ mxmlSaveFilename
+ mxmlSaveIO
  mxmlSaveString
- mxmlSAXLoadFd
- mxmlSAXLoadFile
- mxmlSAXLoadString
  mxmlSetCDATA
  mxmlSetCDATAf
  mxmlSetComment

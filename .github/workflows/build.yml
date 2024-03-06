@@ -12,24 +12,25 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
-    - name: update build environment
+    - name: Checkout Mini-XML sources
+      uses: actions/checkout@v4
+    - name: Update build environment
       run: sudo apt-get update --fix-missing -y
-    - name: install prerequisites
+    - name: Install prerequisites
       run: sudo apt-get install -y cppcheck
-    - name: configure
+    - name: Configure Mini-XML
       env:
         CC: /usr/bin/gcc
-      run: ./configure --enable-debug --enable-maintainer
-    - name: make
+      run: ./configure --enable-debug --enable-maintainer --with-sanitizer
+    - name: Build Mini-XML
       run: make
-    - name: test
+    - name: Test Mini-XML
       env:
         ASAN_OPTIONS: leak_check_at_exit=false
       run: make test
-    - name: clang static analyzer
+    - name: Run Clang Static Analyzer
       run: make CC=clang "GHA_ERROR=::error::" clang
-    - name: cppcheck
+    - name: Run cppcheck
       run: make "GHA_ERROR=::error::" cppcheck
 
   build-macos:
@@ -37,14 +38,15 @@ jobs:
     runs-on: macos-latest
 
     steps:
-    - uses: actions/checkout@v2
-    - name: configure
-      run: ./configure --enable-debug --enable-maintainer
-    - name: make
+    - name: Checkout Mini-XML sources
+      uses: actions/checkout@v4
+    - name: Configure Mini-XML
+      run: ./configure --enable-debug --enable-maintainer --with-sanitizer
+    - name: Build Mini-XML
       run: make
-    - name: test
+    - name: Test Mini-XML
       run: make test
-    - name: clang static analyzer
+    - name: Run Clang Static Analyzer
       run: make CC=clang "GHA_ERROR=::error::" clang
 
   build-windows:
@@ -52,8 +54,9 @@ jobs:
     runs-on: windows-latest
 
     steps:
-    - uses: actions/checkout@v2
-    - name: setup-msbuild
+    - name: Checkout Mini-XML sources
+      uses: actions/checkout@v4
+    - name: Setup msbuild
       uses: microsoft/setup-msbuild@v1.0.2
-    - name: msbuild
+    - name: Build Mini-XML
       run: msbuild vcnet\mxml.sln

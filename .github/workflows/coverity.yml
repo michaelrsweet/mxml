@@ -7,8 +7,9 @@ jobs:
     runs-on: ubuntu-latest
     environment: Coverity
     steps:
-      - uses: actions/checkout@v2
-      - name: update build environment
+      - name: Checkout Mini-XML sources
+        uses: actions/checkout@v4
+      - name: Update build environment
         run: sudo apt-get update --fix-missing -y
       - name: Download Coverity Build Tool
         run: |
@@ -18,10 +19,10 @@ jobs:
         env:
           TOKEN: ${{ secrets.COVERITY_SCAN_TOKEN }}
 
-      - name: configure
+      - name: Configure Mini-XML
         run: ./configure --enable-debug --enable-maintainer
 
-      - name: Build with cov-build
+      - name: Build Mini-XML with cov-build
         run: |
           export PATH=`pwd`/cov-analysis-linux64/bin:$PATH
           cov-build --dir cov-int make

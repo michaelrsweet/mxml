@@ -109,6 +109,8 @@ typedef struct _mxml_global_s		// Global, per-thread data
 
 extern _mxml_global_t	*_mxml_global(void);
 extern int		_mxml_entity_cb(const char *name);
+extern const char	*_mxml_entity_string(int ch);
+extern void		_mxml_error(const char *format, ...) MXML_FORMAT(1,2);
 
 
 #endif // !MXML_PRIVATE_H

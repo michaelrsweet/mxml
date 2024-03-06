@@ -14,7 +14,7 @@
 // information.
 //
 
-#include "mxml-private.h"
+#include "mxml.h"
 #ifndef _WIN32
 #  include <unistd.h>
 #endif // !_WIN32
@@ -35,9 +35,9 @@ int		event_counts[7];
 // Local functions...
 //
 
-bool		sax_cb(mxml_node_t *node, mxml_sax_event_t event, void *data);
-mxml_type_t	type_cb(mxml_node_t *node);
-const char	*whitespace_cb(mxml_node_t *node, int where);
+bool		sax_cb(void *cbdata, mxml_node_t *node, mxml_sax_event_t event);
+mxml_type_t	type_cb(void *cbdata, mxml_node_t *node);
+const char	*whitespace_cb(void *cbdata, mxml_node_t *node, mxml_ws_t where);
 
 
 //
@@ -55,14 +55,22 @@ main(int  argc,				// I - Number of command-line args
 			*tree,		// Element tree
 			*node;		// Node which should be in test.xml
   mxml_index_t		*ind;		// XML index
+  mxml_type_t		type;		// Node type
   char			buffer[16384];	// Save string
+  const char		*text;		// Text string
+  bool			whitespace;	// Whitespace before text string
   static const char	*types[] =	// Strings for node types
 			{
+			  "MXML_TYPE_CDATA",
+			  "MXML_TYPE_COMMENT",
+			  "MXML_TYPE_DECLARATION",
+			  "MXML_TYPE_DIRECTIVE",
 			  "MXML_TYPE_ELEMENT",
 			  "MXML_TYPE_INTEGER",
 			  "MXML_TYPE_OPAQUE",
 			  "MXML_TYPE_REAL",
-			  "MXML_TYPE_TEXT"
+			  "MXML_TYPE_TEXT",
+			  "MXML_TYPE_CUSTOM"
 			};
 
 
@@ -83,16 +91,16 @@ main(int  argc,				// I - Number of command-line args
     return (1);
   }
 
-  if (tree->type != MXML_TYPE_ELEMENT)
+  if (mxmlGetType(tree) != MXML_TYPE_ELEMENT)
   {
-    fprintf(stderr, "ERROR: Parent has type %s (%d), expected MXML_TYPE_ELEMENT.\n", tree->type < MXML_TYPE_ELEMENT || tree->type > MXML_TYPE_TEXT ? "UNKNOWN" : types[tree->type], tree->type);
+    fprintf(stderr, "ERROR: Parent has type %d(%s), expected MXML_TYPE_ELEMENT.\n", mxmlGetType(tree), types[mxmlGetType(tree)]);
     mxmlDelete(tree);
     return (1);
   }
 
-  if (strcmp(tree->value.element.name, "element"))
+  if (strcmp(mxmlGetElement(tree), "element"))
   {
-    fprintf(stderr, "ERROR: Parent value is \"%s\", expected \"element\".\n", tree->value.element.name);
+    fprintf(stderr, "ERROR: Parent value is \"%s\", expected \"element\".\n", mxmlGetElement(tree));
     mxmlDelete(tree);
     return (1);
   }
@@ -102,11 +110,19 @@ main(int  argc,				// I - Number of command-line args
   mxmlNewReal(tree, 123.4);
   mxmlNewText(tree, 1, "text");
 
-  mxmlLoadString(tree, "<group type='string'>string string string</group>", MXML_NO_CALLBACK);
-  mxmlLoadString(tree, "<group type='integer'>1 2 3</group>", MXML_INTEGER_CALLBACK);
-  mxmlLoadString(tree, "<group type='real'>1.0 2.0 3.0</group>", MXML_REAL_CALLBACK);
-  mxmlLoadString(tree, "<group>opaque opaque opaque</group>", MXML_OPAQUE_CALLBACK);
-  mxmlLoadString(tree, "<foo><bar><one><two>value<two>value2</two></two></one></bar></foo>", MXML_OPAQUE_CALLBACK);
+  type = MXML_TYPE_TEXT;
+  mxmlLoadString(tree, "<group type='string'>string string string</group>", /*load_cb*/NULL, /*load_cbdata*/&type, /*sax_cb*/NULL, /*sax_cbdata*/NULL);
+
+  type = MXML_TYPE_INTEGER;
+  mxmlLoadString(tree, "<group type='integer'>1 2 3</group>", /*load_cb*/NULL, /*load_cbdata*/&type, /*sax_cb*/NULL, /*sax_cbdata*/NULL);
+
+  type = MXML_TYPE_REAL;
+  mxmlLoadString(tree, "<group type='real'>1.0 2.0 3.0</group>", /*load_cb*/NULL, /*load_cbdata*/&type, /*sax_cb*/NULL, /*sax_cbdata*/NULL);
+
+  type = MXML_TYPE_OPAQUE;
+  mxmlLoadString(tree, "<group>opaque opaque opaque</group>", /*load_cb*/NULL, /*load_cbdata*/&type, /*sax_cb*/NULL, /*sax_cbdata*/NULL);
+  mxmlLoadString(tree, "<foo><bar><one><two>value<two>value2</two></two></one></bar></foo>", /*load_cb*/NULL, /*load_cbdata*/&type, /*sax_cb*/NULL, /*sax_cbdata*/NULL);
+
   mxmlNewCDATA(tree, "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef\n");
   mxmlNewCDATA(tree,
                "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef\n"
@@ -123,7 +139,7 @@ main(int  argc,				// I - Number of command-line args
                "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef\n"
                "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef\n");
 
-  node = tree->child;
+  node = mxmlGetFirstChild(tree);
 
   if (!node)
   {
@@ -132,21 +148,21 @@ main(int  argc,				// I - Number of command-line args
     return (1);
   }
 
-  if (node->type != MXML_TYPE_INTEGER)
+  if (mxmlGetType(node) != MXML_TYPE_INTEGER)
   {
-    fprintf(stderr, "ERROR: First child has type %s (%d), expected MXML_TYPE_INTEGER.\n", node->type < MXML_TYPE_ELEMENT || node->type > MXML_TYPE_TEXT ? "UNKNOWN" : types[node->type], node->type);
+    fprintf(stderr, "ERROR: First child has type %d(%s), expected MXML_TYPE_INTEGER.\n", mxmlGetType(node), types[mxmlGetType(node)]);
     mxmlDelete(tree);
     return (1);
   }
 
-  if (node->value.integer != 123)
+  if (mxmlGetInteger(node) != 123)
   {
-    fprintf(stderr, "ERROR: First child value is %ld, expected 123.\n", node->value.integer);
+    fprintf(stderr, "ERROR: First child value is %ld, expected 123.\n", mxmlGetInteger(node));
     mxmlDelete(tree);
     return (1);
   }
 
-  node = node->next;
+  node = mxmlGetNextSibling(node);
 
   if (!node)
   {
@@ -155,21 +171,21 @@ main(int  argc,				// I - Number of command-line args
     return (1);
   }
 
-  if (node->type != MXML_TYPE_OPAQUE)
+  if (mxmlGetType(node) != MXML_TYPE_OPAQUE)
   {
-    fprintf(stderr, "ERROR: Second child has type %s (%d), expected MXML_TYPE_OPAQUE.\n", node->type < MXML_TYPE_ELEMENT || node->type > MXML_TYPE_TEXT ? "UNKNOWN" : types[node->type], node->type);
+    fprintf(stderr, "ERROR: Second child has type %s (%d), expected MXML_TYPE_OPAQUE.\n", mxmlGetType(node) < MXML_TYPE_ELEMENT || mxmlGetType(node) > MXML_TYPE_TEXT ? "UNKNOWN" : types[mxmlGetType(node)], mxmlGetType(node));
     mxmlDelete(tree);
     return (1);
   }
 
-  if (!node->value.opaque || strcmp(node->value.opaque, "opaque"))
+  if (!mxmlGetOpaque(node) || strcmp(mxmlGetOpaque(node), "opaque"))
   {
-    fprintf(stderr, "ERROR: Second child value is \"%s\", expected \"opaque\".\n", node->value.opaque ? node->value.opaque : "(null)");
+    fprintf(stderr, "ERROR: Second child value is \"%s\", expected \"opaque\".\n", mxmlGetOpaque(node) ? mxmlGetOpaque(node) : "(null)");
     mxmlDelete(tree);
     return (1);
   }
 
-  node = node->next;
+  node = mxmlGetNextSibling(node);
 
   if (!node)
   {
@@ -178,21 +194,21 @@ main(int  argc,				// I - Number of command-line args
     return (1);
   }
 
-  if (node->type != MXML_TYPE_REAL)
+  if (mxmlGetType(node) != MXML_TYPE_REAL)
   {
-    fprintf(stderr, "ERROR: Third child has type %s (%d), expected MXML_TYPE_REAL.\n", node->type < MXML_TYPE_ELEMENT || node->type > MXML_TYPE_TEXT ? "UNKNOWN" : types[node->type], node->type);
+    fprintf(stderr, "ERROR: Third child has type %s (%d), expected MXML_TYPE_REAL.\n", mxmlGetType(node) < MXML_TYPE_ELEMENT || mxmlGetType(node) > MXML_TYPE_TEXT ? "UNKNOWN" : types[mxmlGetType(node)], mxmlGetType(node));
     mxmlDelete(tree);
     return (1);
   }
 
-  if (node->value.real != 123.4)
+  if (mxmlGetReal(node) != 123.4)
   {
-    fprintf(stderr, "ERROR: Third child value is %f, expected 123.4.\n", node->value.real);
+    fprintf(stderr, "ERROR: Third child value is %f, expected 123.4.\n", mxmlGetReal(node));
     mxmlDelete(tree);
     return (1);
   }
 
-  node = node->next;
+  node = mxmlGetNextSibling(node);
 
   if (!node)
   {
@@ -201,23 +217,25 @@ main(int  argc,				// I - Number of command-line args
     return (1);
   }
 
-  if (node->type != MXML_TYPE_TEXT)
+  if (mxmlGetType(node) != MXML_TYPE_TEXT)
   {
-    fprintf(stderr, "ERROR: Fourth child has type %s (%d), expected MXML_TYPE_TEXT.\n", node->type < MXML_TYPE_ELEMENT || node->type > MXML_TYPE_TEXT ? "UNKNOWN" : types[node->type], node->type);
+    fprintf(stderr, "ERROR: Fourth child has type %s (%d), expected MXML_TYPE_TEXT.\n", mxmlGetType(node) < MXML_TYPE_ELEMENT || mxmlGetType(node) > MXML_TYPE_TEXT ? "UNKNOWN" : types[mxmlGetType(node)], mxmlGetType(node));
     mxmlDelete(tree);
     return (1);
   }
 
-  if (!node->value.text.whitespace || !node->value.text.string || strcmp(node->value.text.string, "text"))
+  text = mxmlGetText(node, &whitespace);
+
+  if (!whitespace || !text || strcmp(text, "text"))
   {
-    fprintf(stderr, "ERROR: Fourth child value is %d,\"%s\", expected 1,\"text\".\n", node->value.text.whitespace, node->value.text.string ? node->value.text.string : "(null)");
+    fprintf(stderr, "ERROR: Fourth child value is %s,\"%s\", expected true,\"text\".\n", whitespace ? "true" : "false", text);
     mxmlDelete(tree);
     return (1);
   }
 
   for (i = 0; i < 4; i ++)
   {
-    node = node->next;
+    node = mxmlGetNextSibling(node);
 
     if (!node)
     {
@@ -226,9 +244,9 @@ main(int  argc,				// I - Number of command-line args
       return (1);
     }
 
-    if (node->type != MXML_TYPE_ELEMENT)
+    if (mxmlGetType(node) != MXML_TYPE_ELEMENT)
     {
-      fprintf(stderr, "ERROR: Group child #%d has type %s (%d), expected MXML_TYPE_ELEMENT.\n", i + 1, node->type < MXML_TYPE_ELEMENT || node->type > MXML_TYPE_TEXT ? "UNKNOWN" : types[node->type], node->type);
+      fprintf(stderr, "ERROR: Group child #%d has type %d(%s), expected MXML_TYPE_ELEMENT.\n", i + 1, mxmlGetType(node), types[mxmlGetType(node)]);
       mxmlDelete(tree);
       return (1);
     }
@@ -242,9 +260,9 @@ main(int  argc,				// I - Number of command-line args
     mxmlDelete(tree);
     return (1);
   }
-  else if (node->type != MXML_TYPE_OPAQUE || strcmp(node->value.opaque, "value"))
+  else if (mxmlGetType(node) != MXML_TYPE_OPAQUE || strcmp(mxmlGetOpaque(node), "value"))
   {
-    fputs("ERROR: Bad value for \"*/two\".\n", stderr);
+    fprintf(stderr, "ERROR: Bad value for \"*/two\" - node=%p(%s), opaque=\"%s\"\n", node, types[mxmlGetType(node)], mxmlGetOpaque(node));
     mxmlDelete(tree);
     return (1);
   }
@@ -256,7 +274,7 @@ main(int  argc,				// I - Number of command-line args
     mxmlDelete(tree);
     return (1);
   }
-  else if (node->type != MXML_TYPE_OPAQUE || strcmp(node->value.opaque, "value"))
+  else if (mxmlGetType(node) != MXML_TYPE_OPAQUE || strcmp(mxmlGetOpaque(node), "value"))
   {
     fputs("ERROR: Bad value for \"foo/*/two\".\n", stderr);
     mxmlDelete(tree);
@@ -270,7 +288,7 @@ main(int  argc,				// I - Number of command-line args
     mxmlDelete(tree);
     return (1);
   }
-  else if (node->type != MXML_TYPE_OPAQUE || strcmp(node->value.opaque, "value"))
+  else if (mxmlGetType(node) != MXML_TYPE_OPAQUE || strcmp(mxmlGetOpaque(node), "value"))
   {
     fputs("ERROR: Bad value for \"foo/bar/one/two\".\n", stderr);
     mxmlDelete(tree);
@@ -286,9 +304,9 @@ main(int  argc,				// I - Number of command-line args
     return (1);
   }
 
-  if (ind->num_nodes != 10)
+  if (mxmlIndexGetCount(ind) != 10)
   {
-    fprintf(stderr, "ERROR: Index of all nodes contains %lu nodes; expected 10.\n", (unsigned long)ind->num_nodes);
+    fprintf(stderr, "ERROR: Index of all nodes contains %lu nodes; expected 10.\n", (unsigned long)mxmlIndexGetCount(ind));
     mxmlIndexDelete(ind);
     mxmlDelete(tree);
     return (1);
@@ -313,9 +331,9 @@ main(int  argc,				// I - Number of command-line args
     return (1);
   }
 
-  if (ind->num_nodes != 4)
+  if (mxmlIndexGetCount(ind) != 4)
   {
-    fprintf(stderr, "ERROR: Index of groups contains %lu nodes; expected 4.\n", (unsigned long)ind->num_nodes);
+    fprintf(stderr, "ERROR: Index of groups contains %lu nodes; expected 4.\n", (unsigned long)mxmlIndexGetCount(ind));
     mxmlIndexDelete(ind);
     mxmlDelete(tree);
     return (1);
@@ -340,9 +358,9 @@ main(int  argc,				// I - Number of command-line args
     return (1);
   }
 
-  if (ind->num_nodes != 3)
+  if (mxmlIndexGetCount(ind) != 3)
   {
-    fprintf(stderr, "ERROR: Index of type attributes contains %lu nodes; expected 3.\n", (unsigned long)ind->num_nodes);
+    fprintf(stderr, "ERROR: Index of type attributes contains %lu nodes; expected 3.\n", (unsigned long)mxmlIndexGetCount(ind));
     mxmlIndexDelete(ind);
     mxmlDelete(tree);
     return (1);
@@ -367,9 +385,9 @@ main(int  argc,				// I - Number of command-line args
     return (1);
   }
 
-  if (ind->num_nodes != 3)
+  if (mxmlIndexGetCount(ind) != 3)
   {
-    fprintf(stderr, "ERROR: Index of elements and attributes contains %lu nodes; expected 3.\n", (unsigned long)ind->num_nodes);
+    fprintf(stderr, "ERROR: Index of elements and attributes contains %lu nodes; expected 3.\n", (unsigned long)mxmlIndexGetCount(ind));
     mxmlIndexDelete(ind);
     mxmlDelete(tree);
     return (1);
@@ -389,9 +407,9 @@ main(int  argc,				// I - Number of command-line args
   // Check the mxmlDelete() works properly...
   for (i = 0; i < 12; i ++)
   {
-    if (tree->child)
+    if (mxmlGetFirstChild(tree))
     {
-      mxmlDelete(tree->child);
+      mxmlDelete(mxmlGetFirstChild(tree));
     }
     else
     {
@@ -401,13 +419,13 @@ main(int  argc,				// I - Number of command-line args
     }
   }
 
-  if (tree->child)
+  if (mxmlGetFirstChild(tree))
   {
     fputs("ERROR: Child pointer not NULL after deleting all children.\n", stderr);
     return (1);
   }
 
-  if (tree->last_child)
+  if (mxmlGetLastChild(tree))
   {
     fputs("ERROR: Last child pointer not NULL after deleting all children.\n", stderr);
     return (1);
@@ -417,21 +435,9 @@ main(int  argc,				// I - Number of command-line args
 
   // Open the file/string using the default (MXML_NO_CALLBACK) callback...
   if (argv[1][0] == '<')
-  {
-    xml = mxmlLoadString(NULL, argv[1], MXML_NO_CALLBACK);
-  }
-  else if ((fp = fopen(argv[1], "rb")) == NULL)
-  {
-    perror(argv[1]);
-    return (1);
-  }
+    xml = mxmlLoadString(/*top*/NULL, argv[1], /*load_cb*/NULL, /*load_cbdata*/NULL, /*sax_cb*/NULL, /*sax_cbdata*/NULL);
   else
-  {
-    // Read the file...
-    xml = mxmlLoadFile(NULL, fp, MXML_NO_CALLBACK);
-
-    fclose(fp);
-  }
+    xml = mxmlLoadFilename(/*top*/NULL, argv[1], /*load_cb*/NULL, /*load_cbdata*/NULL, /*sax_cb*/NULL, /*sax_cbdata*/NULL);
 
   if (!xml)
   {
@@ -441,8 +447,6 @@ main(int  argc,				// I - Number of command-line args
 
   if (!strcmp(argv[1], "test.xml"))
   {
-    const char	*text;			// Text value
-
     // Verify that mxmlFindElement() and indirectly mxmlWalkNext() work properly...
     if ((node = mxmlFindPath(xml, "group/option/keyword")) == NULL)
     {
@@ -451,10 +455,10 @@ main(int  argc,				// I - Number of command-line args
       return (1);
     }
 
-    if (node->type != MXML_TYPE_TEXT)
+    if (mxmlGetType(node) != MXML_TYPE_TEXT)
     {
       fputs("No child node of group/option/keyword.\n", stderr);
-      mxmlSaveFile(xml, stderr, MXML_NO_CALLBACK);
+      mxmlSaveFile(xml, stderr, /*save_cb*/NULL, /*save_cbdata*/NULL);
       mxmlDelete(xml);
       return (1);
     }
@@ -471,21 +475,9 @@ main(int  argc,				// I - Number of command-line args
 
   // Open the file...
   if (argv[1][0] == '<')
-  {
-    xml = mxmlLoadString(NULL, argv[1], type_cb);
-  }
-  else if ((fp = fopen(argv[1], "rb")) == NULL)
-  {
-    perror(argv[1]);
-    return (1);
-  }
+    xml = mxmlLoadString(/*top*/NULL, argv[1], /*load_cb*/type_cb, /*load_cbdata*/NULL, /*sax_cb*/NULL, /*sax_cbdata*/NULL);
   else
-  {
-    // Read the file...
-    xml = mxmlLoadFile(NULL, fp, type_cb);
-
-    fclose(fp);
-  }
+    xml = mxmlLoadFilename(/*top*/NULL, argv[1], /*load_cb*/type_cb, /*load_cbdata*/NULL, /*sax_cb*/NULL, /*sax_cbdata*/NULL);
 
   if (!xml)
   {
@@ -512,10 +504,10 @@ main(int  argc,				// I - Number of command-line args
   }
 
   // Print the XML tree...
-  mxmlSaveFile(xml, stdout, whitespace_cb);
+  mxmlSaveFile(xml, stdout, whitespace_cb, /*save_cbdata*/NULL);
 
   // Save the XML tree to a string and print it...
-  if (mxmlSaveString(xml, buffer, sizeof(buffer), whitespace_cb) > 0)
+  if (mxmlSaveString(xml, buffer, sizeof(buffer), whitespace_cb, /*save_cbdata*/NULL) > 0)
   {
     if (argc == 3)
     {
@@ -539,7 +531,7 @@ main(int  argc,				// I - Number of command-line args
     }
 
     // Read the file...
-    xml = mxmlLoadFd(NULL, fd, type_cb);
+    xml = mxmlLoadFd(/*top*/NULL, fd, type_cb, /*load_cbdata*/NULL, /*sax_cb*/NULL, /*sax_cbdata*/NULL);
 
     close(fd);
 
@@ -554,7 +546,7 @@ main(int  argc,				// I - Number of command-line args
     }
 
     // Write the file...
-    mxmlSaveFd(xml, fd, whitespace_cb);
+    mxmlSaveFd(xml, fd, whitespace_cb, /*save_cbdata*/NULL);
 
     close(fd);
 
@@ -566,21 +558,9 @@ main(int  argc,				// I - Number of command-line args
   memset(event_counts, 0, sizeof(event_counts));
 
   if (argv[1][0] == '<')
-  {
-    mxmlRelease(mxmlSAXLoadString(NULL, argv[1], type_cb, sax_cb, NULL));
-  }
-  else if ((fp = fopen(argv[1], "rb")) == NULL)
-  {
-    perror(argv[1]);
-    return (1);
-  }
+    mxmlRelease(mxmlLoadString(/*top*/NULL, argv[1], type_cb, /*load_cbdata*/NULL, sax_cb, /*sax_cbdata*/NULL));
   else
-  {
-    // Read the file...
-    mxmlRelease(mxmlSAXLoadFile(NULL, fp, type_cb, sax_cb, NULL));
-
-    fclose(fp);
-  }
+    mxmlRelease(mxmlLoadFilename(/*top*/NULL, argv[1], type_cb, /*load_cbdata*/NULL, sax_cb, /*sax_cbdata*/NULL));
 
   if (!strcmp(argv[1], "test.xml"))
   {
@@ -654,9 +634,9 @@ main(int  argc,				// I - Number of command-line args
 //
 
 bool					// O - `true` to continue, `false` to stop
-sax_cb(mxml_node_t      *node,		// I - Current node
-       mxml_sax_event_t event,		// I - SAX event
-       void             *data)		// I - SAX user data
+sax_cb(void             *cbdata,	// I - SAX callback data (not used)
+       mxml_node_t      *node,		// I - Current node
+       mxml_sax_event_t event)		// I - SAX event
 {
   static const char * const events[] =	// Events
   {
@@ -670,7 +650,7 @@ sax_cb(mxml_node_t      *node,		// I - Current node
   };
 
 
-  (void)data;
+  (void)cbdata;
 
   // This SAX callback just counts the different events.
   if (!node)
@@ -687,14 +667,20 @@ sax_cb(mxml_node_t      *node,		// I - Current node
 //
 
 mxml_type_t				// O - Data type
-type_cb(mxml_node_t *node)		// I - Element node
+type_cb(void        *cbdata,		// I - Callback data
+        mxml_node_t *node)		// I - Element node
 {
   const char	*type;			// Type string
 
 
+  (void)cbdata;
+
   // You can lookup attributes and/or use the element name, hierarchy, etc...
   if ((type = mxmlElementGetAttr(node, "type")) == NULL)
-    type = node->value.element.name;
+  {
+    if ((type = mxmlGetElement(node)) == NULL)
+      type = "";
+  }
 
   if (!strcmp(type, "integer"))
     return (MXML_TYPE_INTEGER);
@@ -713,8 +699,9 @@ type_cb(mxml_node_t *node)		// I - Element node
 //
 
 const char *				// O - Whitespace string or NULL
-whitespace_cb(mxml_node_t *node,	// I - Element node
-              int         where)	// I - Open or close tag?
+whitespace_cb(void        *cbdata,	// I - Callback data
+              mxml_node_t *node,	// I - Element node
+              mxml_ws_t   where)	// I - Open or close tag?
 {
   mxml_node_t	*parent;		// Parent node
   int		level;			// Indentation level
@@ -722,6 +709,8 @@ whitespace_cb(mxml_node_t *node,	// I - Element node
   static const char *tabs = "\t\t\t\t\t\t\t\t";
 					// Tabs for indentation
 
+
+  (void)cbdata;
 
   // We can conditionally break to a new line before or after any element.
   // These are just common HTML elements...
@@ -756,7 +745,7 @@ whitespace_cb(mxml_node_t *node,	// I - Element node
   }
   else if (where == MXML_WS_BEFORE_OPEN || ((!strcmp(name, "choice") || !strcmp(name, "option")) && where == MXML_WS_BEFORE_CLOSE))
   {
-    for (level = -1, parent = node->parent; parent; level ++, parent = parent->parent);
+    for (level = -1, parent = mxmlGetParent(node); parent; level ++, parent = mxmlGetParent(parent));
 
     if (level > 8)
       level = 8;

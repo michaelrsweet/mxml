@@ -40,11 +40,11 @@
 
 
 //
-// 'mxml_error()' - Display an error message.
+// '_mxml_error()' - Display an error message.
 //
 
 void
-mxml_error(const char *format,		// I - Printf-style format string
+_mxml_error(const char *format,		// I - Printf-style format string
            ...)				// I - Additional arguments as needed
 {
   va_list	ap;			// Pointer to arguments
@@ -67,58 +67,6 @@ mxml_error(const char *format,		// I - Printf-style format string
     (*global->error_cb)(s);
   else
     fprintf(stderr, "%s\n", s);
-}
-
-
-//
-// 'mxml_ignore_cb()' - Default callback for ignored values.
-//
-
-mxml_type_t				// O - Node type
-mxml_ignore_cb(mxml_node_t *node)	// I - Current node
-{
-  (void)node;
-
-  return (MXML_TYPE_IGNORE);
-}
-
-
-//
-// 'mxml_integer_cb()' - Default callback for integer values.
-//
-
-mxml_type_t				// O - Node type
-mxml_integer_cb(mxml_node_t *node)	// I - Current node
-{
-  (void)node;
-
-  return (MXML_TYPE_INTEGER);
-}
-
-
-//
-// 'mxml_opaque_cb()' - Default callback for opaque values.
-//
-
-mxml_type_t				// O - Node type
-mxml_opaque_cb(mxml_node_t *node)	// I - Current node
-{
-  (void)node;
-
-  return (MXML_TYPE_OPAQUE);
-}
-
-
-//
-// 'mxml_real_cb()' - Default callback for real number values.
-//
-
-mxml_type_t				// O - Node type
-mxml_real_cb(mxml_node_t *node)		// I - Current node
-{
-  (void)node;
-
-  return (MXML_TYPE_REAL);
 }
 
 

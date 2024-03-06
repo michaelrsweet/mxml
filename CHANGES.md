@@ -3,6 +3,8 @@
 - Now require C99 support.
 - Now install as "libmxml4" to support installing both Mini-XML 3.x and 4.x at
   the same time (use `--disable-libmxml4-prefix` configure option to disable)
+- Added `mxmlLoadIO` and `mxmlSaveIO` functions to load and save XML via
+  callbacks (Issue #98)
 - Added new `MXML_TYPE_CDATA`, `MXML_TYPE_COMMENT`, `MXML_TYPE_DECLARATION`, and
   `MXML_TYPE_DIRECTIVE` node types (Issue #250)
 - Renamed `mxml_type_t` enumerations to `MXML_TYPE_xxx` (Issue #251)

@@ -33,7 +33,7 @@ mxmlEntityAddCallback(
   }
   else
   {
-    mxml_error("Unable to add entity callback!");
+    _mxml_error("Unable to add entity callback!");
 
     return (false);
   }
@@ -41,27 +41,25 @@ mxmlEntityAddCallback(
 
 
 //
-// 'mxmlEntityGetName()' - Get the name that corresponds to the character value.
-//
-// If val does not need to be represented by a named entity, @code NULL@ is returned.
+// '_mxml_entity_string()' - Get the entity that corresponds to the character, if any.
 //
 
-const char *				// O - Entity name or @code NULL@
-mxmlEntityGetName(int val)		// I - Character value
+const char *				// O - Entity or `NULL` for none
+_mxml_entity_string(int ch)		// I - Character
 {
-  switch (val)
+  switch (ch)
   {
     case '&' :
-        return ("amp");
+        return ("&amp;");
 
     case '<' :
-        return ("lt");
+        return ("&lt;");
 
     case '>' :
-        return ("gt");
+        return ("&gt;");
 
     case '\"' :
-        return ("quot");
+        return ("&quot;");
 
     default :
         return (NULL);

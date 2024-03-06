@@ -1,4 +1,4 @@
-.TH mxml 3 "Mini-XML API" "2024-03-04" "Mini-XML API"
+.TH mxml 3 "Mini-XML API" "2024-03-06" "Mini-XML API"
 .SH NAME
 mxml \- Mini-XML API
 .SH INCLUDE FILE
@@ -259,6 +259,24 @@ Real value
 MXML_TYPE_TEXT
 .br
 Text fragment
+.SS mxml_ws_e
+Whitespace periods
+.TP 5
+MXML_WS_AFTER_CLOSE
+.br
+Callback for after close tag
+.TP 5
+MXML_WS_AFTER_OPEN
+.br
+Callback for after open tag
+.TP 5
+MXML_WS_BEFORE_CLOSE
+.br
+Callback for before close tag
+.TP 5
+MXML_WS_BEFORE_OPEN
+.br
+Callback for before open tag
 .SH FUNCTIONS
 .SS mxmlAdd
 Add a node to a tree.
@@ -370,16 +388,6 @@ bool  mxmlEntityAddCallback (
     mxml_entity_cb_t cb
 );
 .fi
-.SS mxmlEntityGetName
-Get the name that corresponds to the character value.
-.PP
-.nf
-const char * mxmlEntityGetName (
-    int val
-);
-.fi
-.PP
-If val does not need to be represented by a named entity, \fBNULL\fR is returned.
 .SS mxmlEntityGetValue
 Get the character corresponding to a named entity.
 .PP
@@ -667,7 +675,7 @@ to calling \fImxmlIndexEnum\fR.
 Get the number of nodes in an index.
 .PP
 .nf
-int  mxmlIndexGetCount (
+size_t  mxmlIndexGetCount (
     mxml_index_t *ind
 );
 .fi
@@ -706,7 +714,10 @@ Load a file descriptor into an XML node tree.
 mxml_node_t * mxmlLoadFd (
     mxml_node_t *top,
     int fd,
-    mxml_load_cb_t cb
+    mxml_load_cb_t load_cb,
+    void *load_cbdata,
+    mxml_sax_cb_t sax_cb,
+    void *sax_cbdata
 );
 .fi
 .PP
@@ -716,8 +727,8 @@ single parent node like
 .URL ?xml ?xml
  for the entire file. The callback
 function returns the value type that should be used for child nodes.
-The constants \fBMXML_INTEGER_CALLBACK\fR, \fBMXML_TYPE_OPAQUE_CALLBACK\fR,
-\fBMXML_REAL_CALLBACK\fR, and \fBMXML_TYPE_TEXT_CALLBACK\fR are defined for
+The constants \fBMXML_INTEGER_CALLBACK\fR, \fBMXML_OPAQUE_CALLBACK\fR,
+\fBMXML_REAL_CALLBACK\fR, and \fBMXML_TEXT_CALLBACK\fR are defined for
 loading child (data) nodes of the specified type.
 .PP
 Note: The most common programming error when using the Mini-XML library is
@@ -732,7 +743,10 @@ Load a file into an XML node tree.
 mxml_node_t * mxmlLoadFile (
     mxml_node_t *top,
     FILE *fp,
-    mxml_load_cb_t cb
+    mxml_load_cb_t load_cb,
+    void *load_cbdata,
+    mxml_sax_cb_t sax_cb,
+    void *sax_cbdata
 );
 .fi
 .PP
@@ -742,8 +756,67 @@ single parent node like
 .URL ?xml ?xml
  for the entire file. The callback
 function returns the value type that should be used for child nodes.
-The constants \fBMXML_INTEGER_CALLBACK\fR, \fBMXML_TYPE_OPAQUE_CALLBACK\fR,
-\fBMXML_REAL_CALLBACK\fR, and \fBMXML_TYPE_TEXT_CALLBACK\fR are defined for
+The constants \fBMXML_INTEGER_CALLBACK\fR, \fBMXML_OPAQUE_CALLBACK\fR,
+\fBMXML_REAL_CALLBACK\fR, and \fBMXML_TEXT_CALLBACK\fR are defined for
+loading child (data) nodes of the specified type.
+.PP
+Note: The most common programming error when using the Mini-XML library is
+to load an XML file using the \fBMXML_TEXT_CALLBACK\fR, which returns inline
+text as a series of whitespace-delimited words, instead of using the
+\fBMXML_OPAQUE_CALLBACK\fR which returns the inline text as a single string
+(including whitespace).
+.SS mxmlLoadFilename
+Load a file into an XML node tree.
+.PP
+.nf
+mxml_node_t * mxmlLoadFilename (
+    mxml_node_t *top,
+    const char *filename,
+    mxml_load_cb_t load_cb,
+    void *load_cbdata,
+    mxml_sax_cb_t sax_cb,
+    void *sax_cbdata
+);
+.fi
+.PP
+The nodes in the specified file are added to the specified top node.
+If no top node is provided, the XML file MUST be well-formed with a
+single parent node like 
+.URL ?xml ?xml
+ for the entire file. The callback
+function returns the value type that should be used for child nodes.
+The constants \fBMXML_INTEGER_CALLBACK\fR, \fBMXML_OPAQUE_CALLBACK\fR,
+\fBMXML_REAL_CALLBACK\fR, and \fBMXML_TEXT_CALLBACK\fR are defined for
+loading child (data) nodes of the specified type.
+.PP
+Note: The most common programming error when using the Mini-XML library is
+to load an XML file using the \fBMXML_TEXT_CALLBACK\fR, which returns inline
+text as a series of whitespace-delimited words, instead of using the
+\fBMXML_OPAQUE_CALLBACK\fR which returns the inline text as a single string
+(including whitespace).
+.SS mxmlLoadIO
+Load an XML node tree using a read callback.
+.PP
+.nf
+mxml_node_t * mxmlLoadIO (
+    mxml_node_t *top,
+    mxml_read_cb_t read_cb,
+    void *read_cbdata,
+    mxml_load_cb_t load_cb,
+    void *load_cbdata,
+    mxml_sax_cb_t sax_cb,
+    void *sax_cbdata
+);
+.fi
+.PP
+The nodes in the specified file are added to the specified top node.
+If no top node is provided, the XML file MUST be well-formed with a
+single parent node like 
+.URL ?xml ?xml
+ for the entire file. The callback
+function returns the value type that should be used for child nodes.
+The constants \fBMXML_INTEGER_CALLBACK\fR, \fBMXML_OPAQUE_CALLBACK\fR,
+\fBMXML_REAL_CALLBACK\fR, and \fBMXML_TEXT_CALLBACK\fR are defined for
 loading child (data) nodes of the specified type.
 .PP
 Note: The most common programming error when using the Mini-XML library is
@@ -758,7 +831,10 @@ Load a string into an XML node tree.
 mxml_node_t * mxmlLoadString (
     mxml_node_t *top,
     const char *s,
-    mxml_load_cb_t cb
+    mxml_load_cb_t load_cb,
+    void *load_cbdata,
+    mxml_sax_cb_t sax_cb,
+    void *sax_cbdata
 );
 .fi
 .PP
@@ -768,8 +844,8 @@ single parent node like
 .URL ?xml ?xml
  for the entire string. The callback
 function returns the value type that should be used for child nodes.
-The constants \fBMXML_INTEGER_CALLBACK\fR, \fBMXML_TYPE_OPAQUE_CALLBACK\fR,
-\fBMXML_REAL_CALLBACK\fR, and \fBMXML_TYPE_TEXT_CALLBACK\fR are defined for
+The constants \fBMXML_INTEGER_CALLBACK\fR, \fBMXML_OPAQUE_CALLBACK\fR,
+\fBMXML_REAL_CALLBACK\fR, and \fBMXML_TEXT_CALLBACK\fR are defined for
 loading child (data) nodes of the specified type.
 .PP
 Note: The most common programming error when using the Mini-XML library is
@@ -1051,94 +1127,14 @@ int  mxmlRetain (
     mxml_node_t *node
 );
 .fi
-.SS mxmlSAXLoadFd
-Load a file descriptor into an XML node tree
-                    using a SAX callback.
-.PP
-.nf
-mxml_node_t * mxmlSAXLoadFd (
-    mxml_node_t *top,
-    int fd,
-    mxml_load_cb_t cb,
-    mxml_sax_cb_t sax_cb,
-    void *sax_data
-);
-.fi
-.PP
-The nodes in the specified file are added to the specified top node.
-If no top node is provided, the XML file MUST be well-formed with a
-single parent node like 
-.URL ?xml ?xml
- for the entire file. The callback
-function returns the value type that should be used for child nodes.
-The constants \fBMXML_INTEGER_CALLBACK\fR, \fBMXML_TYPE_OPAQUE_CALLBACK\fR,
-\fBMXML_REAL_CALLBACK\fR, and \fBMXML_TYPE_TEXT_CALLBACK\fR are defined for
-loading child nodes of the specified type.
-.PP
-The SAX callback must call \fImxmlRetain\fR for any nodes that need to
-be kept for later use. Otherwise, nodes are deleted when the parent
-node is closed or after each data, comment, CDATA, or directive node.
-.SS mxmlSAXLoadFile
-Load a file into an XML node tree
-                      using a SAX callback.
-.PP
-.nf
-mxml_node_t * mxmlSAXLoadFile (
-    mxml_node_t *top,
-    FILE *fp,
-    mxml_load_cb_t cb,
-    mxml_sax_cb_t sax_cb,
-    void *sax_data
-);
-.fi
-.PP
-The nodes in the specified file are added to the specified top node.
-If no top node is provided, the XML file MUST be well-formed with a
-single parent node like 
-.URL ?xml ?xml
- for the entire file. The callback
-function returns the value type that should be used for child nodes.
-The constants \fBMXML_INTEGER_CALLBACK\fR, \fBMXML_TYPE_OPAQUE_CALLBACK\fR,
-\fBMXML_REAL_CALLBACK\fR, and \fBMXML_TYPE_TEXT_CALLBACK\fR are defined for
-loading child nodes of the specified type.
-.PP
-The SAX callback must call \fImxmlRetain\fR for any nodes that need to
-be kept for later use. Otherwise, nodes are deleted when the parent
-node is closed or after each data, comment, CDATA, or directive node.
-.SS mxmlSAXLoadString
-Load a string into an XML node tree
-                        using a SAX callback.
-.PP
-.nf
-mxml_node_t * mxmlSAXLoadString (
-    mxml_node_t *top,
-    const char *s,
-    mxml_load_cb_t cb,
-    mxml_sax_cb_t sax_cb,
-    void *sax_data
-);
-.fi
-.PP
-The nodes in the specified string are added to the specified top node.
-If no top node is provided, the XML string MUST be well-formed with a
-single parent node like 
-.URL ?xml ?xml
- for the entire string. The callback
-function returns the value type that should be used for child nodes.
-The constants \fBMXML_INTEGER_CALLBACK\fR, \fBMXML_TYPE_OPAQUE_CALLBACK\fR,
-\fBMXML_REAL_CALLBACK\fR, and \fBMXML_TYPE_TEXT_CALLBACK\fR are defined for
-loading child nodes of the specified type.
-.PP
-The SAX callback must call \fImxmlRetain\fR for any nodes that need to
-be kept for later use. Otherwise, nodes are deleted when the parent
-node is closed or after each data, comment, CDATA, or directive node.
 .SS mxmlSaveAllocString
 Save an XML tree to an allocated string.
 .PP
 .nf
 char * mxmlSaveAllocString (
     mxml_node_t *node,
-    mxml_save_cb_t cb
+    mxml_save_cb_t save_cb,
+    void *save_cbdata
 );
 .fi
 .PP
@@ -1159,7 +1155,8 @@ Save an XML tree to a file descriptor.
 bool  mxmlSaveFd (
     mxml_node_t *node,
     int fd,
-    mxml_save_cb_t cb
+    mxml_save_cb_t save_cb,
+    void *save_cbdata
 );
 .fi
 .PP
@@ -1175,7 +1172,43 @@ Save an XML tree to a file.
 bool  mxmlSaveFile (
     mxml_node_t *node,
     FILE *fp,
-    mxml_save_cb_t cb
+    mxml_save_cb_t save_cb,
+    void *save_cbdata
+);
+.fi
+.PP
+The callback argument specifies a function that returns a whitespace
+string or NULL before and after each element. If \fBMXML_NO_CALLBACK\fR
+is specified, whitespace will only be added before \fBMXML_TYPE_TEXT\fR nodes
+with leading whitespace and before attribute names inside opening
+element tags.
+.SS mxmlSaveFilename
+Save an XML tree to a file.
+.PP
+.nf
+bool  mxmlSaveFilename (
+    mxml_node_t *node,
+    const char *filename,
+    mxml_save_cb_t save_cb,
+    void *save_cbdata
+);
+.fi
+.PP
+The callback argument specifies a function that returns a whitespace
+string or NULL before and after each element. If \fBMXML_NO_CALLBACK\fR
+is specified, whitespace will only be added before \fBMXML_TYPE_TEXT\fR nodes
+with leading whitespace and before attribute names inside opening
+element tags.
+.SS mxmlSaveIO
+Save an XML tree using a callback.
+.PP
+.nf
+bool  mxmlSaveIO (
+    mxml_node_t *node,
+    mxml_write_cb_t write_cb,
+    void *write_cbdata,
+    mxml_save_cb_t save_cb,
+    void *save_cbdata
 );
 .fi
 .PP
@@ -1192,7 +1225,8 @@ size_t  mxmlSaveString (
     mxml_node_t *node,
     char *buffer,
     size_t bufsize,
-    mxml_save_cb_t cb
+    mxml_save_cb_t save_cb,
+    void *save_cbdata
 );
 .fi
 .PP
@@ -1457,19 +1491,19 @@ typedef void(*)(void *) mxml_custom_destroy_cb_t;
 Custom data load callback function
 .PP
 .nf
-typedef bool(*)(mxml_node_t *, const char *) mxml_custom_load_cb_t;
+typedef bool(*)(mxml_node_t *node const char *s) mxml_custom_load_cb_t;
 .fi
 .SS mxml_custom_save_cb_t
 Custom data save callback function
 .PP
 .nf
-typedef char *(*)(mxml_node_t *) mxml_custom_save_cb_t;
+typedef char *(*)(mxml_node_t *node) mxml_custom_save_cb_t;
 .fi
 .SS mxml_entity_cb_t
 Entity callback function
 .PP
 .nf
-typedef int(*)(const char *) mxml_entity_cb_t;
+typedef int(*)(const char *name) mxml_entity_cb_t;
 .fi
 .SS mxml_error_cb_t
 Error callback function
@@ -1487,7 +1521,7 @@ typedef struct _mxml_index_s mxml_index_t;
 Load callback function
 .PP
 .nf
-typedef mxml_type_t(*)(mxml_node_t *) mxml_load_cb_t;
+typedef mxml_type_t(*)(void *cbdata mxml_node_t *node) mxml_load_cb_t;
 .fi
 .SS mxml_node_t
 An XML node.
@@ -1495,17 +1529,23 @@ An XML node.
 .nf
 typedef struct _mxml_node_s mxml_node_t;
 .fi
+.SS mxml_read_cb_t
+Read callback function
+.PP
+.nf
+typedef ssize_t(*)(void *cbdata void *buffer size_t bytes) mxml_read_cb_t;
+.fi
 .SS mxml_save_cb_t
 Save callback function
 .PP
 .nf
-typedef const char *(*)(mxml_node_t *, int) mxml_save_cb_t;
+typedef const char *(*)(void *cbdata mxml_node_t *node mxml_ws_t when) mxml_save_cb_t;
 .fi
 .SS mxml_sax_cb_t
 SAX callback function
 .PP
 .nf
-typedef bool(*)(mxml_node_t *, mxml_sax_event_t, void *) mxml_sax_cb_t;
+typedef bool(*)(void *cbdata mxml_node_t *node mxml_sax_event_t event) mxml_sax_cb_t;
 .fi
 .SS mxml_sax_event_t
 SAX event type.
@@ -1518,6 +1558,18 @@ The XML node type.
 .PP
 .nf
 typedef enum mxml_type_e mxml_type_t;
+.fi
+.SS mxml_write_cb_t
+Write callback function
+.PP
+.nf
+typedef ssize_t(*)(void *cbdata const void *buffer size_t bytes) mxml_write_cb_t;
+.fi
+.SS mxml_ws_t
+Whitespace periods
+.PP
+.nf
+typedef enum mxml_ws_e mxml_ws_t;
 .fi
 .SH SEE ALSO
 Mini-XML Programmers Manual, https://www.msweet.org/mxml

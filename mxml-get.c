@@ -136,12 +136,8 @@ mxmlGetElement(mxml_node_t *node)	// I - Node to get
 mxml_node_t *				// O - First child or `NULL`
 mxmlGetFirstChild(mxml_node_t *node)	// I - Node to get
 {
-  // Range check input...
-  if (!node || node->type != MXML_TYPE_ELEMENT)
-    return (NULL);
-
   // Return the first child node...
-  return (node->child);
+  return (node ? node->child : NULL);
 }
 
 
@@ -179,12 +175,7 @@ mxmlGetInteger(mxml_node_t *node)	// I - Node to get
 mxml_node_t *				// O - Last child or `NULL`
 mxmlGetLastChild(mxml_node_t *node)	// I - Node to get
 {
-  // Range check input...
-  if (!node || node->type != MXML_TYPE_ELEMENT)
-    return (NULL);
-
-  // Return the last child node...
-  return (node->last_child);
+  return (node ? node->last_child : NULL);
 }
 
 
@@ -197,12 +188,7 @@ mxmlGetLastChild(mxml_node_t *node)	// I - Node to get
 mxml_node_t *
 mxmlGetNextSibling(mxml_node_t *node)	// I - Node to get
 {
-  // Range check input...
-  if (!node)
-    return (NULL);
-
-  // Return the next sibling node...
-  return (node->next);
+  return (node ? node->next : NULL);
 }
 
 
@@ -239,12 +225,7 @@ mxmlGetOpaque(mxml_node_t *node)	// I - Node to get
 mxml_node_t *				// O - Parent node or `NULL`
 mxmlGetParent(mxml_node_t *node)	// I - Node to get
 {
-  // Range check input...
-  if (!node)
-    return (NULL);
-
-  // Return the parent node...
-  return (node->parent);
+  return (node ? node->parent : NULL);
 }
 
 
@@ -257,12 +238,7 @@ mxmlGetParent(mxml_node_t *node)	// I - Node to get
 mxml_node_t *				// O - Previous node or `NULL`
 mxmlGetPrevSibling(mxml_node_t *node)	// I - Node to get
 {
-  // Range check input...
-  if (!node)
-    return (NULL);
-
-  // Return the previous sibling node...
-  return (node->prev);
+  return (node ? node->prev : NULL);
 }
 
 

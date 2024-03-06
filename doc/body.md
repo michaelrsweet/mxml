@@ -99,47 +99,55 @@ You load an XML file using the `mxmlLoadFile` function:
 ```c
 mxml_node_t *
 mxmlLoadFile(mxml_node_t *top, FILE *fp,
-             mxml_type_t (*cb)(mxml_node_t *));
+             mxml_load_cb_t load_cb, void *load_cbdata,
+             mxml_sax_cb_t sax_cb, void *sax_cbdata);
 ```
 
-The `cb` argument specifies a function that assigns child (value) node types for
-each element in the document.  The callback can be a function you provide or one
-of the standard functions provided with Mini-XML.  For example, to load the XML
-file "filename.xml" containing text strings you can use the
-`MXML_OPAQUE_CALLBACK` function:
+The `load_cb` argument specifies a function that assigns child (value) node
+types for each element in the document.  The default callback (`NULL`) supports
+passing a pointer to an `mxml_type_t` variable containing the type of value
+nodes.  For example, to load the XML file "filename.xml" containing literal
+strings you can use:
 
 ```c
 FILE *fp;
 mxml_node_t *tree;
+mxml_type_t type = MXML_TYPE_OPAQUE;
 
 fp = fopen("filename.xml", "r");
-tree = mxmlLoadFile(NULL, fp, MXML_OPAQUE_CALLBACK);
+tree = mxmlLoadFile(/*top*/NULL, fp, /*load_cb*/NULL, &type,
+                    /*sax_cb*/NULL, /*sax_cbdata*/NULL);
 fclose(fp);
 ```
 
-Mini-XML also provides functions to load from a file descriptor or string:
+Mini-XML also provides functions to load from a named file, a file descriptor,
+or string:
 
 ```c
 mxml_node_t *
 mxmlLoadFd(mxml_node_t *top, int fd,
-           mxml_type_t (*cb)(mxml_node_t *));
+           mxml_load_cb_t load_cb, void *load_cbdata,
+           mxml_sax_cb_t sax_cb, void *sax_cbdata);
+
+mxml_node_t *
+mxmlLoadFilename(mxml_node_t *top, const char *filename,
+                 mxml_load_cb_t load_cb, void *load_cbdata,
+                 mxml_sax_cb_t sax_cb, void *sax_cbdata);
 
 mxml_node_t *
 mxmlLoadString(mxml_node_t *top, const char *s,
-               mxml_type_t (*cb)(mxml_node_t *));
+           mxml_load_cb_t load_cb, void *load_cbdata,
+           mxml_sax_cb_t sax_cb, void *sax_cbdata);
 ```
 
 
 ### Load Callbacks
 
-The last argument to the `mxmlLoad` functions is a callback function which is
-used to determine the value type of each data node in an XML document.  Mini-XML
-defines several standard callbacks for simple XML data files:
-
-- `MXML_INTEGER_CALLBACK`: All data nodes contain whitespace-separated integers.
-- `MXML_OPAQUE_CALLBACK`: All data nodes contain opaque strings with whitespace preserved.
-- `MXML_REAL_CALLBACK` - All data nodes contain whitespace-separated floating-point numbers.
-- `MXML_TEXT_CALLBACK` - All data nodes contain whitespace-separated strings.
+The `load_xxx` arguments to the `mxmlLoad` functions are a callback function and
+a data pointer which are used to determine the value type of each data node in
+an XML document.  The default (`NULL`) callback expects the `load_cbdata`
+argument to be a pointer to a `mxml_type_t` variable - if `NULL` it returns the
+`MXML_TYPE_TEXT` type.
 
 You can provide your own callback functions for more complex XML documents.
 Your callback function will receive a pointer to the current element node and
@@ -154,7 +162,7 @@ element name to determine the value type for its child nodes:
 
 ```c
 mxml_type_t
-type_cb(mxml_node_t *node)
+type_cb(void *cbdata, mxml_node_t *node)
 {
   const char *type;
 
@@ -186,7 +194,9 @@ FILE *fp;
 mxml_node_t *tree;
 
 fp = fopen("filename.xml", "r");
-tree = mxmlLoadFile(NULL, fp, type_cb);
+tree = mxmlLoadFile(/*top*/NULL, fp,
+                    type_cb, /*load_cbdata*/NULL,
+                    /*sax_cb*/NULL, /*sax_cbata*/NULL);
 fclose(fp);
 ```
 
@@ -846,7 +856,7 @@ for (node = xml;
 
 The nodes will be returned in the following order:
 
-```c
+```
 <?xml version="1.0" encoding="utf-8"?>
 <data>
 <node>
@@ -952,17 +962,13 @@ mxmlIndexDelete(mxml_index_t *ind);
 Custom Data Types
 =================
 
-Mini-XML supports
--------------------- data types via per-thread load and save callbacks.
+Mini-XML supports custom data types via per-thread load and save callbacks.
 Only a single set of callbacks can be active at any time for the current thread,
 however your callbacks can store additional information in order to support
-multiple
--------------------- data types as needed.  The `MXML_TYPE_CUSTOM` node type
-identifies
--------------------- data nodes.
+multiple custom data types as needed.  The `MXML_TYPE_CUSTOM` node type
+identifies custom data nodes.
 
-The `mxmlGetCustom` function retrieves the
--------------------- value pointer for a node.
+The `mxmlGetCustom` function retrieves the custom value pointer for a node.
 
 ```c
 const void *
@@ -970,40 +976,31 @@ mxmlGetCustom(mxml_node_t *node);
 ```
 
 Custom \(`MXML_TYPE_CUSTOM`) nodes are created using the `mxmlNewCustom`
-function or using a
--------------------- per-thread load callbacks specified using the
+function or using a custom per-thread load callbacks specified using the
 `mxmlSetCustomHandlers` function:
 
 ```c
-typedef void (*mxml_
---------------------_destroy_cb_t)(void *);
-typedef bool (*mxml_
---------------------_load_cb_t)(mxml_node_t *, const char *);
-typedef char *(*mxml_
---------------------_save_cb_t)(mxml_node_t *);
+typedef void (*mxml_custom_destroy_cb_t)(void *);
+typedef bool (*mxml_custom_load_cb_t)(mxml_node_t *, const char *);
+typedef char *(*mxml_custom_save_cb_t)(mxml_node_t *);
 
 mxml_node_t *
 mxmlNewCustom(mxml_node_t *parent, void *data,
-              mxml_
---------------------_destroy_cb_t destroy);
+              mxml_custom_destroy_cb_t destroy);
 
 int
 mxmlSetCustom(mxml_node_t *node, void *data,
-              mxml_
---------------------_destroy_cb_t destroy);
+              mxml_custom_destroy_cb_t destroy);
 
 void
-mxmlSetCustomHandlers(mxml_
---------------------_load_cb_t load,
-                      mxml_
---------------------_save_cb_t save);
+mxmlSetCustomHandlers(mxml_custom_load_cb_t load,
+                      mxml_custom_save_cb_t save);
 ```
 
 The load callback receives a pointer to the current data node and a string of
 opaque character data from the XML source with character entities converted to
 the corresponding UTF-8 characters.  For example, if we wanted to support a
-
--------------------- date/time type whose value is encoded as "yyyy-mm-ddThh:mm:ssZ" (ISO
+custom date/time type whose value is encoded as "yyyy-mm-ddThh:mm:ssZ" (ISO
 format), the load callback would look like the following:
 
 ```c
@@ -1019,8 +1016,7 @@ typedef struct
 } iso_date_time_t;
 
 bool
-load_
---------------------(mxml_node_t *node, const char *data)
+load_custom(mxml_node_t *node, const char *data)
 {
   iso_date_time_t *dt;
   struct tm tmdata;
@@ -1082,8 +1078,7 @@ load_
   dt->unix = gmtime(&tmdata);
 
  /*
-  * Assign
--------------------- node data and destroy (free) function
+  * Assign custom node data and destroy (free) function
   * pointers...
   */
 
@@ -1098,24 +1093,19 @@ load_
 ```
 
 The function itself can return `true` on success or `false` if it is unable to
-decode the
--------------------- data or the data contains an error.  Custom data nodes contain
-a `void` pointer to the allocated
--------------------- data for the node and a pointer to a
-destructor function which will free the
--------------------- data when the node is deleted.
+decode the custom data or the data contains an error.  Custom data nodes contain
+a `void` pointer to the allocated custom data for the node and a pointer to a
+destructor function which will free the custom data when the node is deleted.
 In this example, we use the standard `free` function since everything is
 contained in a single calloc'd block.
 
 The save callback receives the node pointer and returns an allocated string
-containing the
--------------------- data value.  The following save callback could be used for
+containing the custom data value.  The following save callback could be used for
 our ISO date/time type:
 
 ```c
 char *
-save_
---------------------(mxml_node_t *node)
+save_custom(mxml_node_t *node)
 {
   char data[255];
   iso_date_time_t *dt;
@@ -1135,9 +1125,7 @@ save_
 You register the callback functions using the `mxmlSetCustomHandlers` function:
 
 ```c
-mxmlSetCustomHandlers(load_
---------------------, save_
---------------------);
+mxmlSetCustomHandlers(load_custom, save_custom);
 ```
 
 
@@ -1150,35 +1138,15 @@ allowing you to process XML documents of any size, the Mini-XML implementation
 also allows you to retain portions of the document in memory for later
 processing.
 
-The `mxmlSAXLoadFd`, `mxmlSAXLoadFile`, and `mxmlSAXLoadString` functions
-provide the SAX loading APIs:
-
-```c
-mxml_node_t *
-mxmlSAXLoadFd(mxml_node_t *top, int fd,
-              mxml_type_t (*cb)(mxml_node_t *),
-              mxml_sax_cb_t sax, void *sax_data);
-
-mxml_node_t *
-mxmlSAXLoadFile(mxml_node_t *top, FILE *fp,
-                mxml_type_t (*cb)(mxml_node_t *),
-                mxml_sax_cb_t sax, void *sax_data);
-
-mxml_node_t *
-mxmlSAXLoadString(mxml_node_t *top, const char *s,
-                  mxml_type_t (*cb)(mxml_node_t *),
-                  mxml_sax_cb_t sax, void *sax_data);
-```
-
-Each function works like the corresponding `mxmlLoad` function but uses a
-callback to process each node as it is read.  The callback function receives the
-node, an event code, and a user data pointer you supply and returns `true` to
-continue processing or `false` to stop:
+The `mxmlLoadFd`, `mxmlLoadFile`, `mxmlLoadFilename`, `mxmlLoadIO`, and
+`mxmlLoadString` functions support a SAX callback and associated data.  The
+callback function receives the data pointer you supplied, the node, and an event
+code and returns `true` to continue processing or `false` to stop:
 
 ```c
 bool
-sax_cb(mxml_node_t *node, mxml_sax_event_t event,
-       void *data)
+sax_cb(void *cbdata, mxml_node_t *node,
+       mxml_sax_event_t event)
 {
   ... do something ...
 
@@ -1204,8 +1172,7 @@ retain all nodes, effectively simulating a normal in-memory load:
 
 ```c
 bool
-sax_cb(mxml_node_t *node, mxml_sax_event_t event,
-       void *data)
+sax_cb(void *cbdata, mxml_node_t *node, mxml_sax_event_t event)
 {
   if (event != MXML_SAX_ELEMENT_CLOSE)
     mxmlRetain(node);
@@ -1222,8 +1189,8 @@ directives like  `<?xml ... ?>` and declarations like `<!DOCTYPE ... >`:
 
 ```c
 bool
-sax_cb(mxml_node_t *node, mxml_sax_event_t event,
-       void *data)
+sax_cb(void *cbdata, mxml_node_t *node,
+       mxml_sax_event_t event)
 {
   if (event == MXML_SAX_ELEMENT_OPEN)
   {
@@ -1267,15 +1234,16 @@ sax_cb(mxml_node_t *node, mxml_sax_event_t event,
 ```
 
 The resulting skeleton document tree can then be searched just like one loaded
-using the `mxmlLoad` functions.  For example, a filter that reads an XHTML
+without the SAX callback function.  For example, a filter that reads an XHTML
 document from stdin and then shows the title and headings in the document would
 look like:
 
 ```c
 mxml_node_t *doc, *title, *body, *heading;
 
-doc = mxmlSAXLoadFd(NULL, 0, MXML_TEXT_CALLBACK, sax_cb,
-                    NULL);
+doc = mxmlLoadFd(/*top*/NULL, /*fd*/0,
+                 /*load_cb*/NULL, /*load_cbdata*/NULL,
+                 sax_cb, /*sax_cbdata*/NULL);
 
 title = mxmlFindElement(doc, doc, "title", NULL, NULL,
                         MXML_DESCEND);
@@ -1329,6 +1297,8 @@ The following incompatible API changes were made in Mini-XML v4.0:
 
 - SAX events are now named `MXML_SAX_EVENT_foo` instead of `MXML_SAX_foo`.
 - SAX callbacks now return a boolean value.
+- The `mxmlSAXLoadXxx` functions have been removed in favor of passing the SAX
+  callback function and data pointers to the `mxmlLoadXxx` functions.
 - Node types are now named `MXML_TYPE_foo` instead of `MXML_foo`.
 - Functions that returned `0` on success and `-1` on error now return `true` on
   success and `false` on error.

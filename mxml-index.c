@@ -181,7 +181,7 @@ mxmlIndexFind(mxml_index_t *ind,	// I - Index to search
 // 'mxmlIndexGetCount()' - Get the number of nodes in an index.
 //
 
-int					// I - Number of nodes in index
+size_t					// I - Number of nodes in index
 mxmlIndexGetCount(mxml_index_t *ind)	// I - Index of nodes
 {
   // Range check input...
@@ -222,7 +222,7 @@ mxmlIndexNew(mxml_node_t *node,		// I - XML node tree
   // Create a new index...
   if ((ind = calloc(1, sizeof(mxml_index_t))) == NULL)
   {
-    mxml_error("Unable to allocate memory for index.");
+    _mxml_error("Unable to allocate memory for index.");
     return (NULL);
   }
 
@@ -230,7 +230,7 @@ mxmlIndexNew(mxml_node_t *node,		// I - XML node tree
   {
     if ((ind->attr = strdup(attr)) == NULL)
     {
-      mxml_error("Unable to allocate memory for index attribute.");
+      _mxml_error("Unable to allocate memory for index attribute.");
       free(ind);
       return (NULL);
     }
@@ -253,7 +253,7 @@ mxmlIndexNew(mxml_node_t *node,		// I - XML node tree
       if (!temp)
       {
         // Unable to allocate memory for the index, so abort...
-        mxml_error("Unable to allocate memory for index nodes.");
+        _mxml_error("Unable to allocate memory for index nodes.");
         mxmlIndexDelete(ind);
 	return (NULL);
       }

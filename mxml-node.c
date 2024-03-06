@@ -210,7 +210,7 @@ mxmlNewCDATA(mxml_node_t *parent,	// I - Parent node or `MXML_NO_PARENT`
   {
     if ((node->value.cdata = strdup(data)) == NULL)
     {
-      mxml_error("Unable to allocate memory for CDATA.");
+      _mxml_error("Unable to allocate memory for CDATA.");
       mxmlDelete(node);
       return (NULL);
     }
@@ -286,7 +286,7 @@ mxmlNewComment(mxml_node_t *parent,	// I - Parent node or `MXML_NO_PARENT`
   {
     if ((node->value.comment = strdup(comment)) == NULL)
     {
-      mxml_error("Unable to allocate memory for comment.");
+      _mxml_error("Unable to allocate memory for comment.");
       mxmlDelete(node);
       return (NULL);
     }
@@ -394,7 +394,7 @@ mxmlNewDeclaration(
   {
     if ((node->value.declaration = strdup(declaration)) == NULL)
     {
-      mxml_error("Unable to allocate memory for declaration.");
+      _mxml_error("Unable to allocate memory for declaration.");
       mxmlDelete(node);
       return (NULL);
     }
@@ -471,7 +471,7 @@ mxmlNewDirective(mxml_node_t *parent,	// I - Parent node or `MXML_NO_PARENT`
   {
     if ((node->value.directive = strdup(directive)) == NULL)
     {
-      mxml_error("Unable to allocate memory for processing instruction.");
+      _mxml_error("Unable to allocate memory for processing instruction.");
       mxmlDelete(node);
       return (NULL);
     }

@@ -292,7 +292,6 @@ span.string {
 <li><a href="#mxmlElementSetAttr">mxmlElementSetAttr</a></li>
 <li><a href="#mxmlElementSetAttrf">mxmlElementSetAttrf</a></li>
 <li><a href="#mxmlEntityAddCallback">mxmlEntityAddCallback</a></li>
-<li><a href="#mxmlEntityGetName">mxmlEntityGetName</a></li>
 <li><a href="#mxmlEntityGetValue">mxmlEntityGetValue</a></li>
 <li><a href="#mxmlEntityRemoveCallback">mxmlEntityRemoveCallback</a></li>
 <li><a href="#mxmlFindElement">mxmlFindElement</a></li>
@@ -323,6 +322,8 @@ span.string {
 <li><a href="#mxmlIndexReset">mxmlIndexReset</a></li>
 <li><a href="#mxmlLoadFd">mxmlLoadFd</a></li>
 <li><a href="#mxmlLoadFile">mxmlLoadFile</a></li>
+<li><a href="#mxmlLoadFilename">mxmlLoadFilename</a></li>
+<li><a href="#mxmlLoadIO">mxmlLoadIO</a></li>
 <li><a href="#mxmlLoadString">mxmlLoadString</a></li>
 <li><a href="#mxmlNewCDATA">mxmlNewCDATA</a></li>
 <li><a href="#mxmlNewCDATAf">mxmlNewCDATAf</a></li>
@@ -344,12 +345,11 @@ span.string {
 <li><a href="#mxmlRelease">mxmlRelease</a></li>
 <li><a href="#mxmlRemove">mxmlRemove</a></li>
 <li><a href="#mxmlRetain">mxmlRetain</a></li>
-<li><a href="#mxmlSAXLoadFd">mxmlSAXLoadFd</a></li>
-<li><a href="#mxmlSAXLoadFile">mxmlSAXLoadFile</a></li>
-<li><a href="#mxmlSAXLoadString">mxmlSAXLoadString</a></li>
 <li><a href="#mxmlSaveAllocString">mxmlSaveAllocString</a></li>
 <li><a href="#mxmlSaveFd">mxmlSaveFd</a></li>
 <li><a href="#mxmlSaveFile">mxmlSaveFile</a></li>
+<li><a href="#mxmlSaveFilename">mxmlSaveFilename</a></li>
+<li><a href="#mxmlSaveIO">mxmlSaveIO</a></li>
 <li><a href="#mxmlSaveString">mxmlSaveString</a></li>
 <li><a href="#mxmlSetCDATA">mxmlSetCDATA</a></li>
 <li><a href="#mxmlSetCDATAf">mxmlSetCDATAf</a></li>
@@ -383,14 +383,18 @@ span.string {
 <li><a href="#mxml_index_t">mxml_index_t</a></li>
 <li><a href="#mxml_load_cb_t">mxml_load_cb_t</a></li>
 <li><a href="#mxml_node_t">mxml_node_t</a></li>
+<li><a href="#mxml_read_cb_t">mxml_read_cb_t</a></li>
 <li><a href="#mxml_save_cb_t">mxml_save_cb_t</a></li>
 <li><a href="#mxml_sax_cb_t">mxml_sax_cb_t</a></li>
 <li><a href="#mxml_sax_event_t">mxml_sax_event_t</a></li>
 <li><a href="#mxml_type_t">mxml_type_t</a></li>
+<li><a href="#mxml_write_cb_t">mxml_write_cb_t</a></li>
+<li><a href="#mxml_ws_t">mxml_ws_t</a></li>
 </ul></li>
 <li><a href="#ENUMERATIONS">Enumerations</a><ul class="subcontents">
 <li><a href="#mxml_sax_event_e">mxml_sax_event_e</a></li>
 <li><a href="#mxml_type_e">mxml_type_e</a></li>
+<li><a href="#mxml_ws_e">mxml_ws_e</a></li>
 </ul></li>
 </ul>
 </div>
@@ -443,41 +447,41 @@ span.string {
 <p>You load an XML file using the <code>mxmlLoadFile</code> function:</p>
 <pre><code class="language-c">mxml_node_t *
 mxmlLoadFile(mxml_node_t *top, FILE *fp,
-             mxml_type_t (*cb)(mxml_node_t *));
+             mxml_load_cb_t load_cb, <span class="reserved">void</span> *load_cbdata,
+             mxml_sax_cb_t sax_cb, <span class="reserved">void</span> *sax_cbdata);
 </code></pre>
-<p>The <code>cb</code> argument specifies a function that assigns child (value) node types for each element in the document. The callback can be a function you provide or one of the standard functions provided with Mini-XML. For example, to load the XML file &quot;filename.xml&quot; containing text strings you can use the <code>MXML_OPAQUE_CALLBACK</code> function:</p>
+<p>The <code>load_cb</code> argument specifies a function that assigns child (value) node types for each element in the document. The default callback (<code>NULL</code>) supports passing a pointer to an <code>mxml_type_t</code> variable containing the type of value nodes. For example, to load the XML file &quot;filename.xml&quot; containing literal strings you can use:</p>
 <pre><code class="language-c">FILE *fp;
 mxml_node_t *tree;
+mxml_type_t type = MXML_TYPE_OPAQUE;
 
 fp = fopen(<span class="string">&quot;filename.xml&quot;</span>, <span class="string">&quot;r&quot;</span>);
-tree = mxmlLoadFile(NULL, fp, MXML_OPAQUE_CALLBACK);
+tree = mxmlLoadFile(<span class="comment">/*top*/</span>NULL, fp, <span class="comment">/*load_cb*/</span>NULL, &amp;type,
+                    <span class="comment">/*sax_cb*/</span>NULL, <span class="comment">/*sax_cbdata*/</span>NULL);
 fclose(fp);
 </code></pre>
-<p>Mini-XML also provides functions to load from a file descriptor or string:</p>
+<p>Mini-XML also provides functions to load from a named file, a file descriptor, or string:</p>
 <pre><code class="language-c">mxml_node_t *
 mxmlLoadFd(mxml_node_t *top, <span class="reserved">int</span> fd,
-           mxml_type_t (*cb)(mxml_node_t *));
+           mxml_load_cb_t load_cb, <span class="reserved">void</span> *load_cbdata,
+           mxml_sax_cb_t sax_cb, <span class="reserved">void</span> *sax_cbdata);
+
+mxml_node_t *
+mxmlLoadFilename(mxml_node_t *top, <span class="reserved">const</span> <span class="reserved">char</span> *filename,
+                 mxml_load_cb_t load_cb, <span class="reserved">void</span> *load_cbdata,
+                 mxml_sax_cb_t sax_cb, <span class="reserved">void</span> *sax_cbdata);
 
 mxml_node_t *
 mxmlLoadString(mxml_node_t *top, <span class="reserved">const</span> <span class="reserved">char</span> *s,
-               mxml_type_t (*cb)(mxml_node_t *));
+           mxml_load_cb_t load_cb, <span class="reserved">void</span> *load_cbdata,
+           mxml_sax_cb_t sax_cb, <span class="reserved">void</span> *sax_cbdata);
 </code></pre>
 <h4 id="load-callbacks">Load Callbacks</h4>
-<p>The last argument to the <code>mxmlLoad</code> functions is a callback function which is used to determine the value type of each data node in an XML document. Mini-XML defines several standard callbacks for simple XML data files:</p>
-<ul>
-<li><p><code>MXML_INTEGER_CALLBACK</code>: All data nodes contain whitespace-separated integers.</p>
-</li>
-<li><p><code>MXML_OPAQUE_CALLBACK</code>: All data nodes contain opaque strings with whitespace preserved.</p>
-</li>
-<li><p><code>MXML_REAL_CALLBACK</code> - All data nodes contain whitespace-separated floating-point numbers.</p>
-</li>
-<li><p><code>MXML_TEXT_CALLBACK</code> - All data nodes contain whitespace-separated strings.</p>
-</li>
-</ul>
+<p>The <code>load_xxx</code> arguments to the <code>mxmlLoad</code> functions are a callback function and a data pointer which are used to determine the value type of each data node in an XML document. The default (<code>NULL</code>) callback expects the <code>load_cbdata</code> argument to be a pointer to a <code>mxml_type_t</code> variable - if <code>NULL</code> it returns the <code>MXML_TYPE_TEXT</code> type.</p>
 <p>You can provide your own callback functions for more complex XML documents. Your callback function will receive a pointer to the current element node and must return the value type of the immediate children for that element node: <code>MXML_TYPE_CUSTOM</code>, <code>MXML_TYPE_INTEGER</code>, <code>MXML_TYPE_OPAQUE</code>, <code>MXML_TYPE_REAL</code>, or <code>MXML_TYPE_TEXT</code>. The function is called <em>after</em> the element and its attributes have been read, so you can look at the element name, attributes, and attribute values to determine the proper value type to return.</p>
 <p>The following callback function looks for an attribute named &quot;type&quot; or the element name to determine the value type for its child nodes:</p>
 <pre><code class="language-c">mxml_type_t
-type_cb(mxml_node_t *node)
+type_cb(<span class="reserved">void</span> *cbdata, mxml_node_t *node)
 {
   <span class="reserved">const</span> <span class="reserved">char</span> *type;
 
@@ -505,7 +509,9 @@ type_cb(mxml_node_t *node)
 mxml_node_t *tree;
 
 fp = fopen(<span class="string">&quot;filename.xml&quot;</span>, <span class="string">&quot;r&quot;</span>);
-tree = mxmlLoadFile(NULL, fp, type_cb);
+tree = mxmlLoadFile(<span class="comment">/*top*/</span>NULL, fp,
+                    type_cb, <span class="comment">/*load_cbdata*/</span>NULL,
+                    <span class="comment">/*sax_cb*/</span>NULL, <span class="comment">/*sax_cbata*/</span>NULL);
 fclose(fp);
 </code></pre>
 <h3 class="title" id="nodes">Nodes</h3>
@@ -924,7 +930,7 @@ mxmlWalkPrev(mxml_node_t *node, mxml_node_t *top,
 }
 </code></pre>
 <p>The nodes will be returned in the following order:</p>
-<pre><code class="language-c">&lt;?xml version=<span class="string">&quot;1.0&quot;</span> encoding=<span class="string">&quot;utf-8&quot;</span>?&gt;
+<pre><code>&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
 &lt;data&gt;
 &lt;node&gt;
 val1
@@ -988,37 +994,29 @@ mxmlIndexGetCount(mxml_index_t *ind);
 mxmlIndexDelete(mxml_index_t *ind);
 </code></pre>
 <h2 class="title" id="custom-data-types">Custom Data Types</h2>
-<p>Mini-XML supports -------------------- data types via per-thread load and save callbacks. Only a single set of callbacks can be active at any time for the current thread, however your callbacks can store additional information in order to support multiple -------------------- data types as needed. The <code>MXML_TYPE_CUSTOM</code> node type identifies -------------------- data nodes.</p>
-<p>The <code>mxmlGetCustom</code> function retrieves the -------------------- value pointer for a node.</p>
+<p>Mini-XML supports custom data types via per-thread load and save callbacks. Only a single set of callbacks can be active at any time for the current thread, however your callbacks can store additional information in order to support multiple custom data types as needed. The <code>MXML_TYPE_CUSTOM</code> node type identifies custom data nodes.</p>
+<p>The <code>mxmlGetCustom</code> function retrieves the custom value pointer for a node.</p>
 <pre><code class="language-c"><span class="reserved">const</span> <span class="reserved">void</span> *
 mxmlGetCustom(mxml_node_t *node);
 </code></pre>
-<p>Custom (<code>MXML_TYPE_CUSTOM</code>) nodes are created using the <code>mxmlNewCustom</code> function or using a -------------------- per-thread load callbacks specified using the <code>mxmlSetCustomHandlers</code> function:</p>
-<pre><code class="language-c"><span class="reserved">typedef</span> <span class="reserved">void</span> (*mxml_
---------------------_destroy_cb_t)(<span class="reserved">void</span> *);
-<span class="reserved">typedef</span> <span class="reserved">bool</span> (*mxml_
---------------------_load_cb_t)(mxml_node_t *, <span class="reserved">const</span> <span class="reserved">char</span> *);
-<span class="reserved">typedef</span> <span class="reserved">char</span> *(*mxml_
---------------------_save_cb_t)(mxml_node_t *);
+<p>Custom (<code>MXML_TYPE_CUSTOM</code>) nodes are created using the <code>mxmlNewCustom</code> function or using a custom per-thread load callbacks specified using the <code>mxmlSetCustomHandlers</code> function:</p>
+<pre><code class="language-c"><span class="reserved">typedef</span> <span class="reserved">void</span> (*mxml_custom_destroy_cb_t)(<span class="reserved">void</span> *);
+<span class="reserved">typedef</span> <span class="reserved">bool</span> (*mxml_custom_load_cb_t)(mxml_node_t *, <span class="reserved">const</span> <span class="reserved">char</span> *);
+<span class="reserved">typedef</span> <span class="reserved">char</span> *(*mxml_custom_save_cb_t)(mxml_node_t *);
 
 mxml_node_t *
 mxmlNewCustom(mxml_node_t *parent, <span class="reserved">void</span> *data,
-              mxml_
---------------------_destroy_cb_t destroy);
+              mxml_custom_destroy_cb_t destroy);
 
 <span class="reserved">int</span>
 mxmlSetCustom(mxml_node_t *node, <span class="reserved">void</span> *data,
-              mxml_
---------------------_destroy_cb_t destroy);
+              mxml_custom_destroy_cb_t destroy);
 
 <span class="reserved">void</span>
-mxmlSetCustomHandlers(mxml_
---------------------_load_cb_t load,
-                      mxml_
---------------------_save_cb_t save);
+mxmlSetCustomHandlers(mxml_custom_load_cb_t load,
+                      mxml_custom_save_cb_t save);
 </code></pre>
-<p>The load callback receives a pointer to the current data node and a string of opaque character data from the XML source with character entities converted to the corresponding UTF-8 characters. For example, if we wanted to support a</p>
-<p>-------------------- date/time type whose value is encoded as &quot;yyyy-mm-ddThh:mm:ssZ&quot; (ISO format), the load callback would look like the following:</p>
+<p>The load callback receives a pointer to the current data node and a string of opaque character data from the XML source with character entities converted to the corresponding UTF-8 characters. For example, if we wanted to support a custom date/time type whose value is encoded as &quot;yyyy-mm-ddThh:mm:ssZ&quot; (ISO format), the load callback would look like the following:</p>
 <pre><code class="language-c"><span class="reserved">typedef</span> <span class="reserved">struct</span>
 {
   <span class="reserved">unsigned</span> year,    <span class="comment">/* Year */</span>
@@ -1031,8 +1029,7 @@ mxmlSetCustomHandlers(mxml_
 } iso_date_time_t;
 
 <span class="reserved">bool</span>
-load_
---------------------(mxml_node_t *node, <span class="reserved">const</span> <span class="reserved">char</span> *data)
+load_custom(mxml_node_t *node, <span class="reserved">const</span> <span class="reserved">char</span> *data)
 {
   iso_date_time_t *dt;
   <span class="reserved">struct</span> tm tmdata;
@@ -1094,8 +1091,7 @@ load_
   dt-&gt;unix = gmtime(&amp;tmdata);
 
  <span class="comment">/*</span>
-<span class="comment">  * Assign</span>
-<span class="comment">-------------------- node data and destroy (free) function</span>
+<span class="comment">  * Assign custom node data and destroy (free) function</span>
 <span class="comment">  * pointers...</span>
 <span class="comment">  */</span>
 
@@ -1108,11 +1104,10 @@ load_
   <span class="reserved">return</span> (<span class="reserved">true</span>);
 }
 </code></pre>
-<p>The function itself can return <code>true</code> on success or <code>false</code> if it is unable to decode the -------------------- data or the data contains an error. Custom data nodes contain a <code>void</code> pointer to the allocated -------------------- data for the node and a pointer to a destructor function which will free the -------------------- data when the node is deleted. In this example, we use the standard <code>free</code> function since everything is contained in a single calloc'd block.</p>
-<p>The save callback receives the node pointer and returns an allocated string containing the -------------------- data value. The following save callback could be used for our ISO date/time type:</p>
+<p>The function itself can return <code>true</code> on success or <code>false</code> if it is unable to decode the custom data or the data contains an error. Custom data nodes contain a <code>void</code> pointer to the allocated custom data for the node and a pointer to a destructor function which will free the custom data when the node is deleted. In this example, we use the standard <code>free</code> function since everything is contained in a single calloc'd block.</p>
+<p>The save callback receives the node pointer and returns an allocated string containing the custom data value. The following save callback could be used for our ISO date/time type:</p>
 <pre><code class="language-c"><span class="reserved">char</span> *
-save_
---------------------(mxml_node_t *node)
+save_custom(mxml_node_t *node)
 {
   <span class="reserved">char</span> data[<span class="number">255</span>];
   iso_date_time_t *dt;
@@ -1129,32 +1124,14 @@ save_
 }
 </code></pre>
 <p>You register the callback functions using the <code>mxmlSetCustomHandlers</code> function:</p>
-<pre><code class="language-c">mxmlSetCustomHandlers(load_
---------------------, save_
---------------------);
+<pre><code class="language-c">mxmlSetCustomHandlers(load_custom, save_custom);
 </code></pre>
 <h2 class="title" id="sax-stream-loading-of-documents">SAX (Stream) Loading of Documents</h2>
 <p>Mini-XML supports an implementation of the Simple API for XML (SAX) which allows you to load and process an XML document as a stream of nodes. Aside from allowing you to process XML documents of any size, the Mini-XML implementation also allows you to retain portions of the document in memory for later processing.</p>
-<p>The <code>mxmlSAXLoadFd</code>, <code>mxmlSAXLoadFile</code>, and <code>mxmlSAXLoadString</code> functions provide the SAX loading APIs:</p>
-<pre><code class="language-c">mxml_node_t *
-mxmlSAXLoadFd(mxml_node_t *top, <span class="reserved">int</span> fd,
-              mxml_type_t (*cb)(mxml_node_t *),
-              mxml_sax_cb_t sax, <span class="reserved">void</span> *sax_data);
-
-mxml_node_t *
-mxmlSAXLoadFile(mxml_node_t *top, FILE *fp,
-                mxml_type_t (*cb)(mxml_node_t *),
-                mxml_sax_cb_t sax, <span class="reserved">void</span> *sax_data);
-
-mxml_node_t *
-mxmlSAXLoadString(mxml_node_t *top, <span class="reserved">const</span> <span class="reserved">char</span> *s,
-                  mxml_type_t (*cb)(mxml_node_t *),
-                  mxml_sax_cb_t sax, <span class="reserved">void</span> *sax_data);
-</code></pre>
-<p>Each function works like the corresponding <code>mxmlLoad</code> function but uses a callback to process each node as it is read. The callback function receives the node, an event code, and a user data pointer you supply and returns <code>true</code> to continue processing or <code>false</code> to stop:</p>
+<p>The <code>mxmlLoadFd</code>, <code>mxmlLoadFile</code>, <code>mxmlLoadFilename</code>, <code>mxmlLoadIO</code>, and <code>mxmlLoadString</code> functions support a SAX callback and associated data. The callback function receives the data pointer you supplied, the node, and an event code and returns <code>true</code> to continue processing or <code>false</code> to stop:</p>
 <pre><code class="language-c"><span class="reserved">bool</span>
-sax_cb(mxml_node_t *node, mxml_sax_event_t event,
-       <span class="reserved">void</span> *data)
+sax_cb(<span class="reserved">void</span> *cbdata, mxml_node_t *node,
+       mxml_sax_event_t event)
 {
   ... <span class="reserved">do</span> something ...
 
@@ -1181,8 +1158,7 @@ sax_cb(mxml_node_t *node, mxml_sax_event_t event,
 </ul>
 <p>Elements are <em>released</em> after the close element is processed. All other nodes are released after they are processed. The SAX callback can <em>retain</em> the node using the <code>mxmlRetain</code> function. For example, the following SAX callback will retain all nodes, effectively simulating a normal in-memory load:</p>
 <pre><code class="language-c"><span class="reserved">bool</span>
-sax_cb(mxml_node_t *node, mxml_sax_event_t event,
-       <span class="reserved">void</span> *data)
+sax_cb(<span class="reserved">void</span> *cbdata, mxml_node_t *node, mxml_sax_event_t event)
 {
   <span class="reserved">if</span> (event != MXML_SAX_ELEMENT_CLOSE)
     mxmlRetain(node);
@@ -1192,8 +1168,8 @@ sax_cb(mxml_node_t *node, mxml_sax_event_t event,
 </code></pre>
 <p>More typically the SAX callback will only retain a small portion of the document that is needed for post-processing. For example, the following SAX callback will retain the title and headings in an XHTML file. It also retains the (parent) elements like <code>&lt;html&gt;</code>, <code>&lt;head&gt;</code>, and <code>&lt;body&gt;</code>, and processing directives like <code>&lt;?xml ... ?&gt;</code> and declarations like <code>&lt;!DOCTYPE ... &gt;</code>:</p>
 <pre><code class="language-c"><span class="reserved">bool</span>
-sax_cb(mxml_node_t *node, mxml_sax_event_t event,
-       <span class="reserved">void</span> *data)
+sax_cb(<span class="reserved">void</span> *cbdata, mxml_node_t *node,
+       mxml_sax_event_t event)
 {
   <span class="reserved">if</span> (event == MXML_SAX_ELEMENT_OPEN)
   {
@@ -1235,11 +1211,12 @@ sax_cb(mxml_node_t *node, mxml_sax_event_t event,
   <span class="reserved">return</span> (<span class="reserved">true</span>);
 }
 </code></pre>
-<p>The resulting skeleton document tree can then be searched just like one loaded using the <code>mxmlLoad</code> functions. For example, a filter that reads an XHTML document from stdin and then shows the title and headings in the document would look like:</p>
+<p>The resulting skeleton document tree can then be searched just like one loaded without the SAX callback function. For example, a filter that reads an XHTML document from stdin and then shows the title and headings in the document would look like:</p>
 <pre><code class="language-c">mxml_node_t *doc, *title, *body, *heading;
 
-doc = mxmlSAXLoadFd(NULL, <span class="number">0</span>, MXML_TEXT_CALLBACK, sax_cb,
-                    NULL);
+doc = mxmlLoadFd(<span class="comment">/*top*/</span>NULL, <span class="comment">/*fd*/</span><span class="number">0</span>,
+                 <span class="comment">/*load_cb*/</span>NULL, <span class="comment">/*load_cbdata*/</span>NULL,
+                 sax_cb, <span class="comment">/*sax_cbdata*/</span>NULL);
 
 title = mxmlFindElement(doc, doc, <span class="string">&quot;title&quot;</span>, NULL, NULL,
                         MXML_DESCEND);
@@ -1287,6 +1264,8 @@ print_children(mxml_node_t *parent)
 <li><p>SAX events are now named <code>MXML_SAX_EVENT_foo</code> instead of <code>MXML_SAX_foo</code>.</p>
 </li>
 <li><p>SAX callbacks now return a boolean value.</p>
+</li>
+<li><p>The <code>mxmlSAXLoadXxx</code> functions have been removed in favor of passing the SAX callback function and data pointers to the <code>mxmlLoadXxx</code> functions.</p>
 </li>
 <li><p>Node types are now named <code>MXML_TYPE_foo</code> instead of <code>MXML_foo</code>.</p>
 </li>
@@ -1445,19 +1424,6 @@ bool mxmlEntityAddCallback(<a href="#mxml_entity_cb_t">mxml_entity_cb_t</a> cb);
 </tbody></table>
 <h4 class="returnvalue">Return Value</h4>
 <p class="description"><code>true</code> on success, <code>false</code> on failure</p>
-<h3 class="function"><a id="mxmlEntityGetName">mxmlEntityGetName</a></h3>
-<p class="description">Get the name that corresponds to the character value.</p>
-<p class="code">
-const char *mxmlEntityGetName(int val);</p>
-<h4 class="parameters">Parameters</h4>
-<table class="list"><tbody>
-<tr><th>val</th>
-<td class="description">Character value</td></tr>
-</tbody></table>
-<h4 class="returnvalue">Return Value</h4>
-<p class="description">Entity name or <code>NULL</code></p>
-<h4 class="discussion">Discussion</h4>
-<p class="discussion">If val does not need to be represented by a named entity, <code>NULL</code> is returned.</p>
 <h3 class="function"><a id="mxmlEntityGetValue">mxmlEntityGetValue</a></h3>
 <p class="description">Get the character corresponding to a named entity.</p>
 <p class="code">
@@ -1825,7 +1791,7 @@ to calling <a href="#mxmlIndexEnum"><code>mxmlIndexEnum</code></a>.</p>
 <h3 class="function"><a id="mxmlIndexGetCount">mxmlIndexGetCount</a></h3>
 <p class="description">Get the number of nodes in an index.</p>
 <p class="code">
-int mxmlIndexGetCount(<a href="#mxml_index_t">mxml_index_t</a> *ind);</p>
+size_t mxmlIndexGetCount(<a href="#mxml_index_t">mxml_index_t</a> *ind);</p>
 <h4 class="parameters">Parameters</h4>
 <table class="list"><tbody>
 <tr><th>ind</th>
@@ -1872,15 +1838,21 @@ argument is not NULL.</p>
 <h3 class="function"><a id="mxmlLoadFd">mxmlLoadFd</a></h3>
 <p class="description">Load a file descriptor into an XML node tree.</p>
 <p class="code">
-<a href="#mxml_node_t">mxml_node_t</a> *mxmlLoadFd(<a href="#mxml_node_t">mxml_node_t</a> *top, int fd, <a href="#mxml_load_cb_t">mxml_load_cb_t</a> cb);</p>
+<a href="#mxml_node_t">mxml_node_t</a> *mxmlLoadFd(<a href="#mxml_node_t">mxml_node_t</a> *top, int fd, <a href="#mxml_load_cb_t">mxml_load_cb_t</a> load_cb, void *load_cbdata, <a href="#mxml_sax_cb_t">mxml_sax_cb_t</a> sax_cb, void *sax_cbdata);</p>
 <h4 class="parameters">Parameters</h4>
 <table class="list"><tbody>
 <tr><th>top</th>
 <td class="description">Top node</td></tr>
 <tr><th>fd</th>
 <td class="description">File descriptor to read from</td></tr>
-<tr><th>cb</th>
-<td class="description">Callback function or constant</td></tr>
+<tr><th>load_cb</th>
+<td class="description">Load callback function or <code>NULL</code></td></tr>
+<tr><th>load_cbdata</th>
+<td class="description">Load callback data</td></tr>
+<tr><th>sax_cb</th>
+<td class="description">SAX callback function or <code>NULL</code><code></code></td></tr>
+<tr><th>sax_cbdata</th>
+<td class="description">SAX callback data</td></tr>
 </tbody></table>
 <h4 class="returnvalue">Return Value</h4>
 <p class="description">First node or <code>NULL</code> if the file could not be read.</p>
@@ -1889,8 +1861,8 @@ argument is not NULL.</p>
 If no top node is provided, the XML file MUST be well-formed with a
 single parent node like <a href="?xml">?xml</a> for the entire file. The callback
 function returns the value type that should be used for child nodes.
-The constants <code>MXML_INTEGER_CALLBACK</code>, <code>MXML_TYPE_OPAQUE_CALLBACK</code>,
-<code>MXML_REAL_CALLBACK</code>, and <code>MXML_TYPE_TEXT_CALLBACK</code> are defined for
+The constants <code>MXML_INTEGER_CALLBACK</code>, <code>MXML_OPAQUE_CALLBACK</code>,
+<code>MXML_REAL_CALLBACK</code>, and <code>MXML_TEXT_CALLBACK</code> are defined for
 loading child (data) nodes of the specified type.<br>
 <br>
 Note: The most common programming error when using the Mini-XML library is
@@ -1901,15 +1873,21 @@ text as a series of whitespace-delimited words, instead of using the
 <h3 class="function"><a id="mxmlLoadFile">mxmlLoadFile</a></h3>
 <p class="description">Load a file into an XML node tree.</p>
 <p class="code">
-<a href="#mxml_node_t">mxml_node_t</a> *mxmlLoadFile(<a href="#mxml_node_t">mxml_node_t</a> *top, FILE *fp, <a href="#mxml_load_cb_t">mxml_load_cb_t</a> cb);</p>
+<a href="#mxml_node_t">mxml_node_t</a> *mxmlLoadFile(<a href="#mxml_node_t">mxml_node_t</a> *top, FILE *fp, <a href="#mxml_load_cb_t">mxml_load_cb_t</a> load_cb, void *load_cbdata, <a href="#mxml_sax_cb_t">mxml_sax_cb_t</a> sax_cb, void *sax_cbdata);</p>
 <h4 class="parameters">Parameters</h4>
 <table class="list"><tbody>
 <tr><th>top</th>
 <td class="description">Top node</td></tr>
 <tr><th>fp</th>
 <td class="description">File to read from</td></tr>
-<tr><th>cb</th>
-<td class="description">Callback function or constant</td></tr>
+<tr><th>load_cb</th>
+<td class="description">Load callback function or <code>NULL</code></td></tr>
+<tr><th>load_cbdata</th>
+<td class="description">Load callback data</td></tr>
+<tr><th>sax_cb</th>
+<td class="description">SAX callback function or <code>NULL</code><code></code></td></tr>
+<tr><th>sax_cbdata</th>
+<td class="description">SAX callback data</td></tr>
 </tbody></table>
 <h4 class="returnvalue">Return Value</h4>
 <p class="description">First node or <code>NULL</code> if the file could not be read.</p>
@@ -1918,8 +1896,80 @@ text as a series of whitespace-delimited words, instead of using the
 If no top node is provided, the XML file MUST be well-formed with a
 single parent node like <a href="?xml">?xml</a> for the entire file. The callback
 function returns the value type that should be used for child nodes.
-The constants <code>MXML_INTEGER_CALLBACK</code>, <code>MXML_TYPE_OPAQUE_CALLBACK</code>,
-<code>MXML_REAL_CALLBACK</code>, and <code>MXML_TYPE_TEXT_CALLBACK</code> are defined for
+The constants <code>MXML_INTEGER_CALLBACK</code>, <code>MXML_OPAQUE_CALLBACK</code>,
+<code>MXML_REAL_CALLBACK</code>, and <code>MXML_TEXT_CALLBACK</code> are defined for
+loading child (data) nodes of the specified type.<br>
+<br>
+Note: The most common programming error when using the Mini-XML library is
+to load an XML file using the <code>MXML_TEXT_CALLBACK</code>, which returns inline
+text as a series of whitespace-delimited words, instead of using the
+<code>MXML_OPAQUE_CALLBACK</code> which returns the inline text as a single string
+(including whitespace).</p>
+<h3 class="function"><a id="mxmlLoadFilename">mxmlLoadFilename</a></h3>
+<p class="description">Load a file into an XML node tree.</p>
+<p class="code">
+<a href="#mxml_node_t">mxml_node_t</a> *mxmlLoadFilename(<a href="#mxml_node_t">mxml_node_t</a> *top, const char *filename, <a href="#mxml_load_cb_t">mxml_load_cb_t</a> load_cb, void *load_cbdata, <a href="#mxml_sax_cb_t">mxml_sax_cb_t</a> sax_cb, void *sax_cbdata);</p>
+<h4 class="parameters">Parameters</h4>
+<table class="list"><tbody>
+<tr><th>top</th>
+<td class="description">Top node</td></tr>
+<tr><th>filename</th>
+<td class="description">File to read from</td></tr>
+<tr><th>load_cb</th>
+<td class="description">Load callback function or <code>NULL</code></td></tr>
+<tr><th>load_cbdata</th>
+<td class="description">Load callback data</td></tr>
+<tr><th>sax_cb</th>
+<td class="description">SAX callback function or <code>NULL</code><code></code></td></tr>
+<tr><th>sax_cbdata</th>
+<td class="description">SAX callback data</td></tr>
+</tbody></table>
+<h4 class="returnvalue">Return Value</h4>
+<p class="description">First node or <code>NULL</code> if the file could not be read.</p>
+<h4 class="discussion">Discussion</h4>
+<p class="discussion">The nodes in the specified file are added to the specified top node.
+If no top node is provided, the XML file MUST be well-formed with a
+single parent node like <a href="?xml">?xml</a> for the entire file. The callback
+function returns the value type that should be used for child nodes.
+The constants <code>MXML_INTEGER_CALLBACK</code>, <code>MXML_OPAQUE_CALLBACK</code>,
+<code>MXML_REAL_CALLBACK</code>, and <code>MXML_TEXT_CALLBACK</code> are defined for
+loading child (data) nodes of the specified type.<br>
+<br>
+Note: The most common programming error when using the Mini-XML library is
+to load an XML file using the <code>MXML_TEXT_CALLBACK</code>, which returns inline
+text as a series of whitespace-delimited words, instead of using the
+<code>MXML_OPAQUE_CALLBACK</code> which returns the inline text as a single string
+(including whitespace).</p>
+<h3 class="function"><a id="mxmlLoadIO">mxmlLoadIO</a></h3>
+<p class="description">Load an XML node tree using a read callback.</p>
+<p class="code">
+<a href="#mxml_node_t">mxml_node_t</a> *mxmlLoadIO(<a href="#mxml_node_t">mxml_node_t</a> *top, <a href="#mxml_read_cb_t">mxml_read_cb_t</a> read_cb, void *read_cbdata, <a href="#mxml_load_cb_t">mxml_load_cb_t</a> load_cb, void *load_cbdata, <a href="#mxml_sax_cb_t">mxml_sax_cb_t</a> sax_cb, void *sax_cbdata);</p>
+<h4 class="parameters">Parameters</h4>
+<table class="list"><tbody>
+<tr><th>top</th>
+<td class="description">Top node</td></tr>
+<tr><th>read_cb</th>
+<td class="description">Read callback function</td></tr>
+<tr><th>read_cbdata</th>
+<td class="description">Read callback data</td></tr>
+<tr><th>load_cb</th>
+<td class="description">Load callback function or <code>NULL</code></td></tr>
+<tr><th>load_cbdata</th>
+<td class="description">Load callback data</td></tr>
+<tr><th>sax_cb</th>
+<td class="description">SAX callback function or <code>NULL</code><code></code></td></tr>
+<tr><th>sax_cbdata</th>
+<td class="description">SAX callback data</td></tr>
+</tbody></table>
+<h4 class="returnvalue">Return Value</h4>
+<p class="description">First node or <code>NULL</code> if the file could not be read.</p>
+<h4 class="discussion">Discussion</h4>
+<p class="discussion">The nodes in the specified file are added to the specified top node.
+If no top node is provided, the XML file MUST be well-formed with a
+single parent node like <a href="?xml">?xml</a> for the entire file. The callback
+function returns the value type that should be used for child nodes.
+The constants <code>MXML_INTEGER_CALLBACK</code>, <code>MXML_OPAQUE_CALLBACK</code>,
+<code>MXML_REAL_CALLBACK</code>, and <code>MXML_TEXT_CALLBACK</code> are defined for
 loading child (data) nodes of the specified type.<br>
 <br>
 Note: The most common programming error when using the Mini-XML library is
@@ -1930,15 +1980,21 @@ text as a series of whitespace-delimited words, instead of using the
 <h3 class="function"><a id="mxmlLoadString">mxmlLoadString</a></h3>
 <p class="description">Load a string into an XML node tree.</p>
 <p class="code">
-<a href="#mxml_node_t">mxml_node_t</a> *mxmlLoadString(<a href="#mxml_node_t">mxml_node_t</a> *top, const char *s, <a href="#mxml_load_cb_t">mxml_load_cb_t</a> cb);</p>
+<a href="#mxml_node_t">mxml_node_t</a> *mxmlLoadString(<a href="#mxml_node_t">mxml_node_t</a> *top, const char *s, <a href="#mxml_load_cb_t">mxml_load_cb_t</a> load_cb, void *load_cbdata, <a href="#mxml_sax_cb_t">mxml_sax_cb_t</a> sax_cb, void *sax_cbdata);</p>
 <h4 class="parameters">Parameters</h4>
 <table class="list"><tbody>
 <tr><th>top</th>
 <td class="description">Top node</td></tr>
 <tr><th>s</th>
 <td class="description">String to load</td></tr>
-<tr><th>cb</th>
-<td class="description">Callback function or constant</td></tr>
+<tr><th>load_cb</th>
+<td class="description">Load callback function or <code>NULL</code></td></tr>
+<tr><th>load_cbdata</th>
+<td class="description">Load callback data</td></tr>
+<tr><th>sax_cb</th>
+<td class="description">SAX callback function or <code>NULL</code><code></code></td></tr>
+<tr><th>sax_cbdata</th>
+<td class="description">SAX callback data</td></tr>
 </tbody></table>
 <h4 class="returnvalue">Return Value</h4>
 <p class="description">First node or <code>NULL</code> if the string has errors.</p>
@@ -1947,8 +2003,8 @@ text as a series of whitespace-delimited words, instead of using the
 If no top node is provided, the XML string MUST be well-formed with a
 single parent node like <a href="?xml">?xml</a> for the entire string. The callback
 function returns the value type that should be used for child nodes.
-The constants <code>MXML_INTEGER_CALLBACK</code>, <code>MXML_TYPE_OPAQUE_CALLBACK</code>,
-<code>MXML_REAL_CALLBACK</code>, and <code>MXML_TYPE_TEXT_CALLBACK</code> are defined for
+The constants <code>MXML_INTEGER_CALLBACK</code>, <code>MXML_OPAQUE_CALLBACK</code>,
+<code>MXML_REAL_CALLBACK</code>, and <code>MXML_TEXT_CALLBACK</code> are defined for
 loading child (data) nodes of the specified type.<br>
 <br>
 Note: The most common programming error when using the Mini-XML library is
@@ -2313,112 +2369,18 @@ int mxmlRetain(<a href="#mxml_node_t">mxml_node_t</a> *node);</p>
 </tbody></table>
 <h4 class="returnvalue">Return Value</h4>
 <p class="description">New reference count</p>
-<h3 class="function"><a id="mxmlSAXLoadFd">mxmlSAXLoadFd</a></h3>
-<p class="description">Load a file descriptor into an XML node tree
-                    using a SAX callback.</p>
-<p class="code">
-<a href="#mxml_node_t">mxml_node_t</a> *mxmlSAXLoadFd(<a href="#mxml_node_t">mxml_node_t</a> *top, int fd, <a href="#mxml_load_cb_t">mxml_load_cb_t</a> cb, <a href="#mxml_sax_cb_t">mxml_sax_cb_t</a> sax_cb, void *sax_data);</p>
-<h4 class="parameters">Parameters</h4>
-<table class="list"><tbody>
-<tr><th>top</th>
-<td class="description">Top node</td></tr>
-<tr><th>fd</th>
-<td class="description">File descriptor to read from</td></tr>
-<tr><th>cb</th>
-<td class="description">Callback function or constant</td></tr>
-<tr><th>sax_cb</th>
-<td class="description">SAX callback or <code>MXML_NO_CALLBACK</code></td></tr>
-<tr><th>sax_data</th>
-<td class="description">SAX user data</td></tr>
-</tbody></table>
-<h4 class="returnvalue">Return Value</h4>
-<p class="description">First node or <code>NULL</code> if the file could not be read.</p>
-<h4 class="discussion">Discussion</h4>
-<p class="discussion">The nodes in the specified file are added to the specified top node.
-If no top node is provided, the XML file MUST be well-formed with a
-single parent node like <a href="?xml">?xml</a> for the entire file. The callback
-function returns the value type that should be used for child nodes.
-The constants <code>MXML_INTEGER_CALLBACK</code>, <code>MXML_TYPE_OPAQUE_CALLBACK</code>,
-<code>MXML_REAL_CALLBACK</code>, and <code>MXML_TYPE_TEXT_CALLBACK</code> are defined for
-loading child nodes of the specified type.<br>
-<br>
-The SAX callback must call <a href="#mxmlRetain"><code>mxmlRetain</code></a> for any nodes that need to
-be kept for later use. Otherwise, nodes are deleted when the parent
-node is closed or after each data, comment, CDATA, or directive node.</p>
-<h3 class="function"><a id="mxmlSAXLoadFile">mxmlSAXLoadFile</a></h3>
-<p class="description">Load a file into an XML node tree
-                      using a SAX callback.</p>
-<p class="code">
-<a href="#mxml_node_t">mxml_node_t</a> *mxmlSAXLoadFile(<a href="#mxml_node_t">mxml_node_t</a> *top, FILE *fp, <a href="#mxml_load_cb_t">mxml_load_cb_t</a> cb, <a href="#mxml_sax_cb_t">mxml_sax_cb_t</a> sax_cb, void *sax_data);</p>
-<h4 class="parameters">Parameters</h4>
-<table class="list"><tbody>
-<tr><th>top</th>
-<td class="description">Top node</td></tr>
-<tr><th>fp</th>
-<td class="description">File to read from</td></tr>
-<tr><th>cb</th>
-<td class="description">Callback function or constant</td></tr>
-<tr><th>sax_cb</th>
-<td class="description">SAX callback or <code>MXML_NO_CALLBACK</code></td></tr>
-<tr><th>sax_data</th>
-<td class="description">SAX user data</td></tr>
-</tbody></table>
-<h4 class="returnvalue">Return Value</h4>
-<p class="description">First node or <code>NULL</code> if the file could not be read.</p>
-<h4 class="discussion">Discussion</h4>
-<p class="discussion">The nodes in the specified file are added to the specified top node.
-If no top node is provided, the XML file MUST be well-formed with a
-single parent node like <a href="?xml">?xml</a> for the entire file. The callback
-function returns the value type that should be used for child nodes.
-The constants <code>MXML_INTEGER_CALLBACK</code>, <code>MXML_TYPE_OPAQUE_CALLBACK</code>,
-<code>MXML_REAL_CALLBACK</code>, and <code>MXML_TYPE_TEXT_CALLBACK</code> are defined for
-loading child nodes of the specified type.<br>
-<br>
-The SAX callback must call <a href="#mxmlRetain"><code>mxmlRetain</code></a> for any nodes that need to
-be kept for later use. Otherwise, nodes are deleted when the parent
-node is closed or after each data, comment, CDATA, or directive node.</p>
-<h3 class="function"><a id="mxmlSAXLoadString">mxmlSAXLoadString</a></h3>
-<p class="description">Load a string into an XML node tree
-                        using a SAX callback.</p>
-<p class="code">
-<a href="#mxml_node_t">mxml_node_t</a> *mxmlSAXLoadString(<a href="#mxml_node_t">mxml_node_t</a> *top, const char *s, <a href="#mxml_load_cb_t">mxml_load_cb_t</a> cb, <a href="#mxml_sax_cb_t">mxml_sax_cb_t</a> sax_cb, void *sax_data);</p>
-<h4 class="parameters">Parameters</h4>
-<table class="list"><tbody>
-<tr><th>top</th>
-<td class="description">Top node</td></tr>
-<tr><th>s</th>
-<td class="description">String to load</td></tr>
-<tr><th>cb</th>
-<td class="description">Callback function or constant</td></tr>
-<tr><th>sax_cb</th>
-<td class="description">SAX callback or <code>MXML_NO_CALLBACK</code></td></tr>
-<tr><th>sax_data</th>
-<td class="description">SAX user data</td></tr>
-</tbody></table>
-<h4 class="returnvalue">Return Value</h4>
-<p class="description">First node or <code>NULL</code> if the string has errors.</p>
-<h4 class="discussion">Discussion</h4>
-<p class="discussion">The nodes in the specified string are added to the specified top node.
-If no top node is provided, the XML string MUST be well-formed with a
-single parent node like <a href="?xml">?xml</a> for the entire string. The callback
-function returns the value type that should be used for child nodes.
-The constants <code>MXML_INTEGER_CALLBACK</code>, <code>MXML_TYPE_OPAQUE_CALLBACK</code>,
-<code>MXML_REAL_CALLBACK</code>, and <code>MXML_TYPE_TEXT_CALLBACK</code> are defined for
-loading child nodes of the specified type.<br>
-<br>
-The SAX callback must call <a href="#mxmlRetain"><code>mxmlRetain</code></a> for any nodes that need to
-be kept for later use. Otherwise, nodes are deleted when the parent
-node is closed or after each data, comment, CDATA, or directive node.</p>
 <h3 class="function"><a id="mxmlSaveAllocString">mxmlSaveAllocString</a></h3>
 <p class="description">Save an XML tree to an allocated string.</p>
 <p class="code">
-char *mxmlSaveAllocString(<a href="#mxml_node_t">mxml_node_t</a> *node, <a href="#mxml_save_cb_t">mxml_save_cb_t</a> cb);</p>
+char *mxmlSaveAllocString(<a href="#mxml_node_t">mxml_node_t</a> *node, <a href="#mxml_save_cb_t">mxml_save_cb_t</a> save_cb, void *save_cbdata);</p>
 <h4 class="parameters">Parameters</h4>
 <table class="list"><tbody>
 <tr><th>node</th>
 <td class="description">Node to write</td></tr>
-<tr><th>cb</th>
-<td class="description">Whitespace callback or <code>MXML_NO_CALLBACK</code></td></tr>
+<tr><th>save_cb</th>
+<td class="description">Whitespace callback function</td></tr>
+<tr><th>save_cbdata</th>
+<td class="description">Whitespace callback data</td></tr>
 </tbody></table>
 <h4 class="returnvalue">Return Value</h4>
 <p class="description">Allocated string or <code>NULL</code></p>
@@ -2436,15 +2398,17 @@ element tags.</p>
 <h3 class="function"><a id="mxmlSaveFd">mxmlSaveFd</a></h3>
 <p class="description">Save an XML tree to a file descriptor.</p>
 <p class="code">
-bool mxmlSaveFd(<a href="#mxml_node_t">mxml_node_t</a> *node, int fd, <a href="#mxml_save_cb_t">mxml_save_cb_t</a> cb);</p>
+bool mxmlSaveFd(<a href="#mxml_node_t">mxml_node_t</a> *node, int fd, <a href="#mxml_save_cb_t">mxml_save_cb_t</a> save_cb, void *save_cbdata);</p>
 <h4 class="parameters">Parameters</h4>
 <table class="list"><tbody>
 <tr><th>node</th>
 <td class="description">Node to write</td></tr>
 <tr><th>fd</th>
 <td class="description">File descriptor to write to</td></tr>
-<tr><th>cb</th>
-<td class="description">Whitespace callback or <code>MXML_NO_CALLBACK</code></td></tr>
+<tr><th>save_cb</th>
+<td class="description">Whitespace callback function</td></tr>
+<tr><th>save_cbdata</th>
+<td class="description">Whitespace callback data</td></tr>
 </tbody></table>
 <h4 class="returnvalue">Return Value</h4>
 <p class="description"><code>true</code> on success, <code>false</code> on error.</p>
@@ -2457,15 +2421,65 @@ element tags.</p>
 <h3 class="function"><a id="mxmlSaveFile">mxmlSaveFile</a></h3>
 <p class="description">Save an XML tree to a file.</p>
 <p class="code">
-bool mxmlSaveFile(<a href="#mxml_node_t">mxml_node_t</a> *node, FILE *fp, <a href="#mxml_save_cb_t">mxml_save_cb_t</a> cb);</p>
+bool mxmlSaveFile(<a href="#mxml_node_t">mxml_node_t</a> *node, FILE *fp, <a href="#mxml_save_cb_t">mxml_save_cb_t</a> save_cb, void *save_cbdata);</p>
 <h4 class="parameters">Parameters</h4>
 <table class="list"><tbody>
 <tr><th>node</th>
 <td class="description">Node to write</td></tr>
 <tr><th>fp</th>
 <td class="description">File to write to</td></tr>
-<tr><th>cb</th>
-<td class="description">Whitespace callback or <code>MXML_NO_CALLBACK</code></td></tr>
+<tr><th>save_cb</th>
+<td class="description">Whitespace callback function</td></tr>
+<tr><th>save_cbdata</th>
+<td class="description">Whitespace callback data</td></tr>
+</tbody></table>
+<h4 class="returnvalue">Return Value</h4>
+<p class="description"><code>true</code> on success, <code>false</code> on error.</p>
+<h4 class="discussion">Discussion</h4>
+<p class="discussion">The callback argument specifies a function that returns a whitespace
+string or NULL before and after each element. If <code>MXML_NO_CALLBACK</code>
+is specified, whitespace will only be added before <code>MXML_TYPE_TEXT</code> nodes
+with leading whitespace and before attribute names inside opening
+element tags.</p>
+<h3 class="function"><a id="mxmlSaveFilename">mxmlSaveFilename</a></h3>
+<p class="description">Save an XML tree to a file.</p>
+<p class="code">
+bool mxmlSaveFilename(<a href="#mxml_node_t">mxml_node_t</a> *node, const char *filename, <a href="#mxml_save_cb_t">mxml_save_cb_t</a> save_cb, void *save_cbdata);</p>
+<h4 class="parameters">Parameters</h4>
+<table class="list"><tbody>
+<tr><th>node</th>
+<td class="description">Node to write</td></tr>
+<tr><th>filename</th>
+<td class="description">File to write to</td></tr>
+<tr><th>save_cb</th>
+<td class="description">Whitespace callback function</td></tr>
+<tr><th>save_cbdata</th>
+<td class="description">Whitespace callback data</td></tr>
+</tbody></table>
+<h4 class="returnvalue">Return Value</h4>
+<p class="description"><code>true</code> on success, <code>false</code> on error.</p>
+<h4 class="discussion">Discussion</h4>
+<p class="discussion">The callback argument specifies a function that returns a whitespace
+string or NULL before and after each element. If <code>MXML_NO_CALLBACK</code>
+is specified, whitespace will only be added before <code>MXML_TYPE_TEXT</code> nodes
+with leading whitespace and before attribute names inside opening
+element tags.</p>
+<h3 class="function"><a id="mxmlSaveIO">mxmlSaveIO</a></h3>
+<p class="description">Save an XML tree using a callback.</p>
+<p class="code">
+bool mxmlSaveIO(<a href="#mxml_node_t">mxml_node_t</a> *node, <a href="#mxml_write_cb_t">mxml_write_cb_t</a> write_cb, void *write_cbdata, <a href="#mxml_save_cb_t">mxml_save_cb_t</a> save_cb, void *save_cbdata);</p>
+<h4 class="parameters">Parameters</h4>
+<table class="list"><tbody>
+<tr><th>node</th>
+<td class="description">Node to write</td></tr>
+<tr><th>write_cb</th>
+<td class="description">Write callback function</td></tr>
+<tr><th>write_cbdata</th>
+<td class="description">Write callback data</td></tr>
+<tr><th>save_cb</th>
+<td class="description">Whitespace callback function</td></tr>
+<tr><th>save_cbdata</th>
+<td class="description">Whitespace callback data</td></tr>
 </tbody></table>
 <h4 class="returnvalue">Return Value</h4>
 <p class="description"><code>true</code> on success, <code>false</code> on error.</p>
@@ -2478,7 +2492,7 @@ element tags.</p>
 <h3 class="function"><a id="mxmlSaveString">mxmlSaveString</a></h3>
 <p class="description">Save an XML node tree to a string.</p>
 <p class="code">
-size_t mxmlSaveString(<a href="#mxml_node_t">mxml_node_t</a> *node, char *buffer, size_t bufsize, <a href="#mxml_save_cb_t">mxml_save_cb_t</a> cb);</p>
+size_t mxmlSaveString(<a href="#mxml_node_t">mxml_node_t</a> *node, char *buffer, size_t bufsize, <a href="#mxml_save_cb_t">mxml_save_cb_t</a> save_cb, void *save_cbdata);</p>
 <h4 class="parameters">Parameters</h4>
 <table class="list"><tbody>
 <tr><th>node</th>
@@ -2487,8 +2501,10 @@ size_t mxmlSaveString(<a href="#mxml_node_t">mxml_node_t</a> *node, char *buffer
 <td class="description">String buffer</td></tr>
 <tr><th>bufsize</th>
 <td class="description">Size of string buffer</td></tr>
-<tr><th>cb</th>
-<td class="description">Whitespace callback or <code>MXML_NO_CALLBACK</code></td></tr>
+<tr><th>save_cb</th>
+<td class="description">Whitespace callback function</td></tr>
+<tr><th>save_cbdata</th>
+<td class="description">Whitespace callback function</td></tr>
 </tbody></table>
 <h4 class="returnvalue">Return Value</h4>
 <p class="description">Size of string</p>
@@ -2843,17 +2859,17 @@ typedef void (*mxml_custom_destroy_cb_t)(void *);
 <h3 class="typedef"><a id="mxml_custom_load_cb_t">mxml_custom_load_cb_t</a></h3>
 <p class="description">Custom data load callback function</p>
 <p class="code">
-typedef bool (*mxml_custom_load_cb_t)(<a href="#mxml_node_t">mxml_node_t</a> *, const char *);
+typedef bool (*mxml_custom_load_cb_t)(<a href="#mxml_node_t">mxml_node_t</a> *node const char *s);
 </p>
 <h3 class="typedef"><a id="mxml_custom_save_cb_t">mxml_custom_save_cb_t</a></h3>
 <p class="description">Custom data save callback function</p>
 <p class="code">
-typedef char *(*mxml_custom_save_cb_t)(<a href="#mxml_node_t">mxml_node_t</a> *);
+typedef char *(*mxml_custom_save_cb_t)(<a href="#mxml_node_t">mxml_node_t</a> *node);
 </p>
 <h3 class="typedef"><a id="mxml_entity_cb_t">mxml_entity_cb_t</a></h3>
 <p class="description">Entity callback function</p>
 <p class="code">
-typedef int (*mxml_entity_cb_t)(const char *);
+typedef int (*mxml_entity_cb_t)(const char *name);
 </p>
 <h3 class="typedef"><a id="mxml_error_cb_t">mxml_error_cb_t</a></h3>
 <p class="description">Error callback function</p>
@@ -2868,22 +2884,27 @@ typedef struct _mxml_index_s mxml_index_t;
 <h3 class="typedef"><a id="mxml_load_cb_t">mxml_load_cb_t</a></h3>
 <p class="description">Load callback function</p>
 <p class="code">
-typedef <a href="#mxml_type_t">mxml_type_t</a> (*mxml_load_cb_t)(<a href="#mxml_node_t">mxml_node_t</a> *);
+typedef <a href="#mxml_type_t">mxml_type_t</a> (*mxml_load_cb_t)(void *cbdata <a href="#mxml_node_t">mxml_node_t</a> *node);
 </p>
 <h3 class="typedef"><a id="mxml_node_t">mxml_node_t</a></h3>
 <p class="description">An XML node.</p>
 <p class="code">
 typedef struct _mxml_node_s mxml_node_t;
 </p>
+<h3 class="typedef"><a id="mxml_read_cb_t">mxml_read_cb_t</a></h3>
+<p class="description">Read callback function</p>
+<p class="code">
+typedef ssize_t (*mxml_read_cb_t)(void *cbdata void *buffer size_t bytes);
+</p>
 <h3 class="typedef"><a id="mxml_save_cb_t">mxml_save_cb_t</a></h3>
 <p class="description">Save callback function</p>
 <p class="code">
-typedef const char *(*mxml_save_cb_t)(<a href="#mxml_node_t">mxml_node_t</a> *, int);
+typedef const char *(*mxml_save_cb_t)(void *cbdata <a href="#mxml_node_t">mxml_node_t</a> *node <a href="#mxml_ws_t">mxml_ws_t</a> when);
 </p>
 <h3 class="typedef"><a id="mxml_sax_cb_t">mxml_sax_cb_t</a></h3>
 <p class="description">SAX callback function</p>
 <p class="code">
-typedef bool (*mxml_sax_cb_t)(<a href="#mxml_node_t">mxml_node_t</a> *, mxml_sax_event_t, void *);
+typedef bool (*mxml_sax_cb_t)(void *cbdata <a href="#mxml_node_t">mxml_node_t</a> *node <a href="#mxml_sax_event_t">mxml_sax_event_t</a> event);
 </p>
 <h3 class="typedef"><a id="mxml_sax_event_t">mxml_sax_event_t</a></h3>
 <p class="description">SAX event type.</p>
@@ -2894,6 +2915,16 @@ typedef enum <a href="#mxml_sax_event_e">mxml_sax_event_e</a> mxml_sax_event_t;
 <p class="description">The XML node type.</p>
 <p class="code">
 typedef enum <a href="#mxml_type_e">mxml_type_e</a> mxml_type_t;
+</p>
+<h3 class="typedef"><a id="mxml_write_cb_t">mxml_write_cb_t</a></h3>
+<p class="description">Write callback function</p>
+<p class="code">
+typedef ssize_t (*mxml_write_cb_t)(void *cbdata const void *buffer size_t bytes);
+</p>
+<h3 class="typedef"><a id="mxml_ws_t">mxml_ws_t</a></h3>
+<p class="description">Whitespace periods</p>
+<p class="code">
+typedef enum <a href="#mxml_ws_e">mxml_ws_e</a> mxml_ws_t;
 </p>
 <h2 class="title"><a id="ENUMERATIONS">Constants</a></h2>
 <h3 class="enumeration"><a id="mxml_sax_event_e">mxml_sax_event_e</a></h3>
@@ -2923,6 +2954,15 @@ typedef enum <a href="#mxml_type_e">mxml_type_e</a> mxml_type_t;
 <tr><th>MXML_TYPE_OPAQUE </th><td class="description">Opaque string</td></tr>
 <tr><th>MXML_TYPE_REAL </th><td class="description">Real value</td></tr>
 <tr><th>MXML_TYPE_TEXT </th><td class="description">Text fragment</td></tr>
+</tbody></table>
+<h3 class="enumeration"><a id="mxml_ws_e">mxml_ws_e</a></h3>
+<p class="description">Whitespace periods</p>
+<h4 class="constants">Constants</h4>
+<table class="list"><tbody>
+<tr><th>MXML_WS_AFTER_CLOSE </th><td class="description">Callback for after close tag</td></tr>
+<tr><th>MXML_WS_AFTER_OPEN </th><td class="description">Callback for after open tag</td></tr>
+<tr><th>MXML_WS_BEFORE_CLOSE </th><td class="description">Callback for before close tag</td></tr>
+<tr><th>MXML_WS_BEFORE_OPEN </th><td class="description">Callback for before open tag</td></tr>
 </tbody></table>
 </div>
 </body>

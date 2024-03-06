@@ -20,6 +20,7 @@
 #  include <limits.h>
 #  if defined(_WIN32) && !defined(__CUPS_SSIZE_T_DEFINED)
 #    define __CUPS_SSIZE_T_DEFINED
+#    include <sys/types.h>
 // Windows does not provide the ssize_t type, so map it to int64_t... */
 typedef int64_t ssize_t;			// @private@
 #    define SSIZE_MAX	INT64_MAX

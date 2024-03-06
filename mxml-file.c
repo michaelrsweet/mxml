@@ -55,7 +55,6 @@ static inline int	mxml_isspace(int ch)
 			}
 static mxml_node_t	*mxml_load_data(mxml_read_cb_t read_cb, void *read_cbdata, mxml_node_t *top, mxml_load_cb_t load_cb, void *load_cbdata, mxml_sax_cb_t sax_cb, void *sax_data);
 static int		mxml_parse_element(mxml_read_cb_t read_cb, void *read_cbdata, mxml_node_t *node, _mxml_encoding_t *encoding, int *line);
-static bool		mxml_putc(mxml_write_cb_t write_cb, void *write_cbdata, int ch);
 static ssize_t		mxml_read_cb_fd(int *fd, void *buffer, size_t bytes);
 static ssize_t		mxml_read_cb_file(FILE *fp, void *buffer, size_t bytes);
 static ssize_t		mxml_read_cb_string(_mxml_stringbuf_t *sb, void *buffer, size_t bytes);
@@ -1822,54 +1821,6 @@ mxml_parse_element(
   free(value);
 
   return (EOF);
-}
-
-
-//
-// 'mxml_putc()' - Write a single Unicode character with UTF-8 encoding.
-//
-
-static bool				// O - `true` on success, `false` on error
-mxml_putc(mxml_write_cb_t write_cb,	// I - Write callback function
-          void            *write_cbdata,// I - Write callback data
-          int             ch)		// I - Character to write
-{
-  size_t	bytes;			// Number of bytes
-  unsigned char	buffer[4];		// Output buffer
-
-
-  if (ch < 128)
-  {
-    // One byte
-    bytes     = 1;
-    buffer[0] = (unsigned char)ch;
-  }
-  else if (ch < 0x800)
-  {
-    // Two bytes
-    bytes     = 2;
-    buffer[0] = (unsigned char)(0xc0 | ((ch >> 6) & 0x1f));
-    buffer[1] = (unsigned char)(0x80 | (ch & 0x3f));
-  }
-  else if (ch < 0x10000)
-  {
-    // Three bytes
-    bytes     = 3;
-    buffer[0] = (unsigned char)(0xe0 | ((ch >> 12) & 0x0f));
-    buffer[1] = (unsigned char)(0x80 | ((ch >> 6) & 0x3f));
-    buffer[2] = (unsigned char)(0x80 | (ch & 0x3f));
-  }
-  else
-  {
-    // Four bytes
-    bytes     = 4;
-    buffer[0] = (unsigned char)(0xf0 | ((ch >> 18) & 0x07));
-    buffer[1] = (unsigned char)(0x80 | ((ch >> 12) & 0x3f));
-    buffer[2] = (unsigned char)(0x80 | ((ch >> 6) & 0x3f));
-    buffer[3] = (unsigned char)(0x80 | (ch & 0x3f));
-  }
-
-  return ((write_cb)(write_cbdata, buffer, bytes) == (ssize_t)bytes);
 }
 
 

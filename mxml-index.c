@@ -245,12 +245,7 @@ mxmlIndexNew(mxml_node_t *node,		// I - XML node tree
   {
     if (ind->num_nodes >= ind->alloc_nodes)
     {
-      if (!ind->alloc_nodes)
-        temp = malloc(64 * sizeof(mxml_node_t *));
-      else
-        temp = realloc(ind->nodes, (ind->alloc_nodes + 64) * sizeof(mxml_node_t *));
-
-      if (!temp)
+      if ((temp = realloc(ind->nodes, (ind->alloc_nodes + 64) * sizeof(mxml_node_t *))) == NULL)
       {
         // Unable to allocate memory for the index, so abort...
         _mxml_error("Unable to allocate memory for index nodes.");

@@ -1,16 +1,18 @@
 # Changes in Mini-XML 4.0.0
 
-- Now require C99 support.
+- Now require C99 support (Issue #300)
 - Now install as "libmxml4" to support installing both Mini-XML 3.x and 4.x at
   the same time (use `--disable-libmxml4-prefix` configure option to disable)
 - Added `mxmlLoadIO` and `mxmlSaveIO` functions to load and save XML via
   callbacks (Issue #98)
 - Added new `MXML_TYPE_CDATA`, `MXML_TYPE_COMMENT`, `MXML_TYPE_DECLARATION`, and
   `MXML_TYPE_DIRECTIVE` node types (Issue #250)
+- Added `mxmlLoadFilename` and `mxmlSaveFilename` functions (Issue #291)
 - Renamed `mxml_type_t` enumerations to `MXML_TYPE_xxx` (Issue #251)
 - Updated APIs to use bool type instead of an int representing a boolean value.
 - Updated the SAX callback to return a `bool` value to control processing
   (Issue #51)
+- Updated the load and save callbacks to include a context pointer (Issue #106)
 
 
 # Changes in Mini-XML 3.3.2

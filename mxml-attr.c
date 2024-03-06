@@ -246,9 +246,7 @@ mxml_set_attr(mxml_node_t *node,	// I - Element node
   }
 
   // Add a new attribute...
-  attr = realloc(node->value.element.attrs, (node->value.element.num_attrs + 1) * sizeof(_mxml_attr_t));
-
-  if (!attr)
+  if ((attr = realloc(node->value.element.attrs, (node->value.element.num_attrs + 1) * sizeof(_mxml_attr_t))) == NULL)
   {
     _mxml_error("Unable to allocate memory for attribute '%s' in element %s.", name, node->value.element.name);
     return (false);

@@ -17,7 +17,6 @@
 #  include <string.h>
 #  include <ctype.h>
 #  include <errno.h>
-#  include <sys/types.h>
 #  include <limits.h>
 #  if defined(_WIN32) && !defined(__CUPS_SSIZE_T_DEFINED)
 #    define __CUPS_SSIZE_T_DEFINED

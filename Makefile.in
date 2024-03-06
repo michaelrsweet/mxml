@@ -411,6 +411,12 @@ testmxml-vg:	$(LIBOBJS) testmxml.o
 
 testmxml.o:	mxml.h
 
+# Fuzz-test the library <>
+.PHONY: afl
+afl:
+	$(MAKE) -$(MAKEFLAGS) CC="afl-clang-fast" COMMONFLAGS="-g" clean all
+	test afl-output || rm -rf afl-output
+	afl-fuzz -x xml.dict -i afl-input -o afl-output -V 600 -e xml -t 5000 ./testmxml @@ temps.xml
 
 #
 # Analyze code with the Clang static analyzer <https://clang-analyzer.llvm.org>

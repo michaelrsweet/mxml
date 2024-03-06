@@ -4,7 +4,7 @@
 		<keyword type="opaque">InputSlot</keyword>
 		<default type="opaque">Auto</default>
 		<text>Media Source</text>
-		<order type="real">10.000000</order>
+		<order type="real">10.42</order>
 		<choice>
 			<keyword type="opaque">Auto</keyword>
 			<text>Auto Tray Selection</text>

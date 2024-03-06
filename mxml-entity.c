@@ -18,7 +18,8 @@
 
 bool					// O - `true` on success, `false` on failure
 mxmlEntityAddCallback(
-    mxml_entity_cb_t cb)		// I - Callback function to add
+    mxml_entity_cb_t cb,		// I - Callback function to add
+    void             *cbdata)		// I - Callback data
 {
   _mxml_global_t *global = _mxml_global();
 					// Global data
@@ -26,7 +27,8 @@ mxmlEntityAddCallback(
 
   if (global->num_entity_cbs < (sizeof(global->entity_cbs) / sizeof(global->entity_cbs[0])))
   {
-    global->entity_cbs[global->num_entity_cbs] = cb;
+    global->entity_cbs[global->num_entity_cbs]     = cb;
+    global->entity_cbdatas[global->num_entity_cbs] = cbdata;
     global->num_entity_cbs ++;
 
     return (true);
@@ -85,7 +87,7 @@ mxmlEntityGetValue(const char *name)	// I - Entity name
 
   for (i = 0; i < global->num_entity_cbs; i ++)
   {
-    if ((ch = (global->entity_cbs[i])(name)) >= 0)
+    if ((ch = (global->entity_cbs[i])(global->entity_cbdatas[i], name)) >= 0)
       return (ch);
   }
 
@@ -114,8 +116,10 @@ mxmlEntityRemoveCallback(
       global->num_entity_cbs --;
 
       if (i < global->num_entity_cbs)
+      {
         memmove(global->entity_cbs + i, global->entity_cbs + i + 1, (global->num_entity_cbs - i) * sizeof(global->entity_cbs[0]));
-
+        memmove(global->entity_cbdatas + i, global->entity_cbdatas + i + 1, (global->num_entity_cbs - i) * sizeof(global->entity_cbdatas[0]));
+      }
       return;
     }
   }
@@ -127,12 +131,11 @@ mxmlEntityRemoveCallback(
 //
 
 int					// O - Unicode value or -1
-_mxml_entity_cb(const char *name)	// I - Entity name
+_mxml_entity_cb(void       *cbdata,	// I - Callback data (unused)
+                const char *name)	// I - Entity name
 {
-  int		diff;			// Difference between names
-  size_t	current,		// Current entity in search
-		first,			// First entity in search
-		last;			// Last entity in search
+  size_t	i;			// Looping var
+  int		diff;			// Difference
   static const struct
   {
     const char	*name;			// Entity name
@@ -399,27 +402,14 @@ _mxml_entity_cb(const char *name)	// I - Entity name
   };
 
 
-  // Do a binary search for the named entity...
-  first = 0;
-  last  = sizeof(entities) / sizeof(entities[0]) - 1;
-
-  while ((last - first) > 1)
+  // Do a linear search for the named entity...
+  for (i = 0; i < (sizeof(entities) / sizeof(entities[0])); i ++)
   {
-    current = (first + last) / 2;
-
-    if ((diff = strcmp(name, entities[current].name)) == 0)
-      return (entities[current].val);
+    if ((diff = strcmp(name, entities[i].name)) == 0)
+      return (entities[i].val);
     else if (diff < 0)
-      last = current;
-    else
-      first = current;
+      break;
   }
 
-  // If we get here, there is a small chance that there is still a match; check first and last...
-  if (!strcmp(name, entities[first].name))
-    return (entities[first].val);
-  else if (!strcmp(name, entities[last].name))
-    return (entities[last].val);
-  else
-    return (-1);
+  return (-1);
 }

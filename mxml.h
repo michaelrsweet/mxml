@@ -95,7 +95,7 @@ typedef enum mxml_ws_e			// Whitespace periods
 typedef void (*mxml_custom_destroy_cb_t)(void *);
 					// Custom data destructor
 
-typedef void (*mxml_error_cb_t)(const char *);
+typedef void (*mxml_error_cb_t)(void *cbdata, const char *message);
 					// Error callback function
 
 typedef struct _mxml_node_s mxml_node_t;// An XML node.
@@ -103,13 +103,13 @@ typedef struct _mxml_node_s mxml_node_t;// An XML node.
 typedef struct _mxml_index_s mxml_index_t;
 					// An XML node index.
 
-typedef bool (*mxml_custom_load_cb_t)(mxml_node_t *node, const char *s);
+typedef bool (*mxml_custom_load_cb_t)(void *cbdata, mxml_node_t *node, const char *s);
 					// Custom data load callback function
 
-typedef char *(*mxml_custom_save_cb_t)(mxml_node_t *node);
+typedef char *(*mxml_custom_save_cb_t)(void *cbdata, mxml_node_t *node);
 					// Custom data save callback function
 
-typedef int (*mxml_entity_cb_t)(const char *name);
+typedef int (*mxml_entity_cb_t)(void *cbdata, const char *name);
 					// Entity callback function
 
 typedef mxml_type_t (*mxml_load_cb_t)(void *cbdata, mxml_node_t *node);
@@ -142,7 +142,7 @@ extern const char       *mxmlElementGetAttrByIndex(mxml_node_t *node, int idx, c
 extern size_t		mxmlElementGetAttrCount(mxml_node_t *node);
 extern void		mxmlElementSetAttr(mxml_node_t *node, const char *name, const char *value);
 extern void		mxmlElementSetAttrf(mxml_node_t *node, const char *name, const char *format, ...) MXML_FORMAT(3,4);
-extern bool		mxmlEntityAddCallback(mxml_entity_cb_t cb);
+extern bool		mxmlEntityAddCallback(mxml_entity_cb_t cb, void *cbdata);
 extern int		mxmlEntityGetValue(const char *name);
 extern void		mxmlEntityRemoveCallback(mxml_entity_cb_t cb);
 
@@ -218,9 +218,9 @@ extern bool		mxmlSetDeclarationf(mxml_node_t *node, const char *format, ...) MXM
 extern bool		mxmlSetDirective(mxml_node_t *node, const char *directive);
 extern bool		mxmlSetDirectivef(mxml_node_t *node, const char *format, ...) MXML_FORMAT(2,3);
 extern bool		mxmlSetCustom(mxml_node_t *node, void *data, mxml_custom_destroy_cb_t destroy);
-extern void		mxmlSetCustomHandlers(mxml_custom_load_cb_t load, mxml_custom_save_cb_t save);
+extern void		mxmlSetCustomCallbacks(mxml_custom_load_cb_t load_cb, mxml_custom_save_cb_t save_cb, void *cbdata);
 extern bool		mxmlSetElement(mxml_node_t *node, const char *name);
-extern void		mxmlSetErrorCallback(mxml_error_cb_t cb);
+extern void		mxmlSetErrorCallback(mxml_error_cb_t cb, void *cbdata);
 extern bool		mxmlSetInteger(mxml_node_t *node, long integer);
 extern bool		mxmlSetOpaque(mxml_node_t *node, const char *opaque);
 extern bool		mxmlSetOpaquef(mxml_node_t *node, const char *format, ...) MXML_FORMAT(2,3);

@@ -15,6 +15,7 @@
   (Issue #51)
 - Updated the load and save callbacks to include a context pointer (Issue #106)
 - Fixed some warnings (Issue #301)
+- Fixed real number support in non-English locales (Issue #311)
 
 
 # Changes in Mini-XML 3.3.2

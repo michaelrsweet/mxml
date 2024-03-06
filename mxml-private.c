@@ -45,7 +45,7 @@
 
 void
 _mxml_error(const char *format,		// I - Printf-style format string
-           ...)				// I - Additional arguments as needed
+            ...)			// I - Additional arguments as needed
 {
   va_list	ap;			// Pointer to arguments
   char		s[1024];		// Message string
@@ -64,7 +64,7 @@ _mxml_error(const char *format,		// I - Printf-style format string
 
   // And then display the error message...
   if (global->error_cb)
-    (*global->error_cb)(s);
+    (*global->error_cb)(global->error_cbdata, s);
   else
     fprintf(stderr, "%s\n", s);
 }

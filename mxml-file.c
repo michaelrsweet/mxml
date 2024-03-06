@@ -58,6 +58,8 @@ static int		mxml_parse_element(mxml_read_cb_t read_cb, void *read_cbdata, mxml_n
 static ssize_t		mxml_read_cb_fd(int *fd, void *buffer, size_t bytes);
 static ssize_t		mxml_read_cb_file(FILE *fp, void *buffer, size_t bytes);
 static ssize_t		mxml_read_cb_string(_mxml_stringbuf_t *sb, void *buffer, size_t bytes);
+static void		mxml_set_loc(_mxml_global_t *global);
+static double		mxml_strtod(_mxml_global_t *global, const char *buffer, char **bufptr);
 static ssize_t		mxml_write_cb_fd(int *fd, const void *buffer, size_t bytes);
 static ssize_t		mxml_write_cb_file(FILE *fp, const void *buffer, size_t bytes);
 static ssize_t		mxml_write_cb_string(_mxml_stringbuf_t *sb, const void *buffer, size_t bytes);
@@ -536,16 +538,18 @@ mxmlSaveString(
 //
 
 void
-mxmlSetCustomHandlers(
-    mxml_custom_load_cb_t load,		// I - Load function
-    mxml_custom_save_cb_t save)		// I - Save function
+mxmlSetCustomCallbacks(
+    mxml_custom_load_cb_t load_cb,	// I - Load callback function
+    mxml_custom_save_cb_t save_cb,	// I - Save callback function
+    void                  *cbdata)	// I - Callback data
 {
   _mxml_global_t *global = _mxml_global();
 					// Global data
 
 
-  global->custom_load_cb = load;
-  global->custom_save_cb = save;
+  global->custom_load_cb = load_cb;
+  global->custom_save_cb = save_cb;
+  global->custom_cbdata  = cbdata;
 }
 
 
@@ -554,13 +558,16 @@ mxmlSetCustomHandlers(
 //
 
 void
-mxmlSetErrorCallback(mxml_error_cb_t cb)// I - Error callback function
+mxmlSetErrorCallback(
+    mxml_error_cb_t cb,			// I - Error callback function
+    void            *cbdata)		// I - Error callback data
 {
   _mxml_global_t *global = _mxml_global();
 					// Global data
 
 
-  global->error_cb = cb;
+  global->error_cb     = cb;
+  global->error_cbdata = cbdata;
 }
 
 
@@ -702,7 +709,8 @@ mxml_get_entity(
   }
   else if ((ch = mxmlEntityGetValue(entity)) < 0)
   {
-    _mxml_error("Entity name '%s;' not supported under parent <%s> on line %d.", entity, mxmlGetElement(parent), *line);
+    _mxml_error("Entity '&%s;' not supported under parent <%s> on line %d.", entity, mxmlGetElement(parent), *line);
+    return (EOF);
   }
 
   if (mxml_bad_char(ch))
@@ -989,7 +997,7 @@ mxml_load_data(
 	    break;
 
 	case MXML_TYPE_REAL :
-            node = mxmlNewReal(parent, strtod(buffer, &bufptr));
+            node = mxmlNewReal(parent, mxml_strtod(global, buffer, &bufptr));
 	    break;
 
 	case MXML_TYPE_TEXT :
@@ -1002,7 +1010,7 @@ mxml_load_data(
 	      // Use the callback to fill in the custom data...
               node = mxmlNewCustom(parent, NULL, NULL);
 
-	      if (!(*global->custom_load_cb)(node, buffer))
+	      if (!(*global->custom_load_cb)(global->custom_cbdata, node, buffer))
 	      {
 	        _mxml_error("Bad custom value '%s' in parent <%s> on line %d.", buffer, parent ? parent->value.element.name : "null", line);
 		mxmlDelete(node);
@@ -1882,6 +1890,106 @@ mxml_read_cb_string(
 
 
 //
+// 'mxml_set_loc()' - Set the locale values for numbers.
+//
+
+static void
+mxml_set_loc(_mxml_global_t *global)	// I - Global data
+{
+  if ((global->loc = localeconv()) != NULL)
+  {
+    if (!global->loc->decimal_point || !strcmp(global->loc->decimal_point, "."))
+      global->loc = NULL;
+    else
+      global->loc_declen = strlen(global->loc->decimal_point);
+  }
+
+  global->loc_set = true;
+}
+
+
+//
+// 'mxml_strtod()' - Convert a string to a double without respect to the locale.
+//
+
+static double				// O - Real number
+mxml_strtod(_mxml_global_t *global,	// I - Global data
+            const char     *buffer,	// I - String
+            char           **bufend)	// O - End of number in string
+{
+  const char	*bufptr;		// Pointer into buffer
+  char		temp[64],		// Temporary buffer
+		*tempptr;		// Pointer into temporary buffer
+
+
+  // See if the locale has a special decimal point string...
+  if (!global->loc_set)
+    mxml_set_loc(global);
+
+  if (!global->loc)
+    return (strtod(buffer, bufend));
+
+  // Copy leading sign, numbers, period, and then numbers...
+  tempptr                = temp;
+  temp[sizeof(temp) - 1] = '\0';
+
+  if (*bufptr == '-' || *bufptr == '+')
+    *tempptr++ = *bufptr++;
+
+  for (bufptr = buffer; *bufptr && isdigit(*bufptr & 255); bufptr ++)
+  {
+    if (tempptr < (temp + sizeof(temp) - 1))
+    {
+      *tempptr++ = *bufptr;
+    }
+    else
+    {
+      *bufend = (char *)bufptr;
+      return (0.0);
+    }
+  }
+
+  if (*bufptr == '.')
+  {
+    // Convert decimal point to locale equivalent...
+    size_t	declen = strlen(global->loc->decimal_point);
+					// Length of decimal point
+    bufptr ++;
+
+    if (declen <= (sizeof(temp) - (size_t)(tempptr - temp)))
+    {
+      memcpy(tempptr, global->loc->decimal_point, declen);
+      tempptr += declen;
+    }
+    else
+    {
+      *bufend = (char *)bufptr;
+      return (0.0);
+    }
+  }
+
+  // Copy any remaining characters...
+  while (*bufptr && isdigit(*bufptr & 255))
+  {
+    if (tempptr < (temp + sizeof(temp) - 1))
+      *tempptr++ = *bufptr++;
+    else
+      break;
+  }
+
+  *bufend = (char *)bufptr;
+
+  if (*bufptr)
+    return (0.0);
+
+  // Nul-terminate the temporary string and convert the string...
+  *tempptr = '\0';
+
+  return (strtod(temp, NULL));
+}
+
+
+//
 // 'mxml_write_cb_fd()' - Write bytes to a file descriptor.
 //
 
@@ -2079,8 +2187,25 @@ mxml_write_node(
 	  }
 
           // Write real number...
-          // TODO: Provide locale-neutral formatting/scanning code for REAL
-	  snprintf(s, sizeof(s), "%f", current->value.real);
+	  snprintf(s, sizeof(s), "%g", current->value.real);
+
+          if (!global->loc_set)
+            mxml_set_loc(global);
+
+          if (global->loc)
+          {
+            char	*sptr;		// Pointer into string
+
+	    if ((sptr = strstr(s, global->loc->decimal_point)) != NULL)
+	    {
+	      // Convert locale decimal point to "."
+	      if (global->loc_declen > 1)
+	        memmove(sptr + 1, sptr + global->loc_declen, strlen(sptr + global->loc_declen) + 1);
+
+	      *sptr = '.';
+	    }
+          }
+
 	  col = mxml_write_string(write_cb, write_cbdata, s, /*use_entities*/true, col);
 	  break;
 
@@ -2103,7 +2228,7 @@ mxml_write_node(
 	  if (!global->custom_save_cb)
 	    return (-1);
 
-	  if ((data = (*global->custom_save_cb)(current)) == NULL)
+	  if ((data = (*global->custom_save_cb)(global->custom_cbdata, current)) == NULL)
 	    return (-1);
 
 	  col = mxml_write_string(write_cb, write_cbdata, data, /*use_entities*/true, col);

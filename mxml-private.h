@@ -13,6 +13,7 @@
 #  define MXML_PRIVATE_H
 #  include "config.h"
 #  include "mxml.h"
+#  include <locale.h>
 
 
 //
@@ -94,12 +95,18 @@ struct _mxml_index_s			 // An XML node index.
 typedef struct _mxml_global_s		// Global, per-thread data
 
 {
-  void		(*error_cb)(const char *);
-  size_t	num_entity_cbs;
-  int		(*entity_cbs[100])(const char *name);
-  int		wrap;
-  mxml_custom_load_cb_t	custom_load_cb;
-  mxml_custom_save_cb_t	custom_save_cb;
+  mxml_custom_load_cb_t	custom_load_cb;	// Custom load callback function
+  mxml_custom_save_cb_t	custom_save_cb;	// Custom save callback function
+  void		*custom_cbdata;		// Custom callback data
+  mxml_error_cb_t error_cb;		// Error callback function
+  void		*error_cbdata;		// Error callback data
+  size_t	num_entity_cbs;		// Number of entity callbacks
+  mxml_entity_cb_t entity_cbs[100];	// Entity callback functions
+  void		*entity_cbdatas[100];	// Entity callback data
+  struct lconv	*loc;			// Locale data
+  size_t	loc_declen;		// Length of decimal point string
+  bool		loc_set;		// Locale data set?
+  int		wrap;			// Wrap margin
 } _mxml_global_t;
 
 
@@ -108,7 +115,7 @@ typedef struct _mxml_global_s		// Global, per-thread data
 //
 
 extern _mxml_global_t	*_mxml_global(void);
-extern int		_mxml_entity_cb(const char *name);
+extern int		_mxml_entity_cb(void *cbdata, const char *name);
 extern const char	*_mxml_entity_string(int ch);
 extern void		_mxml_error(const char *format, ...) MXML_FORMAT(1,2);
 

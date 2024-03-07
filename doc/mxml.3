@@ -175,6 +175,30 @@ is used for a particular node or the entire tree:
     mxmlDelete(tree);
 .fi
 .SH ENUMERATIONS
+.SS mxml_add_e
+\fImxmlAdd\fR add values
+.TP 5
+MXML_ADD_AFTER
+.br
+Add node after specified node
+.TP 5
+MXML_ADD_BEFORE
+.br
+Add node before specified node
+.SS mxml_descend_e
+\fImxmlFindElement\fR, \fImxmlWalkNext\fR, and \fImxmlWalkPrev\fR descend values
+.TP 5
+MXML_DESCEND_ALL
+.br
+Descend when finding/walking
+.TP 5
+MXML_DESCEND_FIRST
+.br
+Descend for first find
+.TP 5
+MXML_DESCEND_NONE
+.br
+Don't descend when finding/walking
 .SS mxml_sax_event_e
 SAX event type.
 .TP 5
@@ -284,7 +308,7 @@ Add a node to a tree.
 .nf
 void mxmlAdd (
     mxml_node_t *parent,
-    int where,
+    mxml_add_t add,
     mxml_node_t *child,
     mxml_node_t *node
 );
@@ -292,10 +316,9 @@ void mxmlAdd (
 .PP
 Adds the specified node to the parent.  If the child argument is not
 \fBNULL\fR, puts the new node before or after the specified child depending
-on the value of the where argument.  If the child argument is \fBNULL\fR,
+on the value of the \fBadd\fR argument.  If the child argument is \fBNULL\fR,
 puts the new node at the beginning of the child list (\fBMXML_ADD_BEFORE\fR)
-or at the end of the child list (\fBMXML_ADD_AFTER\fR).  The constant
-\fBMXML_ADD_TO_PARENT\fR can be used to specify a \fBNULL\fR child pointer.
+or at the end of the child list (\fBMXML_ADD_AFTER\fR).
 .SS mxmlDelete
 Delete a node and all of its children.
 .PP
@@ -385,7 +408,8 @@ Add a callback to convert entities to Unicode.
 .PP
 .nf
 bool  mxmlEntityAddCallback (
-    mxml_entity_cb_t cb
+    mxml_entity_cb_t cb,
+    void *cbdata
 );
 .fi
 .SS mxmlEntityGetValue
@@ -417,7 +441,7 @@ mxml_node_t * mxmlFindElement (
     const char *element,
     const char *attr,
     const char *value,
-    int descend
+    mxml_descend_t descend
 );
 .fi
 .PP
@@ -1291,13 +1315,14 @@ bool  mxmlSetCustom (
 .fi
 .PP
 The node is not changed if it (or its first child) is not a custom node.
-.SS mxmlSetCustomHandlers
+.SS mxmlSetCustomCallbacks
 Set the handling functions for custom data.
 .PP
 .nf
-void mxmlSetCustomHandlers (
-    mxml_custom_load_cb_t load,
-    mxml_custom_save_cb_t save
+void mxmlSetCustomCallbacks (
+    mxml_custom_load_cb_t load_cb,
+    mxml_custom_save_cb_t save_cb,
+    void *cbdata
 );
 .fi
 .PP
@@ -1360,7 +1385,8 @@ Set the error message callback.
 .PP
 .nf
 void mxmlSetErrorCallback (
-    mxml_error_cb_t cb
+    mxml_error_cb_t cb,
+    void *cbdata
 );
 .fi
 .SS mxmlSetInteger
@@ -1459,7 +1485,7 @@ Walk to the next logical node in the tree.
 mxml_node_t * mxmlWalkNext (
     mxml_node_t *node,
     mxml_node_t *top,
-    int descend
+    mxml_descend_t descend
 );
 .fi
 .PP
@@ -1473,7 +1499,7 @@ Walk to the previous logical node in the tree.
 mxml_node_t * mxmlWalkPrev (
     mxml_node_t *node,
     mxml_node_t *top,
-    int descend
+    mxml_descend_t descend
 );
 .fi
 .PP
@@ -1481,6 +1507,12 @@ The descend argument controls whether the previous node's last child
 is considered to be the previous node.  The top node argument constrains
 the walk to the node's children.
 .SH TYPES
+.SS mxml_add_t
+\fImxmlAdd\fR add values
+.PP
+.nf
+typedef enum mxml_add_e mxml_add_t;
+.fi
 .SS mxml_custom_destroy_cb_t
 Custom data destructor
 .PP
@@ -1491,25 +1523,31 @@ typedef void(*)(void *) mxml_custom_destroy_cb_t;
 Custom data load callback function
 .PP
 .nf
-typedef bool(*)(mxml_node_t *node const char *s) mxml_custom_load_cb_t;
+typedef bool(*)(void *cbdata mxml_node_t *node const char *s) mxml_custom_load_cb_t;
 .fi
 .SS mxml_custom_save_cb_t
 Custom data save callback function
 .PP
 .nf
-typedef char *(*)(mxml_node_t *node) mxml_custom_save_cb_t;
+typedef char *(*)(void *cbdata mxml_node_t *node) mxml_custom_save_cb_t;
+.fi
+.SS mxml_descend_t
+\fImxmlFindElement\fR, \fImxmlWalkNext\fR, and \fImxmlWalkPrev\fR descend values
+.PP
+.nf
+typedef enum mxml_descend_e mxml_descend_t;
 .fi
 .SS mxml_entity_cb_t
 Entity callback function
 .PP
 .nf
-typedef int(*)(const char *name) mxml_entity_cb_t;
+typedef int(*)(void *cbdata const char *name) mxml_entity_cb_t;
 .fi
 .SS mxml_error_cb_t
 Error callback function
 .PP
 .nf
-typedef void(*)(const char *) mxml_error_cb_t;
+typedef void(*)(void *cbdata const char *message) mxml_error_cb_t;
 .fi
 .SS mxml_index_t
 An XML node index.

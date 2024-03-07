@@ -25,6 +25,7 @@
 #  else
 #    define MXML_DEBUG(...)
 #  endif // DEBUG
+#  define MXML_TAB		8	// Tabs every N columns
 
 
 //

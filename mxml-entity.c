@@ -402,6 +402,8 @@ _mxml_entity_cb(void       *cbdata,	// I - Callback data (unused)
   };
 
 
+  (void)cbdata;
+
   // Do a linear search for the named entity...
   for (i = 0; i < (sizeof(entities) / sizeof(entities[0])); i ++)
   {

@@ -43,20 +43,23 @@ extern "C" {
 #    define MXML_FORMAT(a,b)
 #  endif // __GNUC__
 
-#  define MXML_TAB		8	// Tabs every N columns
-
-#  define MXML_DESCEND		1	// Descend when finding/walking
-#  define MXML_NO_DESCEND	0	// Don't descend when finding/walking
-#  define MXML_DESCEND_FIRST	-1	// Descend for first find
-
-#  define MXML_ADD_BEFORE	0	// Add node before specified node
-#  define MXML_ADD_AFTER	1	// Add node after specified node
-#  define MXML_ADD_TO_PARENT	NULL	// Add node relative to parent
-
 
 //
 // Data types...
 //
+
+typedef enum mxml_add_e			// @link mxmlAdd@ add values
+{
+  MXML_ADD_BEFORE,			// Add node before specified node
+  MXML_ADD_AFTER			// Add node after specified node
+} mxml_add_t;
+
+typedef enum mxml_descend_e		// @link mxmlFindElement@, @link mxmlWalkNext@, and @link mxmlWalkPrev@ descend values
+{
+  MXML_DESCEND_FIRST = -1,		// Descend for first find
+  MXML_DESCEND_NONE = 0,		// Don't descend when finding/walking
+  MXML_DESCEND_ALL = 1			// Descend when finding/walking
+} mxml_descend_t;
 
 typedef enum mxml_sax_event_e		// SAX event type.
 {
@@ -132,7 +135,7 @@ typedef bool (*mxml_sax_cb_t)(void *cbdata, mxml_node_t *node, mxml_sax_event_t 
 // Prototypes...
 //
 
-extern void		mxmlAdd(mxml_node_t *parent, int where, mxml_node_t *child, mxml_node_t *node);
+extern void		mxmlAdd(mxml_node_t *parent, mxml_add_t add, mxml_node_t *child, mxml_node_t *node);
 
 extern void		mxmlDelete(mxml_node_t *node);
 
@@ -146,7 +149,7 @@ extern bool		mxmlEntityAddCallback(mxml_entity_cb_t cb, void *cbdata);
 extern int		mxmlEntityGetValue(const char *name);
 extern void		mxmlEntityRemoveCallback(mxml_entity_cb_t cb);
 
-extern mxml_node_t	*mxmlFindElement(mxml_node_t *node, mxml_node_t *top, const char *element, const char *attr, const char *value, int descend);
+extern mxml_node_t	*mxmlFindElement(mxml_node_t *node, mxml_node_t *top, const char *element, const char *attr, const char *value, mxml_descend_t descend);
 extern mxml_node_t	*mxmlFindPath(mxml_node_t *node, const char *path);
 
 extern const char	*mxmlGetCDATA(mxml_node_t *node);
@@ -230,8 +233,8 @@ extern bool		mxmlSetTextf(mxml_node_t *node, bool whitespace, const char *format
 extern bool		mxmlSetUserData(mxml_node_t *node, void *data);
 extern void		mxmlSetWrapMargin(int column);
 
-extern mxml_node_t	*mxmlWalkNext(mxml_node_t *node, mxml_node_t *top, int descend);
-extern mxml_node_t	*mxmlWalkPrev(mxml_node_t *node, mxml_node_t *top, int descend);
+extern mxml_node_t	*mxmlWalkNext(mxml_node_t *node, mxml_node_t *top, mxml_descend_t descend);
+extern mxml_node_t	*mxmlWalkPrev(mxml_node_t *node, mxml_node_t *top, mxml_descend_t descend);
 
 
 #  ifdef __cplusplus

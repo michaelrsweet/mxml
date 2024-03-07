@@ -356,7 +356,7 @@ span.string {
 <li><a href="#mxmlSetComment">mxmlSetComment</a></li>
 <li><a href="#mxmlSetCommentf">mxmlSetCommentf</a></li>
 <li><a href="#mxmlSetCustom">mxmlSetCustom</a></li>
-<li><a href="#mxmlSetCustomHandlers">mxmlSetCustomHandlers</a></li>
+<li><a href="#mxmlSetCustomCallbacks">mxmlSetCustomCallbacks</a></li>
 <li><a href="#mxmlSetDeclaration">mxmlSetDeclaration</a></li>
 <li><a href="#mxmlSetDeclarationf">mxmlSetDeclarationf</a></li>
 <li><a href="#mxmlSetDirective">mxmlSetDirective</a></li>
@@ -375,9 +375,11 @@ span.string {
 <li><a href="#mxmlWalkPrev">mxmlWalkPrev</a></li>
 </ul></li>
 <li><a href="#TYPES">Data Types</a><ul class="subcontents">
+<li><a href="#mxml_add_t">mxml_add_t</a></li>
 <li><a href="#mxml_custom_destroy_cb_t">mxml_custom_destroy_cb_t</a></li>
 <li><a href="#mxml_custom_load_cb_t">mxml_custom_load_cb_t</a></li>
 <li><a href="#mxml_custom_save_cb_t">mxml_custom_save_cb_t</a></li>
+<li><a href="#mxml_descend_t">mxml_descend_t</a></li>
 <li><a href="#mxml_entity_cb_t">mxml_entity_cb_t</a></li>
 <li><a href="#mxml_error_cb_t">mxml_error_cb_t</a></li>
 <li><a href="#mxml_index_t">mxml_index_t</a></li>
@@ -392,6 +394,8 @@ span.string {
 <li><a href="#mxml_ws_t">mxml_ws_t</a></li>
 </ul></li>
 <li><a href="#ENUMERATIONS">Enumerations</a><ul class="subcontents">
+<li><a href="#mxml_add_e">mxml_add_e</a></li>
+<li><a href="#mxml_descend_e">mxml_descend_e</a></li>
 <li><a href="#mxml_sax_event_e">mxml_sax_event_e</a></li>
 <li><a href="#mxml_type_e">mxml_type_e</a></li>
 <li><a href="#mxml_ws_e">mxml_ws_e</a></li>
@@ -869,44 +873,44 @@ mxmlFindElement(mxml_node_t *node, mxml_node_t *top,
 <p>The &quot;element&quot;, &quot;attr&quot;, and &quot;value&quot; arguments can be passed as <code>NULL</code> to act as wildcards, e.g.:</p>
 <pre><code class="language-c"><span class="comment">/* Find the first &quot;a&quot; element */</span>
 node = mxmlFindElement(tree, tree, <span class="string">&quot;a&quot;</span>, NULL, NULL,
-                       MXML_DESCEND);
+                       MXML_DESCEND_ALL);
 
 <span class="comment">/* Find the first &quot;a&quot; element with &quot;href&quot; attribute */</span>
 node = mxmlFindElement(tree, tree, <span class="string">&quot;a&quot;</span>, <span class="string">&quot;href&quot;</span>, NULL,
-                       MXML_DESCEND);
+                       MXML_DESCEND_ALL);
 
 <span class="comment">/* Find the first &quot;a&quot; element with &quot;href&quot; to a URL */</span>
 node = mxmlFindElement(tree, tree, <span class="string">&quot;a&quot;</span>, <span class="string">&quot;href&quot;</span>,
                        <span class="string">&quot;http://michaelrsweet.github.io/&quot;</span>,
-                       MXML_DESCEND);
+                       MXML_DESCEND_ALL);
 
 <span class="comment">/* Find the first element with a &quot;src&quot; attribute*/</span>
 node = mxmlFindElement(tree, tree, NULL, <span class="string">&quot;src&quot;</span>, NULL,
-                       MXML_DESCEND);
+                       MXML_DESCEND_ALL);
 
 <span class="comment">/* Find the first element with a &quot;src&quot; = &quot;foo.jpg&quot; */</span>
 node = mxmlFindElement(tree, tree, NULL, <span class="string">&quot;src&quot;</span>, <span class="string">&quot;foo.jpg&quot;</span>,
-                       MXML_DESCEND);
+                       MXML_DESCEND_ALL);
 </code></pre>
 <p>You can also iterate with the same function:</p>
 <pre><code class="language-c">mxml_node_t *node;
 
 <span class="reserved">for</span> (node = mxmlFindElement(tree, tree, <span class="string">&quot;element&quot;</span>, NULL,
-                            NULL, MXML_DESCEND);
+                            NULL, MXML_DESCEND_ALL);
      node != NULL;
      node = mxmlFindElement(node, tree, <span class="string">&quot;element&quot;</span>, NULL,
-                            NULL, MXML_DESCEND))
+                            NULL, MXML_DESCEND_ALL))
 {
   ... <span class="reserved">do</span> something ...
 }
 </code></pre>
-<p>The <code>descend</code> argument (<code>MXML_DESCEND</code> in the examples above) can be one of three constants:</p>
+<p>The <code>descend</code> argument (<code>MXML_DESCEND_ALL</code> in the examples above) can be one of three constants:</p>
 <ul>
-<li><p><code>MXML_NO_DESCEND</code>: ignore child nodes in the element hierarchy, instead using siblings (same level) or parent nodes (above) until the top (root) node is reached.</p>
+<li><p><code>MXML_DESCEND_NONE</code>: ignore child nodes in the element hierarchy, instead using siblings (same level) or parent nodes (above) until the top (root) node is reached.</p>
 </li>
 <li><p><code>MXML_DESCEND_FIRST</code>: start the search with the first child of the node, and then search siblings. You'll normally use this when iterating through direct children of a parent node, e.g. all of the &quot;node&quot; and &quot;group&quot; elements under the &quot;?xml&quot; parent node in the previous example.</p>
 </li>
-<li><p><code>MXML_DESCEND</code>: search child nodes first, then sibling nodes, and then parent nodes.</p>
+<li><p><code>MXML_DESCEND_ALL</code>: search child nodes first, then sibling nodes, and then parent nodes.</p>
 </li>
 </ul>
 <h3 class="title" id="iterating-nodes">Iterating Nodes</h3>
@@ -924,7 +928,7 @@ mxmlWalkPrev(mxml_node_t *node, mxml_node_t *top,
 
 <span class="reserved">for</span> (node = xml;
      node != NULL;
-     node = mxmlWalkNext(node, xml, MXML_DESCEND))
+     node = mxmlWalkNext(node, xml, MXML_DESCEND_ALL))
 {
   ... <span class="reserved">do</span> something ...
 }
@@ -1219,13 +1223,13 @@ doc = mxmlLoadFd(<span class="comment">/*top*/</span>NULL, <span class="comment"
                  sax_cb, <span class="comment">/*sax_cbdata*/</span>NULL);
 
 title = mxmlFindElement(doc, doc, <span class="string">&quot;title&quot;</span>, NULL, NULL,
-                        MXML_DESCEND);
+                        MXML_DESCEND_ALL);
 
 <span class="reserved">if</span> (title)
   print_children(title);
 
 body = mxmlFindElement(doc, doc, <span class="string">&quot;body&quot;</span>, NULL, NULL,
-                       MXML_DESCEND);
+                       MXML_DESCEND_ALL);
 
 <span class="reserved">if</span> (body)
 {
@@ -1269,6 +1273,8 @@ print_children(mxml_node_t *parent)
 </li>
 <li><p>Node types are now named <code>MXML_TYPE_foo</code> instead of <code>MXML_foo</code>.</p>
 </li>
+<li><p>Descend values are now normalized to <code>MXML_DESCEND_ALL</code>, <code>MXML_DESCEND_FIRST</code>, and <code>MXML_DESCEND_NONE</code>.</p>
+</li>
 <li><p>Functions that returned <code>0</code> on success and <code>-1</code> on error now return <code>true</code> on success and <code>false</code> on error.</p>
 </li>
 <li><p>CDATA nodes (&quot;<code>&lt;![CDATA[...]]&gt;</code>&quot;) now have their own type (<code>MXML_TYPE_CDATA</code>).</p>
@@ -1288,12 +1294,12 @@ print_children(mxml_node_t *parent)
 <h3 class="function"><a id="mxmlAdd">mxmlAdd</a></h3>
 <p class="description">Add a node to a tree.</p>
 <p class="code">
-void mxmlAdd(<a href="#mxml_node_t">mxml_node_t</a> *parent, int where, <a href="#mxml_node_t">mxml_node_t</a> *child, <a href="#mxml_node_t">mxml_node_t</a> *node);</p>
+void mxmlAdd(<a href="#mxml_node_t">mxml_node_t</a> *parent, <a href="#mxml_add_t">mxml_add_t</a> add, <a href="#mxml_node_t">mxml_node_t</a> *child, <a href="#mxml_node_t">mxml_node_t</a> *node);</p>
 <h4 class="parameters">Parameters</h4>
 <table class="list"><tbody>
 <tr><th>parent</th>
 <td class="description">Parent node</td></tr>
-<tr><th>where</th>
+<tr><th>add</th>
 <td class="description">Where to add, <code>MXML_ADD_BEFORE</code> or <code>MXML_ADD_AFTER</code></td></tr>
 <tr><th>child</th>
 <td class="description">Child node for where or <code>MXML_ADD_TO_PARENT</code></td></tr>
@@ -1303,10 +1309,9 @@ void mxmlAdd(<a href="#mxml_node_t">mxml_node_t</a> *parent, int where, <a href=
 <h4 class="discussion">Discussion</h4>
 <p class="discussion">Adds the specified node to the parent.  If the child argument is not
 <code>NULL</code>, puts the new node before or after the specified child depending
-on the value of the where argument.  If the child argument is <code>NULL</code>,
+on the value of the <code>add</code> argument.  If the child argument is <code>NULL</code>,
 puts the new node at the beginning of the child list (<code>MXML_ADD_BEFORE</code>)
-or at the end of the child list (<code>MXML_ADD_AFTER</code>).  The constant
-<code>MXML_ADD_TO_PARENT</code> can be used to specify a <code>NULL</code> child pointer.</p>
+or at the end of the child list (<code>MXML_ADD_AFTER</code>).</p>
 <h3 class="function"><a id="mxmlDelete">mxmlDelete</a></h3>
 <p class="description">Delete a node and all of its children.</p>
 <p class="code">
@@ -1416,11 +1421,13 @@ is not an element.</p>
 <h3 class="function"><a id="mxmlEntityAddCallback">mxmlEntityAddCallback</a></h3>
 <p class="description">Add a callback to convert entities to Unicode.</p>
 <p class="code">
-bool mxmlEntityAddCallback(<a href="#mxml_entity_cb_t">mxml_entity_cb_t</a> cb);</p>
+bool mxmlEntityAddCallback(<a href="#mxml_entity_cb_t">mxml_entity_cb_t</a> cb, void *cbdata);</p>
 <h4 class="parameters">Parameters</h4>
 <table class="list"><tbody>
 <tr><th>cb</th>
 <td class="description">Callback function to add</td></tr>
+<tr><th>cbdata</th>
+<td class="description">Callback data</td></tr>
 </tbody></table>
 <h4 class="returnvalue">Return Value</h4>
 <p class="description"><code>true</code> on success, <code>false</code> on failure</p>
@@ -1450,7 +1457,7 @@ void mxmlEntityRemoveCallback(<a href="#mxml_entity_cb_t">mxml_entity_cb_t</a> c
 <h3 class="function"><a id="mxmlFindElement">mxmlFindElement</a></h3>
 <p class="description">Find the named element.</p>
 <p class="code">
-<a href="#mxml_node_t">mxml_node_t</a> *mxmlFindElement(<a href="#mxml_node_t">mxml_node_t</a> *node, <a href="#mxml_node_t">mxml_node_t</a> *top, const char *element, const char *attr, const char *value, int descend);</p>
+<a href="#mxml_node_t">mxml_node_t</a> *mxmlFindElement(<a href="#mxml_node_t">mxml_node_t</a> *node, <a href="#mxml_node_t">mxml_node_t</a> *top, const char *element, const char *attr, const char *value, <a href="#mxml_descend_t">mxml_descend_t</a> descend);</p>
 <h4 class="parameters">Parameters</h4>
 <table class="list"><tbody>
 <tr><th>node</th>
@@ -1464,7 +1471,7 @@ void mxmlEntityRemoveCallback(<a href="#mxml_entity_cb_t">mxml_entity_cb_t</a> c
 <tr><th>value</th>
 <td class="description">Attribute value, or <code>NULL</code> for any</td></tr>
 <tr><th>descend</th>
-<td class="description">Descend into tree - <code>MXML_DESCEND</code>, <code>MXML_NO_DESCEND</code>, or <code>MXML_DESCEND_FIRST</code></td></tr>
+<td class="description">Descend into tree - <code>MXML_DESCEND_ALL</code>, <code>MXML_DESCEND_NONE</code>, or <code>MXML_DESCEND_FIRST</code></td></tr>
 </tbody></table>
 <h4 class="returnvalue">Return Value</h4>
 <p class="description">Element node or <code>NULL</code></p>
@@ -2593,16 +2600,18 @@ bool mxmlSetCustom(<a href="#mxml_node_t">mxml_node_t</a> *node, void *data, <a 
 <p class="description"><code>true</code> on success, <code>false</code> on failure</p>
 <h4 class="discussion">Discussion</h4>
 <p class="discussion">The node is not changed if it (or its first child) is not a custom node.</p>
-<h3 class="function"><a id="mxmlSetCustomHandlers">mxmlSetCustomHandlers</a></h3>
+<h3 class="function"><a id="mxmlSetCustomCallbacks">mxmlSetCustomCallbacks</a></h3>
 <p class="description">Set the handling functions for custom data.</p>
 <p class="code">
-void mxmlSetCustomHandlers(<a href="#mxml_custom_load_cb_t">mxml_custom_load_cb_t</a> load, <a href="#mxml_custom_save_cb_t">mxml_custom_save_cb_t</a> save);</p>
+void mxmlSetCustomCallbacks(<a href="#mxml_custom_load_cb_t">mxml_custom_load_cb_t</a> load_cb, <a href="#mxml_custom_save_cb_t">mxml_custom_save_cb_t</a> save_cb, void *cbdata);</p>
 <h4 class="parameters">Parameters</h4>
 <table class="list"><tbody>
-<tr><th>load</th>
-<td class="description">Load function</td></tr>
-<tr><th>save</th>
-<td class="description">Save function</td></tr>
+<tr><th>load_cb</th>
+<td class="description">Load callback function</td></tr>
+<tr><th>save_cb</th>
+<td class="description">Save callback function</td></tr>
+<tr><th>cbdata</th>
+<td class="description">Callback data</td></tr>
 </tbody></table>
 <h4 class="discussion">Discussion</h4>
 <p class="discussion">The load function accepts a node pointer and a data string and must
@@ -2684,11 +2693,13 @@ bool mxmlSetElement(<a href="#mxml_node_t">mxml_node_t</a> *node, const char *na
 <h3 class="function"><a id="mxmlSetErrorCallback">mxmlSetErrorCallback</a></h3>
 <p class="description">Set the error message callback.</p>
 <p class="code">
-void mxmlSetErrorCallback(<a href="#mxml_error_cb_t">mxml_error_cb_t</a> cb);</p>
+void mxmlSetErrorCallback(<a href="#mxml_error_cb_t">mxml_error_cb_t</a> cb, void *cbdata);</p>
 <h4 class="parameters">Parameters</h4>
 <table class="list"><tbody>
 <tr><th>cb</th>
 <td class="description">Error callback function</td></tr>
+<tr><th>cbdata</th>
+<td class="description">Error callback data</td></tr>
 </tbody></table>
 <h3 class="function"><a id="mxmlSetInteger">mxmlSetInteger</a></h3>
 <p class="description">Set the value of an integer node.</p>
@@ -2815,7 +2826,7 @@ void mxmlSetWrapMargin(int column);</p>
 <h3 class="function"><a id="mxmlWalkNext">mxmlWalkNext</a></h3>
 <p class="description">Walk to the next logical node in the tree.</p>
 <p class="code">
-<a href="#mxml_node_t">mxml_node_t</a> *mxmlWalkNext(<a href="#mxml_node_t">mxml_node_t</a> *node, <a href="#mxml_node_t">mxml_node_t</a> *top, int descend);</p>
+<a href="#mxml_node_t">mxml_node_t</a> *mxmlWalkNext(<a href="#mxml_node_t">mxml_node_t</a> *node, <a href="#mxml_node_t">mxml_node_t</a> *top, <a href="#mxml_descend_t">mxml_descend_t</a> descend);</p>
 <h4 class="parameters">Parameters</h4>
 <table class="list"><tbody>
 <tr><th>node</th>
@@ -2823,7 +2834,7 @@ void mxmlSetWrapMargin(int column);</p>
 <tr><th>top</th>
 <td class="description">Top node</td></tr>
 <tr><th>descend</th>
-<td class="description">Descend into tree - <code>MXML_DESCEND</code>, <code>MXML_NO_DESCEND</code>, or <code>MXML_DESCEND_FIRST</code></td></tr>
+<td class="description">Descend into tree - <code>MXML_DESCEND_ALL</code>, <code>MXML_DESCEND_NONE</code>, or <code>MXML_DESCEND_FIRST</code></td></tr>
 </tbody></table>
 <h4 class="returnvalue">Return Value</h4>
 <p class="description">Next node or <code>NULL</code></p>
@@ -2834,7 +2845,7 @@ the node's children.</p>
 <h3 class="function"><a id="mxmlWalkPrev">mxmlWalkPrev</a></h3>
 <p class="description">Walk to the previous logical node in the tree.</p>
 <p class="code">
-<a href="#mxml_node_t">mxml_node_t</a> *mxmlWalkPrev(<a href="#mxml_node_t">mxml_node_t</a> *node, <a href="#mxml_node_t">mxml_node_t</a> *top, int descend);</p>
+<a href="#mxml_node_t">mxml_node_t</a> *mxmlWalkPrev(<a href="#mxml_node_t">mxml_node_t</a> *node, <a href="#mxml_node_t">mxml_node_t</a> *top, <a href="#mxml_descend_t">mxml_descend_t</a> descend);</p>
 <h4 class="parameters">Parameters</h4>
 <table class="list"><tbody>
 <tr><th>node</th>
@@ -2842,7 +2853,7 @@ the node's children.</p>
 <tr><th>top</th>
 <td class="description">Top node</td></tr>
 <tr><th>descend</th>
-<td class="description">Descend into tree - <code>MXML_DESCEND</code>, <code>MXML_NO_DESCEND</code>, or <code>MXML_DESCEND_FIRST</code></td></tr>
+<td class="description">Descend into tree - <code>MXML_DESCEND_ALL</code>, <code>MXML_DESCEND_NONE</code>, or <code>MXML_DESCEND_FIRST</code></td></tr>
 </tbody></table>
 <h4 class="returnvalue">Return Value</h4>
 <p class="description">Previous node or <code>NULL</code></p>
@@ -2851,6 +2862,11 @@ the node's children.</p>
 is considered to be the previous node.  The top node argument constrains
 the walk to the node's children.</p>
 <h2 class="title"><a id="TYPES">Data Types</a></h2>
+<h3 class="typedef"><a id="mxml_add_t">mxml_add_t</a></h3>
+<p class="description"><a href="#mxmlAdd"><code>mxmlAdd</code></a> add values</p>
+<p class="code">
+typedef enum <a href="#mxml_add_e">mxml_add_e</a> mxml_add_t;
+</p>
 <h3 class="typedef"><a id="mxml_custom_destroy_cb_t">mxml_custom_destroy_cb_t</a></h3>
 <p class="description">Custom data destructor</p>
 <p class="code">
@@ -2859,22 +2875,27 @@ typedef void (*mxml_custom_destroy_cb_t)(void *);
 <h3 class="typedef"><a id="mxml_custom_load_cb_t">mxml_custom_load_cb_t</a></h3>
 <p class="description">Custom data load callback function</p>
 <p class="code">
-typedef bool (*mxml_custom_load_cb_t)(<a href="#mxml_node_t">mxml_node_t</a> *node const char *s);
+typedef bool (*mxml_custom_load_cb_t)(void *cbdata <a href="#mxml_node_t">mxml_node_t</a> *node const char *s);
 </p>
 <h3 class="typedef"><a id="mxml_custom_save_cb_t">mxml_custom_save_cb_t</a></h3>
 <p class="description">Custom data save callback function</p>
 <p class="code">
-typedef char *(*mxml_custom_save_cb_t)(<a href="#mxml_node_t">mxml_node_t</a> *node);
+typedef char *(*mxml_custom_save_cb_t)(void *cbdata <a href="#mxml_node_t">mxml_node_t</a> *node);
+</p>
+<h3 class="typedef"><a id="mxml_descend_t">mxml_descend_t</a></h3>
+<p class="description"><a href="#mxmlFindElement"><code>mxmlFindElement</code></a>, <a href="#mxmlWalkNext"><code>mxmlWalkNext</code></a>, and <a href="#mxmlWalkPrev"><code>mxmlWalkPrev</code></a> descend values</p>
+<p class="code">
+typedef enum <a href="#mxml_descend_e">mxml_descend_e</a> mxml_descend_t;
 </p>
 <h3 class="typedef"><a id="mxml_entity_cb_t">mxml_entity_cb_t</a></h3>
 <p class="description">Entity callback function</p>
 <p class="code">
-typedef int (*mxml_entity_cb_t)(const char *name);
+typedef int (*mxml_entity_cb_t)(void *cbdata const char *name);
 </p>
 <h3 class="typedef"><a id="mxml_error_cb_t">mxml_error_cb_t</a></h3>
 <p class="description">Error callback function</p>
 <p class="code">
-typedef void (*mxml_error_cb_t)(const char *);
+typedef void (*mxml_error_cb_t)(void *cbdata const char *message);
 </p>
 <h3 class="typedef"><a id="mxml_index_t">mxml_index_t</a></h3>
 <p class="description">An XML node index.</p>
@@ -2927,6 +2948,21 @@ typedef ssize_t (*mxml_write_cb_t)(void *cbdata const void *buffer size_t bytes)
 typedef enum <a href="#mxml_ws_e">mxml_ws_e</a> mxml_ws_t;
 </p>
 <h2 class="title"><a id="ENUMERATIONS">Constants</a></h2>
+<h3 class="enumeration"><a id="mxml_add_e">mxml_add_e</a></h3>
+<p class="description"><a href="#mxmlAdd"><code>mxmlAdd</code></a> add values</p>
+<h4 class="constants">Constants</h4>
+<table class="list"><tbody>
+<tr><th>MXML_ADD_AFTER </th><td class="description">Add node after specified node</td></tr>
+<tr><th>MXML_ADD_BEFORE </th><td class="description">Add node before specified node</td></tr>
+</tbody></table>
+<h3 class="enumeration"><a id="mxml_descend_e">mxml_descend_e</a></h3>
+<p class="description"><a href="#mxmlFindElement"><code>mxmlFindElement</code></a>, <a href="#mxmlWalkNext"><code>mxmlWalkNext</code></a>, and <a href="#mxmlWalkPrev"><code>mxmlWalkPrev</code></a> descend values</p>
+<h4 class="constants">Constants</h4>
+<table class="list"><tbody>
+<tr><th>MXML_DESCEND_ALL </th><td class="description">Descend when finding/walking</td></tr>
+<tr><th>MXML_DESCEND_FIRST </th><td class="description">Descend for first find</td></tr>
+<tr><th>MXML_DESCEND_NONE </th><td class="description">Don't descend when finding/walking</td></tr>
+</tbody></table>
 <h3 class="enumeration"><a id="mxml_sax_event_e">mxml_sax_event_e</a></h3>
 <p class="description">SAX event type.</p>
 <h4 class="constants">Constants</h4>

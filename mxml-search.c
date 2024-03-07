@@ -26,12 +26,12 @@
 //
 
 mxml_node_t *				// O - Element node or `NULL`
-mxmlFindElement(mxml_node_t *node,	// I - Current node
-                mxml_node_t *top,	// I - Top node
-                const char  *element,	// I - Element name or `NULL` for any
-		const char  *attr,	// I - Attribute name, or `NULL` for none
-		const char  *value,	// I - Attribute value, or `NULL` for any
-		int         descend)	// I - Descend into tree - `MXML_DESCEND`, `MXML_NO_DESCEND`, or `MXML_DESCEND_FIRST`
+mxmlFindElement(mxml_node_t    *node,	// I - Current node
+                mxml_node_t    *top,	// I - Top node
+                const char     *element,// I - Element name or `NULL` for any
+		const char     *attr,	// I - Attribute name, or `NULL` for none
+		const char     *value,	// I - Attribute value, or `NULL` for any
+		mxml_descend_t descend)	// I - Descend into tree - `MXML_DESCEND_ALL`, `MXML_DESCEND_NONE`, or `MXML_DESCEND_FIRST`
 {
   const char	*temp;			// Current attribute value
 
@@ -63,8 +63,8 @@ mxmlFindElement(mxml_node_t *node,	// I - Current node
     }
 
     // No match, move on to the next node...
-    if (descend == MXML_DESCEND)
-      node = mxmlWalkNext(node, top, MXML_DESCEND);
+    if (descend == MXML_DESCEND_ALL)
+      node = mxmlWalkNext(node, top, MXML_DESCEND_ALL);
     else
       node = node->next;
   }
@@ -91,7 +91,7 @@ mxmlFindPath(mxml_node_t *top,		// I - Top node
   mxml_node_t	*node;			// Current node
   char		element[256];		// Current element name
   const char	*pathsep;		// Separator in path
-  int		descend;		// mxmlFindElement option
+  mxml_descend_t descend;		// mxmlFindElement option
 
 
   // Range check input...
@@ -106,7 +106,7 @@ mxmlFindPath(mxml_node_t *top,		// I - Top node
     if (!strncmp(path, "*/", 2))
     {
       path += 2;
-      descend = MXML_DESCEND;
+      descend = MXML_DESCEND_ALL;
     }
     else
     {
@@ -150,15 +150,15 @@ mxmlFindPath(mxml_node_t *top,		// I - Top node
 //
 
 mxml_node_t *				// O - Next node or `NULL`
-mxmlWalkNext(mxml_node_t *node,		// I - Current node
-             mxml_node_t *top,		// I - Top node
-             int         descend)	// I - Descend into tree - `MXML_DESCEND`, `MXML_NO_DESCEND`, or `MXML_DESCEND_FIRST`
+mxmlWalkNext(mxml_node_t    *node,	// I - Current node
+             mxml_node_t    *top,	// I - Top node
+             mxml_descend_t descend)	// I - Descend into tree - `MXML_DESCEND_ALL`, `MXML_DESCEND_NONE`, or `MXML_DESCEND_FIRST`
 {
   if (!node)
   {
     return (NULL);
   }
-  else if (node->child && descend)
+  else if (node->child && descend != MXML_DESCEND_NONE)
   {
     return (node->child);
   }
@@ -200,9 +200,9 @@ mxmlWalkNext(mxml_node_t *node,		// I - Current node
 //
 
 mxml_node_t *				// O - Previous node or `NULL`
-mxmlWalkPrev(mxml_node_t *node,		// I - Current node
-             mxml_node_t *top,		// I - Top node
-             int         descend)	// I - Descend into tree - `MXML_DESCEND`, `MXML_NO_DESCEND`, or `MXML_DESCEND_FIRST`
+mxmlWalkPrev(mxml_node_t    *node,	// I - Current node
+             mxml_node_t    *top,	// I - Top node
+             mxml_descend_t descend)	// I - Descend into tree - `MXML_DESCEND_ALL`, `MXML_DESCEND_NONE`, or `MXML_DESCEND_FIRST`
 {
   if (!node || node == top)
   {
@@ -210,7 +210,7 @@ mxmlWalkPrev(mxml_node_t *node,		// I - Current node
   }
   else if (node->prev)
   {
-    if (node->prev->last_child && descend)
+    if (node->prev->last_child && descend != MXML_DESCEND_NONE)
     {
       // Find the last child under the previous node...
       node = node->prev->last_child;

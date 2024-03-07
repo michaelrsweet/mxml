@@ -769,24 +769,24 @@ wildcards, e.g.:
 ```c
 /* Find the first "a" element */
 node = mxmlFindElement(tree, tree, "a", NULL, NULL,
-                       MXML_DESCEND);
+                       MXML_DESCEND_ALL);
 
 /* Find the first "a" element with "href" attribute */
 node = mxmlFindElement(tree, tree, "a", "href", NULL,
-                       MXML_DESCEND);
+                       MXML_DESCEND_ALL);
 
 /* Find the first "a" element with "href" to a URL */
 node = mxmlFindElement(tree, tree, "a", "href",
                        "http://michaelrsweet.github.io/",
-                       MXML_DESCEND);
+                       MXML_DESCEND_ALL);
 
 /* Find the first element with a "src" attribute*/
 node = mxmlFindElement(tree, tree, NULL, "src", NULL,
-                       MXML_DESCEND);
+                       MXML_DESCEND_ALL);
 
 /* Find the first element with a "src" = "foo.jpg" */
 node = mxmlFindElement(tree, tree, NULL, "src", "foo.jpg",
-                       MXML_DESCEND);
+                       MXML_DESCEND_ALL);
 ```
 
 You can also iterate with the same function:
@@ -795,29 +795,29 @@ You can also iterate with the same function:
 mxml_node_t *node;
 
 for (node = mxmlFindElement(tree, tree, "element", NULL,
-                            NULL, MXML_DESCEND);
+                            NULL, MXML_DESCEND_ALL);
      node != NULL;
      node = mxmlFindElement(node, tree, "element", NULL,
-                            NULL, MXML_DESCEND))
+                            NULL, MXML_DESCEND_ALL))
 {
   ... do something ...
 }
 ```
 
-The `descend` argument \(`MXML_DESCEND` in the examples above) can be one of
+The `descend` argument \(`MXML_DESCEND_ALL` in the examples above) can be one of
 three constants:
 
-- `MXML_NO_DESCEND`: ignore child nodes in the element hierarchy, instead using
-  siblings (same level) or parent nodes (above) until the top (root) node is
-  reached.
+- `MXML_DESCEND_NONE`: ignore child nodes in the element hierarchy, instead
+  using siblings (same level) or parent nodes (above) until the top (root) node
+  is reached.
 
 - `MXML_DESCEND_FIRST`: start the search with the first child of the node, and
   then search siblings.  You'll normally use this when iterating through direct
   children of a parent node, e.g. all of the "node" and "group" elements under
   the "?xml" parent node in the previous example.
 
-- `MXML_DESCEND`: search child nodes first, then sibling nodes, and then parent
-  nodes.
+- `MXML_DESCEND_ALL`: search child nodes first, then sibling nodes, and then
+  parent nodes.
 
 
 Iterating Nodes
@@ -848,7 +848,7 @@ mxml_node_t *node;
 
 for (node = xml;
      node != NULL;
-     node = mxmlWalkNext(node, xml, MXML_DESCEND))
+     node = mxmlWalkNext(node, xml, MXML_DESCEND_ALL))
 {
   ... do something ...
 }
@@ -1246,13 +1246,13 @@ doc = mxmlLoadFd(/*top*/NULL, /*fd*/0,
                  sax_cb, /*sax_cbdata*/NULL);
 
 title = mxmlFindElement(doc, doc, "title", NULL, NULL,
-                        MXML_DESCEND);
+                        MXML_DESCEND_ALL);
 
 if (title)
   print_children(title);
 
 body = mxmlFindElement(doc, doc, "body", NULL, NULL,
-                       MXML_DESCEND);
+                       MXML_DESCEND_ALL);
 
 if (body)
 {
@@ -1300,6 +1300,8 @@ The following incompatible API changes were made in Mini-XML v4.0:
 - The `mxmlSAXLoadXxx` functions have been removed in favor of passing the SAX
   callback function and data pointers to the `mxmlLoadXxx` functions.
 - Node types are now named `MXML_TYPE_foo` instead of `MXML_foo`.
+- Descend values are now normalized to `MXML_DESCEND_ALL`, `MXML_DESCEND_FIRST`,
+  and `MXML_DESCEND_NONE`.
 - Functions that returned `0` on success and `-1` on error now return `true` on
   success and `false` on error.
 - CDATA nodes ("`<![CDATA[...]]>`") now have their own type (`MXML_TYPE_CDATA`).

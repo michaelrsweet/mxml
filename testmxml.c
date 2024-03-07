@@ -488,14 +488,14 @@ main(int  argc,				// I - Number of command-line args
   if (!strcmp(argv[1], "test.xml"))
   {
     // Verify that mxmlFindElement() and indirectly mxmlWalkNext() work properly...
-    if ((node = mxmlFindElement(xml, xml, "choice", NULL, NULL, MXML_DESCEND)) == NULL)
+    if ((node = mxmlFindElement(xml, xml, "choice", NULL, NULL, MXML_DESCEND_ALL)) == NULL)
     {
       fputs("Unable to find first <choice> element in XML tree.\n", stderr);
       mxmlDelete(tree);
       return (1);
     }
 
-    if (!mxmlFindElement(node, xml, "choice", NULL, NULL, MXML_NO_DESCEND))
+    if (!mxmlFindElement(node, xml, "choice", NULL, NULL, MXML_DESCEND_NONE))
     {
       fputs("Unable to find second <choice> element in XML tree.\n", stderr);
       mxmlDelete(tree);

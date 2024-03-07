@@ -25,19 +25,18 @@ static mxml_node_t	*mxml_new(mxml_node_t *parent, mxml_type_t type);
 //
 // Adds the specified node to the parent.  If the child argument is not
 // `NULL`, puts the new node before or after the specified child depending
-// on the value of the where argument.  If the child argument is `NULL`,
+// on the value of the `add` argument.  If the child argument is `NULL`,
 // puts the new node at the beginning of the child list (`MXML_ADD_BEFORE`)
-// or at the end of the child list (`MXML_ADD_AFTER`).  The constant
-// `MXML_ADD_TO_PARENT` can be used to specify a `NULL` child pointer.
+// or at the end of the child list (`MXML_ADD_AFTER`).
 //
 
 void
 mxmlAdd(mxml_node_t *parent,		// I - Parent node
-        int         where,		// I - Where to add, `MXML_ADD_BEFORE` or `MXML_ADD_AFTER`
+        mxml_add_t  add,		// I - Where to add, `MXML_ADD_BEFORE` or `MXML_ADD_AFTER`
         mxml_node_t *child,		// I - Child node for where or `MXML_ADD_TO_PARENT`
 	mxml_node_t *node)		// I - Node to add
 {
-  MXML_DEBUG("mxmlAdd(parent=%p, where=%d, child=%p, node=%p)\n", parent, where, child, node);
+  MXML_DEBUG("mxmlAdd(parent=%p, add=%d, child=%p, node=%p)\n", parent, add, child, node);
 
   // Range check input...
   if (!parent || !node)
@@ -50,7 +49,7 @@ mxmlAdd(mxml_node_t *parent,		// I - Parent node
   // Reset pointers...
   node->parent = parent;
 
-  switch (where)
+  switch (add)
   {
     case MXML_ADD_BEFORE :
         if (!child || child == parent->child || child->parent != parent)
@@ -933,7 +932,7 @@ mxml_new(mxml_node_t *parent,		// I - Parent node
 
   // Add to the parent if present...
   if (parent)
-    mxmlAdd(parent, MXML_ADD_AFTER, MXML_ADD_TO_PARENT, node);
+    mxmlAdd(parent, MXML_ADD_AFTER, /*child*/NULL, node);
 
   // Return the new node...
   return (node);

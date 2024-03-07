@@ -1932,15 +1932,16 @@ mxml_strtod(_mxml_global_t *global,	// I - Global data
   // Copy leading sign, numbers, period, and then numbers...
   tempptr                = temp;
   temp[sizeof(temp) - 1] = '\0';
+  bufptr                 = buffer;
 
   if (*bufptr == '-' || *bufptr == '+')
     *tempptr++ = *bufptr++;
 
-  for (bufptr = buffer; *bufptr && isdigit(*bufptr & 255); bufptr ++)
+  while (*bufptr && isdigit(*bufptr & 255))
   {
     if (tempptr < (temp + sizeof(temp) - 1))
     {
-      *tempptr++ = *bufptr;
+      *tempptr++ = *bufptr++;
     }
     else
     {

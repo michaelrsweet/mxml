@@ -239,7 +239,7 @@ mxmlIndexNew(mxml_node_t *node,		// I - XML node tree
   if (!element && !attr)
     current = node;
   else
-    current = mxmlFindElement(node, node, element, attr, NULL, MXML_DESCEND);
+    current = mxmlFindElement(node, node, element, attr, NULL, MXML_DESCEND_ALL);
 
   while (current)
   {
@@ -259,7 +259,7 @@ mxmlIndexNew(mxml_node_t *node,		// I - XML node tree
 
     ind->nodes[ind->num_nodes ++] = current;
 
-    current = mxmlFindElement(current, node, element, attr, NULL, MXML_DESCEND);
+    current = mxmlFindElement(current, node, element, attr, NULL, MXML_DESCEND_ALL);
   }
 
   // Sort nodes based upon the search criteria...

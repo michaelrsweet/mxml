@@ -107,6 +107,9 @@ typedef struct _mxml_global_s		// Global, per-thread data
   struct lconv	*loc;			// Locale data
   size_t	loc_declen;		// Length of decimal point string
   bool		loc_set;		// Locale data set?
+  mxml_strcopy_cb_t strcopy_cb;		// String copy callback function
+  mxml_strfree_cb_t strfree_cb;		// String free callback function
+  void		*str_cbdata;		// String callback data
   int		wrap;			// Wrap margin
 } _mxml_global_t;
 
@@ -119,6 +122,7 @@ extern _mxml_global_t	*_mxml_global(void);
 extern int		_mxml_entity_cb(void *cbdata, const char *name);
 extern const char	*_mxml_entity_string(int ch);
 extern void		_mxml_error(const char *format, ...) MXML_FORMAT(1,2);
-
+extern char		*_mxml_strcopy(const char *s);
+extern void		_mxml_strfree(char *s);
 
 #endif // !MXML_PRIVATE_H

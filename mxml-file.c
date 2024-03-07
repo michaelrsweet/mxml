@@ -528,50 +528,6 @@ mxmlSaveString(
 
 
 //
-// 'mxmlSetCustomHandlers()' - Set the handling functions for custom data.
-//
-// The load function accepts a node pointer and a data string and must
-// return 0 on success and non-zero on error.
-//
-// The save function accepts a node pointer and must return a malloc'd
-// string on success and `NULL` on error.
-//
-
-void
-mxmlSetCustomCallbacks(
-    mxml_custom_load_cb_t load_cb,	// I - Load callback function
-    mxml_custom_save_cb_t save_cb,	// I - Save callback function
-    void                  *cbdata)	// I - Callback data
-{
-  _mxml_global_t *global = _mxml_global();
-					// Global data
-
-
-  global->custom_load_cb = load_cb;
-  global->custom_save_cb = save_cb;
-  global->custom_cbdata  = cbdata;
-}
-
-
-//
-// 'mxmlSetErrorCallback()' - Set the error message callback.
-//
-
-void
-mxmlSetErrorCallback(
-    mxml_error_cb_t cb,			// I - Error callback function
-    void            *cbdata)		// I - Error callback data
-{
-  _mxml_global_t *global = _mxml_global();
-					// Global data
-
-
-  global->error_cb     = cb;
-  global->error_cbdata = cbdata;
-}
-
-
-//
 // 'mxmlSetWrapMargin()' - Set the wrap margin when saving XML data.
 //
 // Wrapping is disabled when "column" is 0.

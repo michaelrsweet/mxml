@@ -207,7 +207,7 @@ mxmlNewCDATA(mxml_node_t *parent,	// I - Parent node or `MXML_NO_PARENT`
   // Create the node and set the name value...
   if ((node = mxml_new(parent, MXML_TYPE_CDATA)) != NULL)
   {
-    if ((node->value.cdata = strdup(data)) == NULL)
+    if ((node->value.cdata = _mxml_strcopy(data)) == NULL)
     {
       _mxml_error("Unable to allocate memory for CDATA.");
       mxmlDelete(node);
@@ -251,7 +251,7 @@ mxmlNewCDATAf(mxml_node_t *parent,	// I - Parent node or `MXML_NO_PARENT`
     vsnprintf(buffer, sizeof(buffer), format, ap);
     va_end(ap);
 
-    node->value.cdata = strdup(buffer);
+    node->value.cdata = _mxml_strcopy(buffer);
   }
 
   return (node);
@@ -283,7 +283,7 @@ mxmlNewComment(mxml_node_t *parent,	// I - Parent node or `MXML_NO_PARENT`
   // Create the node and set the name value...
   if ((node = mxml_new(parent, MXML_TYPE_COMMENT)) != NULL)
   {
-    if ((node->value.comment = strdup(comment)) == NULL)
+    if ((node->value.comment = _mxml_strcopy(comment)) == NULL)
     {
       _mxml_error("Unable to allocate memory for comment.");
       mxmlDelete(node);
@@ -327,7 +327,7 @@ mxmlNewCommentf(mxml_node_t *parent,	// I - Parent node or `MXML_NO_PARENT`
     vsnprintf(buffer, sizeof(buffer), format, ap);
     va_end(ap);
 
-    node->value.comment = strdup(buffer);
+    node->value.comment = _mxml_strcopy(buffer);
   }
 
   return (node);
@@ -391,7 +391,7 @@ mxmlNewDeclaration(
   // Create the node and set the name value...
   if ((node = mxml_new(parent, MXML_TYPE_DECLARATION)) != NULL)
   {
-    if ((node->value.declaration = strdup(declaration)) == NULL)
+    if ((node->value.declaration = _mxml_strcopy(declaration)) == NULL)
     {
       _mxml_error("Unable to allocate memory for declaration.");
       mxmlDelete(node);
@@ -436,7 +436,7 @@ mxmlNewDeclarationf(
     vsnprintf(buffer, sizeof(buffer), format, ap);
     va_end(ap);
 
-    node->value.declaration = strdup(buffer);
+    node->value.declaration = _mxml_strcopy(buffer);
   }
 
   return (node);
@@ -468,7 +468,7 @@ mxmlNewDirective(mxml_node_t *parent,	// I - Parent node or `MXML_NO_PARENT`
   // Create the node and set the name value...
   if ((node = mxml_new(parent, MXML_TYPE_DIRECTIVE)) != NULL)
   {
-    if ((node->value.directive = strdup(directive)) == NULL)
+    if ((node->value.directive = _mxml_strcopy(directive)) == NULL)
     {
       _mxml_error("Unable to allocate memory for processing instruction.");
       mxmlDelete(node);
@@ -512,7 +512,7 @@ mxmlNewDirectivef(mxml_node_t *parent,	// I - Parent node or `MXML_NO_PARENT`
     vsnprintf(buffer, sizeof(buffer), format, ap);
     va_end(ap);
 
-    node->value.directive = strdup(buffer);
+    node->value.directive = _mxml_strcopy(buffer);
   }
 
   return (node);
@@ -542,7 +542,7 @@ mxmlNewElement(mxml_node_t *parent,	// I - Parent node or `MXML_NO_PARENT`
 
   // Create the node and set the element name...
   if ((node = mxml_new(parent, MXML_TYPE_ELEMENT)) != NULL)
-    node->value.element.name = strdup(name);
+    node->value.element.name = _mxml_strcopy(name);
 
   return (node);
 }
@@ -597,7 +597,7 @@ mxmlNewOpaque(mxml_node_t *parent,	// I - Parent node or `MXML_NO_PARENT`
 
   // Create the node and set the element name...
   if ((node = mxml_new(parent, MXML_TYPE_OPAQUE)) != NULL)
-    node->value.opaque = strdup(opaque);
+    node->value.opaque = _mxml_strcopy(opaque);
 
   return (node);
 }
@@ -635,7 +635,7 @@ mxmlNewOpaquef(mxml_node_t *parent,	// I - Parent node or `MXML_NO_PARENT`
     vsnprintf(buffer, sizeof(buffer), format, ap);
     va_end(ap);
 
-    node->value.opaque = strdup(buffer);
+    node->value.opaque = _mxml_strcopy(buffer);
   }
 
   return (node);
@@ -695,7 +695,7 @@ mxmlNewText(mxml_node_t *parent,	// I - Parent node or `MXML_NO_PARENT`
   if ((node = mxml_new(parent, MXML_TYPE_TEXT)) != NULL)
   {
     node->value.text.whitespace = whitespace;
-    node->value.text.string     = strdup(string);
+    node->value.text.string     = _mxml_strcopy(string);
   }
 
   return (node);
@@ -737,7 +737,7 @@ mxmlNewTextf(mxml_node_t *parent,	// I - Parent node or `MXML_NO_PARENT`
     va_end(ap);
 
     node->value.text.whitespace = whitespace;
-    node->value.text.string     = strdup(buffer);
+    node->value.text.string     = _mxml_strcopy(buffer);
   }
 
   return (node);
@@ -854,26 +854,26 @@ mxml_free(mxml_node_t *node)		// I - Node
   switch (node->type)
   {
     case MXML_TYPE_CDATA :
-	free(node->value.cdata);
+	_mxml_strfree(node->value.cdata);
         break;
     case MXML_TYPE_COMMENT :
-	free(node->value.comment);
+	_mxml_strfree(node->value.comment);
         break;
     case MXML_TYPE_DECLARATION :
-	free(node->value.declaration);
+	_mxml_strfree(node->value.declaration);
         break;
     case MXML_TYPE_DIRECTIVE :
-	free(node->value.directive);
+	_mxml_strfree(node->value.directive);
         break;
     case MXML_TYPE_ELEMENT :
-	free(node->value.element.name);
+	_mxml_strfree(node->value.element.name);
 
 	if (node->value.element.num_attrs)
 	{
 	  for (i = 0; i < node->value.element.num_attrs; i ++)
 	  {
-	    free(node->value.element.attrs[i].name);
-	    free(node->value.element.attrs[i].value);
+	    _mxml_strfree(node->value.element.attrs[i].name);
+	    _mxml_strfree(node->value.element.attrs[i].value);
 	  }
 
           free(node->value.element.attrs);
@@ -883,13 +883,13 @@ mxml_free(mxml_node_t *node)		// I - Node
        // Nothing to do
         break;
     case MXML_TYPE_OPAQUE :
-	free(node->value.opaque);
+	_mxml_strfree(node->value.opaque);
         break;
     case MXML_TYPE_REAL :
        // Nothing to do
         break;
     case MXML_TYPE_TEXT :
-	free(node->value.text.string);
+	_mxml_strfree(node->value.text.string);
         break;
     case MXML_TYPE_CUSTOM :
         if (node->value.custom.data && node->value.custom.destroy)

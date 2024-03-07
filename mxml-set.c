@@ -47,13 +47,13 @@ mxmlSetCDATA(mxml_node_t *node,		// I - Node to set
   }
 
   // Allocate the new value, free any old element value, and set the new value...
-  if ((s = strdup(data)) == NULL)
+  if ((s = _mxml_strcopy(data)) == NULL)
   {
     _mxml_error("Unable to allocate memory for CDATA.");
     return (false);
   }
 
-  free(node->value.cdata);
+  _mxml_strfree(node->value.cdata);
   node->value.cdata = s;
 
   return (true);
@@ -94,13 +94,13 @@ mxmlSetCDATAf(mxml_node_t *node,	// I - Node
   vsnprintf(buffer, sizeof(buffer), format, ap);
   va_end(ap);
 
-  if ((s = strdup(buffer)) == NULL)
+  if ((s = _mxml_strcopy(buffer)) == NULL)
   {
     _mxml_error("Unable to allocate memory for CDATA string.");
     return (false);
   }
 
-  free(node->value.cdata);
+  _mxml_strfree(node->value.cdata);
   node->value.cdata = s;
 
   return (true);
@@ -137,13 +137,13 @@ mxmlSetComment(mxml_node_t *node,	// I - Node
     return (true);
 
   // Free any old string value and set the new value...
-  if ((s = strdup(comment)) == NULL)
+  if ((s = _mxml_strcopy(comment)) == NULL)
   {
     _mxml_error("Unable to allocate memory for comment string.");
     return (false);
   }
 
-  free(node->value.comment);
+  _mxml_strfree(node->value.comment);
   node->value.comment = s;
 
   return (true);
@@ -184,13 +184,13 @@ mxmlSetCommentf(mxml_node_t *node,	// I - Node
   vsnprintf(buffer, sizeof(buffer), format, ap);
   va_end(ap);
 
-  if ((s = strdup(buffer)) == NULL)
+  if ((s = _mxml_strcopy(buffer)) == NULL)
   {
     _mxml_error("Unable to allocate memory for comment string.");
     return (false);
   }
 
-  free(node->value.comment);
+  _mxml_strfree(node->value.comment);
   node->value.comment = s;
 
   return (true);
@@ -267,13 +267,13 @@ mxmlSetDeclaration(
     return (true);
 
   // Free any old string value and set the new value...
-  if ((s = strdup(declaration)) == NULL)
+  if ((s = _mxml_strcopy(declaration)) == NULL)
   {
     _mxml_error("Unable to allocate memory for declaration string.");
     return (false);
   }
 
-  free(node->value.declaration);
+  _mxml_strfree(node->value.declaration);
   node->value.declaration = s;
 
   return (true);
@@ -314,13 +314,13 @@ mxmlSetDeclarationf(mxml_node_t *node,	// I - Node
   vsnprintf(buffer, sizeof(buffer), format, ap);
   va_end(ap);
 
-  if ((s = strdup(buffer)) == NULL)
+  if ((s = _mxml_strcopy(buffer)) == NULL)
   {
     _mxml_error("Unable to allocate memory for declaration string.");
     return (false);
   }
 
-  free(node->value.declaration);
+  _mxml_strfree(node->value.declaration);
   node->value.declaration = s;
 
   return (true);
@@ -357,13 +357,13 @@ mxmlSetDirective(mxml_node_t *node,	// I - Node
     return (true);
 
   // Free any old string value and set the new value...
-  if ((s = strdup(directive)) == NULL)
+  if ((s = _mxml_strcopy(directive)) == NULL)
   {
     _mxml_error("Unable to allocate memory for directive string.");
     return (false);
   }
 
-  free(node->value.directive);
+  _mxml_strfree(node->value.directive);
   node->value.directive = s;
 
   return (true);
@@ -404,13 +404,13 @@ mxmlSetDirectivef(mxml_node_t *node,	// I - Node
   vsnprintf(buffer, sizeof(buffer), format, ap);
   va_end(ap);
 
-  if ((s = strdup(buffer)) == NULL)
+  if ((s = _mxml_strcopy(buffer)) == NULL)
   {
     _mxml_error("Unable to allocate memory for directive string.");
     return (false);
   }
 
-  free(node->value.directive);
+  _mxml_strfree(node->value.directive);
   node->value.directive = s;
 
   return (true);
@@ -446,13 +446,13 @@ mxmlSetElement(mxml_node_t *node,	// I - Node to set
     return (true);
 
   // Free any old element value and set the new value...
-  if ((s = strdup(name)) == NULL)
+  if ((s = _mxml_strcopy(name)) == NULL)
   {
     _mxml_error("Unable to allocate memory for element name.");
     return (false);
   }
 
-  free(node->value.element.name);
+  _mxml_strfree(node->value.element.name);
   node->value.element.name = s;
 
   return (true);
@@ -518,13 +518,13 @@ mxmlSetOpaque(mxml_node_t *node,	// I - Node to set
     return (true);
 
   // Free any old opaque value and set the new value...
-  if ((s = strdup(opaque)) == NULL)
+  if ((s = _mxml_strcopy(opaque)) == NULL)
   {
     _mxml_error("Unable to allocate memory for opaque string.");
     return (false);
   }
 
-  free(node->value.opaque);
+  _mxml_strfree(node->value.opaque);
   node->value.opaque = s;
 
   return (true);
@@ -567,13 +567,13 @@ mxmlSetOpaquef(mxml_node_t *node,	// I - Node to set
   vsnprintf(buffer, sizeof(buffer), format, ap);
   va_end(ap);
 
-  if ((s = strdup(buffer)) == NULL)
+  if ((s = _mxml_strcopy(buffer)) == NULL)
   {
     _mxml_error("Unable to allocate memory for opaque string.");
     return (false);
   }
 
-  free(node->value.opaque);
+  _mxml_strfree(node->value.opaque);
   node->value.opaque = s;
 
   return (true);
@@ -646,13 +646,13 @@ mxmlSetText(mxml_node_t *node,		// I - Node to set
   }
 
   // Free any old string value and set the new value...
-  if ((s = strdup(string)) == NULL)
+  if ((s = _mxml_strcopy(string)) == NULL)
   {
     _mxml_error("Unable to allocate memory for text string.");
     return (false);
   }
 
-  free(node->value.text.string);
+  _mxml_strfree(node->value.text.string);
 
   node->value.text.whitespace = whitespace;
   node->value.text.string     = s;
@@ -698,13 +698,13 @@ mxmlSetTextf(mxml_node_t *node,		// I - Node to set
   vsnprintf(buffer, sizeof(buffer), format, ap);
   va_end(ap);
 
-  if ((s = strdup(buffer)) == NULL)
+  if ((s = _mxml_strcopy(buffer)) == NULL)
   {
     _mxml_error("Unable to allocate memory for text string.");
     return (false);
   }
 
-  free(node->value.text.string);
+  _mxml_strfree(node->value.text.string);
 
   node->value.text.whitespace = whitespace;
   node->value.text.string     = s;

@@ -33,7 +33,7 @@ mxmlIndexDelete(mxml_index_t *ind)	// I - Index to delete
     return;
 
   // Free memory...
-  free(ind->attr);
+  _mxml_strfree(ind->attr);
   free(ind->nodes);
   free(ind);
 }
@@ -228,7 +228,7 @@ mxmlIndexNew(mxml_node_t *node,		// I - XML node tree
 
   if (attr)
   {
-    if ((ind->attr = strdup(attr)) == NULL)
+    if ((ind->attr = _mxml_strcopy(attr)) == NULL)
     {
       _mxml_error("Unable to allocate memory for index attribute.");
       free(ind);

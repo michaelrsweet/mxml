@@ -9,6 +9,8 @@
   `MXML_TYPE_DIRECTIVE` node types (Issue #250)
 - Added `mxmlLoadFilename` and `mxmlSaveFilename` functions (Issue #291)
 - Added AFL fuzzing support (Issue #306)
+- Added string copy/free callbacks to support alternate memory management of
+  strings.
 - Renamed `mxml_type_t` enumerations to `MXML_TYPE_xxx` (Issue #251)
 - Updated APIs to use bool type instead of an int representing a boolean value.
 - Updated the SAX callback to return a `bool` value to control processing

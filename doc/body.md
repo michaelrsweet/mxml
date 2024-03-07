@@ -51,7 +51,7 @@ integrated Mini-XML into Gutenprint and removed libxml2.
 
 Thanks to lots of feedback and support from various developers, Mini-XML has
 evolved since then to provide a more complete XML implementation and now stands
-at a whopping 3,751 lines of code, compared to 175,808 lines of code for libxml2
+at a whopping 3,839 lines of code, compared to 175,808 lines of code for libxml2
 version 2.11.7.
 
 

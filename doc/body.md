@@ -45,13 +45,13 @@ I then replied with:
 > Given the limited scope of what you use in XML, it should be trivial to code a
 > mini-XML API in a few hundred lines of code.
 
-I took my own challenge and coded furiously for two days to produced the initial
+I took my own challenge and coded furiously for two days to produce the initial
 public release of Mini-XML, total lines of code: 696.  Robert promptly
 integrated Mini-XML into Gutenprint and removed libxml2.
 
 Thanks to lots of feedback and support from various developers, Mini-XML has
 evolved since then to provide a more complete XML implementation and now stands
-at a whopping 3,839 lines of code, compared to 175,808 lines of code for libxml2
+at a whopping 3,875 lines of code, compared to 175,808 lines of code for libxml2
 version 2.11.7.
 
 
@@ -61,6 +61,9 @@ Resources
 The Mini-XML home page can be found at <https://www.msweet.org/mxml>.  From
 there you can download the current version of Mini-XML, access the issue
 tracker, and find other resources.
+
+Mini-XML v4 has a slightly different API than prior releases. See the
+[Migrating from Mini-XML v3.x](@) chapter for details.
 
 
 Legal Stuff
@@ -90,17 +93,20 @@ proper compiler and linker options for your installation:
 
     gcc `pkg-config --cflags mxml4` -o myprogram myprogram.c `pkg-config --libs mxml4`
 
+> Note: The library name "mxml4" is a configure-time option. If you use the
+> `--disable-libmxml4-prefix` configure option the library is named "mxml".
+
 
 Loading an XML File
 -------------------
 
-You load an XML file using the `mxmlLoadFile` function:
+You load an XML file using the [mxmlLoadFile](@@) function:
 
 ```c
 mxml_node_t *
-mxmlLoadFile(mxml_node_t *top, FILE *fp,
-             mxml_load_cb_t load_cb, void *load_cbdata,
-             mxml_sax_cb_t sax_cb, void *sax_cbdata);
+mxmlLoadFilename(mxml_node_t *top, const char *filename,
+                 mxml_load_cb_t load_cb, void *load_cbdata,
+                 mxml_sax_cb_t sax_cb, void *sax_cbdata);
 ```
 
 The `load_cb` argument specifies a function that assigns child (value) node
@@ -110,18 +116,16 @@ nodes.  For example, to load the XML file "filename.xml" containing literal
 strings you can use:
 
 ```c
-FILE *fp;
 mxml_node_t *tree;
 mxml_type_t type = MXML_TYPE_OPAQUE;
 
-fp = fopen("filename.xml", "r");
-tree = mxmlLoadFile(/*top*/NULL, fp, /*load_cb*/NULL, &type,
-                    /*sax_cb*/NULL, /*sax_cbdata*/NULL);
-fclose(fp);
+tree = mxmlLoadFilename(/*top*/NULL, "filename.xml",
+                        /*load_cb*/NULL, /*load_cbdata*/&type,
+                        /*sax_cb*/NULL, /*sax_cbdata*/NULL);
 ```
 
-Mini-XML also provides functions to load from a named file, a file descriptor,
-or string:
+Mini-XML also provides functions to load from a `FILE` pointer, a file
+descriptor, or string:
 
 ```c
 mxml_node_t *
@@ -130,9 +134,9 @@ mxmlLoadFd(mxml_node_t *top, int fd,
            mxml_sax_cb_t sax_cb, void *sax_cbdata);
 
 mxml_node_t *
-mxmlLoadFilename(mxml_node_t *top, const char *filename,
-                 mxml_load_cb_t load_cb, void *load_cbdata,
-                 mxml_sax_cb_t sax_cb, void *sax_cbdata);
+mxmlLoadFile(mxml_node_t *top, FILE *fp,
+             mxml_load_cb_t load_cb, void *load_cbdata,
+             mxml_sax_cb_t sax_cb, void *sax_cbdata);
 
 mxml_node_t *
 mxmlLoadString(mxml_node_t *top, const char *s,
@@ -143,18 +147,19 @@ mxmlLoadString(mxml_node_t *top, const char *s,
 
 ### Load Callbacks
 
-The `load_xxx` arguments to the `mxmlLoad` functions are a callback function and
-a data pointer which are used to determine the value type of each data node in
-an XML document.  The default (`NULL`) callback expects the `load_cbdata`
-argument to be a pointer to a `mxml_type_t` variable - if `NULL` it returns the
-`MXML_TYPE_TEXT` type.
+The `load_xxx` arguments to the mxmlLoadXxx functions are a callback function
+and a data pointer which are used to determine the value type of each data node
+in an XML document.  The default (`NULL`) callback expects the `load_cbdata`
+argument to be a pointer to a `mxml_type_t` variable that contains the desired
+value node type - if `NULL`, it uses the `MXML_TYPE_TEXT` (whitespace-separated
+text) type.
 
-You can provide your own callback functions for more complex XML documents.
-Your callback function will receive a pointer to the current element node and
-must return the value type of the immediate children for that element node:
+You can provide your own callback function for more complex XML documents. Your
+callback function will receive a pointer to the current element node and must
+return the value type of the immediate children for that element node:
 `MXML_TYPE_CUSTOM`, `MXML_TYPE_INTEGER`, `MXML_TYPE_OPAQUE`, `MXML_TYPE_REAL`,
 or `MXML_TYPE_TEXT`.  The function is called *after* the element and its
-attributes have been read, so you can look at the element name, attributes, and
+attributes have been read so you can look at the element name, attributes, and
 attribute values to determine the proper value type to return.
 
 The following callback function looks for an attribute named "type" or the
@@ -162,7 +167,7 @@ element name to determine the value type for its child nodes:
 
 ```c
 mxml_type_t
-type_cb(void *cbdata, mxml_node_t *node)
+my_load_cb(void *cbdata, mxml_node_t *node)
 {
   const char *type;
 
@@ -174,6 +179,8 @@ type_cb(void *cbdata, mxml_node_t *node)
   type = mxmlElementGetAttr(node, "type");
   if (type == NULL)
     type = mxmlGetElement(node);
+  if (type == NULL)
+    type = "text";
 
   if (!strcmp(type, "integer"))
     return (MXML_TYPE_INTEGER);
@@ -186,18 +193,15 @@ type_cb(void *cbdata, mxml_node_t *node)
 }
 ```
 
-To use this callback function, simply use the name when you call any of the load
+To use this callback function, simply specify it when you call any of the load
 functions:
 
 ```c
-FILE *fp;
 mxml_node_t *tree;
 
-fp = fopen("filename.xml", "r");
-tree = mxmlLoadFile(/*top*/NULL, fp,
-                    type_cb, /*load_cbdata*/NULL,
-                    /*sax_cb*/NULL, /*sax_cbata*/NULL);
-fclose(fp);
+tree = mxmlLoadFilename(/*top*/NULL, "filename.xml",
+                        my_load_cb, /*load_cbdata*/NULL,
+                        /*sax_cb*/NULL, /*sax_cbdata*/NULL);
 ```
 
 
@@ -242,7 +246,7 @@ the node tree for the file would look like the following in memory:
 where "-" is a pointer to the sibling node and "|" is a pointer to the first
 child or parent node.
 
-The `mxmlGetType` function gets the type of a node:
+The [mxmlGetType](@@) function gets the type of a node:
 
 ```c
 mxml_type_t
@@ -261,10 +265,10 @@ mxmlGetType(mxml_node_t *node);
 - `MXML_TYPE_REAL` : A whitespace-delimited floating point value, or
 - `MXML_TYPE_TEXT` : A whitespace-delimited text (fragment) value.
 
-The parent and sibling nodes are accessed using the `mxmlGetParent`,
-`mxmlGetNextSibling`, and `mxmlGetPreviousSibling` functions, while the children
-of an element node are accessed using the `mxmlGetFirstChild` or
-`mxmlGetLastChild` functions:
+The parent and sibling nodes are accessed using the [mxmlGetParent](@@),
+[mxmlGetNextSibling](@@), and [mxmlGetPreviousSibling](@@) functions, while the
+children of an element node are accessed using the [mxmlGetFirstChild](@@) or
+[mxmlGetLastChild](@@) functions:
 
 ```c
 mxml_node_t *
@@ -283,8 +287,8 @@ mxml_node_t *
 mxmlGetPrevSibling(mxml_node_t *node);
 ```
 
-The `mxmlGetUserData` function gets any user (application) data associated with
-the node:
+The [mxmlGetUserData](@@) function gets any user (application) data associated
+with the node:
 
 ```c
 void *

@@ -26,7 +26,8 @@ Mini-XML provides the following functionality:
 - SAX (streamed) reading of XML files and strings to minimize memory usage.
 - Supports arbitrary element names, attributes, and attribute values with no
   preset limits, just available memory.
-- Supports integer, real, opaque ("cdata"), and text data types in "leaf" nodes.
+- Supports integer, real, opaque ("cdata"), text, and custom data types in
+  "leaf" nodes.
 - Functions for creating and managing trees of data.
 - "Find" and "walk" functions for easily locating and navigating trees of data.
 

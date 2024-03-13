@@ -1,4 +1,4 @@
-.TH mxml 3 "Mini-XML API" "2024-03-07" "Mini-XML API"
+.TH mxml 3 "Mini-XML API" "2024-03-13" "Mini-XML API"
 .SH NAME
 mxml \- Mini-XML API
 .SH INCLUDE FILE
@@ -330,11 +330,11 @@ void mxmlDelete (
 .PP
 If the specified node has a parent, this function first removes the
 node from its parent using the \fImxmlRemove\fR function.
-.SS mxmlElementDeleteAttr
+.SS mxmlElementClearAttr
 Delete an attribute.
 .PP
 .nf
-void mxmlElementDeleteAttr (
+void mxmlElementClearAttr (
     mxml_node_t *node,
     const char *name
 );

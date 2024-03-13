@@ -144,7 +144,7 @@ extern void		mxmlAdd(mxml_node_t *parent, mxml_add_t add, mxml_node_t *child, mx
 
 extern void		mxmlDelete(mxml_node_t *node);
 
-extern void		mxmlElementDeleteAttr(mxml_node_t *node, const char *name);
+extern void		mxmlElementClearAttr(mxml_node_t *node, const char *name);
 extern const char	*mxmlElementGetAttr(mxml_node_t *node, const char *name);
 extern const char       *mxmlElementGetAttrByIndex(mxml_node_t *node, int idx, const char **name);
 extern size_t		mxmlElementGetAttrCount(mxml_node_t *node);

@@ -20,18 +20,18 @@ static bool	mxml_set_attr(mxml_node_t *node, const char *name, char *value);
 
 
 //
-// 'mxmlElementDeleteAttr()' - Delete an attribute.
+// 'mxmlElementClearAttr()' - Delete an attribute.
 //
 
 void
-mxmlElementDeleteAttr(mxml_node_t *node,// I - Element
-                      const char  *name)// I - Attribute name
+mxmlElementClearAttr(mxml_node_t *node,	// I - Element
+                     const char  *name)	// I - Attribute name
 {
   size_t	i;			// Looping var
   _mxml_attr_t	*attr;			// Cirrent attribute
 
 
-  MXML_DEBUG("mxmlElementDeleteAttr(node=%p, name=\"%s\")\n", node, name ? name : "(null)");
+  MXML_DEBUG("mxmlElementClearAttr(node=%p, name=\"%s\")\n", node, name ? name : "(null)");
 
   // Range check input...
   if (!node || node->type != MXML_TYPE_ELEMENT || !name)
@@ -40,7 +40,7 @@ mxmlElementDeleteAttr(mxml_node_t *node,// I - Element
   // Look for the attribute...
   for (i = node->value.element.num_attrs, attr = node->value.element.attrs; i > 0; i --, attr ++)
   {
-    MXML_DEBUG("mxmlElementDeleteAttr: %s=\"%s\"\n", attr->name, attr->value);
+    MXML_DEBUG("mxmlElementClearAttr: %s=\"%s\"\n", attr->name, attr->value);
 
     if (!strcmp(attr->name, name))
     {

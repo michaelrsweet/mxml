@@ -1,4 +1,4 @@
-.TH mxml 3 "Mini-XML API" "2024-03-13" "Mini-XML API"
+.TH mxml 3 "Mini-XML API" "2024-03-16" "Mini-XML API"
 .SH NAME
 mxml \- Mini-XML API
 .SH INCLUDE FILE
@@ -314,11 +314,11 @@ void mxmlAdd (
 );
 .fi
 .PP
-Adds the specified node to the parent.  If the child argument is not
-\fBNULL\fR, puts the new node before or after the specified child depending
-on the value of the \fBadd\fR argument.  If the child argument is \fBNULL\fR,
-puts the new node at the beginning of the child list (\fBMXML_ADD_BEFORE\fR)
-or at the end of the child list (\fBMXML_ADD_AFTER\fR).
+This function adds the specified node \fBnode\fR to the parent.  If the \fBchild\fR
+argument is not \fBNULL\fR, the new node is added before or after the specified
+child depending on the value of the \fBadd\fR argument.  If the \fBchild\fR argument
+is \fBNULL\fR, the new node is placed at the beginning of the child list
+(\fBMXML_ADD_BEFORE\fR) or at the end of the child list (\fBMXML_ADD_AFTER\fR).
 .SS mxmlDelete
 Delete a node and all of its children.
 .PP
@@ -328,10 +328,11 @@ void mxmlDelete (
 );
 .fi
 .PP
-If the specified node has a parent, this function first removes the
-node from its parent using the \fImxmlRemove\fR function.
+This function deletes the node \fBnode\fR and all of its children.  If the
+specified node has a parent, this function first removes the node from its
+parent using the \fImxmlRemove\fR function.
 .SS mxmlElementClearAttr
-Delete an attribute.
+Remove an attribute from an element.
 .PP
 .nf
 void mxmlElementClearAttr (
@@ -339,8 +340,10 @@ void mxmlElementClearAttr (
     const char *name
 );
 .fi
+.PP
+This function removes the attribute \fBname\fR from the element \fBnode\fR.
 .SS mxmlElementGetAttr
-Get an attribute.
+Get the value of an attribute.
 .PP
 .nf
 const char * mxmlElementGetAttr (
@@ -349,10 +352,11 @@ const char * mxmlElementGetAttr (
 );
 .fi
 .PP
-This function returns \fBNULL\fR if the node is not an element or the
-named attribute does not exist.
+This function gets the value for the attribute \fBname\fR from the element
+\fBnode\fR.  \fBNULL\fR is returned if the node is not an element or the named
+attribute does not exist.
 .SS mxmlElementGetAttrByIndex
-Get an element attribute by index.
+Get an attribute by index.
 .PP
 .nf
 const char * mxmlElementGetAttrByIndex (
@@ -362,8 +366,9 @@ const char * mxmlElementGetAttrByIndex (
 );
 .fi
 .PP
-The index ("idx") is 0-based.  \fBNULL\fR is returned if the specified index
-is out of range.
+This function returned the Nth (\fBidx\fR) attribute for element \fBnode\fR.  The
+attribute name is optionallly returned in the \fBname\fR argument.  \fBNULL\fR is
+returned if node is not an element or the specified index is out of range.
 .SS mxmlElementGetAttrCount
 Get the number of element attributes.
 .PP
@@ -372,8 +377,12 @@ size_t  mxmlElementGetAttrCount (
     mxml_node_t *node
 );
 .fi
+.PP
+This function returns the number of attributes for the element \fBnode\fR.  \fB0\fR
+is returned if the node is not an element or there are no attributes for the
+element.
 .SS mxmlElementSetAttr
-Set an attribute.
+Set an attribute for an element.
 .PP
 .nf
 void mxmlElementSetAttr (
@@ -383,10 +392,9 @@ void mxmlElementSetAttr (
 );
 .fi
 .PP
-If the named attribute already exists, the value of the attribute
-is replaced by the new string value. The string value is copied
-into the element node. This function does nothing if the node is
-not an element.
+This function sets attribute \fBname\fR to the string \fBvalue\fR for the element
+\fBnode\fR.  If the named attribute already exists, the value of the attribute
+is replaced by the new string value.  The string value is copied.
 .SS mxmlElementSetAttrf
 Set an attribute with a formatted value.
 .PP
@@ -399,10 +407,9 @@ void mxmlElementSetAttrf (
 );
 .fi
 .PP
-If the named attribute already exists, the value of the attribute
-is replaced by the new formatted string. The formatted string value is
-copied into the element node. This function does nothing if the node
-is not an element.
+This function sets attribute \fBname\fR to the formatted value of \fBformat\fR for
+the element \fBnode\fR.  If the named attribute already exists, the value of the
+attribute is replaced by the new formatted string value.
 .SS mxmlEntityAddCallback
 Add a callback to convert entities to Unicode.
 .PP
@@ -412,6 +419,22 @@ bool  mxmlEntityAddCallback (
     void *cbdata
 );
 .fi
+.PP
+This function adds a callback to the current thread that converts named
+XML character entities to Unicode characters.  The callback function \fBcb\fR
+accepts the callback data pointer \fBcbdata\fR and the entity name and returns a
+Unicode character value or \fB-1\fR if the entity is not known.  For example, the
+following entity callback supports the "euro" entity:
+.PP
+\fB`\fRc
+int my_entity_cb(void \fIcbdata, const char \fRname)
+{
+  if (!strcmp(name, "euro"))
+    return (0x20ac);
+  else
+    return (-1);
+}
+\fB`\fR
 .SS mxmlEntityGetValue
 Get the character corresponding to a named entity.
 .PP
@@ -445,14 +468,15 @@ mxml_node_t * mxmlFindElement (
 );
 .fi
 .PP
-The search is constrained by the name, attribute name, and value; any
-\fBNULL\fR names or values are treated as wildcards, so different kinds of
-searches can be implemented by looking for all elements of a given name
-or all elements with a specific attribute. The descend argument determines
-whether the search descends into child nodes; normally you will use
-\fBMXML_DESCEND_FIRST\fR for the initial search and \fBMXML_NO_DESCEND\fR
-to find additional direct descendents of the node. The top node argument
-constrains the search to a particular node's children.
+This function finds the named element \fBelement\fR in XML tree \fBtop\fR starting at
+node \fBnode\fR.  The search is constrained by element name \fBelement\fR, attribute
+name \fBattr\fR, and attribute value \fBvalue\fR - \fBNULL\fR names or values are treated
+as wildcards, so different kinds of searches can be implemented by looking
+for all elements of a given name or all elements with a specific attribute.
+.PP
+The \fBdescend\fR argument determines whether the search descends into child
+nodes; normally you will use \fBMXML_DESCEND_FIRST\fR for the initial search and
+\fBMXML_DESCEND_NONE\fR to find additional direct descendents of the node.
 .SS mxmlFindPath
 Find a node with the given path.
 .PP
@@ -463,9 +487,10 @@ mxml_node_t * mxmlFindPath (
 );
 .fi
 .PP
-The "path" is a slash-separated list of element names. The name "\fI" is
-considered a wildcard for one or more levels of elements.  For example,
-"foo/one/two", "bar/two/one", "\fR/one", and so forth.
+This function finds a node in XML tree \fBtop\fR using a slash-separated list of
+element names in \fBpath\fR.  The name "\fI" is considered a wildcard for one or
+more levels of elements, for example, "foo/one/two", "bar/two/one", "\fR/one",
+and so forth.
 .PP
 The first child node of the found node is returned if the given node has
 children and the first child is a value node.
@@ -478,7 +503,8 @@ const char * mxmlGetCDATA (
 );
 .fi
 .PP
-\fBNULL\fR is returned if the node is not a CDATA element.
+This function gets the string value of a CDATA node.  \fBNULL\fR is returned if
+the node is not a CDATA element.
 .SS mxmlGetComment
 Get the value for a comment node.
 .PP
@@ -488,7 +514,8 @@ const char * mxmlGetComment (
 );
 .fi
 .PP
-\fBNULL\fR is returned if the node is not a comment.
+This function gets the string value of a comment node.  \fBNULL\fR is returned
+if the node is not a comment.
 .SS mxmlGetCustom
 Get the value for a custom node.
 .PP
@@ -498,8 +525,8 @@ const void * mxmlGetCustom (
 );
 .fi
 .PP
-\fBNULL\fR is returned if the node (or its first child) is not a custom
-value node.
+This function gets the binary value of a custom node.  \fBNULL\fR is returned if
+the node (or its first child) is not a custom value node.
 .SS mxmlGetDeclaration
 Get the value for a declaration node.
 .PP
@@ -509,7 +536,8 @@ const char * mxmlGetDeclaration (
 );
 .fi
 .PP
-\fBNULL\fR is returned if the node is not a declaration.
+This function gets the string value of a declaraction node.  \fBNULL\fR is
+returned if the node is not a declaration.
 .SS mxmlGetDirective
 Get the value for a processing instruction node.
 .PP
@@ -519,7 +547,8 @@ const char * mxmlGetDirective (
 );
 .fi
 .PP
-\fBNULL\fR is returned if the node is not a processing instruction.
+This function gets the string value of a processing instruction.  \fBNULL\fR is
+returned if the node is not a processing instruction.
 .SS mxmlGetElement
 Get the name for an element node.
 .PP
@@ -529,9 +558,10 @@ const char * mxmlGetElement (
 );
 .fi
 .PP
-\fBNULL\fR is returned if the node is not an element node.
+This function gets the name of an element node.  \fBNULL\fR is returned if the
+node is not an element node.
 .SS mxmlGetFirstChild
-Get the first child of an element node.
+Get the first child of a node.
 .PP
 .nf
 mxml_node_t * mxmlGetFirstChild (
@@ -539,7 +569,7 @@ mxml_node_t * mxmlGetFirstChild (
 );
 .fi
 .PP
-\fBNULL\fR is returned if the node is not an element node or if the node
+This function gets the first child of a node.  \fBNULL\fR is returned if the node
 has no children.
 .SS mxmlGetInteger
 Get the integer value from the specified node or its
@@ -551,9 +581,10 @@ long  mxmlGetInteger (
 );
 .fi
 .PP
-\fB0\fR is returned if the node (or its first child) is not an integer value node.
+This function gets the value of an integer node.  \fB0\fR is returned if the node
+(or its first child) is not an integer value node.
 .SS mxmlGetLastChild
-Get the last child of an element node.
+Get the last child of a node.
 .PP
 .nf
 mxml_node_t * mxmlGetLastChild (
@@ -561,7 +592,7 @@ mxml_node_t * mxmlGetLastChild (
 );
 .fi
 .PP
-\fBNULL\fR is returned if the node is not an element node or if the node
+This function gets the last child of a node.  \fBNULL\fR is returned if the node
 has no children.
 .SS mxmlGetNextSibling
 
@@ -580,8 +611,8 @@ const char * mxmlGetOpaque (
 );
 .fi
 .PP
-\fBNULL\fR is returned if the node (or its first child) is not an opaque
-value node.
+This function gets the string value of an opaque node.  \fBNULL\fR is returned if
+the node (or its first child) is not an opaque value node.
 .SS mxmlGetParent
 Get the parent node.
 .PP
@@ -591,7 +622,7 @@ mxml_node_t * mxmlGetParent (
 );
 .fi
 .PP
-\fBNULL\fR is returned for a root node.
+This function gets the parent of a node.  \fBNULL\fR is returned for a root node.
 .SS mxmlGetPrevSibling
 Get the previous node for the current parent.
 .PP
@@ -601,7 +632,8 @@ mxml_node_t * mxmlGetPrevSibling (
 );
 .fi
 .PP
-\fBNULL\fR is returned if this is the first child for the current parent.
+This function gets the previous node for the current parent.  \fBNULL\fR is
+returned if this is the first child for the current parent.
 .SS mxmlGetReal
 Get the real value for a node or its first child.
 .PP
@@ -611,7 +643,8 @@ double  mxmlGetReal (
 );
 .fi
 .PP
-0.0 is returned if the node (or its first child) is not a real value node.
+This function gets the value of a real value node.  \fB0.0\fR is returned if the
+node (or its first child) is not a real value node.
 .SS mxmlGetRefCount
 Get the current reference (use) count for a node.
 .PP
@@ -634,8 +667,10 @@ const char * mxmlGetText (
 );
 .fi
 .PP
-\fBNULL\fR is returned if the node (or its first child) is not a text node.
-The "whitespace" argument can be \fBNULL\fR.
+This function gets the string and whitespace values of a text node.  \fBNULL\fR
+and \fBfalse\fR are returned if the node (or its first child) is not a text node.
+The \fBwhitespace\fR argument can be \fBNULL\fR if you don't want to know the
+whitespace value.
 .PP
 Note: Text nodes consist of whitespace-delimited words. You will only get
 single words of text when reading an XML file with \fBMXML_TYPE_TEXT\fR nodes.
@@ -651,7 +686,8 @@ mxml_type_t  mxmlGetType (
 );
 .fi
 .PP
-\fBMXML_TYPE_IGNORE\fR is returned if "node" is \fBNULL\fR.
+This function gets the type of \fBnode\fR.  \fBMXML_TYPE_IGNORE\fR is returned if
+\fBnode\fR is \fBNULL\fR.
 .SS mxmlGetUserData
 Get the user data pointer for a node.
 .PP
@@ -660,6 +696,8 @@ void * mxmlGetUserData (
     mxml_node_t *node
 );
 .fi
+.PP
+This function gets the user data pointer associated with \fBnode\fR.
 .SS mxmlIndexDelete
 Delete an index.
 .PP
@@ -677,6 +715,8 @@ mxml_node_t * mxmlIndexEnum (
 );
 .fi
 .PP
+This function returns the next node in index \fBind\fR.
+.PP
 You should call \fImxmlIndexReset\fR prior to using this function to get
 the first node in the index.  Nodes are returned in the sorted order of the
 index.
@@ -691,9 +731,11 @@ mxml_node_t * mxmlIndexFind (
 );
 .fi
 .PP
+This function finds the next matching node in index \fBind\fR.
+.PP
 You should call \fImxmlIndexReset\fR prior to using this function for
-the first time with a particular set of "element" and "value"
-strings. Passing \fBNULL\fR for both "element" and "value" is equivalent
+the first time with a particular set of \fBelement\fR and \fBvalue\fR
+strings.  Passing \fBNULL\fR for both \fBelement\fR and \fBvalue\fR is equivalent
 to calling \fImxmlIndexEnum\fR.
 .SS mxmlIndexGetCount
 Get the number of nodes in an index.
@@ -714,11 +756,13 @@ mxml_index_t * mxmlIndexNew (
 );
 .fi
 .PP
+This function creates a new index for XML tree \fBnode\fR.
+.PP
 The index will contain all nodes that contain the named element and/or
-attribute.  If both "element" and "attr" are \fBNULL\fR, then the index will
+attribute.  If both \fBelement\fR and \fBattr\fR are \fBNULL\fR, then the index will
 contain a sorted list of the elements in the node tree.  Nodes are
-sorted by element name and optionally by attribute value if the "attr"
-argument is not NULL.
+sorted by element name and optionally by attribute value if the \fBattr\fR
+argument is not \fBNULL\fR.
 .SS mxmlIndexReset
 Reset the enumeration/find pointer in the index and
                      return the first node in the index.
@@ -729,8 +773,9 @@ mxml_node_t * mxmlIndexReset (
 );
 .fi
 .PP
-This function should be called prior to using \fImxmlIndexEnum\fR or
-\fImxmlIndexFind\fR for the first time.
+This function resets the enumeration/find pointer in index \fBind\fR and should
+be called prior to using \fImxmlIndexEnum\fR or \fImxmlIndexFind\fR for the
+first time.
 .SS mxmlLoadFd
 Load a file descriptor into an XML node tree.
 .PP
@@ -745,20 +790,24 @@ mxml_node_t * mxmlLoadFd (
 );
 .fi
 .PP
-The nodes in the specified file are added to the specified top node.
-If no top node is provided, the XML file MUST be well-formed with a
-single parent node like 
-.URL ?xml ?xml
- for the entire file. The callback
-function returns the value type that should be used for child nodes.
-The constants \fBMXML_INTEGER_CALLBACK\fR, \fBMXML_OPAQUE_CALLBACK\fR,
-\fBMXML_REAL_CALLBACK\fR, and \fBMXML_TEXT_CALLBACK\fR are defined for
-loading child (data) nodes of the specified type.
+This function loads the file descriptor \fBfd\fR into an XML node tree.  The
+nodes in the specified file are added to the specified node \fBtop\fR.  If \fBNULL\fR
+is provided, the XML file MUST be well-formed with a single parent processing
+instruction node like \fB<?xml version="1.0"?>\fR at the start of the file.
+.PP
+The load callback function \fBload_cb\fR is called to obtain the node type that
+should be used for child nodes.  If \fBNULL\fR, the \fBload_cbdata\fR argument points
+to a \fBmmd_type_t\fR variable that specifies the value type or \fBMMD_TYPE_TEXT\fR
+if that argument is also \fBNULL\fR.
+.PP
+The SAX callback function \fBsax_cb\fR and associated callback data \fBsax_cbdata\fR
+are used to enable the Simple API for XML streaming mode.  The callback is
+called as the XML node tree is parsed.
 .PP
 Note: The most common programming error when using the Mini-XML library is
-to load an XML file using the \fBMXML_TEXT_CALLBACK\fR, which returns inline
-text as a series of whitespace-delimited words, instead of using the
-\fBMXML_OPAQUE_CALLBACK\fR which returns the inline text as a single string
+to load an XML file using the \fBMXML_TYPE_TEXT\fR node type, which returns
+inline text as a series of whitespace-delimited words, instead of using the
+\fBMXML_TYPE_OPAQUE\fR node type which returns the inline text as a single string
 (including whitespace).
 .SS mxmlLoadFile
 Load a file into an XML node tree.
@@ -774,20 +823,24 @@ mxml_node_t * mxmlLoadFile (
 );
 .fi
 .PP
-The nodes in the specified file are added to the specified top node.
-If no top node is provided, the XML file MUST be well-formed with a
-single parent node like 
-.URL ?xml ?xml
- for the entire file. The callback
-function returns the value type that should be used for child nodes.
-The constants \fBMXML_INTEGER_CALLBACK\fR, \fBMXML_OPAQUE_CALLBACK\fR,
-\fBMXML_REAL_CALLBACK\fR, and \fBMXML_TEXT_CALLBACK\fR are defined for
-loading child (data) nodes of the specified type.
+This function loads the \fBFILE\fR pointer \fBfp\fR into an XML node tree.  The
+nodes in the specified file are added to the specified node \fBtop\fR.  If \fBNULL\fR
+is provided, the XML file MUST be well-formed with a single parent processing
+instruction node like \fB<?xml version="1.0"?>\fR at the start of the file.
+.PP
+The load callback function \fBload_cb\fR is called to obtain the node type that
+should be used for child nodes.  If \fBNULL\fR, the \fBload_cbdata\fR argument points
+to a \fBmmd_type_t\fR variable that specifies the value type or \fBMMD_TYPE_TEXT\fR
+if that argument is also \fBNULL\fR.
+.PP
+The SAX callback function \fBsax_cb\fR and associated callback data \fBsax_cbdata\fR
+are used to enable the Simple API for XML streaming mode.  The callback is
+called as the XML node tree is parsed.
 .PP
 Note: The most common programming error when using the Mini-XML library is
-to load an XML file using the \fBMXML_TEXT_CALLBACK\fR, which returns inline
-text as a series of whitespace-delimited words, instead of using the
-\fBMXML_OPAQUE_CALLBACK\fR which returns the inline text as a single string
+to load an XML file using the \fBMXML_TYPE_TEXT\fR node type, which returns
+inline text as a series of whitespace-delimited words, instead of using the
+\fBMXML_TYPE_OPAQUE\fR node type which returns the inline text as a single string
 (including whitespace).
 .SS mxmlLoadFilename
 Load a file into an XML node tree.
@@ -803,20 +856,24 @@ mxml_node_t * mxmlLoadFilename (
 );
 .fi
 .PP
-The nodes in the specified file are added to the specified top node.
-If no top node is provided, the XML file MUST be well-formed with a
-single parent node like 
-.URL ?xml ?xml
- for the entire file. The callback
-function returns the value type that should be used for child nodes.
-The constants \fBMXML_INTEGER_CALLBACK\fR, \fBMXML_OPAQUE_CALLBACK\fR,
-\fBMXML_REAL_CALLBACK\fR, and \fBMXML_TEXT_CALLBACK\fR are defined for
-loading child (data) nodes of the specified type.
+This function loads the named file \fBfilename\fR into an XML node tree.  The
+nodes in the specified file are added to the specified node \fBtop\fR.  If \fBNULL\fR
+is provided, the XML file MUST be well-formed with a single parent processing
+instruction node like \fB<?xml version="1.0"?>\fR at the start of the file.
+.PP
+The load callback function \fBload_cb\fR is called to obtain the node type that
+should be used for child nodes.  If \fBNULL\fR, the \fBload_cbdata\fR argument points
+to a \fBmmd_type_t\fR variable that specifies the value type or \fBMMD_TYPE_TEXT\fR
+if that argument is also \fBNULL\fR.
+.PP
+The SAX callback function \fBsax_cb\fR and associated callback data \fBsax_cbdata\fR
+are used to enable the Simple API for XML streaming mode.  The callback is
+called as the XML node tree is parsed.
 .PP
 Note: The most common programming error when using the Mini-XML library is
-to load an XML file using the \fBMXML_TEXT_CALLBACK\fR, which returns inline
-text as a series of whitespace-delimited words, instead of using the
-\fBMXML_OPAQUE_CALLBACK\fR which returns the inline text as a single string
+to load an XML file using the \fBMXML_TYPE_TEXT\fR node type, which returns
+inline text as a series of whitespace-delimited words, instead of using the
+\fBMXML_TYPE_OPAQUE\fR node type which returns the inline text as a single string
 (including whitespace).
 .SS mxmlLoadIO
 Load an XML node tree using a read callback.
@@ -833,21 +890,40 @@ mxml_node_t * mxmlLoadIO (
 );
 .fi
 .PP
-The nodes in the specified file are added to the specified top node.
-If no top node is provided, the XML file MUST be well-formed with a
-single parent node like 
-.URL ?xml ?xml
- for the entire file. The callback
-function returns the value type that should be used for child nodes.
-The constants \fBMXML_INTEGER_CALLBACK\fR, \fBMXML_OPAQUE_CALLBACK\fR,
-\fBMXML_REAL_CALLBACK\fR, and \fBMXML_TEXT_CALLBACK\fR are defined for
-loading child (data) nodes of the specified type.
+This function loads data into an XML node tree using a read callback.  The
+nodes in the specified file are added to the specified node \fBtop\fR.  If \fBNULL\fR
+is provided, the XML file MUST be well-formed with a single parent processing
+instruction node like \fB<?xml version="1.0"?>\fR at the start of the file.
 .PP
-Note: The most common programming error when using the Mini-XML library is
-to load an XML file using the \fBMXML_TEXT_CALLBACK\fR, which returns inline
-text as a series of whitespace-delimited words, instead of using the
-\fBMXML_OPAQUE_CALLBACK\fR which returns the inline text as a single string
-(including whitespace).
+The read callback function \fBread_cb\fR is called to read a number of bytes from
+the source.  The callback data pointer \fBread_cbdata\fR is passed to the read
+callback with a pointer to a buffer and the maximum number of bytes to read,
+for example:
+.PP
+\fB`\fRc
+ssize_t my_read_cb(void \fIcbdata, void \fRbuffer, size_t bytes)
+{
+  ... copy up to "bytes" bytes into buffer ...
+  ... return the number of bytes "read" or -1 on error ...
+}
+.nf
+    
+    The load callback function `load_cb` is called to obtain the node type that
+    should be used for child nodes.  If `NULL`, the `load_cbdata` argument points
+    to a `mmd_type_t` variable that specifies the value type or `MMD_TYPE_TEXT`
+    if that argument is also `NULL`.
+    
+    The SAX callback function `sax_cb` and associated callback data `sax_cbdata`
+    are used to enable the Simple API for XML streaming mode.  The callback is
+    called as the XML node tree is parsed.
+    
+    Note: The most common programming error when using the Mini-XML library is
+    to load an XML file using the `MXML_TYPE_TEXT` node type, which returns
+    inline text as a series of whitespace-delimited words, instead of using the
+    `MXML_TYPE_OPAQUE` node type which returns the inline text as a single string
+    (including whitespace).
+.fi
+
 .SS mxmlLoadString
 Load a string into an XML node tree.
 .PP
@@ -862,20 +938,24 @@ mxml_node_t * mxmlLoadString (
 );
 .fi
 .PP
-The nodes in the specified string are added to the specified top node.
-If no top node is provided, the XML string MUST be well-formed with a
-single parent node like 
-.URL ?xml ?xml
- for the entire string. The callback
-function returns the value type that should be used for child nodes.
-The constants \fBMXML_INTEGER_CALLBACK\fR, \fBMXML_OPAQUE_CALLBACK\fR,
-\fBMXML_REAL_CALLBACK\fR, and \fBMXML_TEXT_CALLBACK\fR are defined for
-loading child (data) nodes of the specified type.
+This function loads the string into an XML node tree.  The nodes in the
+specified file are added to the specified node \fBtop\fR.  If \fBNULL\fR is provided,
+the XML file MUST be well-formed with a single parent processing instruction
+node like \fB<?xml version="1.0"?>\fR at the start of the file.
+.PP
+The load callback function \fBload_cb\fR is called to obtain the node type that
+should be used for child nodes.  If \fBNULL\fR, the \fBload_cbdata\fR argument points
+to a \fBmmd_type_t\fR variable that specifies the value type or \fBMMD_TYPE_TEXT\fR
+if that argument is also \fBNULL\fR.
+.PP
+The SAX callback function \fBsax_cb\fR and associated callback data \fBsax_cbdata\fR
+are used to enable the Simple API for XML streaming mode.  The callback is
+called as the XML node tree is parsed.
 .PP
 Note: The most common programming error when using the Mini-XML library is
-to load an XML file using the \fBMXML_TEXT_CALLBACK\fR, which returns inline
-text as a series of whitespace-delimited words, instead of using the
-\fBMXML_OPAQUE_CALLBACK\fR which returns the inline text as a single string
+to load an XML file using the \fBMXML_TYPE_TEXT\fR node type, which returns
+inline text as a series of whitespace-delimited words, instead of using the
+\fBMXML_TYPE_OPAQUE\fR node type which returns the inline text as a single string
 (including whitespace).
 .SS mxmlNewCDATA
 Create a new CDATA node.
@@ -1162,16 +1242,28 @@ char * mxmlSaveAllocString (
 );
 .fi
 .PP
-This function returns a pointer to a string containing the textual
-representation of the XML node tree.  The string should be freed
-using \fBfree()\fR when you are done with it.  \fBNULL\fR is returned if the node
-would produce an empty string or if the string cannot be allocated.
+This function saves the XML tree \fBnode\fR to an allocated string.  The string
+should be freed using \fBfree\fR (or the string free callback set using
+\fImxmlSetStringCallbacks\fR) when you are done with it.
 .PP
-The callback argument specifies a function that returns a whitespace
-string or \fBNULL\fR before and after each element.  If \fBMXML_NO_CALLBACK\fR
-is specified, whitespace will only be added before \fBMXML_TYPE_TEXT\fR nodes
-with leading whitespace and before attribute names inside opening
-element tags.
+\fBNULL\fR is returned if the node would produce an empty string or if the string
+cannot be allocated.
+.PP
+The callback function \fBsave_cb\fR specifies a function that returns a
+whitespace string or \fBNULL\fR before and after each element.  The function
+receives the callback data pointer \fBsave_cbdata\fR, the \fBmxml_node_t\fR pointer,
+and a "when" value indicating where the whitespace is being added, for
+example:
+.PP
+\fB`\fRc
+const char \fImy_save_cb(void \fRcbdata, mxml_node_t *node, mxml_ws_t when)
+{
+  if (when == MXML_WS_BEFORE_OPEN || when == MXML_WS_AFTER_CLOSE)
+    return ("n");
+  else
+    return (NULL);
+}
+\fB`\fR
 .SS mxmlSaveFd
 Save an XML tree to a file descriptor.
 .PP
@@ -1184,11 +1276,23 @@ bool  mxmlSaveFd (
 );
 .fi
 .PP
-The callback argument specifies a function that returns a whitespace
-string or NULL before and after each element. If \fBMXML_NO_CALLBACK\fR
-is specified, whitespace will only be added before \fBMXML_TYPE_TEXT\fR nodes
-with leading whitespace and before attribute names inside opening
-element tags.
+This function saves the XML tree \fBnode\fR to a file descriptor.
+.PP
+The callback function \fBsave_cb\fR specifies a function that returns a
+whitespace string or \fBNULL\fR before and after each element.  The function
+receives the callback data pointer \fBsave_cbdata\fR, the \fBmxml_node_t\fR pointer,
+and a "when" value indicating where the whitespace is being added, for
+example:
+.PP
+\fB`\fRc
+const char \fImy_save_cb(void \fRcbdata, mxml_node_t *node, mxml_ws_t when)
+{
+  if (when == MXML_WS_BEFORE_OPEN || when == MXML_WS_AFTER_CLOSE)
+    return ("n");
+  else
+    return (NULL);
+}
+\fB`\fR
 .SS mxmlSaveFile
 Save an XML tree to a file.
 .PP
@@ -1201,11 +1305,23 @@ bool  mxmlSaveFile (
 );
 .fi
 .PP
-The callback argument specifies a function that returns a whitespace
-string or NULL before and after each element. If \fBMXML_NO_CALLBACK\fR
-is specified, whitespace will only be added before \fBMXML_TYPE_TEXT\fR nodes
-with leading whitespace and before attribute names inside opening
-element tags.
+This function saves the XML tree \fBnode\fR to a stdio \fBFILE\fR.
+.PP
+The callback function \fBsave_cb\fR specifies a function that returns a
+whitespace string or \fBNULL\fR before and after each element.  The function
+receives the callback data pointer \fBsave_cbdata\fR, the \fBmxml_node_t\fR pointer,
+and a "when" value indicating where the whitespace is being added, for
+example:
+.PP
+\fB`\fRc
+const char \fImy_save_cb(void \fRcbdata, mxml_node_t *node, mxml_ws_t when)
+{
+  if (when == MXML_WS_BEFORE_OPEN || when == MXML_WS_AFTER_CLOSE)
+    return ("n");
+  else
+    return (NULL);
+}
+\fB`\fR
 .SS mxmlSaveFilename
 Save an XML tree to a file.
 .PP
@@ -1218,11 +1334,23 @@ bool  mxmlSaveFilename (
 );
 .fi
 .PP
-The callback argument specifies a function that returns a whitespace
-string or NULL before and after each element. If \fBMXML_NO_CALLBACK\fR
-is specified, whitespace will only be added before \fBMXML_TYPE_TEXT\fR nodes
-with leading whitespace and before attribute names inside opening
-element tags.
+This function saves the XML tree \fBnode\fR to a named file.
+.PP
+The callback function \fBsave_cb\fR specifies a function that returns a
+whitespace string or \fBNULL\fR before and after each element.  The function
+receives the callback data pointer \fBsave_cbdata\fR, the \fBmxml_node_t\fR pointer,
+and a "when" value indicating where the whitespace is being added, for
+example:
+.PP
+\fB`\fRc
+const char \fImy_save_cb(void \fRcbdata, mxml_node_t *node, mxml_ws_t when)
+{
+  if (when == MXML_WS_BEFORE_OPEN || when == MXML_WS_AFTER_CLOSE)
+    return ("n");
+  else
+    return (NULL);
+}
+\fB`\fR
 .SS mxmlSaveIO
 Save an XML tree using a callback.
 .PP
@@ -1236,11 +1364,36 @@ bool  mxmlSaveIO (
 );
 .fi
 .PP
-The callback argument specifies a function that returns a whitespace
-string or NULL before and after each element. If \fBMXML_NO_CALLBACK\fR
-is specified, whitespace will only be added before \fBMXML_TYPE_TEXT\fR nodes
-with leading whitespace and before attribute names inside opening
-element tags.
+This function saves the XML tree \fBnode\fR using a write callback function
+\fBwrite_cb\fR.  The write callback is called with the callback data pointer
+\fBwrite_cbdata\fR, a buffer pointer, and the number of bytes to write, for
+example:
+.PP
+\fB`\fRc
+ssize_t my_write_cb(void \fIcbdata, const void \fRbuffer, size_t bytes)
+{
+  ... write/copy bytes from buffer to the output ...
+  ... return the number of bytes written/copied or -1 on error ...
+}
+.nf
+    
+    The callback function `save_cb` specifies a function that returns a
+    whitespace string or `NULL` before and after each element.  The function
+    receives the callback data pointer `save_cbdata`, the `mxml_node_t` pointer,
+    and a "when" value indicating where the whitespace is being added, for
+    example:
+    
+    ```c
+    const char *my_save_cb(void *cbdata, mxml_node_t *node, mxml_ws_t when)
+    {
+      if (when == MXML_WS_BEFORE_OPEN || when == MXML_WS_AFTER_CLOSE)
+        return ("n");
+      else
+        return (NULL);
+    }
+
+.fi
+
 .SS mxmlSaveString
 Save an XML node tree to a string.
 .PP
@@ -1254,15 +1407,23 @@ size_t  mxmlSaveString (
 );
 .fi
 .PP
-This function returns the total number of bytes that would be
-required for the string but only copies (bufsize - 1) characters
-into the specified buffer.
+This function saves the XML tree \fBnode\fR to a string buffer.
 .PP
-The callback argument specifies a function that returns a whitespace
-string or NULL before and after each element. If \fBMXML_NO_CALLBACK\fR
-is specified, whitespace will only be added before \fBMXML_TYPE_TEXT\fR nodes
-with leading whitespace and before attribute names inside opening
-element tags.
+The callback function \fBsave_cb\fR specifies a function that returns a
+whitespace string or \fBNULL\fR before and after each element.  The function
+receives the callback data pointer \fBsave_cbdata\fR, the \fBmxml_node_t\fR pointer,
+and a "when" value indicating where the whitespace is being added, for
+example:
+.PP
+\fB`\fRc
+const char \fImy_save_cb(void \fRcbdata, mxml_node_t *node, mxml_ws_t when)
+{
+  if (when == MXML_WS_BEFORE_OPEN || when == MXML_WS_AFTER_CLOSE)
+    return ("n");
+  else
+    return (NULL);
+}
+\fB`\fR
 .SS mxmlSetCDATA
 Set the data for a CDATA node.
 .PP
@@ -1273,7 +1434,8 @@ bool  mxmlSetCDATA (
 );
 .fi
 .PP
-The node is not changed if it (or its first child) is not a CDATA node.
+This function sets the value string for a CDATA node.  The node is not
+changed if it (or its first child) is not a CDATA node.
 .SS mxmlSetCDATAf
 Set the data for a CDATA to a formatted string.
 .PP
@@ -1284,6 +1446,9 @@ bool  mxmlSetCDATAf (
     ...
 );
 .fi
+.PP
+This function sets the formatted string value of a CDATA node.  The node is
+not changed if it (or its first child) is not a CDATA node.
 .SS mxmlSetComment
 Set a comment to a literal string.
 .PP
@@ -1293,6 +1458,8 @@ bool  mxmlSetComment (
     const char *comment
 );
 .fi
+.PP
+This function sets the string value of a comment node.
 .SS mxmlSetCommentf
 Set a comment to a formatted string.
 .PP
@@ -1303,6 +1470,8 @@ bool  mxmlSetCommentf (
     ...
 );
 .fi
+.PP
+This function sets the formatted string value of a comment node.
 .SS mxmlSetCustom
 Set the data and destructor of a custom data node.
 .PP
@@ -1310,13 +1479,15 @@ Set the data and destructor of a custom data node.
 bool  mxmlSetCustom (
     mxml_node_t *node,
     void *data,
-    mxml_custom_destroy_cb_t destroy
+    mxml_custom_destroy_cb_t destroy_cb
 );
 .fi
 .PP
-The node is not changed if it (or its first child) is not a custom node.
+This function sets the data pointer \fBdata\fR and destructor callback
+\fBdestroy_cb\fR of a custom data node.  The node is not changed if it (or its
+first child) is not a custom node.
 .SS mxmlSetDeclaration
-Set a comment to a literal string.
+Set a declaration to a literal string.
 .PP
 .nf
 bool  mxmlSetDeclaration (
@@ -1324,8 +1495,10 @@ bool  mxmlSetDeclaration (
     const char *declaration
 );
 .fi
+.PP
+This function sets the string value of a declaration node.
 .SS mxmlSetDeclarationf
-Set a comment to a formatted string.
+Set a declaration to a formatted string.
 .PP
 .nf
 bool  mxmlSetDeclarationf (
@@ -1334,8 +1507,10 @@ bool  mxmlSetDeclarationf (
     ...
 );
 .fi
+.PP
+This function sets the formatted string value of a declaration node.
 .SS mxmlSetDirective
-Set a directive to a literal string.
+Set a processing instruction to a literal string.
 .PP
 .nf
 bool  mxmlSetDirective (
@@ -1343,8 +1518,10 @@ bool  mxmlSetDirective (
     const char *directive
 );
 .fi
+.PP
+This function sets the string value of a processing instruction node.
 .SS mxmlSetDirectivef
-Set a directive to a formatted string.
+Set a processing instruction to a formatted string.
 .PP
 .nf
 bool  mxmlSetDirectivef (
@@ -1353,6 +1530,9 @@ bool  mxmlSetDirectivef (
     ...
 );
 .fi
+.PP
+This function sets the formatted string value of a processing instruction
+node.
 .SS mxmlSetElement
 Set the name of an element node.
 .PP
@@ -1363,7 +1543,8 @@ bool  mxmlSetElement (
 );
 .fi
 .PP
-The node is not changed if it is not an element node.
+This function sets the name of an element node.  The node is not changed if
+it is not an element node.
 .SS mxmlSetInteger
 Set the value of an integer node.
 .PP
@@ -1374,7 +1555,8 @@ bool  mxmlSetInteger (
 );
 .fi
 .PP
-The node is not changed if it (or its first child) is not an integer node.
+This function sets the value of an integer node.  The node is not changed if
+it (or its first child) is not an integer node.
 .SS mxmlSetOpaque
 Set the value of an opaque node.
 .PP
@@ -1385,7 +1567,8 @@ bool  mxmlSetOpaque (
 );
 .fi
 .PP
-The node is not changed if it (or its first child) is not an opaque node.
+This function sets the string value of an opaque node.  The node is not
+changed if it (or its first child) is not an opaque node.
 .SS mxmlSetOpaquef
 Set the value of an opaque string node to a formatted string.
 .PP
@@ -1397,9 +1580,10 @@ bool  mxmlSetOpaquef (
 );
 .fi
 .PP
-The node is not changed if it (or its first child) is not an opaque node.
+This function sets the formatted string value of an opaque node.  The node is
+not changed if it (or its first child) is not an opaque node.
 .SS mxmlSetReal
-Set the value of a real number node.
+Set the value of a real value node.
 .PP
 .nf
 bool  mxmlSetReal (
@@ -1408,7 +1592,8 @@ bool  mxmlSetReal (
 );
 .fi
 .PP
-The node is not changed if it (or its first child) is not a real number node.
+This function sets the value of a real value node.  The node is not changed
+if it (or its first child) is not a real value node.
 .SS mxmlSetText
 Set the value of a text node.
 .PP
@@ -1420,7 +1605,8 @@ bool  mxmlSetText (
 );
 .fi
 .PP
-The node is not changed if it (or its first child) is not a text node.
+This function sets the string and whitespace values of a text node.  The node
+is not changed if it (or its first child) is not a text node.
 .SS mxmlSetTextf
 Set the value of a text node to a formatted string.
 .PP
@@ -1433,6 +1619,7 @@ bool  mxmlSetTextf (
 );
 .fi
 .PP
+This function sets the formatted string and whitespace values of a text node.
 The node is not changed if it (or its first child) is not a text node.
 .SS mxmlSetUserData
 Set the user data pointer for a node.
@@ -1452,7 +1639,8 @@ void mxmlSetWrapMargin (
 );
 .fi
 .PP
-Wrapping is disabled when "column" is 0.
+This function sets the wrap margin used when saving XML data for the current
+thread.  Wrapping is disabled when \fBcolumn\fR is \fB0\fR.
 .SS mxmlWalkNext
 Walk to the next logical node in the tree.
 .PP
@@ -1464,9 +1652,9 @@ mxml_node_t * mxmlWalkNext (
 );
 .fi
 .PP
-The descend argument controls whether the first child is considered
-to be the next node.  The top node argument constrains the walk to
-the node's children.
+This function walks to the next logical node in the tree.  The \fBdescend\fR
+argument controls whether the first child is considered to be the next node.
+The \fBtop\fR argument constrains the walk to that node's children.
 .SS mxmlWalkPrev
 Walk to the previous logical node in the tree.
 .PP
@@ -1478,9 +1666,9 @@ mxml_node_t * mxmlWalkPrev (
 );
 .fi
 .PP
-The descend argument controls whether the previous node's last child
-is considered to be the previous node.  The top node argument constrains
-the walk to the node's children.
+This function walks to the previous logical node in the tree.  The \fBdescend\fR
+argument controls whether the first child is considered to be the next node.
+The \fBtop\fR argument constrains the walk to that node's children.
 .SH TYPES
 .SS mxml_add_t
 \fImxmlAdd\fR add values

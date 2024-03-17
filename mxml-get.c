@@ -15,7 +15,8 @@
 //
 // 'mxmlGetCDATA()' - Get the value for a CDATA node.
 //
-// `NULL` is returned if the node is not a CDATA element.
+// This function gets the string value of a CDATA node.  `NULL` is returned if
+// the node is not a CDATA element.
 //
 
 const char *				// O - CDATA value or `NULL`
@@ -33,7 +34,8 @@ mxmlGetCDATA(mxml_node_t *node)		// I - Node to get
 //
 // 'mxmlGetComment()' - Get the value for a comment node.
 //
-// `NULL` is returned if the node is not a comment.
+// This function gets the string value of a comment node.  `NULL` is returned
+// if the node is not a comment.
 //
 
 const char *				// O - Comment value or `NULL`
@@ -51,8 +53,8 @@ mxmlGetComment(mxml_node_t *node)	// I - Node to get
 //
 // 'mxmlGetCustom()' - Get the value for a custom node.
 //
-// `NULL` is returned if the node (or its first child) is not a custom
-// value node.
+// This function gets the binary value of a custom node.  `NULL` is returned if
+// the node (or its first child) is not a custom value node.
 //
 
 const void *				// O - Custom value or `NULL`
@@ -75,7 +77,8 @@ mxmlGetCustom(mxml_node_t *node)	// I - Node to get
 //
 // 'mxmlGetDeclaration()' - Get the value for a declaration node.
 //
-// `NULL` is returned if the node is not a declaration.
+// This function gets the string value of a declaraction node.  `NULL` is
+// returned if the node is not a declaration.
 //
 
 const char *				// O - Declaraction value or `NULL`
@@ -93,7 +96,8 @@ mxmlGetDeclaration(mxml_node_t *node)	// I - Node to get
 //
 // 'mxmlGetDirective()' - Get the value for a processing instruction node.
 //
-// `NULL` is returned if the node is not a processing instruction.
+// This function gets the string value of a processing instruction.  `NULL` is
+// returned if the node is not a processing instruction.
 //
 
 const char *				// O - Comment value or `NULL`
@@ -111,7 +115,8 @@ mxmlGetDirective(mxml_node_t *node)	// I - Node to get
 //
 // 'mxmlGetElement()' - Get the name for an element node.
 //
-// `NULL` is returned if the node is not an element node.
+// This function gets the name of an element node.  `NULL` is returned if the
+// node is not an element node.
 //
 
 const char *				// O - Element name or `NULL`
@@ -127,9 +132,9 @@ mxmlGetElement(mxml_node_t *node)	// I - Node to get
 
 
 //
-// 'mxmlGetFirstChild()' - Get the first child of an element node.
+// 'mxmlGetFirstChild()' - Get the first child of a node.
 //
-// `NULL` is returned if the node is not an element node or if the node
+// This function gets the first child of a node.  `NULL` is returned if the node
 // has no children.
 //
 
@@ -145,7 +150,8 @@ mxmlGetFirstChild(mxml_node_t *node)	// I - Node to get
 // 'mxmlGetInteger()' - Get the integer value from the specified node or its
 //                      first child.
 //
-// `0` is returned if the node (or its first child) is not an integer value node.
+// This function gets the value of an integer node.  `0` is returned if the node
+// (or its first child) is not an integer value node.
 //
 
 long					// O - Integer value or `0`
@@ -166,9 +172,9 @@ mxmlGetInteger(mxml_node_t *node)	// I - Node to get
 
 
 //
-// 'mxmlGetLastChild()' - Get the last child of an element node.
+// 'mxmlGetLastChild()' - Get the last child of a node.
 //
-// `NULL` is returned if the node is not an element node or if the node
+// This function gets the last child of a node.  `NULL` is returned if the node
 // has no children.
 //
 
@@ -182,7 +188,8 @@ mxmlGetLastChild(mxml_node_t *node)	// I - Node to get
 //
 // 'mxmlGetNextSibling()' - Get the next node for the current parent.
 //
-// `NULL` is returned if this is the last child for the current parent.
+// This function gets the next node for the current parent.  `NULL` is returned
+// if this is the last child for the current parent.
 //
 
 mxml_node_t *
@@ -195,8 +202,8 @@ mxmlGetNextSibling(mxml_node_t *node)	// I - Node to get
 //
 // 'mxmlGetOpaque()' - Get an opaque string value for a node or its first child.
 //
-// `NULL` is returned if the node (or its first child) is not an opaque
-// value node.
+// This function gets the string value of an opaque node.  `NULL` is returned if
+// the node (or its first child) is not an opaque value node.
 //
 
 const char *				// O - Opaque string or `NULL`
@@ -219,7 +226,7 @@ mxmlGetOpaque(mxml_node_t *node)	// I - Node to get
 //
 // 'mxmlGetParent()' - Get the parent node.
 //
-// `NULL` is returned for a root node.
+// This function gets the parent of a node.  `NULL` is returned for a root node.
 //
 
 mxml_node_t *				// O - Parent node or `NULL`
@@ -232,7 +239,8 @@ mxmlGetParent(mxml_node_t *node)	// I - Node to get
 //
 // 'mxmlGetPrevSibling()' - Get the previous node for the current parent.
 //
-// `NULL` is returned if this is the first child for the current parent.
+// This function gets the previous node for the current parent.  `NULL` is
+// returned if this is the first child for the current parent.
 //
 
 mxml_node_t *				// O - Previous node or `NULL`
@@ -245,7 +253,8 @@ mxmlGetPrevSibling(mxml_node_t *node)	// I - Node to get
 //
 // 'mxmlGetReal()' - Get the real value for a node or its first child.
 //
-// 0.0 is returned if the node (or its first child) is not a real value node.
+// This function gets the value of a real value node.  `0.0` is returned if the
+// node (or its first child) is not a real value node.
 //
 
 double					// O - Real value or 0.0
@@ -268,8 +277,10 @@ mxmlGetReal(mxml_node_t *node)		// I - Node to get
 //
 // 'mxmlGetText()' - Get the text value for a node or its first child.
 //
-// `NULL` is returned if the node (or its first child) is not a text node.
-// The "whitespace" argument can be `NULL`.
+// This function gets the string and whitespace values of a text node.  `NULL`
+// and `false` are returned if the node (or its first child) is not a text node.
+// The `whitespace` argument can be `NULL` if you don't want to know the
+// whitespace value.
 //
 // Note: Text nodes consist of whitespace-delimited words. You will only get
 // single words of text when reading an XML file with `MXML_TYPE_TEXT` nodes.
@@ -319,7 +330,8 @@ mxmlGetText(mxml_node_t *node,		// I - Node to get
 //
 // 'mxmlGetType()' - Get the node type.
 //
-// `MXML_TYPE_IGNORE` is returned if "node" is `NULL`.
+// This function gets the type of `node`.  `MXML_TYPE_IGNORE` is returned if
+// `node` is `NULL`.
 //
 
 mxml_type_t				// O - Type of node
@@ -336,6 +348,8 @@ mxmlGetType(mxml_node_t *node)		// I - Node to get
 
 //
 // 'mxmlGetUserData()' - Get the user data pointer for a node.
+//
+// This function gets the user data pointer associated with `node`.
 //
 
 void *					// O - User data pointer

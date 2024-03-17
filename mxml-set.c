@@ -15,7 +15,8 @@
 //
 // 'mxmlSetCDATA()' - Set the data for a CDATA node.
 //
-// The node is not changed if it (or its first child) is not a CDATA node.
+// This function sets the value string for a CDATA node.  The node is not
+// changed if it (or its first child) is not a CDATA node.
 //
 
 bool					// O - `true` on success, `false` on failure
@@ -62,6 +63,9 @@ mxmlSetCDATA(mxml_node_t *node,		// I - Node to set
 
 //
 // 'mxmlSetCDATAf()' - Set the data for a CDATA to a formatted string.
+//
+// This function sets the formatted string value of a CDATA node.  The node is
+// not changed if it (or its first child) is not a CDATA node.
 //
 
 bool					// O - `true` on success, `false` on failure
@@ -110,6 +114,8 @@ mxmlSetCDATAf(mxml_node_t *node,	// I - Node
 //
 // 'mxmlSetComment()' - Set a comment to a literal string.
 //
+// This function sets the string value of a comment node.
+//
 
 bool					// O - `true` on success, `false` on failure
 mxmlSetComment(mxml_node_t *node,	// I - Node
@@ -152,6 +158,8 @@ mxmlSetComment(mxml_node_t *node,	// I - Node
 
 //
 // 'mxmlSetCommentf()' - Set a comment to a formatted string.
+//
+// This function sets the formatted string value of a comment node.
 //
 
 bool					// O - `true` on success, `false` on failure
@@ -200,14 +208,16 @@ mxmlSetCommentf(mxml_node_t *node,	// I - Node
 //
 // 'mxmlSetCustom()' - Set the data and destructor of a custom data node.
 //
-// The node is not changed if it (or its first child) is not a custom node.
+// This function sets the data pointer `data` and destructor callback
+// `destroy_cb` of a custom data node.  The node is not changed if it (or its
+// first child) is not a custom node.
 //
 
 bool					// O - `true` on success, `false` on failure
 mxmlSetCustom(
     mxml_node_t              *node,	// I - Node to set
     void                     *data,	// I - New data pointer
-    mxml_custom_destroy_cb_t destroy)	// I - New destructor function
+    mxml_custom_destroy_cb_t destroy_cb)// I - New destructor function
 {
   // Range check input...
   if (node && node->type == MXML_TYPE_ELEMENT && node->child && node->child->type == MXML_TYPE_CUSTOM)
@@ -221,7 +231,7 @@ mxmlSetCustom(
 
   if (data == node->value.custom.data)
   {
-    node->value.custom.destroy = destroy;
+    node->value.custom.destroy = destroy_cb;
     return (true);
   }
 
@@ -230,14 +240,16 @@ mxmlSetCustom(
     (*(node->value.custom.destroy))(node->value.custom.data);
 
   node->value.custom.data    = data;
-  node->value.custom.destroy = destroy;
+  node->value.custom.destroy = destroy_cb;
 
   return (true);
 }
 
 
 //
-// 'mxmlSetDeclaration()' - Set a comment to a literal string.
+// 'mxmlSetDeclaration()' - Set a declaration to a literal string.
+//
+// This function sets the string value of a declaration node.
 //
 
 bool					// O - `true` on success, `false` on failure
@@ -281,7 +293,9 @@ mxmlSetDeclaration(
 
 
 //
-// 'mxmlSetDeclarationf()' - Set a comment to a formatted string.
+// 'mxmlSetDeclarationf()' - Set a declaration to a formatted string.
+//
+// This function sets the formatted string value of a declaration node.
 //
 
 bool					// O - `true` on success, `false` on failure
@@ -328,7 +342,9 @@ mxmlSetDeclarationf(mxml_node_t *node,	// I - Node
 
 
 //
-// 'mxmlSetDirective()' - Set a directive to a literal string.
+// 'mxmlSetDirective()' - Set a processing instruction to a literal string.
+//
+// This function sets the string value of a processing instruction node.
 //
 
 bool					// O - `true` on success, `false` on failure
@@ -371,7 +387,10 @@ mxmlSetDirective(mxml_node_t *node,	// I - Node
 
 
 //
-// 'mxmlSetDirectivef()' - Set a directive to a formatted string.
+// 'mxmlSetDirectivef()' - Set a processing instruction to a formatted string.
+//
+// This function sets the formatted string value of a processing instruction
+// node.
 //
 
 bool					// O - `true` on success, `false` on failure
@@ -420,7 +439,8 @@ mxmlSetDirectivef(mxml_node_t *node,	// I - Node
 //
 // 'mxmlSetElement()' - Set the name of an element node.
 //
-// The node is not changed if it is not an element node.
+// This function sets the name of an element node.  The node is not changed if
+// it is not an element node.
 //
 
 bool					// O - `true` on success, `false` on failure
@@ -462,7 +482,8 @@ mxmlSetElement(mxml_node_t *node,	// I - Node to set
 //
 // 'mxmlSetInteger()' - Set the value of an integer node.
 //
-// The node is not changed if it (or its first child) is not an integer node.
+// This function sets the value of an integer node.  The node is not changed if
+// it (or its first child) is not an integer node.
 //
 
 bool					// O - `true` on success, `false` on failure
@@ -489,7 +510,8 @@ mxmlSetInteger(mxml_node_t *node,	// I - Node to set
 //
 // 'mxmlSetOpaque()' - Set the value of an opaque node.
 //
-// The node is not changed if it (or its first child) is not an opaque node.
+// This function sets the string value of an opaque node.  The node is not
+// changed if it (or its first child) is not an opaque node.
 //
 
 bool					// O - `true` on success, `false` on failure
@@ -534,7 +556,8 @@ mxmlSetOpaque(mxml_node_t *node,	// I - Node to set
 //
 // 'mxmlSetOpaquef()' - Set the value of an opaque string node to a formatted string.
 //
-// The node is not changed if it (or its first child) is not an opaque node.
+// This function sets the formatted string value of an opaque node.  The node is
+// not changed if it (or its first child) is not an opaque node.
 //
 
 bool					// O - `true` on success, `false` on failure
@@ -581,19 +604,17 @@ mxmlSetOpaquef(mxml_node_t *node,	// I - Node to set
 
 
 //
-// 'mxmlSetReal()' - Set the value of a real number node.
+// 'mxmlSetReal()' - Set the value of a real value node.
 //
-// The node is not changed if it (or its first child) is not a real number node.
+// This function sets the value of a real value node.  The node is not changed
+// if it (or its first child) is not a real value node.
 //
 
 bool					// O - `true` on success, `false` on failure
 mxmlSetReal(mxml_node_t *node,		// I - Node to set
             double      real)		// I - Real number value
 {
- /*
-  * Range check input...
-  */
-
+  // Range check input...
   if (node && node->type == MXML_TYPE_ELEMENT && node->child && node->child->type == MXML_TYPE_REAL)
     node = node->child;
 
@@ -613,7 +634,8 @@ mxmlSetReal(mxml_node_t *node,		// I - Node to set
 //
 // 'mxmlSetText()' - Set the value of a text node.
 //
-// The node is not changed if it (or its first child) is not a text node.
+// This function sets the string and whitespace values of a text node.  The node
+// is not changed if it (or its first child) is not a text node.
 //
 
 bool					// O - `true` on success, `false` on failure
@@ -664,6 +686,7 @@ mxmlSetText(mxml_node_t *node,		// I - Node to set
 //
 // 'mxmlSetTextf()' - Set the value of a text node to a formatted string.
 //
+// This function sets the formatted string and whitespace values of a text node.
 // The node is not changed if it (or its first child) is not a text node.
 //
 

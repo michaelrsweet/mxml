@@ -20,7 +20,9 @@ static bool	mxml_set_attr(mxml_node_t *node, const char *name, char *value);
 
 
 //
-// 'mxmlElementClearAttr()' - Delete an attribute.
+// 'mxmlElementClearAttr()' - Remove an attribute from an element.
+//
+// This function removes the attribute `name` from the element `node`.
 //
 
 void
@@ -63,13 +65,14 @@ mxmlElementClearAttr(mxml_node_t *node,	// I - Element
 
 
 //
-// 'mxmlElementGetAttr()' - Get an attribute.
+// 'mxmlElementGetAttr()' - Get the value of an attribute.
 //
-// This function returns @code NULL@ if the node is not an element or the
-// named attribute does not exist.
+// This function gets the value for the attribute `name` from the element
+// `node`.  `NULL` is returned if the node is not an element or the named
+// attribute does not exist.
 //
 
-const char *				// O - Attribute value or @code NULL@
+const char *				// O - Attribute value or `NULL`
 mxmlElementGetAttr(mxml_node_t *node,	// I - Element node
                    const char  *name)	// I - Name of attribute
 {
@@ -103,17 +106,18 @@ mxmlElementGetAttr(mxml_node_t *node,	// I - Element node
 
 
 //
-// 'mxmlElementGetAttrByIndex()' - Get an element attribute by index.
+// 'mxmlElementGetAttrByIndex()' - Get an attribute by index.
 //
-// The index ("idx") is 0-based.  @code NULL@ is returned if the specified index
-// is out of range.
+// This function returned the Nth (`idx`) attribute for element `node`.  The
+// attribute name is optionallly returned in the `name` argument.  `NULL` is
+// returned if node is not an element or the specified index is out of range.
 //
 
 const char *                            // O - Attribute value
 mxmlElementGetAttrByIndex(
     mxml_node_t *node,                  // I - Node
-    int         idx,                    // I - Attribute index, starting at 0
-    const char  **name)                 // O - Attribute name
+    int         idx,                    // I - Attribute index, starting at `0`
+    const char  **name)                 // O - Attribute name or `NULL` to not return it
 {
   if (!node || node->type != MXML_TYPE_ELEMENT || idx < 0 || idx >= node->value.element.num_attrs)
     return (NULL);
@@ -128,6 +132,10 @@ mxmlElementGetAttrByIndex(
 //
 // 'mxmlElementGetAttrCount()' - Get the number of element attributes.
 //
+// This function returns the number of attributes for the element `node`.  `0`
+// is returned if the node is not an element or there are no attributes for the
+// element.
+//
 
 size_t					// O - Number of attributes
 mxmlElementGetAttrCount(
@@ -141,12 +149,11 @@ mxmlElementGetAttrCount(
 
 
 //
-// 'mxmlElementSetAttr()' - Set an attribute.
+// 'mxmlElementSetAttr()' - Set an attribute for an element.
 //
-// If the named attribute already exists, the value of the attribute
-// is replaced by the new string value. The string value is copied
-// into the element node. This function does nothing if the node is
-// not an element.
+// This function sets attribute `name` to the string `value` for the element
+// `node`.  If the named attribute already exists, the value of the attribute
+// is replaced by the new string value.  The string value is copied.
 //
 
 void
@@ -184,10 +191,9 @@ mxmlElementSetAttr(mxml_node_t *node,	// I - Element node
 //
 // 'mxmlElementSetAttrf()' - Set an attribute with a formatted value.
 //
-// If the named attribute already exists, the value of the attribute
-// is replaced by the new formatted string. The formatted string value is
-// copied into the element node. This function does nothing if the node
-// is not an element.
+// This function sets attribute `name` to the formatted value of `format` for
+// the element `node`.  If the named attribute already exists, the value of the
+// attribute is replaced by the new formatted string value.
 //
 
 void

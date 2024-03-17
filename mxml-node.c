@@ -23,11 +23,11 @@ static mxml_node_t	*mxml_new(mxml_node_t *parent, mxml_type_t type);
 //
 // 'mxmlAdd()' - Add a node to a tree.
 //
-// Adds the specified node to the parent.  If the child argument is not
-// `NULL`, puts the new node before or after the specified child depending
-// on the value of the `add` argument.  If the child argument is `NULL`,
-// puts the new node at the beginning of the child list (`MXML_ADD_BEFORE`)
-// or at the end of the child list (`MXML_ADD_AFTER`).
+// This function adds the specified node `node` to the parent.  If the `child`
+// argument is not `NULL`, the new node is added before or after the specified
+// child depending on the value of the `add` argument.  If the `child` argument
+// is `NULL`, the new node is placed at the beginning of the child list
+// (`MXML_ADD_BEFORE`) or at the end of the child list (`MXML_ADD_AFTER`).
 //
 
 void
@@ -114,8 +114,9 @@ mxmlAdd(mxml_node_t *parent,		// I - Parent node
 //
 // 'mxmlDelete()' - Delete a node and all of its children.
 //
-// If the specified node has a parent, this function first removes the
-// node from its parent using the @link mxmlRemove@ function.
+// This function deletes the node `node` and all of its children.  If the
+// specified node has a parent, this function first removes the node from its
+// parent using the @link mxmlRemove@ function.
 //
 
 void

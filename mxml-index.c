@@ -42,6 +42,8 @@ mxmlIndexDelete(mxml_index_t *ind)	// I - Index to delete
 //
 // 'mxmlIndexEnum()' - Return the next node in the index.
 //
+// This function returns the next node in index `ind`.
+//
 // You should call @link mxmlIndexReset@ prior to using this function to get
 // the first node in the index.  Nodes are returned in the sorted order of the
 // index.
@@ -65,9 +67,11 @@ mxmlIndexEnum(mxml_index_t *ind)	// I - Index to enumerate
 //
 // 'mxmlIndexFind()' - Find the next matching node.
 //
+// This function finds the next matching node in index `ind`.
+//
 // You should call @link mxmlIndexReset@ prior to using this function for
-// the first time with a particular set of "element" and "value"
-// strings. Passing `NULL` for both "element" and "value" is equivalent
+// the first time with a particular set of `element` and `value`
+// strings.  Passing `NULL` for both `element` and `value` is equivalent
 // to calling @link mxmlIndexEnum@.
 //
 
@@ -196,11 +200,13 @@ mxmlIndexGetCount(mxml_index_t *ind)	// I - Index of nodes
 //
 // 'mxmlIndexNew()' - Create a new index.
 //
+// This function creates a new index for XML tree `node`.
+//
 // The index will contain all nodes that contain the named element and/or
-// attribute.  If both "element" and "attr" are `NULL`, then the index will
+// attribute.  If both `element` and `attr` are `NULL`, then the index will
 // contain a sorted list of the elements in the node tree.  Nodes are
-// sorted by element name and optionally by attribute value if the "attr"
-// argument is not NULL.
+// sorted by element name and optionally by attribute value if the `attr`
+// argument is not `NULL`.
 //
 
 mxml_index_t *				// O - New index
@@ -275,8 +281,9 @@ mxmlIndexNew(mxml_node_t *node,		// I - XML node tree
 // 'mxmlIndexReset()' - Reset the enumeration/find pointer in the index and
 //                      return the first node in the index.
 //
-// This function should be called prior to using @link mxmlIndexEnum@ or
-// @link mxmlIndexFind@ for the first time.
+// This function resets the enumeration/find pointer in index `ind` and should
+// be called prior to using @link mxmlIndexEnum@ or @link mxmlIndexFind@ for the
+// first time.
 //
 
 mxml_node_t *				// O - First node or `NULL` if there is none

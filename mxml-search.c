@@ -15,14 +15,15 @@
 //
 // 'mxmlFindElement()' - Find the named element.
 //
-// The search is constrained by the name, attribute name, and value; any
-// `NULL` names or values are treated as wildcards, so different kinds of
-// searches can be implemented by looking for all elements of a given name
-// or all elements with a specific attribute. The descend argument determines
-// whether the search descends into child nodes; normally you will use
-// `MXML_DESCEND_FIRST` for the initial search and `MXML_NO_DESCEND`
-// to find additional direct descendents of the node. The top node argument
-// constrains the search to a particular node's children.
+// This function finds the named element `element` in XML tree `top` starting at
+// node `node`.  The search is constrained by element name `element`, attribute
+// name `attr`, and attribute value `value` - `NULL` names or values are treated
+// as wildcards, so different kinds of searches can be implemented by looking
+// for all elements of a given name or all elements with a specific attribute.
+//
+// The `descend` argument determines whether the search descends into child
+// nodes; normally you will use `MXML_DESCEND_FIRST` for the initial search and
+// `MXML_DESCEND_NONE` to find additional direct descendents of the node.
 //
 
 mxml_node_t *				// O - Element node or `NULL`
@@ -76,9 +77,10 @@ mxmlFindElement(mxml_node_t    *node,	// I - Current node
 //
 // 'mxmlFindPath()' - Find a node with the given path.
 //
-// The "path" is a slash-separated list of element names. The name "*" is
-// considered a wildcard for one or more levels of elements.  For example,
-// "foo/one/two", "bar/two/one", "*\/one", and so forth.
+// This function finds a node in XML tree `top` using a slash-separated list of
+// element names in `path`.  The name "*" is considered a wildcard for one or
+// more levels of elements, for example, "foo/one/two", "bar/two/one", "*\/one",
+// and so forth.
 //
 // The first child node of the found node is returned if the given node has
 // children and the first child is a value node.
@@ -144,9 +146,9 @@ mxmlFindPath(mxml_node_t *top,		// I - Top node
 //
 // 'mxmlWalkNext()' - Walk to the next logical node in the tree.
 //
-// The descend argument controls whether the first child is considered
-// to be the next node.  The top node argument constrains the walk to
-// the node's children.
+// This function walks to the next logical node in the tree.  The `descend`
+// argument controls whether the first child is considered to be the next node.
+// The `top` argument constrains the walk to that node's children.
 //
 
 mxml_node_t *				// O - Next node or `NULL`
@@ -194,9 +196,9 @@ mxmlWalkNext(mxml_node_t    *node,	// I - Current node
 //
 // 'mxmlWalkPrev()' - Walk to the previous logical node in the tree.
 //
-// The descend argument controls whether the previous node's last child
-// is considered to be the previous node.  The top node argument constrains
-// the walk to the node's children.
+// This function walks to the previous logical node in the tree.  The `descend`
+// argument controls whether the first child is considered to be the next node.
+// The `top` argument constrains the walk to that node's children.
 //
 
 mxml_node_t *				// O - Previous node or `NULL`

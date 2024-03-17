@@ -15,6 +15,22 @@
 //
 // 'mxmlEntityAddCallback()' - Add a callback to convert entities to Unicode.
 //
+// This function adds a callback to the current thread that converts named
+// XML character entities to Unicode characters.  The callback function `cb`
+// accepts the callback data pointer `cbdata` and the entity name and returns a
+// Unicode character value or `-1` if the entity is not known.  For example, the
+// following entity callback supports the "euro" entity:
+//
+// ```c
+// int my_entity_cb(void *cbdata, const char *name)
+// {
+//   if (!strcmp(name, "euro"))
+//     return (0x20ac);
+//   else
+//     return (-1);
+// }
+// ```
+//
 
 bool					// O - `true` on success, `false` on failure
 mxmlEntityAddCallback(

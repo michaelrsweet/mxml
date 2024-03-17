@@ -71,18 +71,24 @@ static int		mxml_write_ws(mxml_write_cb_t write_cb, void *write_cbdata, mxml_nod
 //
 // 'mxmlLoadFd()' - Load a file descriptor into an XML node tree.
 //
-// The nodes in the specified file are added to the specified top node.
-// If no top node is provided, the XML file MUST be well-formed with a
-// single parent node like <?xml> for the entire file. The callback
-// function returns the value type that should be used for child nodes.
-// The constants `MXML_INTEGER_CALLBACK`, `MXML_OPAQUE_CALLBACK`,
-// `MXML_REAL_CALLBACK`, and `MXML_TEXT_CALLBACK` are defined for
-// loading child (data) nodes of the specified type.
+// This function loads the file descriptor `fd` into an XML node tree.  The
+// nodes in the specified file are added to the specified node `top`.  If `NULL`
+// is provided, the XML file MUST be well-formed with a single parent processing
+// instruction node like `<?xml version="1.0"?>` at the start of the file.
+//
+// The load callback function `load_cb` is called to obtain the node type that
+// should be used for child nodes.  If `NULL`, the `load_cbdata` argument points
+// to a `mmd_type_t` variable that specifies the value type or `MMD_TYPE_TEXT`
+// if that argument is also `NULL`.
+//
+// The SAX callback function `sax_cb` and associated callback data `sax_cbdata`
+// are used to enable the Simple API for XML streaming mode.  The callback is
+// called as the XML node tree is parsed.
 //
 // Note: The most common programming error when using the Mini-XML library is
-// to load an XML file using the `MXML_TEXT_CALLBACK`, which returns inline
-// text as a series of whitespace-delimited words, instead of using the
-// `MXML_OPAQUE_CALLBACK` which returns the inline text as a single string
+// to load an XML file using the `MXML_TYPE_TEXT` node type, which returns
+// inline text as a series of whitespace-delimited words, instead of using the
+// `MXML_TYPE_OPAQUE` node type which returns the inline text as a single string
 // (including whitespace).
 //
 
@@ -107,18 +113,24 @@ mxmlLoadFd(
 //
 // 'mxmlLoadFile()' - Load a file into an XML node tree.
 //
-// The nodes in the specified file are added to the specified top node.
-// If no top node is provided, the XML file MUST be well-formed with a
-// single parent node like <?xml> for the entire file. The callback
-// function returns the value type that should be used for child nodes.
-// The constants `MXML_INTEGER_CALLBACK`, `MXML_OPAQUE_CALLBACK`,
-// `MXML_REAL_CALLBACK`, and `MXML_TEXT_CALLBACK` are defined for
-// loading child (data) nodes of the specified type.
+// This function loads the `FILE` pointer `fp` into an XML node tree.  The
+// nodes in the specified file are added to the specified node `top`.  If `NULL`
+// is provided, the XML file MUST be well-formed with a single parent processing
+// instruction node like `<?xml version="1.0"?>` at the start of the file.
+//
+// The load callback function `load_cb` is called to obtain the node type that
+// should be used for child nodes.  If `NULL`, the `load_cbdata` argument points
+// to a `mmd_type_t` variable that specifies the value type or `MMD_TYPE_TEXT`
+// if that argument is also `NULL`.
+//
+// The SAX callback function `sax_cb` and associated callback data `sax_cbdata`
+// are used to enable the Simple API for XML streaming mode.  The callback is
+// called as the XML node tree is parsed.
 //
 // Note: The most common programming error when using the Mini-XML library is
-// to load an XML file using the `MXML_TEXT_CALLBACK`, which returns inline
-// text as a series of whitespace-delimited words, instead of using the
-// `MXML_OPAQUE_CALLBACK` which returns the inline text as a single string
+// to load an XML file using the `MXML_TYPE_TEXT` node type, which returns
+// inline text as a series of whitespace-delimited words, instead of using the
+// `MXML_TYPE_OPAQUE` node type which returns the inline text as a single string
 // (including whitespace).
 //
 
@@ -143,18 +155,24 @@ mxmlLoadFile(
 //
 // 'mxmlLoadFilename()' - Load a file into an XML node tree.
 //
-// The nodes in the specified file are added to the specified top node.
-// If no top node is provided, the XML file MUST be well-formed with a
-// single parent node like <?xml> for the entire file. The callback
-// function returns the value type that should be used for child nodes.
-// The constants `MXML_INTEGER_CALLBACK`, `MXML_OPAQUE_CALLBACK`,
-// `MXML_REAL_CALLBACK`, and `MXML_TEXT_CALLBACK` are defined for
-// loading child (data) nodes of the specified type.
+// This function loads the named file `filename` into an XML node tree.  The
+// nodes in the specified file are added to the specified node `top`.  If `NULL`
+// is provided, the XML file MUST be well-formed with a single parent processing
+// instruction node like `<?xml version="1.0"?>` at the start of the file.
+//
+// The load callback function `load_cb` is called to obtain the node type that
+// should be used for child nodes.  If `NULL`, the `load_cbdata` argument points
+// to a `mmd_type_t` variable that specifies the value type or `MMD_TYPE_TEXT`
+// if that argument is also `NULL`.
+//
+// The SAX callback function `sax_cb` and associated callback data `sax_cbdata`
+// are used to enable the Simple API for XML streaming mode.  The callback is
+// called as the XML node tree is parsed.
 //
 // Note: The most common programming error when using the Mini-XML library is
-// to load an XML file using the `MXML_TEXT_CALLBACK`, which returns inline
-// text as a series of whitespace-delimited words, instead of using the
-// `MXML_OPAQUE_CALLBACK` which returns the inline text as a single string
+// to load an XML file using the `MXML_TYPE_TEXT` node type, which returns
+// inline text as a series of whitespace-delimited words, instead of using the
+// `MXML_TYPE_OPAQUE` node type which returns the inline text as a single string
 // (including whitespace).
 //
 
@@ -192,18 +210,37 @@ mxmlLoadFilename(
 //
 // 'mxmlLoadIO()' - Load an XML node tree using a read callback.
 //
-// The nodes in the specified file are added to the specified top node.
-// If no top node is provided, the XML file MUST be well-formed with a
-// single parent node like <?xml> for the entire file. The callback
-// function returns the value type that should be used for child nodes.
-// The constants `MXML_INTEGER_CALLBACK`, `MXML_OPAQUE_CALLBACK`,
-// `MXML_REAL_CALLBACK`, and `MXML_TEXT_CALLBACK` are defined for
-// loading child (data) nodes of the specified type.
+// This function loads data into an XML node tree using a read callback.  The
+// nodes in the specified file are added to the specified node `top`.  If `NULL`
+// is provided, the XML file MUST be well-formed with a single parent processing
+// instruction node like `<?xml version="1.0"?>` at the start of the file.
+//
+// The read callback function `read_cb` is called to read a number of bytes from
+// the source.  The callback data pointer `read_cbdata` is passed to the read
+// callback with a pointer to a buffer and the maximum number of bytes to read,
+// for example:
+//
+// ```c
+// ssize_t my_read_cb(void *cbdata, void *buffer, size_t bytes)
+// {
+//   ... copy up to "bytes" bytes into buffer ...
+//   ... return the number of bytes "read" or -1 on error ...
+// }
+// ```
+//
+// The load callback function `load_cb` is called to obtain the node type that
+// should be used for child nodes.  If `NULL`, the `load_cbdata` argument points
+// to a `mmd_type_t` variable that specifies the value type or `MMD_TYPE_TEXT`
+// if that argument is also `NULL`.
+//
+// The SAX callback function `sax_cb` and associated callback data `sax_cbdata`
+// are used to enable the Simple API for XML streaming mode.  The callback is
+// called as the XML node tree is parsed.
 //
 // Note: The most common programming error when using the Mini-XML library is
-// to load an XML file using the `MXML_TEXT_CALLBACK`, which returns inline
-// text as a series of whitespace-delimited words, instead of using the
-// `MXML_OPAQUE_CALLBACK` which returns the inline text as a single string
+// to load an XML file using the `MXML_TYPE_TEXT` node type, which returns
+// inline text as a series of whitespace-delimited words, instead of using the
+// `MXML_TYPE_OPAQUE` node type which returns the inline text as a single string
 // (including whitespace).
 //
 
@@ -229,18 +266,24 @@ mxmlLoadIO(
 //
 // 'mxmlLoadString()' - Load a string into an XML node tree.
 //
-// The nodes in the specified string are added to the specified top node.
-// If no top node is provided, the XML string MUST be well-formed with a
-// single parent node like <?xml> for the entire string. The callback
-// function returns the value type that should be used for child nodes.
-// The constants `MXML_INTEGER_CALLBACK`, `MXML_OPAQUE_CALLBACK`,
-// `MXML_REAL_CALLBACK`, and `MXML_TEXT_CALLBACK` are defined for
-// loading child (data) nodes of the specified type.
+// This function loads the string into an XML node tree.  The nodes in the
+// specified file are added to the specified node `top`.  If `NULL` is provided,
+// the XML file MUST be well-formed with a single parent processing instruction
+// node like `<?xml version="1.0"?>` at the start of the file.
+//
+// The load callback function `load_cb` is called to obtain the node type that
+// should be used for child nodes.  If `NULL`, the `load_cbdata` argument points
+// to a `mmd_type_t` variable that specifies the value type or `MMD_TYPE_TEXT`
+// if that argument is also `NULL`.
+//
+// The SAX callback function `sax_cb` and associated callback data `sax_cbdata`
+// are used to enable the Simple API for XML streaming mode.  The callback is
+// called as the XML node tree is parsed.
 //
 // Note: The most common programming error when using the Mini-XML library is
-// to load an XML file using the `MXML_TEXT_CALLBACK`, which returns inline
-// text as a series of whitespace-delimited words, instead of using the
-// `MXML_OPAQUE_CALLBACK` which returns the inline text as a single string
+// to load an XML file using the `MXML_TYPE_TEXT` node type, which returns
+// inline text as a series of whitespace-delimited words, instead of using the
+// `MXML_TYPE_OPAQUE` node type which returns the inline text as a single string
 // (including whitespace).
 //
 
@@ -274,16 +317,28 @@ mxmlLoadString(
 //
 // 'mxmlSaveAllocString()' - Save an XML tree to an allocated string.
 //
-// This function returns a pointer to a string containing the textual
-// representation of the XML node tree.  The string should be freed
-// using `free()` when you are done with it.  `NULL` is returned if the node
-// would produce an empty string or if the string cannot be allocated.
+// This function saves the XML tree `node` to an allocated string.  The string
+// should be freed using `free` (or the string free callback set using
+// @link mxmlSetStringCallbacks@) when you are done with it.
 //
-// The callback argument specifies a function that returns a whitespace
-// string or `NULL` before and after each element.  If `MXML_NO_CALLBACK`
-// is specified, whitespace will only be added before `MXML_TYPE_TEXT` nodes
-// with leading whitespace and before attribute names inside opening
-// element tags.
+// `NULL` is returned if the node would produce an empty string or if the string
+// cannot be allocated.
+//
+// The callback function `save_cb` specifies a function that returns a
+// whitespace string or `NULL` before and after each element.  The function
+// receives the callback data pointer `save_cbdata`, the `mxml_node_t` pointer,
+// and a "when" value indicating where the whitespace is being added, for
+// example:
+//
+// ```c
+// const char *my_save_cb(void *cbdata, mxml_node_t *node, mxml_ws_t when)
+// {
+//   if (when == MXML_WS_BEFORE_OPEN || when == MXML_WS_AFTER_CLOSE)
+//     return ("\n");
+//   else
+//     return (NULL);
+// }
+// ```
 //
 
 char *					// O - Allocated string or `NULL`
@@ -323,11 +378,23 @@ mxmlSaveAllocString(
 //
 // 'mxmlSaveFd()' - Save an XML tree to a file descriptor.
 //
-// The callback argument specifies a function that returns a whitespace
-// string or NULL before and after each element. If `MXML_NO_CALLBACK`
-// is specified, whitespace will only be added before `MXML_TYPE_TEXT` nodes
-// with leading whitespace and before attribute names inside opening
-// element tags.
+// This function saves the XML tree `node` to a file descriptor.
+//
+// The callback function `save_cb` specifies a function that returns a
+// whitespace string or `NULL` before and after each element.  The function
+// receives the callback data pointer `save_cbdata`, the `mxml_node_t` pointer,
+// and a "when" value indicating where the whitespace is being added, for
+// example:
+//
+// ```c
+// const char *my_save_cb(void *cbdata, mxml_node_t *node, mxml_ws_t when)
+// {
+//   if (when == MXML_WS_BEFORE_OPEN || when == MXML_WS_AFTER_CLOSE)
+//     return ("\n");
+//   else
+//     return (NULL);
+// }
+// ```
 //
 
 bool					// O - `true` on success, `false` on error.
@@ -359,11 +426,23 @@ mxmlSaveFd(mxml_node_t    *node,	// I - Node to write
 //
 // 'mxmlSaveFile()' - Save an XML tree to a file.
 //
-// The callback argument specifies a function that returns a whitespace
-// string or NULL before and after each element. If `MXML_NO_CALLBACK`
-// is specified, whitespace will only be added before `MXML_TYPE_TEXT` nodes
-// with leading whitespace and before attribute names inside opening
-// element tags.
+// This function saves the XML tree `node` to a stdio `FILE`.
+//
+// The callback function `save_cb` specifies a function that returns a
+// whitespace string or `NULL` before and after each element.  The function
+// receives the callback data pointer `save_cbdata`, the `mxml_node_t` pointer,
+// and a "when" value indicating where the whitespace is being added, for
+// example:
+//
+// ```c
+// const char *my_save_cb(void *cbdata, mxml_node_t *node, mxml_ws_t when)
+// {
+//   if (when == MXML_WS_BEFORE_OPEN || when == MXML_WS_AFTER_CLOSE)
+//     return ("\n");
+//   else
+//     return (NULL);
+// }
+// ```
 //
 
 bool					// O - `true` on success, `false` on error.
@@ -396,11 +475,23 @@ mxmlSaveFile(
 //
 // 'mxmlSaveFilename()' - Save an XML tree to a file.
 //
-// The callback argument specifies a function that returns a whitespace
-// string or NULL before and after each element. If `MXML_NO_CALLBACK`
-// is specified, whitespace will only be added before `MXML_TYPE_TEXT` nodes
-// with leading whitespace and before attribute names inside opening
-// element tags.
+// This function saves the XML tree `node` to a named file.
+//
+// The callback function `save_cb` specifies a function that returns a
+// whitespace string or `NULL` before and after each element.  The function
+// receives the callback data pointer `save_cbdata`, the `mxml_node_t` pointer,
+// and a "when" value indicating where the whitespace is being added, for
+// example:
+//
+// ```c
+// const char *my_save_cb(void *cbdata, mxml_node_t *node, mxml_ws_t when)
+// {
+//   if (when == MXML_WS_BEFORE_OPEN || when == MXML_WS_AFTER_CLOSE)
+//     return ("\n");
+//   else
+//     return (NULL);
+// }
+// ```
 //
 
 bool					// O - `true` on success, `false` on error.
@@ -442,11 +533,34 @@ mxmlSaveFilename(
 //
 // 'mxmlSaveIO()' - Save an XML tree using a callback.
 //
-// The callback argument specifies a function that returns a whitespace
-// string or NULL before and after each element. If `MXML_NO_CALLBACK`
-// is specified, whitespace will only be added before `MXML_TYPE_TEXT` nodes
-// with leading whitespace and before attribute names inside opening
-// element tags.
+// This function saves the XML tree `node` using a write callback function
+// `write_cb`.  The write callback is called with the callback data pointer
+// `write_cbdata`, a buffer pointer, and the number of bytes to write, for
+// example:
+//
+// ```c
+// ssize_t my_write_cb(void *cbdata, const void *buffer, size_t bytes)
+// {
+//   ... write/copy bytes from buffer to the output ...
+//   ... return the number of bytes written/copied or -1 on error ...
+// }
+// ```
+//
+// The callback function `save_cb` specifies a function that returns a
+// whitespace string or `NULL` before and after each element.  The function
+// receives the callback data pointer `save_cbdata`, the `mxml_node_t` pointer,
+// and a "when" value indicating where the whitespace is being added, for
+// example:
+//
+// ```c
+// const char *my_save_cb(void *cbdata, mxml_node_t *node, mxml_ws_t when)
+// {
+//   if (when == MXML_WS_BEFORE_OPEN || when == MXML_WS_AFTER_CLOSE)
+//     return ("\n");
+//   else
+//     return (NULL);
+// }
+// ```
 //
 
 bool					// O - `true` on success, `false` on error.
@@ -484,15 +598,23 @@ mxmlSaveIO(
 //
 // 'mxmlSaveString()' - Save an XML node tree to a string.
 //
-// This function returns the total number of bytes that would be
-// required for the string but only copies (bufsize - 1) characters
-// into the specified buffer.
+// This function saves the XML tree `node` to a string buffer.
 //
-// The callback argument specifies a function that returns a whitespace
-// string or NULL before and after each element. If `MXML_NO_CALLBACK`
-// is specified, whitespace will only be added before `MXML_TYPE_TEXT` nodes
-// with leading whitespace and before attribute names inside opening
-// element tags.
+// The callback function `save_cb` specifies a function that returns a
+// whitespace string or `NULL` before and after each element.  The function
+// receives the callback data pointer `save_cbdata`, the `mxml_node_t` pointer,
+// and a "when" value indicating where the whitespace is being added, for
+// example:
+//
+// ```c
+// const char *my_save_cb(void *cbdata, mxml_node_t *node, mxml_ws_t when)
+// {
+//   if (when == MXML_WS_BEFORE_OPEN || when == MXML_WS_AFTER_CLOSE)
+//     return ("\n");
+//   else
+//     return (NULL);
+// }
+// ```
 //
 
 size_t					// O - Size of string
@@ -530,7 +652,8 @@ mxmlSaveString(
 //
 // 'mxmlSetWrapMargin()' - Set the wrap margin when saving XML data.
 //
-// Wrapping is disabled when "column" is 0.
+// This function sets the wrap margin used when saving XML data for the current
+// thread.  Wrapping is disabled when `column` is `0`.
 //
 
 void

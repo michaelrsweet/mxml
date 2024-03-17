@@ -14,6 +14,7 @@
 // information.
 //
 
+#include "config.h"
 #include "mxml.h"
 #ifndef _WIN32
 #  include <unistd.h>

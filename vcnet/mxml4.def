@@ -2,14 +2,13 @@ LIBRARY "MXML4"
 EXPORTS
  mxmlAdd
  mxmlDelete
- mxmlElementDeleteAttr
+ mxmlElementClearAttr
  mxmlElementGetAttrByIndex
  mxmlElementGetAttrCount
  mxmlElementGetAttr
  mxmlElementSetAttr
  mxmlElementSetAttrf
  mxmlEntityAddCallback
- mxmlEntityGetName
  mxmlEntityGetValue
  mxmlEntityRemoveCallback
  mxmlFindElement
@@ -74,7 +73,7 @@ EXPORTS
  mxmlSetComment
  mxmlSetCommentf
  mxmlSetCustom
- mxmlSetCustomHandlers
+ mxmlSetCustomCallbacks
  mxmlSetDeclaration
  mxmlSetDeclarationf
  mxmlSetDirective

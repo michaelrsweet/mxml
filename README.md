@@ -87,46 +87,29 @@ Mini-XML provides a single header file which you include:
 
 Nodes (elements, comments, processing directives, integers, opaque strings, real
 numbers, and text strings) are represented by `mxml_node_t` objects.  New nodes
-can be created using the `mxmlNewElement()`, `mxmlNewInteger()`,
-`mxmlNewOpaque()`, `mxmlNewReal()`, and `mxmlNewText()` functions.  Only
-elements can have child nodes, and the top node must be the "?xml" processing
-directive.
+can be created using the mxmlNewComment, mxmlNewCustom, mxmlNewDeclaration,
+mxmlNewDirective, mxmlNewElement, mxmlNewInteger, mxmlNewOpaque, mxmlNewReal,
+and mxmlNewText functions.  The top node must be the "?xml ...?" processing
+instruction.
 
-You load an XML file using the `mxmlLoadFile()` function:
+You load an XML file using the mxmlLoadFilename function:
 
-    FILE *fp;
     mxml_node_t *tree;
 
-    fp = fopen("filename.xml", "r");
-    tree = mxmlLoadFile(NULL, fp, MXML_OPAQUE_CALLBACK);
-    fclose(fp);
+    tree = mxmlLoadFilename(NULL, "filename.xml",
+                            /*load_cb*/NULL, /*load_cbdata*/NULL);
 
-Similarly, you save an XML file using the `mxmlSaveFile()` function:
+Similarly, you save an XML file using the mxmlSaveFilename function:
 
-    FILE *fp;
     mxml_node_t *tree;
 
-    fp = fopen("filename.xml", "w");
-    mxmlSaveFile(tree, fp, MXML_NO_CALLBACK);
-    fclose(fp);
+    mxmlSaveFilename(tree, "filename.xml",
+                     /*load_cb*/NULL, /*load_cbdata*/NULL);
 
-The `mxmlLoadString()`, `mxmlSaveAllocString()`, and `mxmlSaveString()`
-functions load XML node trees from and save XML node trees to strings:
+There are variations of these functions for loading from or saving to file
+descriptors, `FILE` pointers, strings, and IO callbacks.
 
-    char buffer[8192];
-    char *ptr;
-    mxml_node_t *tree;
-
-    ...
-    tree = mxmlLoadString(NULL, buffer, MXML_OPAQUE_CALLBACK);
-
-    ...
-    mxmlSaveString(tree, buffer, sizeof(buffer), MXML_NO_CALLBACK);
-
-    ...
-    ptr = mxmlSaveAllocString(tree, MXML_NO_CALLBACK);
-
-You can find a named element/node using the `mxmlFindElement()` function:
+You can find a named element/node using the mxmlFindElement function:
 
     mxml_node_t *node = mxmlFindElement(tree, tree, "name", "attr",
 					"value", MXML_DESCEND);
@@ -165,13 +148,13 @@ You can also iterate with the same function:
       ... do something ...
     }
 
-The `mxmlFindPath()` function finds the (first) value node under a specific
+The mxmlFindPath function finds the (first) value node under a specific
 element using an XPath:
 
     mxml_node_t *value = mxmlFindPath(tree, "path/to/*/foo/bar");
 
-The `mxmlGetInteger()`, `mxmlGetOpaque()`, `mxmlGetReal()`, and
-`mxmlGetText()` functions retrieve the corresponding value from a node:
+The mxmlGetInteger, mxmlGetOpaque, mxmlGetReal, and mxmlGetText functions
+retrieve the corresponding value from a node:
 
     mxml_node_t *node;
 
@@ -184,9 +167,9 @@ The `mxmlGetInteger()`, `mxmlGetOpaque()`, `mxmlGetReal()`, and
     int whitespacevalue;
     const char *textvalue = mxmlGetText(node, &whitespacevalue);
 
-Finally, once you are done with the XML data, use the `mxmlDelete()`
-function to recursively free the memory that is used for a particular node
-or the entire tree:
+Finally, once you are done with the XML data, use the mxmlDelete function to
+recursively free the memory that is used for a particular node or the entire
+tree:
 
     mxmlDelete(tree);
 
@@ -209,7 +192,7 @@ files "LICENSE" and "NOTICE" for more information.
 
 > Note: The exception listed in the NOTICE file only applies when linking
 > against GPL2/LGPL2-only software.  Some Apache License purists have objected
-> to linking Apa/che Licensed code against Mini-XML with these exceptions on the
+> to linking Apache Licensed code against Mini-XML with these exceptions on the
 > grounds that it makes Mini-XML somehow incompatible with the Apache License.
 > For that reason, people wishing to retain their Apache License purity may
 > omit the exception from their copy of Mini-XML.

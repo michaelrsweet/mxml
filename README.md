@@ -30,6 +30,8 @@ Mini-XML provides the following functionality:
   "leaf" nodes.
 - Functions for creating and managing trees of data.
 - "Find" and "walk" functions for easily locating and navigating trees of data.
+- Support for custom string memory management functions to implement string
+  pools and other schemes for reducing memory usage.
 
 Mini-XML doesn't do validation or other types of processing on the data
 based upon schema files or other sources of definition information.

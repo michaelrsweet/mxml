@@ -27,6 +27,32 @@ mxmlOptionsDelete(
 //
 // 'mxmlOptionsNew()' - Allocate load/save options.
 //
+// This function creates a new set of load/save options to use with the
+// @link mxmlLoadFd@, @link mxmlLoadFile@, @link mxmlLoadFilename@,
+// @link mxmlLoadIO@, @link mxmlLoadString@, @link mxmlSaveAllocString@,
+// @link mxmlSaveFd@, @link mxmlSaveFile@, @link mxmlSaveFilename@,
+// @link mxmlSaveIO@, and @link mxmlSaveString@ functions.  Options can be
+// reused for multiple calls to these functions and should be freed using the
+// @link mxmlOptionsDelete@ function.
+//
+// The default load/save options load values using the constant type
+// `MXML_TYPE_TEXT` and save XML data with a wrap margin of 72 columns.
+// The various `mxmlOptionsSet` functions are used to change the defaults,
+// for example:
+//
+// ```c
+// mxml_options_t *options = mxmlOptionsNew();
+//
+// /* Load values as opaque strings */
+// mxmlOptionsSetTypeValue(options, MXML_TYPE_OPAQUE);
+// ```
+//
+// Note: The most common programming error when using the Mini-XML library is
+// to load an XML file using the `MXML_TYPE_TEXT` node type, which returns
+// inline text as a series of whitespace-delimited words, instead of using the
+// `MXML_TYPE_OPAQUE` node type which returns the inline text as a single string
+// (including whitespace).
+//
 
 mxml_options_t *			// O - Options
 mxmlOptionsNew(void)
@@ -184,8 +210,8 @@ mxmlOptionsSetCustomCallbacks(
 // }
 // ```
 //
-// Mini-XML supports the "amp", "gt", "lt", and "quot" character entities, which
-// are required by the base XML specification.
+// Mini-XML automatically supports the "amp", "gt", "lt", and "quot" character
+// entities which are required by the base XML specification.
 //
 
 void

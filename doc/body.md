@@ -27,6 +27,8 @@ Mini-XML provides the following functionality:
 - Functions for creating and managing trees of data.
 - "Find" and "walk" functions for easily locating and navigating trees of
   data.
+- Support for custom string memory management functions to implement string
+  pools and other schemes for reducing memory usage.
 
 Mini-XML doesn't do validation or other types of processing on the data based
 upon schema files or other sources of definition information.
@@ -54,7 +56,7 @@ integrated Mini-XML into Gutenprint and removed libxml2.
 
 Thanks to lots of feedback and support from various developers, Mini-XML has
 evolved since then to provide a more complete XML implementation and now stands
-at a whopping 3,875 lines of code, compared to 175,808 lines of code for libxml2
+at a whopping 3,491 lines of code, compared to 175,808 lines of code for libxml2
 version 2.11.7.
 
 
@@ -103,14 +105,79 @@ proper compiler and linker options for your installation:
 Loading an XML File
 -------------------
 
-You load an XML file using the [mxmlLoadFile](@@) function:
+You load an XML file using the [mxmlLoadFilename](@@) function:
 
 ```c
 mxml_node_t *
-mxmlLoadFilename(mxml_node_t *top, const char *filename,
-                 mxml_load_cb_t load_cb, void *load_cbdata,
-                 mxml_sax_cb_t sax_cb, void *sax_cbdata);
+mxmlLoadFilename(mxml_node_t *top, mxml_options_t *options,
+                 const char *filename);
 ```
+
+Mini-XML also provides functions to load from a `FILE` pointer, a file
+descriptor, a string, or using a callback:
+
+```c
+mxml_node_t *
+mxmlLoadFd(mxml_node_t *top, mxml_options_t *options,
+           int fd);
+
+mxml_node_t *
+mxmlLoadFile(mxml_node_t *top, mxml_options_t *options,
+             FILE *fp);
+
+mxml_node_t *
+mxmlLoadIO(mxml_node_t *top, mxml_options_t *options,
+           mxml_io_cb_t io_cb, void *io_cbdata);
+
+mxml_node_t *
+mxmlLoadString(mxml_node_t *top, mxml_options_t *options,
+               const char *s);
+```
+
+Each accepts a pointer to the top-most ("root") node (usually `NULL`) you want
+to add the XML data to, any load options, and the content to be loaded.  For
+example, the following code will load an XML file called "example.xml" using the
+default load options:
+
+```c
+mxml_node_t *xml;
+
+xml = mxmlLoadFilename(/*top*/NULL, /*options*/NULL, "example.xml");
+```
+
+
+### Load Options
+
+Load options are specified using a `mxml_options_t` object, which you create
+using the [mxmlOptionsNew](@@) function:
+
+```c
+mxml_options_t *options = mxmlOptionsNew();
+```
+
+The default load options will treat any values in your XML as whitespace-
+delimited text (`MXML_TYPE_TEXT`).  You can specify a different type of values
+using the [mxmlOptionsSetTypeValue](@@) function.  For example, the following
+will specify that values are opaque text strings, including whitespace
+(`MXML_TYPE_OPAQUE`):
+
+```c
+mxmlOptionsSetTypeValue(options, MXML_TYPE_OPAQUE);
+```
+
+For more complex XML documents, you can specify a callback that returns the type
+of value for a given element node using the [mxmlOptionsSetTypeCallback](@@)
+function.  For example, to specify a callback function called `my_type_cb` that
+has no callback data:
+
+```c
+mxmlOptionsSetTypeValue(options, my_type_cb, /*cbdata*/NULL);
+```
+
+The `my_type_cb` function accepts the callback data pointer (`NULL` in this
+case) and the `mxml_node_t` pointer for the current element and returns a
+`mxml_type_t` enumeration value specifying the value type for child nodes:
+
 
 The `load_cb` argument specifies a function that assigns child (value) node
 types for each element in the document.  The default callback (`NULL`) supports
@@ -127,28 +194,6 @@ tree = mxmlLoadFilename(/*top*/NULL, "filename.xml",
                         /*sax_cb*/NULL, /*sax_cbdata*/NULL);
 ```
 
-Mini-XML also provides functions to load from a `FILE` pointer, a file
-descriptor, or string:
-
-```c
-mxml_node_t *
-mxmlLoadFd(mxml_node_t *top, int fd,
-           mxml_load_cb_t load_cb, void *load_cbdata,
-           mxml_sax_cb_t sax_cb, void *sax_cbdata);
-
-mxml_node_t *
-mxmlLoadFile(mxml_node_t *top, FILE *fp,
-             mxml_load_cb_t load_cb, void *load_cbdata,
-             mxml_sax_cb_t sax_cb, void *sax_cbdata);
-
-mxml_node_t *
-mxmlLoadString(mxml_node_t *top, const char *s,
-           mxml_load_cb_t load_cb, void *load_cbdata,
-           mxml_sax_cb_t sax_cb, void *sax_cbdata);
-```
-
-
-### Load Callbacks
 
 The `load_xxx` arguments to the mxmlLoadXxx functions are a callback function
 and a data pointer which are used to determine the value type of each data node

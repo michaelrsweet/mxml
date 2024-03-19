@@ -846,7 +846,7 @@ mxmlRetain(mxml_node_t *node)		// I - Node
 static void
 mxml_free(mxml_node_t *node)		// I - Node
 {
-  int	i;				// Looping var
+  size_t	i;			// Looping var
 
 
   switch (node->type)

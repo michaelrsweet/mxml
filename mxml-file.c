@@ -211,10 +211,10 @@ mxmlLoadFilename(
 // for example:
 //
 // ```c
-// ssize_t my_io_cb(void *cbdata, void *buffer, size_t bytes)
+// size_t my_io_cb(void *cbdata, void *buffer, size_t bytes)
 // {
 //   ... copy up to "bytes" bytes into buffer ...
-//   ... return the number of bytes "read" or -1 on error ...
+//   ... return the number of bytes "read" or 0 on error ...
 // }
 // ```
 //
@@ -511,10 +511,10 @@ mxmlSaveFilename(
 // example:
 //
 // ```c
-// ssize_t my_io_cb(void *cbdata, const void *buffer, size_t bytes)
+// size_t my_io_cb(void *cbdata, const void *buffer, size_t bytes)
 // {
 //   ... write/copy bytes from buffer to the output ...
-//   ... return the number of bytes written/copied or -1 on error ...
+//   ... return the number of bytes written/copied or 0 on error ...
 // }
 // ```
 //
@@ -1858,12 +1858,16 @@ mxml_read_cb_fd(int    *fd,		// I - File descriptor
                 void   *buffer,		// I - Buffer
                 size_t bytes)		// I - Bytes to read
 {
+#if _WIN32
+  int		rbytes;			// Bytes read
+
+
+  rbytes = read(*fd, buffer, bytes);
+
+#else
   ssize_t	rbytes;			// Bytes read
 
 
-#if _WIN32
-  rbytes = read(*fd, buffer, buffer);
-#else
   while ((rbytes = read(*fd, buffer, bytes)) < 0)
   {
     if (errno != EINTR && errno != EAGAIN)
@@ -1917,7 +1921,7 @@ mxml_read_cb_string(
     sb->bufptr += bytes;
   }
 
-  return ((ssize_t)bytes);
+  return (bytes);
 }
 
 
@@ -2009,12 +2013,16 @@ mxml_io_cb_fd(int    *fd,		// I - File descriptor
                  void   *buffer,	// I - Buffer
                  size_t bytes)		// I - Bytes to write
 {
+#if _WIN32
+  int		wbytes;			// Bytes written
+
+
+  wbytes = write(*fd, buffer, bytes);
+
+#else
   ssize_t	wbytes;			// Bytes written
 
 
-#if _WIN32
-  wbytes = write(*fd, buffer, bytes);
-#else
   while ((wbytes = write(*fd, buffer, bytes)) < 0)
   {
     if (errno != EINTR && errno != EAGAIN)
@@ -2159,7 +2167,7 @@ mxml_write_node(
 	    if (attr->value)
 	      width += strlen(attr->value) + 3;
 
-	    if (options && options->wrap > 0 && (col + width) > options->wrap)
+	    if (options && options->wrap > 0 && (col + (int)width) > options->wrap)
 	      col = mxml_write_string("\n", io_cb, io_cbdata, /*use_entities*/false, col);
 	    else
 	      col = mxml_write_string(" ", io_cb, io_cbdata, /*use_entities*/false, col);

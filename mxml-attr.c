@@ -115,11 +115,11 @@ mxmlElementGetAttr(mxml_node_t *node,	// I - Element node
 
 const char *                            // O - Attribute value
 mxmlElementGetAttrByIndex(
-    mxml_node_t *node,                  // I - Node
-    int         idx,                    // I - Attribute index, starting at `0`
-    const char  **name)                 // O - Attribute name or `NULL` to not return it
+    mxml_node_t *node,			// I - Node
+    size_t      idx,			// I - Attribute index, starting at `0`
+    const char  **name)			// O - Attribute name or `NULL` to not return it
 {
-  if (!node || node->type != MXML_TYPE_ELEMENT || idx < 0 || idx >= node->value.element.num_attrs)
+  if (!node || node->type != MXML_TYPE_ELEMENT || idx >= node->value.element.num_attrs)
     return (NULL);
 
   if (name)

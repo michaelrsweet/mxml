@@ -556,7 +556,7 @@ mxmlSaveIO(
   if (col > 0)
   {
     // Make sure the file ends with a newline...
-    if ((io_cb)(io_cbdata, "\n", 1) < 0)
+    if ((io_cb)(io_cbdata, "\n", 1) != 1)
       return (false);
   }
 
@@ -913,8 +913,6 @@ mxml_getc(mxml_options_t   *options,	// I  - Options
 	}
 	break;
   }
-
-//  MXML_DEBUG("mxml_getc: %c (0x%04x)\n", ch < ' ' ? '.' : ch, ch);
 
   if (mxml_bad_char(ch))
   {

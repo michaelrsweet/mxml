@@ -57,7 +57,6 @@ main(int  argc,				// I - Number of command-line args
 			*tree,		// Element tree
 			*node;		// Node which should be in test.xml
   mxml_index_t		*ind;		// XML index
-  mxml_type_t		type;		// Node type
   char			buffer[16384];	// Save string
   const char		*text;		// Text string
   bool			whitespace;	// Whitespace before text string

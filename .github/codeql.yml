@@ -1,5 +1,6 @@
 paths-ignore:
   - testsuite
+  - testmxml.c
 
 query-filters:
   - exclude:
@@ -46,3 +47,6 @@ query-filters:
       id: cpp/nested-loops-with-same-variable
   - exclude:
       id: cpp/stack-address-escape
+  - exclude:
+      id: cpp/world-writable-file-creation
+

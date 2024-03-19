@@ -8,9 +8,6 @@ EXPORTS
  mxmlElementGetAttr
  mxmlElementSetAttr
  mxmlElementSetAttrf
- mxmlEntityAddCallback
- mxmlEntityGetValue
- mxmlEntityRemoveCallback
  mxmlFindElement
  mxmlFindPath
  mxmlGetCDATA
@@ -59,6 +56,16 @@ EXPORTS
  mxmlNewText
  mxmlNewTextf
  mxmlNewXML
+ mxmlOptionsDelete
+ mxmlOptionsNew
+ mxmlOptionsSetCustomCallbacks
+ mxmlOptionsSetEntityCallback
+ mxmlOptionsSetErrorCallback
+ mxmlOptionsSetSAXCallback
+ mxmlOptionsSetTypeCallback
+ mxmlOptionsSetTypeValue
+ mxmlOptionsSetWhitespaceCallback
+ mxmlOptionsSetWrapMargin
  mxmlRelease
  mxmlRemove
  mxmlRetain
@@ -73,20 +80,18 @@ EXPORTS
  mxmlSetComment
  mxmlSetCommentf
  mxmlSetCustom
- mxmlSetCustomCallbacks
  mxmlSetDeclaration
  mxmlSetDeclarationf
  mxmlSetDirective
  mxmlSetDirectivef
  mxmlSetElement
- mxmlSetErrorCallback
  mxmlSetInteger
  mxmlSetOpaque
  mxmlSetOpaquef
  mxmlSetReal
+ mxmlSetStringCallbacks
  mxmlSetText
  mxmlSetTextf
  mxmlSetUserData
- mxmlSetWrapMargin
  mxmlWalkNext
  mxmlWalkPrev

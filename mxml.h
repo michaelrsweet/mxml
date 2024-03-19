@@ -19,12 +19,6 @@
 #  include <ctype.h>
 #  include <errno.h>
 #  include <limits.h>
-#  if defined(_WIN32) && !defined(__CUPS_SSIZE_T_DEFINED)
-#    define __CUPS_SSIZE_T_DEFINED
-// Windows does not provide the ssize_t type, so map it to int64_t... */
-typedef int64_t ssize_t;			// @private@
-#    define SSIZE_MAX	INT64_MAX
-#  endif // _WIN32 && !__CUPS_SSIZE_T_DEFINED
 #  ifdef __cplusplus
 extern "C" {
 #  endif // __cplusplus
@@ -95,45 +89,46 @@ typedef enum mxml_ws_e			// Whitespace periods
   MXML_WS_AFTER_CLOSE,			// Callback for after close tag
 } mxml_ws_t;
 
-typedef void (*mxml_custom_destroy_cb_t)(void *);
-					// Custom data destructor
-
 typedef void (*mxml_error_cb_t)(void *cbdata, const char *message);
 					// Error callback function
 
-typedef struct _mxml_node_s mxml_node_t;// An XML node.
+typedef struct _mxml_node_s mxml_node_t;// An XML node
 
 typedef struct _mxml_index_s mxml_index_t;
-					// An XML node index.
+					// An XML node index
 
-typedef bool (*mxml_custom_load_cb_t)(void *cbdata, mxml_node_t *node, const char *s);
+typedef struct _mxml_options_s mxml_options_t;
+					// XML options
+
+typedef void (*mxml_custfree_cb_t)(void *cbdata, void *custdata);
+					// Custom data destructor
+
+typedef bool (*mxml_custload_cb_t)(void *cbdata, mxml_node_t *node, const char *s);
 					// Custom data load callback function
 
-typedef char *(*mxml_custom_save_cb_t)(void *cbdata, mxml_node_t *node);
+typedef char *(*mxml_custsave_cb_t)(void *cbdata, mxml_node_t *node);
 					// Custom data save callback function
 
 typedef int (*mxml_entity_cb_t)(void *cbdata, const char *name);
 					// Entity callback function
 
-typedef mxml_type_t (*mxml_load_cb_t)(void *cbdata, mxml_node_t *node);
-					// Load callback function
+typedef size_t (*mxml_io_cb_t)(void *cbdata, void *buffer, size_t bytes);
+					// Read/write callback function
 
-typedef ssize_t (*mxml_read_cb_t)(void *cbdata, void *buffer, size_t bytes);
-					// Read callback function
-
-typedef const char *(*mxml_save_cb_t)(void *cbdata, mxml_node_t *node, mxml_ws_t when);
-					// Save callback function
+typedef bool (*mxml_sax_cb_t)(void *cbdata, mxml_node_t *node, mxml_sax_event_t event);
+					// SAX callback function
 
 typedef char *(*mxml_strcopy_cb_t)(void *cbdata, const char *s);
 					// String copy/allocation callback
 typedef void (*mxml_strfree_cb_t)(void *cbdata, char *s);
 					// String free callback
 
-typedef ssize_t (*mxml_write_cb_t)(void *cbdata, const void *buffer, size_t bytes);
-					// Write callback function
+typedef mxml_type_t (*mxml_type_cb_t)(void *cbdata, mxml_node_t *node);
+					// Type callback function
 
-typedef bool (*mxml_sax_cb_t)(void *cbdata, mxml_node_t *node, mxml_sax_event_t event);
-					// SAX callback function
+typedef const char *(*mxml_ws_cb_t)(void *cbdata, mxml_node_t *node, mxml_ws_t when);
+					// Whitespace callback function
+
 
 
 //
@@ -150,9 +145,6 @@ extern const char       *mxmlElementGetAttrByIndex(mxml_node_t *node, int idx, c
 extern size_t		mxmlElementGetAttrCount(mxml_node_t *node);
 extern void		mxmlElementSetAttr(mxml_node_t *node, const char *name, const char *value);
 extern void		mxmlElementSetAttrf(mxml_node_t *node, const char *name, const char *format, ...) MXML_FORMAT(3,4);
-extern bool		mxmlEntityAddCallback(mxml_entity_cb_t cb, void *cbdata);
-extern int		mxmlEntityGetValue(const char *name);
-extern void		mxmlEntityRemoveCallback(mxml_entity_cb_t cb);
 
 extern mxml_node_t	*mxmlFindElement(mxml_node_t *node, mxml_node_t *top, const char *element, const char *attr, const char *value, mxml_descend_t descend);
 extern mxml_node_t	*mxmlFindPath(mxml_node_t *node, const char *path);
@@ -183,17 +175,28 @@ extern size_t		mxmlIndexGetCount(mxml_index_t *ind);
 extern mxml_index_t	*mxmlIndexNew(mxml_node_t *node, const char *element, const char *attr);
 extern mxml_node_t	*mxmlIndexReset(mxml_index_t *ind);
 
-extern mxml_node_t	*mxmlLoadFd(mxml_node_t *top, int fd, mxml_load_cb_t load_cb, void *load_cbdata, mxml_sax_cb_t sax_cb, void *sax_cbdata);
-extern mxml_node_t	*mxmlLoadFile(mxml_node_t *top, FILE *fp, mxml_load_cb_t load_cb, void *load_cbdata, mxml_sax_cb_t sax_cb, void *sax_cbdata);
-extern mxml_node_t	*mxmlLoadFilename(mxml_node_t *top, const char *filename, mxml_load_cb_t load_cb, void *load_cbdata, mxml_sax_cb_t sax_cb, void *sax_cbdata);
-extern mxml_node_t	*mxmlLoadIO(mxml_node_t *top, mxml_read_cb_t read_cb, void *read_cbdata, mxml_load_cb_t load_cb, void *load_cbdata, mxml_sax_cb_t sax_cb, void *sax_cbdata);
-extern mxml_node_t	*mxmlLoadString(mxml_node_t *top, const char *s, mxml_load_cb_t load_cb, void *load_cbdata, mxml_sax_cb_t sax_cb, void *sax_cbdata);
+extern mxml_node_t	*mxmlLoadFd(mxml_node_t *top, mxml_options_t *options, int fd);
+extern mxml_node_t	*mxmlLoadFile(mxml_node_t *top, mxml_options_t *options, FILE *fp);
+extern mxml_node_t	*mxmlLoadFilename(mxml_node_t *top, mxml_options_t *options, const char *filename);
+extern mxml_node_t	*mxmlLoadIO(mxml_node_t *top, mxml_options_t *options, mxml_io_cb_t io_cb, void *io_cbdata);
+extern mxml_node_t	*mxmlLoadString(mxml_node_t *top, mxml_options_t *options, const char *s);
+
+extern void		mxmlOptionsDelete(mxml_options_t *options);
+extern mxml_options_t	*mxmlOptionsNew(void);
+extern void		mxmlOptionsSetCustomCallbacks(mxml_options_t *options, mxml_custload_cb_t load_cb, mxml_custsave_cb_t save_cb, void *cbdata);
+extern void		mxmlOptionsSetEntityCallback(mxml_options_t *options, mxml_entity_cb_t cb, void *cbdata);
+extern void		mxmlOptionsSetErrorCallback(mxml_options_t *options, mxml_error_cb_t cb, void *cbdata);
+extern void		mxmlOptionsSetSAXCallback(mxml_options_t *options, mxml_sax_cb_t cb, void *cbdata);
+extern void		mxmlOptionsSetTypeCallback(mxml_options_t *options, mxml_type_cb_t cb, void *cbdata);
+extern void		mxmlOptionsSetTypeValue(mxml_options_t *options, mxml_type_t type);
+extern void		mxmlOptionsSetWhitespaceCallback(mxml_options_t *options, mxml_ws_cb_t cb, void *cbdata);
+extern void		mxmlOptionsSetWrapMargin(mxml_options_t *options, int column);
 
 extern mxml_node_t	*mxmlNewCDATA(mxml_node_t *parent, const char *string);
 extern mxml_node_t	*mxmlNewCDATAf(mxml_node_t *parent, const char *format, ...) MXML_FORMAT(2,3);
 extern mxml_node_t	*mxmlNewComment(mxml_node_t *parent, const char *comment);
 extern mxml_node_t	*mxmlNewCommentf(mxml_node_t *parent, const char *format, ...) MXML_FORMAT(2,3);
-extern mxml_node_t	*mxmlNewCustom(mxml_node_t *parent, void *data, mxml_custom_destroy_cb_t destroy);
+extern mxml_node_t	*mxmlNewCustom(mxml_node_t *parent, void *data, mxml_custfree_cb_t free_cb, void *free_cbdata);
 extern mxml_node_t	*mxmlNewDeclaration(mxml_node_t *parent, const char *declaration);
 extern mxml_node_t	*mxmlNewDeclarationf(mxml_node_t *parent, const char *format, ...) MXML_FORMAT(2,3);
 extern mxml_node_t	*mxmlNewDirective(mxml_node_t *parent, const char *directive);
@@ -211,12 +214,13 @@ extern int		mxmlRelease(mxml_node_t *node);
 extern void		mxmlRemove(mxml_node_t *node);
 extern int		mxmlRetain(mxml_node_t *node);
 
-extern char		*mxmlSaveAllocString(mxml_node_t *node, mxml_save_cb_t save_cb, void *save_cbdata);
-extern bool		mxmlSaveFd(mxml_node_t *node, int fd, mxml_save_cb_t save_cb, void *save_cbdata);
-extern bool		mxmlSaveFile(mxml_node_t *node, FILE *fp, mxml_save_cb_t save_cb, void *save_cbdata);
-extern bool		mxmlSaveFilename(mxml_node_t *node, const char *filename, mxml_save_cb_t save_cb, void *save_cbdata);
-extern bool		mxmlSaveIO(mxml_node_t *node, mxml_write_cb_t write_cb, void *write_cbdata, mxml_save_cb_t save_cb, void *save_cbdata);
-extern size_t		mxmlSaveString(mxml_node_t *node, char *buffer, size_t bufsize, mxml_save_cb_t save_cb, void *save_cbdata);
+extern char		*mxmlSaveAllocString(mxml_node_t *node, mxml_options_t *options);
+extern bool		mxmlSaveFd(mxml_node_t *node, mxml_options_t *options, int fd);
+extern bool		mxmlSaveFile(mxml_node_t *node, mxml_options_t *options, FILE *fp);
+extern bool		mxmlSaveFilename(mxml_node_t *node, mxml_options_t *options, const char *filename);
+extern bool		mxmlSaveIO(mxml_node_t *node, mxml_options_t *options, mxml_io_cb_t io_cb, void *io_cbdata);
+extern size_t		mxmlSaveString(mxml_node_t *node, mxml_options_t *options, char *buffer, size_t bufsize);
+
 extern bool		mxmlSetCDATA(mxml_node_t *node, const char *data);
 extern bool		mxmlSetCDATAf(mxml_node_t *node, const char *format, ...) MXML_FORMAT(2,3);
 extern bool		mxmlSetComment(mxml_node_t *node, const char *comment);
@@ -225,10 +229,8 @@ extern bool		mxmlSetDeclaration(mxml_node_t *node, const char *declaration);
 extern bool		mxmlSetDeclarationf(mxml_node_t *node, const char *format, ...) MXML_FORMAT(2,3);
 extern bool		mxmlSetDirective(mxml_node_t *node, const char *directive);
 extern bool		mxmlSetDirectivef(mxml_node_t *node, const char *format, ...) MXML_FORMAT(2,3);
-extern bool		mxmlSetCustom(mxml_node_t *node, void *data, mxml_custom_destroy_cb_t destroy_cb);
-extern void		mxmlSetCustomCallbacks(mxml_custom_load_cb_t load_cb, mxml_custom_save_cb_t save_cb, void *cbdata);
+extern bool		mxmlSetCustom(mxml_node_t *node, void *data, mxml_custfree_cb_t free_cb, void *free_cbdata);
 extern bool		mxmlSetElement(mxml_node_t *node, const char *name);
-extern void		mxmlSetErrorCallback(mxml_error_cb_t cb, void *cbdata);
 extern bool		mxmlSetInteger(mxml_node_t *node, long integer);
 extern bool		mxmlSetOpaque(mxml_node_t *node, const char *opaque);
 extern bool		mxmlSetOpaquef(mxml_node_t *node, const char *format, ...) MXML_FORMAT(2,3);
@@ -237,7 +239,6 @@ extern void		mxmlSetStringCallbacks(mxml_strcopy_cb_t strcopy_cb, mxml_strfree_c
 extern bool		mxmlSetText(mxml_node_t *node, bool whitespace, const char *string);
 extern bool		mxmlSetTextf(mxml_node_t *node, bool whitespace, const char *format, ...) MXML_FORMAT(3,4);
 extern bool		mxmlSetUserData(mxml_node_t *node, void *data);
-extern void		mxmlSetWrapMargin(int column);
 
 extern mxml_node_t	*mxmlWalkNext(mxml_node_t *node, mxml_node_t *top, mxml_descend_t descend);
 extern mxml_node_t	*mxmlWalkPrev(mxml_node_t *node, mxml_node_t *top, mxml_descend_t descend);

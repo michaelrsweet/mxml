@@ -31,15 +31,9 @@ mxmlSetCDATA(mxml_node_t *node,		// I - Node to set
     node = node->child;
 
   if (!node || node->type != MXML_TYPE_CDATA)
-  {
-    _mxml_error("Wrong node type.");
     return (false);
-  }
   else if (!data)
-  {
-    _mxml_error("NULL string not allowed.");
     return (false);
-  }
 
   if (data == node->value.cdata)
   {
@@ -49,10 +43,7 @@ mxmlSetCDATA(mxml_node_t *node,		// I - Node to set
 
   // Allocate the new value, free any old element value, and set the new value...
   if ((s = _mxml_strcopy(data)) == NULL)
-  {
-    _mxml_error("Unable to allocate memory for CDATA.");
     return (false);
-  }
 
   _mxml_strfree(node->value.cdata);
   node->value.cdata = s;
@@ -83,15 +74,9 @@ mxmlSetCDATAf(mxml_node_t *node,	// I - Node
     node = node->child;
 
   if (!node || node->type != MXML_TYPE_CDATA)
-  {
-    _mxml_error("Wrong node type.");
     return (false);
-  }
   else if (!format)
-  {
-    _mxml_error("NULL string not allowed.");
     return (false);
-  }
 
   // Format the new string, free any old string value, and set the new value...
   va_start(ap, format);
@@ -99,10 +84,7 @@ mxmlSetCDATAf(mxml_node_t *node,	// I - Node
   va_end(ap);
 
   if ((s = _mxml_strcopy(buffer)) == NULL)
-  {
-    _mxml_error("Unable to allocate memory for CDATA string.");
     return (false);
-  }
 
   _mxml_strfree(node->value.cdata);
   node->value.cdata = s;
@@ -129,25 +111,16 @@ mxmlSetComment(mxml_node_t *node,	// I - Node
     node = node->child;
 
   if (!node || node->type != MXML_TYPE_COMMENT)
-  {
-    _mxml_error("Wrong node type.");
     return (false);
-  }
   else if (!comment)
-  {
-    _mxml_error("NULL comment not allowed.");
     return (false);
-  }
 
   if (comment == node->value.comment)
     return (true);
 
   // Free any old string value and set the new value...
   if ((s = _mxml_strcopy(comment)) == NULL)
-  {
-    _mxml_error("Unable to allocate memory for comment string.");
     return (false);
-  }
 
   _mxml_strfree(node->value.comment);
   node->value.comment = s;
@@ -177,15 +150,9 @@ mxmlSetCommentf(mxml_node_t *node,	// I - Node
     node = node->child;
 
   if (!node || node->type != MXML_TYPE_COMMENT)
-  {
-    _mxml_error("Wrong node type.");
     return (false);
-  }
   else if (!format)
-  {
-    _mxml_error("NULL string not allowed.");
     return (false);
-  }
 
   // Format the new string, free any old string value, and set the new value...
   va_start(ap, format);
@@ -193,10 +160,7 @@ mxmlSetCommentf(mxml_node_t *node,	// I - Node
   va_end(ap);
 
   if ((s = _mxml_strcopy(buffer)) == NULL)
-  {
-    _mxml_error("Unable to allocate memory for comment string.");
     return (false);
-  }
 
   _mxml_strfree(node->value.comment);
   node->value.comment = s;
@@ -215,32 +179,31 @@ mxmlSetCommentf(mxml_node_t *node,	// I - Node
 
 bool					// O - `true` on success, `false` on failure
 mxmlSetCustom(
-    mxml_node_t              *node,	// I - Node to set
-    void                     *data,	// I - New data pointer
-    mxml_custom_destroy_cb_t destroy_cb)// I - New destructor function
+    mxml_node_t        *node,		// I - Node to set
+    void               *data,		// I - New data pointer
+    mxml_custfree_cb_t free_cb,		// I - Free callback function
+    void               *free_cbdata)	// I - Free callback data
 {
   // Range check input...
   if (node && node->type == MXML_TYPE_ELEMENT && node->child && node->child->type == MXML_TYPE_CUSTOM)
     node = node->child;
 
   if (!node || node->type != MXML_TYPE_CUSTOM)
-  {
-    _mxml_error("Wrong node type.");
     return (false);
-  }
 
   if (data == node->value.custom.data)
-  {
-    node->value.custom.destroy = destroy_cb;
-    return (true);
-  }
+    goto set_free_callback;
 
   // Free any old element value and set the new value...
-  if (node->value.custom.data && node->value.custom.destroy)
-    (*(node->value.custom.destroy))(node->value.custom.data);
+  if (node->value.custom.data && node->value.custom.free_cb)
+    (node->value.custom.free_cb)(node->value.custom.free_cbdata, node->value.custom.data);
 
-  node->value.custom.data    = data;
-  node->value.custom.destroy = destroy_cb;
+  node->value.custom.data = data;
+
+  set_free_callback:
+
+  node->value.custom.free_cb     = free_cb;
+  node->value.custom.free_cbdata = free_cbdata;
 
   return (true);
 }
@@ -265,25 +228,16 @@ mxmlSetDeclaration(
     node = node->child;
 
   if (!node || node->type != MXML_TYPE_DECLARATION)
-  {
-    _mxml_error("Wrong node type.");
     return (false);
-  }
   else if (!declaration)
-  {
-    _mxml_error("NULL declaration not allowed.");
     return (false);
-  }
 
   if (declaration == node->value.declaration)
     return (true);
 
   // Free any old string value and set the new value...
   if ((s = _mxml_strcopy(declaration)) == NULL)
-  {
-    _mxml_error("Unable to allocate memory for declaration string.");
     return (false);
-  }
 
   _mxml_strfree(node->value.declaration);
   node->value.declaration = s;
@@ -313,15 +267,9 @@ mxmlSetDeclarationf(mxml_node_t *node,	// I - Node
     node = node->child;
 
   if (!node || node->type != MXML_TYPE_COMMENT)
-  {
-    _mxml_error("Wrong node type.");
     return (false);
-  }
   else if (!format)
-  {
-    _mxml_error("NULL string not allowed.");
     return (false);
-  }
 
   // Format the new string, free any old string value, and set the new value...
   va_start(ap, format);
@@ -329,10 +277,7 @@ mxmlSetDeclarationf(mxml_node_t *node,	// I - Node
   va_end(ap);
 
   if ((s = _mxml_strcopy(buffer)) == NULL)
-  {
-    _mxml_error("Unable to allocate memory for declaration string.");
     return (false);
-  }
 
   _mxml_strfree(node->value.declaration);
   node->value.declaration = s;
@@ -359,25 +304,16 @@ mxmlSetDirective(mxml_node_t *node,	// I - Node
     node = node->child;
 
   if (!node || node->type != MXML_TYPE_DIRECTIVE)
-  {
-    _mxml_error("Wrong node type.");
     return (false);
-  }
   else if (!directive)
-  {
-    _mxml_error("NULL directive not allowed.");
     return (false);
-  }
 
   if (directive == node->value.directive)
     return (true);
 
   // Free any old string value and set the new value...
   if ((s = _mxml_strcopy(directive)) == NULL)
-  {
-    _mxml_error("Unable to allocate memory for directive string.");
     return (false);
-  }
 
   _mxml_strfree(node->value.directive);
   node->value.directive = s;
@@ -408,15 +344,9 @@ mxmlSetDirectivef(mxml_node_t *node,	// I - Node
     node = node->child;
 
   if (!node || node->type != MXML_TYPE_DIRECTIVE)
-  {
-    _mxml_error("Wrong node type.");
     return (false);
-  }
   else if (!format)
-  {
-    _mxml_error("NULL string not allowed.");
     return (false);
-  }
 
   // Format the new string, free any old string value, and set the new value...
   va_start(ap, format);
@@ -424,10 +354,7 @@ mxmlSetDirectivef(mxml_node_t *node,	// I - Node
   va_end(ap);
 
   if ((s = _mxml_strcopy(buffer)) == NULL)
-  {
-    _mxml_error("Unable to allocate memory for directive string.");
     return (false);
-  }
 
   _mxml_strfree(node->value.directive);
   node->value.directive = s;
@@ -452,25 +379,16 @@ mxmlSetElement(mxml_node_t *node,	// I - Node to set
 
   // Range check input...
   if (!node || node->type != MXML_TYPE_ELEMENT)
-  {
-    _mxml_error("Wrong node type.");
     return (false);
-  }
   else if (!name)
-  {
-    _mxml_error("NULL string not allowed.");
     return (false);
-  }
 
   if (name == node->value.element.name)
     return (true);
 
   // Free any old element value and set the new value...
   if ((s = _mxml_strcopy(name)) == NULL)
-  {
-    _mxml_error("Unable to allocate memory for element name.");
     return (false);
-  }
 
   _mxml_strfree(node->value.element.name);
   node->value.element.name = s;
@@ -495,10 +413,7 @@ mxmlSetInteger(mxml_node_t *node,	// I - Node to set
     node = node->child;
 
   if (!node || node->type != MXML_TYPE_INTEGER)
-  {
-    _mxml_error("Wrong node type.");
     return (false);
-  }
 
   // Set the new value and return...
   node->value.integer = integer;
@@ -526,25 +441,16 @@ mxmlSetOpaque(mxml_node_t *node,	// I - Node to set
     node = node->child;
 
   if (!node || node->type != MXML_TYPE_OPAQUE)
-  {
-    _mxml_error("Wrong node type.");
     return (false);
-  }
   else if (!opaque)
-  {
-    _mxml_error("NULL string not allowed.");
     return (false);
-  }
 
   if (node->value.opaque == opaque)
     return (true);
 
   // Free any old opaque value and set the new value...
   if ((s = _mxml_strcopy(opaque)) == NULL)
-  {
-    _mxml_error("Unable to allocate memory for opaque string.");
     return (false);
-  }
 
   _mxml_strfree(node->value.opaque);
   node->value.opaque = s;
@@ -575,15 +481,9 @@ mxmlSetOpaquef(mxml_node_t *node,	// I - Node to set
     node = node->child;
 
   if (!node || node->type != MXML_TYPE_OPAQUE)
-  {
-    _mxml_error("Wrong node type.");
     return (false);
-  }
   else if (!format)
-  {
-    _mxml_error("NULL string not allowed.");
     return (false);
-  }
 
   // Format the new string, free any old string value, and set the new value...
   va_start(ap, format);
@@ -591,10 +491,7 @@ mxmlSetOpaquef(mxml_node_t *node,	// I - Node to set
   va_end(ap);
 
   if ((s = _mxml_strcopy(buffer)) == NULL)
-  {
-    _mxml_error("Unable to allocate memory for opaque string.");
     return (false);
-  }
 
   _mxml_strfree(node->value.opaque);
   node->value.opaque = s;
@@ -619,10 +516,7 @@ mxmlSetReal(mxml_node_t *node,		// I - Node to set
     node = node->child;
 
   if (!node || node->type != MXML_TYPE_REAL)
-  {
-    _mxml_error("Wrong node type.");
     return (false);
-  }
 
   // Set the new value and return...
   node->value.real = real;
@@ -651,15 +545,9 @@ mxmlSetText(mxml_node_t *node,		// I - Node to set
     node = node->child;
 
   if (!node || node->type != MXML_TYPE_TEXT)
-  {
-    _mxml_error("Wrong node type.");
     return (false);
-  }
   else if (!string)
-  {
-    _mxml_error("NULL string not allowed.");
     return (false);
-  }
 
   if (string == node->value.text.string)
   {
@@ -669,10 +557,7 @@ mxmlSetText(mxml_node_t *node,		// I - Node to set
 
   // Free any old string value and set the new value...
   if ((s = _mxml_strcopy(string)) == NULL)
-  {
-    _mxml_error("Unable to allocate memory for text string.");
     return (false);
-  }
 
   _mxml_strfree(node->value.text.string);
 
@@ -706,15 +591,9 @@ mxmlSetTextf(mxml_node_t *node,		// I - Node to set
     node = node->child;
 
   if (!node || node->type != MXML_TYPE_TEXT)
-  {
-    _mxml_error("Wrong node type.");
     return (false);
-  }
   else if (!format)
-  {
-    _mxml_error("NULL string not allowed.");
     return (false);
-  }
 
   // Free any old string value and set the new value...
   va_start(ap, format);
@@ -722,10 +601,7 @@ mxmlSetTextf(mxml_node_t *node,		// I - Node to set
   va_end(ap);
 
   if ((s = _mxml_strcopy(buffer)) == NULL)
-  {
-    _mxml_error("Unable to allocate memory for text string.");
     return (false);
-  }
 
   _mxml_strfree(node->value.text.string);
 

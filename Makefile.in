@@ -150,8 +150,8 @@ BUILDROOT	=	$(DSTROOT)$(DESTDIR)
 
 DOCFILES	=	doc/mxml.epub doc/mxml.html doc/mxml-cover.png \
 			CHANGES.md LICENSE NOTICE README.md
-PUBLIBOBJS	=	mxml-attr.o mxml-entity.o mxml-file.o mxml-get.o \
-			mxml-index.o mxml-node.o mxml-search.o mxml-set.o
+PUBLIBOBJS	=	mxml-attr.o mxml-file.o mxml-get.o mxml-index.o \
+			mxml-node.o mxml-options.o mxml-search.o mxml-set.o
 LIBOBJS		=	$(PUBLIBOBJS) mxml-private.o
 OBJS		=	testmxml.o $(LIBOBJS)
 ALLTARGETS	=	$(LIBMXML) testmxml

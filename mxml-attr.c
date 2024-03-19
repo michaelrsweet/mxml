@@ -173,10 +173,7 @@ mxmlElementSetAttr(mxml_node_t *node,	// I - Element node
   if (value)
   {
     if ((valuec = _mxml_strcopy(value)) == NULL)
-    {
-      _mxml_error("Unable to allocate memory for attribute '%s' in element %s.", name, node->value.element.name);
       return;
-    }
   }
   else
   {
@@ -218,10 +215,11 @@ mxmlElementSetAttrf(mxml_node_t *node,	// I - Element node
   vsnprintf(buffer, sizeof(buffer), format, ap);
   va_end(ap);
 
-  if ((value = _mxml_strcopy(buffer)) == NULL)
-    _mxml_error("Unable to allocate memory for attribute '%s' in element %s.", name, node->value.element.name);
-  else if (!mxml_set_attr(node, name, value))
-    _mxml_strfree(value);
+  if ((value = _mxml_strcopy(buffer)) != NULL)
+  {
+    if (!mxml_set_attr(node, name, value))
+      _mxml_strfree(value);
+  }
 }
 
 
@@ -253,19 +251,13 @@ mxml_set_attr(mxml_node_t *node,	// I - Element node
 
   // Add a new attribute...
   if ((attr = realloc(node->value.element.attrs, (node->value.element.num_attrs + 1) * sizeof(_mxml_attr_t))) == NULL)
-  {
-    _mxml_error("Unable to allocate memory for attribute '%s' in element %s.", name, node->value.element.name);
     return (false);
-  }
 
   node->value.element.attrs = attr;
   attr += node->value.element.num_attrs;
 
   if ((attr->name = _mxml_strcopy(name)) == NULL)
-  {
-    _mxml_error("Unable to allocate memory for attribute '%s' in element %s.", name, node->value.element.name);
     return (false);
-  }
 
   attr->value = value;
 

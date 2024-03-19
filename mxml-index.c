@@ -227,16 +227,12 @@ mxmlIndexNew(mxml_node_t *node,		// I - XML node tree
 
   // Create a new index...
   if ((ind = calloc(1, sizeof(mxml_index_t))) == NULL)
-  {
-    _mxml_error("Unable to allocate memory for index.");
     return (NULL);
-  }
 
   if (attr)
   {
     if ((ind->attr = _mxml_strcopy(attr)) == NULL)
     {
-      _mxml_error("Unable to allocate memory for index attribute.");
       free(ind);
       return (NULL);
     }
@@ -254,7 +250,6 @@ mxmlIndexNew(mxml_node_t *node,		// I - XML node tree
       if ((temp = realloc(ind->nodes, (ind->alloc_nodes + 64) * sizeof(mxml_node_t *))) == NULL)
       {
         // Unable to allocate memory for the index, so abort...
-        _mxml_error("Unable to allocate memory for index nodes.");
         mxmlIndexDelete(ind);
 	return (NULL);
       }

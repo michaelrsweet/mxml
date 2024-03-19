@@ -23,7 +23,6 @@
 
 /* Begin PBXBuildFile section */
 		272C00191E8C66C8007EBCAC /* mxml-attr.c in Sources */ = {isa = PBXBuildFile; fileRef = 272C000D1E8C66C8007EBCAC /* mxml-attr.c */; };
-		272C001A1E8C66C8007EBCAC /* mxml-entity.c in Sources */ = {isa = PBXBuildFile; fileRef = 272C000E1E8C66C8007EBCAC /* mxml-entity.c */; };
 		272C001B1E8C66C8007EBCAC /* mxml-file.c in Sources */ = {isa = PBXBuildFile; fileRef = 272C000F1E8C66C8007EBCAC /* mxml-file.c */; };
 		272C001C1E8C66C8007EBCAC /* mxml-get.c in Sources */ = {isa = PBXBuildFile; fileRef = 272C00101E8C66C8007EBCAC /* mxml-get.c */; };
 		272C001D1E8C66C8007EBCAC /* mxml-index.c in Sources */ = {isa = PBXBuildFile; fileRef = 272C00111E8C66C8007EBCAC /* mxml-index.c */; };
@@ -36,6 +35,7 @@
 		272C00261E8C66CF007EBCAC /* config.h in Headers */ = {isa = PBXBuildFile; fileRef = 272C00251E8C66CF007EBCAC /* config.h */; };
 		272C00421E8C6B30007EBCAC /* testmxml.c in Sources */ = {isa = PBXBuildFile; fileRef = 272C00401E8C6B1B007EBCAC /* testmxml.c */; };
 		272C00501E8C6B89007EBCAC /* libmxml.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 272C00051E8C6664007EBCAC /* libmxml.a */; };
+		27459CD92BA8BAC300EAF97D /* mxml-options.c in Sources */ = {isa = PBXBuildFile; fileRef = 27459CD82BA8BAC300EAF97D /* mxml-options.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -77,7 +77,6 @@
 /* Begin PBXFileReference section */
 		272C00051E8C6664007EBCAC /* libmxml.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libmxml.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		272C000D1E8C66C8007EBCAC /* mxml-attr.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "mxml-attr.c"; path = "../mxml-attr.c"; sourceTree = "<group>"; };
-		272C000E1E8C66C8007EBCAC /* mxml-entity.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "mxml-entity.c"; path = "../mxml-entity.c"; sourceTree = "<group>"; };
 		272C000F1E8C66C8007EBCAC /* mxml-file.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "mxml-file.c"; path = "../mxml-file.c"; sourceTree = "<group>"; };
 		272C00101E8C66C8007EBCAC /* mxml-get.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "mxml-get.c"; path = "../mxml-get.c"; sourceTree = "<group>"; };
 		272C00111E8C66C8007EBCAC /* mxml-index.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "mxml-index.c"; path = "../mxml-index.c"; sourceTree = "<group>"; };
@@ -92,6 +91,7 @@
 		272C00401E8C6B1B007EBCAC /* testmxml.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = testmxml.c; path = ../testmxml.c; sourceTree = "<group>"; };
 		272C00551E8EF972007EBCAC /* libarchive.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libarchive.tbd; path = usr/lib/libarchive.tbd; sourceTree = SDKROOT; };
 		272C005A1E943423007EBCAC /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
+		27459CD82BA8BAC300EAF97D /* mxml-options.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "mxml-options.c"; path = "../mxml-options.c"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -128,11 +128,11 @@
 				272C00181E8C66C8007EBCAC /* mxml.h */,
 				272C00141E8C66C8007EBCAC /* mxml-private.h */,
 				272C000D1E8C66C8007EBCAC /* mxml-attr.c */,
-				272C000E1E8C66C8007EBCAC /* mxml-entity.c */,
 				272C000F1E8C66C8007EBCAC /* mxml-file.c */,
 				272C00101E8C66C8007EBCAC /* mxml-get.c */,
 				272C00111E8C66C8007EBCAC /* mxml-index.c */,
 				272C00121E8C66C8007EBCAC /* mxml-node.c */,
+				27459CD82BA8BAC300EAF97D /* mxml-options.c */,
 				272C00131E8C66C8007EBCAC /* mxml-private.c */,
 				272C00151E8C66C8007EBCAC /* mxml-search.c */,
 				272C00161E8C66C8007EBCAC /* mxml-set.c */,
@@ -226,7 +226,7 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
-				LastUpgradeCheck = 1520;
+				LastUpgradeCheck = 1530;
 				ORGANIZATIONNAME = "Michael R Sweet";
 				TargetAttributes = {
 					272C00041E8C6664007EBCAC = {
@@ -271,7 +271,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				272C001A1E8C66C8007EBCAC /* mxml-entity.c in Sources */,
+				27459CD92BA8BAC300EAF97D /* mxml-options.c in Sources */,
 				272C001E1E8C66C8007EBCAC /* mxml-node.c in Sources */,
 				272C001B1E8C66C8007EBCAC /* mxml-file.c in Sources */,
 				272C001C1E8C66C8007EBCAC /* mxml-get.c in Sources */,

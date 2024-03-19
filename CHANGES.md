@@ -9,6 +9,8 @@
   `MXML_TYPE_DIRECTIVE` node types (Issue #250)
 - Added `mxmlLoadFilename` and `mxmlSaveFilename` functions (Issue #291)
 - Added AFL fuzzing support (Issue #306)
+- Added `mxmlOptions` APIs to replace the long list of callbacks and options for
+  each of the load and save functions (Issue #312)
 - Added string copy/free callbacks to support alternate memory management of
   strings.
 - Renamed `mxml_type_t` enumerations to `MXML_TYPE_xxx` (Issue #251)

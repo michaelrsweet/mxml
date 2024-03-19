@@ -24,12 +24,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\mxml-attr.c" />
-    <ClCompile Include="..\mxml-entity.c" />
     <ClCompile Include="..\mxml-file.c" />
     <ClCompile Include="..\mxml-get.c" />
     <ClCompile Include="..\mxml-index.c" />
     <ClCompile Include="..\mxml-node.c" />
     <ClCompile Include="..\mxml-private.c" />
+    <ClCompile Include="..\mxml-options.c" />
     <ClCompile Include="..\mxml-search.c" />
     <ClCompile Include="..\mxml-set.c" />
   </ItemGroup>

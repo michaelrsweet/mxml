@@ -210,7 +210,6 @@ mxmlNewCDATA(mxml_node_t *parent,	// I - Parent node or `MXML_NO_PARENT`
   {
     if ((node->value.cdata = _mxml_strcopy(data)) == NULL)
     {
-      _mxml_error("Unable to allocate memory for CDATA.");
       mxmlDelete(node);
       return (NULL);
     }
@@ -286,7 +285,6 @@ mxmlNewComment(mxml_node_t *parent,	// I - Parent node or `MXML_NO_PARENT`
   {
     if ((node->value.comment = _mxml_strcopy(comment)) == NULL)
     {
-      _mxml_error("Unable to allocate memory for comment.");
       mxmlDelete(node);
       return (NULL);
     }
@@ -339,27 +337,28 @@ mxmlNewCommentf(mxml_node_t *parent,	// I - Parent node or `MXML_NO_PARENT`
 // 'mxmlNewCustom()' - Create a new custom data node.
 //
 // The new custom node is added to the end of the specified parent's child
-// list. The constant `MXML_NO_PARENT` can be used to specify that the new
-// element node has no parent. `NULL` can be passed when the data in the
-// node is not dynamically allocated or is separately managed.
+// list.  The `free_cb` argument specifies a function to call to free the custom
+// data when the node is deleted.
 //
 
 mxml_node_t *				// O - New node
 mxmlNewCustom(
-    mxml_node_t              *parent,	// I - Parent node or `MXML_NO_PARENT`
-    void                     *data,	// I - Pointer to data
-    mxml_custom_destroy_cb_t destroy)	// I - Function to destroy data
+    mxml_node_t        *parent,		// I - Parent node or `MXML_NO_PARENT`
+    void               *data,		// I - Pointer to data
+    mxml_custfree_cb_t free_cb,		// I - Free callback function or `NULL` if none needed
+    void               *free_cbdata)	// I - Free callback data
 {
   mxml_node_t	*node;			// New node
 
 
-  MXML_DEBUG("mxmlNewCustom(parent=%p, data=%p, destroy=%p)\n", parent, data, destroy);
+  MXML_DEBUG("mxmlNewCustom(parent=%p, data=%p, free_cb=%p, free_cbdata=%p)\n", parent, data, free_cb, free_cbdata);
 
   // Create the node and set the value...
   if ((node = mxml_new(parent, MXML_TYPE_CUSTOM)) != NULL)
   {
-    node->value.custom.data    = data;
-    node->value.custom.destroy = destroy;
+    node->value.custom.data        = data;
+    node->value.custom.free_cb     = free_cb;
+    node->value.custom.free_cbdata = free_cbdata;
   }
 
   return (node);
@@ -394,7 +393,6 @@ mxmlNewDeclaration(
   {
     if ((node->value.declaration = _mxml_strcopy(declaration)) == NULL)
     {
-      _mxml_error("Unable to allocate memory for declaration.");
       mxmlDelete(node);
       return (NULL);
     }
@@ -471,7 +469,6 @@ mxmlNewDirective(mxml_node_t *parent,	// I - Parent node or `MXML_NO_PARENT`
   {
     if ((node->value.directive = _mxml_strcopy(directive)) == NULL)
     {
-      _mxml_error("Unable to allocate memory for processing instruction.");
       mxmlDelete(node);
       return (NULL);
     }
@@ -893,8 +890,8 @@ mxml_free(mxml_node_t *node)		// I - Node
 	_mxml_strfree(node->value.text.string);
         break;
     case MXML_TYPE_CUSTOM :
-        if (node->value.custom.data && node->value.custom.destroy)
-	  (*(node->value.custom.destroy))(node->value.custom.data);
+        if (node->value.custom.data && node->value.custom.free_cb)
+	  (node->value.custom.free_cb)(node->value.custom.free_cbdata, node->value.custom.data);
 	break;
     default :
         break;

@@ -52,6 +52,7 @@ main(int  argc,				// I - Number of command-line args
   int			i;		// Looping var
   FILE			*fp;		// File to read
   int			fd;		// File descriptor
+  mxml_options_t	*options;	// Load/save options
   mxml_node_t		*xml,		// <?xml ...?> node
 			*tree,		// Element tree
 			*node;		// Node which should be in test.xml
@@ -83,8 +84,9 @@ main(int  argc,				// I - Number of command-line args
   }
 
   // Test the basic functionality...
-  xml  = mxmlNewXML("1.0");
-  tree = mxmlNewElement(xml, "element");
+  options = mxmlOptionsNew();
+  xml     = mxmlNewXML("1.0");
+  tree    = mxmlNewElement(xml, "element");
 
   if (!tree)
   {
@@ -111,18 +113,18 @@ main(int  argc,				// I - Number of command-line args
   mxmlNewReal(tree, 123.4);
   mxmlNewText(tree, 1, "text");
 
-  type = MXML_TYPE_TEXT;
-  mxmlLoadString(tree, "<group type='string'>string string string</group>", /*load_cb*/NULL, /*load_cbdata*/&type, /*sax_cb*/NULL, /*sax_cbdata*/NULL);
+  mxmlOptionsSetTypeValue(options, MXML_TYPE_TEXT);
+  mxmlLoadString(tree, options, "<group type='string'>string string string</group>");
 
-  type = MXML_TYPE_INTEGER;
-  mxmlLoadString(tree, "<group type='integer'>1 2 3</group>", /*load_cb*/NULL, /*load_cbdata*/&type, /*sax_cb*/NULL, /*sax_cbdata*/NULL);
+  mxmlOptionsSetTypeValue(options, MXML_TYPE_INTEGER);
+  mxmlLoadString(tree, options, "<group type='integer'>1 2 3</group>");
 
-  type = MXML_TYPE_REAL;
-  mxmlLoadString(tree, "<group type='real'>1.0 2.0 3.0</group>", /*load_cb*/NULL, /*load_cbdata*/&type, /*sax_cb*/NULL, /*sax_cbdata*/NULL);
+  mxmlOptionsSetTypeValue(options, MXML_TYPE_REAL);
+  mxmlLoadString(tree, options, "<group type='real'>1.0 2.0 3.0</group>");
 
-  type = MXML_TYPE_OPAQUE;
-  mxmlLoadString(tree, "<group>opaque opaque opaque</group>", /*load_cb*/NULL, /*load_cbdata*/&type, /*sax_cb*/NULL, /*sax_cbdata*/NULL);
-  mxmlLoadString(tree, "<foo><bar><one><two>value<two>value2</two></two></one></bar></foo>", /*load_cb*/NULL, /*load_cbdata*/&type, /*sax_cb*/NULL, /*sax_cbdata*/NULL);
+  mxmlOptionsSetTypeValue(options, MXML_TYPE_OPAQUE);
+  mxmlLoadString(tree, options, "<group>opaque opaque opaque</group>");
+  mxmlLoadString(tree, options,  "<foo><bar><one><two>value<two>value2</two></two></one></bar></foo>");
 
   mxmlNewCDATA(tree, "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef\n");
   mxmlNewCDATA(tree,
@@ -434,11 +436,13 @@ main(int  argc,				// I - Number of command-line args
 
   mxmlDelete(xml);
 
-  // Open the file/string using the default (MXML_NO_CALLBACK) callback...
+  // Open the file/string using the default callback...
+  mxmlOptionsSetTypeValue(options, MXML_TYPE_TEXT);
+
   if (argv[1][0] == '<')
-    xml = mxmlLoadString(/*top*/NULL, argv[1], /*load_cb*/NULL, /*load_cbdata*/NULL, /*sax_cb*/NULL, /*sax_cbdata*/NULL);
+    xml = mxmlLoadString(/*top*/NULL, options, argv[1]);
   else
-    xml = mxmlLoadFilename(/*top*/NULL, argv[1], /*load_cb*/NULL, /*load_cbdata*/NULL, /*sax_cb*/NULL, /*sax_cbdata*/NULL);
+    xml = mxmlLoadFilename(/*top*/NULL, options, argv[1]);
 
   if (!xml)
   {
@@ -459,7 +463,7 @@ main(int  argc,				// I - Number of command-line args
     if (mxmlGetType(node) != MXML_TYPE_TEXT)
     {
       fputs("No child node of group/option/keyword.\n", stderr);
-      mxmlSaveFile(xml, stderr, /*save_cb*/NULL, /*save_cbdata*/NULL);
+      mxmlSaveFile(xml, options, stderr);
       mxmlDelete(xml);
       return (1);
     }
@@ -475,10 +479,12 @@ main(int  argc,				// I - Number of command-line args
   mxmlDelete(xml);
 
   // Open the file...
+  mxmlOptionsSetTypeCallback(options, type_cb, /*cbdata*/NULL);
+
   if (argv[1][0] == '<')
-    xml = mxmlLoadString(/*top*/NULL, argv[1], /*load_cb*/type_cb, /*load_cbdata*/NULL, /*sax_cb*/NULL, /*sax_cbdata*/NULL);
+    xml = mxmlLoadString(/*top*/NULL, options, argv[1]);
   else
-    xml = mxmlLoadFilename(/*top*/NULL, argv[1], /*load_cb*/type_cb, /*load_cbdata*/NULL, /*sax_cb*/NULL, /*sax_cbdata*/NULL);
+    xml = mxmlLoadFilename(/*top*/NULL, options, argv[1]);
 
   if (!xml)
   {
@@ -505,10 +511,11 @@ main(int  argc,				// I - Number of command-line args
   }
 
   // Print the XML tree...
-  mxmlSaveFile(xml, stdout, whitespace_cb, /*save_cbdata*/NULL);
+  mxmlOptionsSetWhitespaceCallback(options, whitespace_cb, /*cbdata*/NULL);
+  mxmlSaveFile(xml, options, stdout);
 
   // Save the XML tree to a string and print it...
-  if (mxmlSaveString(xml, buffer, sizeof(buffer), whitespace_cb, /*save_cbdata*/NULL) > 0)
+  if (mxmlSaveString(xml, options, buffer, sizeof(buffer)) > 0)
   {
     if (argc == 3)
     {
@@ -532,7 +539,7 @@ main(int  argc,				// I - Number of command-line args
     }
 
     // Read the file...
-    xml = mxmlLoadFd(/*top*/NULL, fd, type_cb, /*load_cbdata*/NULL, /*sax_cb*/NULL, /*sax_cbdata*/NULL);
+    xml = mxmlLoadFd(/*top*/NULL, options, fd);
 
     close(fd);
 
@@ -547,7 +554,7 @@ main(int  argc,				// I - Number of command-line args
     }
 
     // Write the file...
-    mxmlSaveFd(xml, fd, whitespace_cb, /*save_cbdata*/NULL);
+    mxmlSaveFd(xml, options, fd);
 
     close(fd);
 
@@ -558,10 +565,12 @@ main(int  argc,				// I - Number of command-line args
   // Test SAX methods...
   memset(event_counts, 0, sizeof(event_counts));
 
+  mxmlOptionsSetSAXCallback(options, sax_cb, /*cbdata*/NULL);
+
   if (argv[1][0] == '<')
-    mxmlRelease(mxmlLoadString(/*top*/NULL, argv[1], type_cb, /*load_cbdata*/NULL, sax_cb, /*sax_cbdata*/NULL));
+    mxmlRelease(mxmlLoadString(/*top*/NULL, options, argv[1]));
   else
-    mxmlRelease(mxmlLoadFilename(/*top*/NULL, argv[1], type_cb, /*load_cbdata*/NULL, sax_cb, /*sax_cbdata*/NULL));
+    mxmlRelease(mxmlLoadFilename(/*top*/NULL, options, argv[1]));
 
   if (!strcmp(argv[1], "test.xml"))
   {

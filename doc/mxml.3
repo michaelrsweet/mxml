@@ -1,4 +1,4 @@
-.TH mxml 3 "Mini-XML API" "2024-03-16" "Mini-XML API"
+.TH mxml 3 "Mini-XML API" "2024-03-20" "Mini-XML API"
 .SH NAME
 mxml \- Mini-XML API
 .SH INCLUDE FILE
@@ -361,7 +361,7 @@ Get an attribute by index.
 .nf
 const char * mxmlElementGetAttrByIndex (
     mxml_node_t *node,
-    int idx,
+    size_t idx,
     const char **name
 );
 .fi
@@ -410,50 +410,6 @@ void mxmlElementSetAttrf (
 This function sets attribute \fBname\fR to the formatted value of \fBformat\fR for
 the element \fBnode\fR.  If the named attribute already exists, the value of the
 attribute is replaced by the new formatted string value.
-.SS mxmlEntityAddCallback
-Add a callback to convert entities to Unicode.
-.PP
-.nf
-bool  mxmlEntityAddCallback (
-    mxml_entity_cb_t cb,
-    void *cbdata
-);
-.fi
-.PP
-This function adds a callback to the current thread that converts named
-XML character entities to Unicode characters.  The callback function \fBcb\fR
-accepts the callback data pointer \fBcbdata\fR and the entity name and returns a
-Unicode character value or \fB-1\fR if the entity is not known.  For example, the
-following entity callback supports the "euro" entity:
-.PP
-\fB`\fRc
-int my_entity_cb(void \fIcbdata, const char \fRname)
-{
-  if (!strcmp(name, "euro"))
-    return (0x20ac);
-  else
-    return (-1);
-}
-\fB`\fR
-.SS mxmlEntityGetValue
-Get the character corresponding to a named entity.
-.PP
-.nf
-int  mxmlEntityGetValue (
-    const char *name
-);
-.fi
-.PP
-The entity name can also be a numeric constant. \fB-1\fR is returned if the
-name is not known.
-.SS mxmlEntityRemoveCallback
-Remove a callback.
-.PP
-.nf
-void mxmlEntityRemoveCallback (
-    mxml_entity_cb_t cb
-);
-.fi
 .SS mxmlFindElement
 Find the named element.
 .PP
@@ -782,181 +738,109 @@ Load a file descriptor into an XML node tree.
 .nf
 mxml_node_t * mxmlLoadFd (
     mxml_node_t *top,
-    int fd,
-    mxml_load_cb_t load_cb,
-    void *load_cbdata,
-    mxml_sax_cb_t sax_cb,
-    void *sax_cbdata
+    mxml_options_t *options,
+    int fd
 );
 .fi
 .PP
 This function loads the file descriptor \fBfd\fR into an XML node tree.  The
-nodes in the specified file are added to the specified node \fBtop\fR.  If \fBNULL\fR
-is provided, the XML file MUST be well-formed with a single parent processing
-instruction node like \fB<?xml version="1.0"?>\fR at the start of the file.
+nodes in the specified file are added to the specified node \fBtop\fR - if \fBNULL\fR
+the XML file MUST be well-formed with a single parent processing instruction
+node like \fB<?xml version="1.0"?>\fR at the start of the file.
 .PP
-The load callback function \fBload_cb\fR is called to obtain the node type that
-should be used for child nodes.  If \fBNULL\fR, the \fBload_cbdata\fR argument points
-to a \fBmmd_type_t\fR variable that specifies the value type or \fBMMD_TYPE_TEXT\fR
-if that argument is also \fBNULL\fR.
-.PP
-The SAX callback function \fBsax_cb\fR and associated callback data \fBsax_cbdata\fR
-are used to enable the Simple API for XML streaming mode.  The callback is
-called as the XML node tree is parsed.
-.PP
-Note: The most common programming error when using the Mini-XML library is
-to load an XML file using the \fBMXML_TYPE_TEXT\fR node type, which returns
-inline text as a series of whitespace-delimited words, instead of using the
-\fBMXML_TYPE_OPAQUE\fR node type which returns the inline text as a single string
-(including whitespace).
+Load options are provides via the \fBoptions\fR argument.  If \fBNULL\fR, all values
+will be loaded into \fBMXML_TYPE_TEXT\fR nodes.  Use the \fImxmlOptionsNew\fR
+function to create options when loading XML data.
 .SS mxmlLoadFile
 Load a file into an XML node tree.
 .PP
 .nf
 mxml_node_t * mxmlLoadFile (
     mxml_node_t *top,
-    FILE *fp,
-    mxml_load_cb_t load_cb,
-    void *load_cbdata,
-    mxml_sax_cb_t sax_cb,
-    void *sax_cbdata
+    mxml_options_t *options,
+    FILE *fp
 );
 .fi
 .PP
 This function loads the \fBFILE\fR pointer \fBfp\fR into an XML node tree.  The
-nodes in the specified file are added to the specified node \fBtop\fR.  If \fBNULL\fR
-is provided, the XML file MUST be well-formed with a single parent processing
-instruction node like \fB<?xml version="1.0"?>\fR at the start of the file.
+nodes in the specified file are added to the specified node \fBtop\fR - if \fBNULL\fR
+the XML file MUST be well-formed with a single parent processing instruction
+node like \fB<?xml version="1.0"?>\fR at the start of the file.
 .PP
-The load callback function \fBload_cb\fR is called to obtain the node type that
-should be used for child nodes.  If \fBNULL\fR, the \fBload_cbdata\fR argument points
-to a \fBmmd_type_t\fR variable that specifies the value type or \fBMMD_TYPE_TEXT\fR
-if that argument is also \fBNULL\fR.
-.PP
-The SAX callback function \fBsax_cb\fR and associated callback data \fBsax_cbdata\fR
-are used to enable the Simple API for XML streaming mode.  The callback is
-called as the XML node tree is parsed.
-.PP
-Note: The most common programming error when using the Mini-XML library is
-to load an XML file using the \fBMXML_TYPE_TEXT\fR node type, which returns
-inline text as a series of whitespace-delimited words, instead of using the
-\fBMXML_TYPE_OPAQUE\fR node type which returns the inline text as a single string
-(including whitespace).
+Load options are provides via the \fBoptions\fR argument.  If \fBNULL\fR, all values
+will be loaded into \fBMXML_TYPE_TEXT\fR nodes.  Use the \fImxmlOptionsNew\fR
+function to create options when loading XML data.
 .SS mxmlLoadFilename
 Load a file into an XML node tree.
 .PP
 .nf
 mxml_node_t * mxmlLoadFilename (
     mxml_node_t *top,
-    const char *filename,
-    mxml_load_cb_t load_cb,
-    void *load_cbdata,
-    mxml_sax_cb_t sax_cb,
-    void *sax_cbdata
+    mxml_options_t *options,
+    const char *filename
 );
 .fi
 .PP
 This function loads the named file \fBfilename\fR into an XML node tree.  The
-nodes in the specified file are added to the specified node \fBtop\fR.  If \fBNULL\fR
-is provided, the XML file MUST be well-formed with a single parent processing
-instruction node like \fB<?xml version="1.0"?>\fR at the start of the file.
+nodes in the specified file are added to the specified node \fBtop\fR - if \fBNULL\fR
+the XML file MUST be well-formed with a single parent processing instruction
+node like \fB<?xml version="1.0"?>\fR at the start of the file.
 .PP
-The load callback function \fBload_cb\fR is called to obtain the node type that
-should be used for child nodes.  If \fBNULL\fR, the \fBload_cbdata\fR argument points
-to a \fBmmd_type_t\fR variable that specifies the value type or \fBMMD_TYPE_TEXT\fR
-if that argument is also \fBNULL\fR.
-.PP
-The SAX callback function \fBsax_cb\fR and associated callback data \fBsax_cbdata\fR
-are used to enable the Simple API for XML streaming mode.  The callback is
-called as the XML node tree is parsed.
-.PP
-Note: The most common programming error when using the Mini-XML library is
-to load an XML file using the \fBMXML_TYPE_TEXT\fR node type, which returns
-inline text as a series of whitespace-delimited words, instead of using the
-\fBMXML_TYPE_OPAQUE\fR node type which returns the inline text as a single string
-(including whitespace).
+Load options are provides via the \fBoptions\fR argument.  If \fBNULL\fR, all values
+will be loaded into \fBMXML_TYPE_TEXT\fR nodes.  Use the \fImxmlOptionsNew\fR
+function to create options when loading XML data.
 .SS mxmlLoadIO
 Load an XML node tree using a read callback.
 .PP
 .nf
 mxml_node_t * mxmlLoadIO (
     mxml_node_t *top,
-    mxml_read_cb_t read_cb,
-    void *read_cbdata,
-    mxml_load_cb_t load_cb,
-    void *load_cbdata,
-    mxml_sax_cb_t sax_cb,
-    void *sax_cbdata
+    mxml_options_t *options,
+    mxml_io_cb_t io_cb,
+    void *io_cbdata
 );
 .fi
 .PP
 This function loads data into an XML node tree using a read callback.  The
-nodes in the specified file are added to the specified node \fBtop\fR.  If \fBNULL\fR
-is provided, the XML file MUST be well-formed with a single parent processing
-instruction node like \fB<?xml version="1.0"?>\fR at the start of the file.
+nodes in the specified file are added to the specified node \fBtop\fR - if \fBNULL\fR
+the XML file MUST be well-formed with a single parent processing instruction
+node like \fB<?xml version="1.0"?>\fR at the start of the file.
 .PP
-The read callback function \fBread_cb\fR is called to read a number of bytes from
-the source.  The callback data pointer \fBread_cbdata\fR is passed to the read
+Load options are provides via the \fBoptions\fR argument.  If \fBNULL\fR, all values
+will be loaded into \fBMXML_TYPE_TEXT\fR nodes.  Use the \fImxmlOptionsNew\fR
+function to create options when loading XML data.
+.PP
+The read callback function \fBio_cb\fR is called to read a number of bytes from
+the source.  The callback data pointer \fBio_cbdata\fR is passed to the read
 callback with a pointer to a buffer and the maximum number of bytes to read,
 for example:
 .PP
 \fB`\fRc
-ssize_t my_read_cb(void \fIcbdata, void \fRbuffer, size_t bytes)
+size_t my_io_cb(void \fIcbdata, void \fRbuffer, size_t bytes)
 {
   ... copy up to "bytes" bytes into buffer ...
-  ... return the number of bytes "read" or -1 on error ...
+  ... return the number of bytes "read" or 0 on error ...
 }
-.nf
-    
-    The load callback function `load_cb` is called to obtain the node type that
-    should be used for child nodes.  If `NULL`, the `load_cbdata` argument points
-    to a `mmd_type_t` variable that specifies the value type or `MMD_TYPE_TEXT`
-    if that argument is also `NULL`.
-    
-    The SAX callback function `sax_cb` and associated callback data `sax_cbdata`
-    are used to enable the Simple API for XML streaming mode.  The callback is
-    called as the XML node tree is parsed.
-    
-    Note: The most common programming error when using the Mini-XML library is
-    to load an XML file using the `MXML_TYPE_TEXT` node type, which returns
-    inline text as a series of whitespace-delimited words, instead of using the
-    `MXML_TYPE_OPAQUE` node type which returns the inline text as a single string
-    (including whitespace).
-.fi
-
+\fB`\fR
 .SS mxmlLoadString
 Load a string into an XML node tree.
 .PP
 .nf
 mxml_node_t * mxmlLoadString (
     mxml_node_t *top,
-    const char *s,
-    mxml_load_cb_t load_cb,
-    void *load_cbdata,
-    mxml_sax_cb_t sax_cb,
-    void *sax_cbdata
+    mxml_options_t *options,
+    const char *s
 );
 .fi
 .PP
 This function loads the string into an XML node tree.  The nodes in the
-specified file are added to the specified node \fBtop\fR.  If \fBNULL\fR is provided,
-the XML file MUST be well-formed with a single parent processing instruction
-node like \fB<?xml version="1.0"?>\fR at the start of the file.
+specified file are added to the specified node \fBtop\fR - if \fBNULL\fR the XML file
+MUST be well-formed with a single parent processing instruction node like
+\fB<?xml version="1.0"?>\fR at the start of the file.
 .PP
-The load callback function \fBload_cb\fR is called to obtain the node type that
-should be used for child nodes.  If \fBNULL\fR, the \fBload_cbdata\fR argument points
-to a \fBmmd_type_t\fR variable that specifies the value type or \fBMMD_TYPE_TEXT\fR
-if that argument is also \fBNULL\fR.
-.PP
-The SAX callback function \fBsax_cb\fR and associated callback data \fBsax_cbdata\fR
-are used to enable the Simple API for XML streaming mode.  The callback is
-called as the XML node tree is parsed.
-.PP
-Note: The most common programming error when using the Mini-XML library is
-to load an XML file using the \fBMXML_TYPE_TEXT\fR node type, which returns
-inline text as a series of whitespace-delimited words, instead of using the
-\fBMXML_TYPE_OPAQUE\fR node type which returns the inline text as a single string
-(including whitespace).
+Load options are provides via the \fBoptions\fR argument.  If \fBNULL\fR, all values
+will be loaded into \fBMXML_TYPE_TEXT\fR nodes.  Use the \fImxmlOptionsNew\fR
+function to create options when loading XML data.
 .SS mxmlNewCDATA
 Create a new CDATA node.
 .PP
@@ -1023,14 +907,14 @@ Create a new custom data node.
 mxml_node_t * mxmlNewCustom (
     mxml_node_t *parent,
     void *data,
-    mxml_custom_destroy_cb_t destroy
+    mxml_custfree_cb_t free_cb,
+    void *free_cbdata
 );
 .fi
 .PP
 The new custom node is added to the end of the specified parent's child
-list. The constant \fBMXML_NO_PARENT\fR can be used to specify that the new
-element node has no parent. \fBNULL\fR can be passed when the data in the
-node is not dynamically allocated or is separately managed.
+list.  The \fBfree_cb\fR argument specifies a function to call to free the custom
+data when the node is deleted.
 .SS mxmlNewDeclaration
 Create a new declaraction node.
 .PP
@@ -1201,6 +1085,359 @@ mxml_node_t * mxmlNewXML (
 .PP
 The "version" argument specifies the version number to put in the
 ?xml directive node. If \fBNULL\fR, version "1.0" is assumed.
+.SS mxmlOptionsDelete
+Free load/save options.
+.PP
+.nf
+void mxmlOptionsDelete (
+    mxml_options_t *options
+);
+.fi
+.SS mxmlOptionsNew
+Allocate load/save options.
+.PP
+.nf
+mxml_options_t * mxmlOptionsNew (void);
+.fi
+.PP
+This function creates a new set of load/save options to use with the
+\fImxmlLoadFd\fR, \fImxmlLoadFile\fR, \fImxmlLoadFilename\fR,
+\fImxmlLoadIO\fR, \fImxmlLoadString\fR, \fImxmlSaveAllocString\fR,
+\fImxmlSaveFd\fR, \fImxmlSaveFile\fR, \fImxmlSaveFilename\fR,
+\fImxmlSaveIO\fR, and \fImxmlSaveString\fR functions.  Options can be
+reused for multiple calls to these functions and should be freed using the
+\fImxmlOptionsDelete\fR function.
+.PP
+The default load/save options load values using the constant type
+\fBMXML_TYPE_TEXT\fR and save XML data with a wrap margin of 72 columns.
+The various \fBmxmlOptionsSet\fR functions are used to change the defaults,
+for example:
+.PP
+\fB`\fRc
+mxml_options_t \fIoptions = mxmlOptionsNew();
+
+/\fR Load values as opaque strings */
+mxmlOptionsSetTypeValue(options, MXML_TYPE_OPAQUE);
+.nf
+    
+    Note: The most common programming error when using the Mini-XML library is
+    to load an XML file using the `MXML_TYPE_TEXT` node type, which returns
+    inline text as a series of whitespace-delimited words, instead of using the
+    `MXML_TYPE_OPAQUE` node type which returns the inline text as a single string
+    (including whitespace).
+.fi
+
+.SS mxmlOptionsSetCustomCallbacks
+Set the custom data callbacks.
+.PP
+.nf
+void mxmlOptionsSetCustomCallbacks (
+    mxml_options_t *options,
+    mxml_custload_cb_t load_cb,
+    mxml_custsave_cb_t save_cb,
+    void *cbdata
+);
+.fi
+.PP
+This function sets the callbacks that are used for loading and saving custom
+data types. The load callback \fBload_cb\fR accepts the callback data pointer
+\fBcbdata\fR, a node pointer, and a data string and returns \fBtrue\fR on success and
+\fBfalse\fR on error, for example:
+.PP
+\fB`\fRc
+typedef struct
+{
+  unsigned year,    /\fI Year \fR/
+           month,   /\fI Month \fR/
+           day,     /\fI Day \fR/
+           hour,    /\fI Hour \fR/
+           minute,  /\fI Minute \fR/
+           second;  /\fI Second \fR/
+  time_t   unix;    /\fI UNIX time \fR/
+} iso_date_time_t;
+.PP
+void
+my_custom_free_cb(void \fIcbdata, void \fRdata)
+{
+  free(data);
+}
+.PP
+bool
+my_custom_load_cb(void \fIcbdata, mxml_node_t \fRnode, const char \fIdata)
+{
+  iso_date_time_t \fRdt;
+  struct tm tmdata;
+.PP
+  /\fI Allocate custom data structure ... \fR/
+  dt = calloc(1, sizeof(iso_date_time_t));
+.PP
+  /\fI Parse the data string... \fR/
+  if (sscanf(data, "%u-%u-%uT%u:%u:%uZ", &(dt->year), &(dt->month),
+             &(dt->day), &(dt->hour), &(dt->minute), &(dt->second)) != 6)
+  {
+    /\fI Unable to parse date and time numbers... \fR/
+    free(dt);
+    return (false);
+  }
+.PP
+  /\fI Range check values... \fR/
+  if (dt->month 
+.URL  1 || dt-  1 || dt-
+month > 12 || dt->day 
+.URL  1 || dt-  1 || dt-
+day > 31 ||
+      dt->hour 
+.URL  0 || dt-  0 || dt-
+hour > 23 || dt->minute 
+.URL  0 || dt-  0 || dt-
+minute > 59 ||
+      dt->second 
+.URL  0 || dt-  0 || dt-
+second > 60)
+  {
+    /\fI Date information is out of range... \fR/
+    free(dt);
+    return (false);
+  }
+.PP
+  /\fI Convert ISO time to UNIX time in seconds... \fR/
+  tmdata.tm_year = dt->year - 1900;
+  tmdata.tm_mon  = dt->month - 1;
+  tmdata.tm_day  = dt->day;
+  tmdata.tm_hour = dt->hour;
+  tmdata.tm_min  = dt->minute;
+  tmdata.tm_sec  = dt->second;
+.PP
+  dt->unix = gmtime(&tmdata);
+.PP
+  /\fI Set custom data and free function... \fR/
+  mxmlSetCustom(node, data, my_custom_free, /\fIcbdata\fR/NULL);
+.PP
+  /\fI Return with no errors... \fR/
+  return (true);
+}
+.nf
+    
+    The save callback `save_cb` accepts the callback data pointer `cbdata` and a
+    node pointer and returns a malloc'd string on success and `NULL` on error,
+    for example:
+    
+    ```c
+    char *
+    my_custom_save_cb(void *cbdata, mxml_node_t *node)
+    {
+      char data[255];
+      iso_date_time_t *dt;
+    
+      /* Get the custom data structure */
+      dt = (iso_date_time_t *)mxmlGetCustom(node);
+    
+      /* Generate string version of the date/time... */
+      snprintf(data, sizeof(data), "%04u-%02u-%02uT%02u:%02u:%02uZ",
+               dt->year, dt->month, dt->day, dt->hour, dt->minute, dt->second);
+    
+      /* Duplicate the string and return... */
+      return (strdup(data));
+    }
+
+.fi
+
+.SS mxmlOptionsSetEntityCallback
+Set the entity lookup callback to use when loading XML data.
+.PP
+.nf
+void mxmlOptionsSetEntityCallback (
+    mxml_options_t *options,
+    mxml_entity_cb_t cb,
+    void *cbdata
+);
+.fi
+.PP
+This function sets the callback that is used to lookup named XML character
+entities when loading XML data.  The callback function \fBcb\fR accepts the
+callback data pointer \fBcbdata\fR and the entity name.  The function returns a
+Unicode character value or \fB-1\fR if the entity is not known.  For example, the
+following entity callback supports the "euro" entity:
+.PP
+\fB`\fRc
+int my_entity_cb(void \fIcbdata, const char \fRname)
+{
+  if (!strcmp(name, "euro"))
+    return (0x20ac);
+  else
+    return (-1);
+}
+.nf
+    
+    Mini-XML automatically supports the "amp", "gt", "lt", and "quot" character
+    entities which are required by the base XML specification.
+.fi
+ char *data)
+{
+  iso_date_time_t 
+.SS mxmlOptionsSetErrorCallback
+Set the error message callback.
+.PP
+.nf
+void mxmlOptionsSetErrorCallback (
+    mxml_options_t *options,
+    mxml_error_cb_t cb,
+    void *cbdata
+);
+.fi
+.PP
+This function sets a function to use when reporting errors.  The callback
+\fBcb\fR accepts the data pointer \fBcbdata\fR and a string pointer containing the
+error message:
+.PP
+\fB`\fRc
+void my_error_cb(void \fIcbdata, const char \fRmessage)
+{
+  fprintf(stderr, "myprogram: %sn", message);
+}
+.nf
+    
+    The default error callback writes the error message to the `stderr` file.
+.fi
+ack supports the "euro" entity:
+.PP
+\fB`\fR
+.SS mxmlOptionsSetSAXCallback
+Set the SAX callback to use when reading XML data.
+.PP
+.nf
+void mxmlOptionsSetSAXCallback (
+    mxml_options_t *options,
+    mxml_sax_cb_t cb,
+    void *cbdata
+);
+.fi
+.PP
+This function sets a SAX callback to use when reading XML data.  The SAX
+callback function \fBcb\fR and associated callback data \fBcbdata\fR are used to
+enable the Simple API for XML streaming mode.  The callback is called as the
+XML node tree is parsed and receives the \fBcbdata\fR pointer, the \fBmxml_node_t\fR
+pointer, and an event code.  The function returns \fBtrue\fR to continue
+processing or \fBfalse\fR to stop:
+.PP
+\fB`\fRc
+bool
+sax_cb(void \fIcbdata, mxml_node_t \fRnode,
+       mxml_sax_event_t event)
+{
+  ... do something ...
+.PP
+  /\fI Continue processing... \fR/
+  return (true);
+}
+.nf
+    
+    The event will be one of the following:
+    
+    - `MXML_SAX_EVENT_CDATA`: CDATA was just read.
+    - `MXML_SAX_EVENT_COMMENT`: A comment was just read.
+    - `MXML_SAX_EVENT_DATA`: Data (integer, opaque, real, or text) was just read.
+    - `MXML_SAX_EVENT_DECLARATION`: A declaration was just read.
+    - `MXML_SAX_EVENT_DIRECTIVE`: A processing directive/instruction was just read.
+    - `MXML_SAX_EVENT_ELEMENT_CLOSE` - A close element was just read (`</element>`)
+    - `MXML_SAX_EVENT_ELEMENT_OPEN` - An open element was just read (`<element>`)
+    
+    Elements are *released* after the close element is processed.  All other nodes
+    are released after they are processed.  The SAX callback can *retain* the node
+    using the [mxmlRetain](@@) function.
+.fi
+ /* Date information is out of range... 
+.SS mxmlOptionsSetTypeCallback
+Set the type callback for child/value nodes.
+.PP
+.nf
+void mxmlOptionsSetTypeCallback (
+    mxml_options_t *options,
+    mxml_type_cb_t cb,
+    void *cbdata
+);
+.fi
+.PP
+The load callback function \fBcb\fR is called to obtain the node type child/value
+nodes and receives the \fBcbdata\fR pointer and the \fBmxml_node_t\fR pointer, for
+example:
+.PP
+\fB`\fRc
+mxml_type_t
+my_type_cb(void \fIcbdata, mxml_node_t \fRnode)
+{
+  const char \fItype;
+
+ /\fR
+  \fI You can lookup attributes and/or use the element name,
+  \fR hierarchy, etc...
+  */
+.PP
+  type = mxmlElementGetAttr(node, "type");
+  if (type == NULL)
+    type = mxmlGetElement(node);
+  if (type == NULL)
+    type = "text";
+.PP
+  if (!strcmp(type, "integer"))
+    return (MXML_TYPE_INTEGER);
+  else if (!strcmp(type, "opaque"))
+    return (MXML_TYPE_OPAQUE);
+  else if (!strcmp(type, "real"))
+    return (MXML_TYPE_REAL);
+  else
+    return (MXML_TYPE_TEXT);
+}
+\fB`\fR
+.SS mxmlOptionsSetTypeValue
+Set the type to use for all child/value nodes.
+.PP
+.nf
+void mxmlOptionsSetTypeValue (
+    mxml_options_t *options,
+    mxml_type_t type
+);
+.fi
+.PP
+This functions sets a constant node type to use for all child/value nodes.
+.SS mxmlOptionsSetWhitespaceCallback
+Set the whitespace callback.
+.PP
+.nf
+void mxmlOptionsSetWhitespaceCallback (
+    mxml_options_t *options,
+    mxml_ws_cb_t cb,
+    void *cbdata
+);
+.fi
+.PP
+This function sets the whitespace callback that is used when saving XML data.
+The callback function \fBcb\fR specifies a function that returns a whitespace
+string or \fBNULL\fR before and after each element.  The function receives the
+callback data pointer \fBcbdata\fR, the \fBmxml_node_t\fR pointer, and a "when"
+value indicating where the whitespace is being added, for example:
+.PP
+\fB`\fRc
+const char \fImy_whitespace_cb(void \fRcbdata, mxml_node_t *node, mxml_ws_t when)
+{
+  if (when == MXML_WS_BEFORE_OPEN || when == MXML_WS_AFTER_CLOSE)
+    return ("n");
+  else
+    return (NULL);
+}
+\fB`\fR
+.SS mxmlOptionsSetWrapMargin
+Set the wrap margin when saving XML data.
+.PP
+.nf
+void mxmlOptionsSetWrapMargin (
+    mxml_options_t *options,
+    int column
+);
+.fi
+.PP
+This function sets the wrap margin used when saving XML data.  Wrapping is
+disabled when \fBcolumn\fR is \fB0\fR.
 .SS mxmlRelease
 Release a node.
 .PP
@@ -1237,8 +1474,7 @@ Save an XML tree to an allocated string.
 .nf
 char * mxmlSaveAllocString (
     mxml_node_t *node,
-    mxml_save_cb_t save_cb,
-    void *save_cbdata
+    mxml_options_t *options
 );
 .fi
 .PP
@@ -1249,181 +1485,109 @@ should be freed using \fBfree\fR (or the string free callback set using
 \fBNULL\fR is returned if the node would produce an empty string or if the string
 cannot be allocated.
 .PP
-The callback function \fBsave_cb\fR specifies a function that returns a
-whitespace string or \fBNULL\fR before and after each element.  The function
-receives the callback data pointer \fBsave_cbdata\fR, the \fBmxml_node_t\fR pointer,
-and a "when" value indicating where the whitespace is being added, for
-example:
-.PP
-\fB`\fRc
-const char \fImy_save_cb(void \fRcbdata, mxml_node_t *node, mxml_ws_t when)
-{
-  if (when == MXML_WS_BEFORE_OPEN || when == MXML_WS_AFTER_CLOSE)
-    return ("n");
-  else
-    return (NULL);
-}
-\fB`\fR
+Save options are provides via the \fBoptions\fR argument.  If \fBNULL\fR, the XML
+output will be wrapped at column 72 with no additional whitespace.  Use the
+\fImxmlOptionsNew\fR function to create options for saving XML data.
 .SS mxmlSaveFd
 Save an XML tree to a file descriptor.
 .PP
 .nf
 bool  mxmlSaveFd (
     mxml_node_t *node,
-    int fd,
-    mxml_save_cb_t save_cb,
-    void *save_cbdata
+    mxml_options_t *options,
+    int fd
 );
 .fi
 .PP
 This function saves the XML tree \fBnode\fR to a file descriptor.
 .PP
-The callback function \fBsave_cb\fR specifies a function that returns a
-whitespace string or \fBNULL\fR before and after each element.  The function
-receives the callback data pointer \fBsave_cbdata\fR, the \fBmxml_node_t\fR pointer,
-and a "when" value indicating where the whitespace is being added, for
-example:
-.PP
-\fB`\fRc
-const char \fImy_save_cb(void \fRcbdata, mxml_node_t *node, mxml_ws_t when)
-{
-  if (when == MXML_WS_BEFORE_OPEN || when == MXML_WS_AFTER_CLOSE)
-    return ("n");
-  else
-    return (NULL);
-}
-\fB`\fR
+Save options are provides via the \fBoptions\fR argument.  If \fBNULL\fR, the XML
+output will be wrapped at column 72 with no additional whitespace.  Use the
+\fImxmlOptionsNew\fR function to create options for saving XML data.
 .SS mxmlSaveFile
 Save an XML tree to a file.
 .PP
 .nf
 bool  mxmlSaveFile (
     mxml_node_t *node,
-    FILE *fp,
-    mxml_save_cb_t save_cb,
-    void *save_cbdata
+    mxml_options_t *options,
+    FILE *fp
 );
 .fi
 .PP
 This function saves the XML tree \fBnode\fR to a stdio \fBFILE\fR.
 .PP
-The callback function \fBsave_cb\fR specifies a function that returns a
-whitespace string or \fBNULL\fR before and after each element.  The function
-receives the callback data pointer \fBsave_cbdata\fR, the \fBmxml_node_t\fR pointer,
-and a "when" value indicating where the whitespace is being added, for
-example:
-.PP
-\fB`\fRc
-const char \fImy_save_cb(void \fRcbdata, mxml_node_t *node, mxml_ws_t when)
-{
-  if (when == MXML_WS_BEFORE_OPEN || when == MXML_WS_AFTER_CLOSE)
-    return ("n");
-  else
-    return (NULL);
-}
-\fB`\fR
+Save options are provides via the \fBoptions\fR argument.  If \fBNULL\fR, the XML
+output will be wrapped at column 72 with no additional whitespace.  Use the
+\fImxmlOptionsNew\fR function to create options for saving XML data.
 .SS mxmlSaveFilename
 Save an XML tree to a file.
 .PP
 .nf
 bool  mxmlSaveFilename (
     mxml_node_t *node,
-    const char *filename,
-    mxml_save_cb_t save_cb,
-    void *save_cbdata
+    mxml_options_t *options,
+    const char *filename
 );
 .fi
 .PP
 This function saves the XML tree \fBnode\fR to a named file.
 .PP
-The callback function \fBsave_cb\fR specifies a function that returns a
-whitespace string or \fBNULL\fR before and after each element.  The function
-receives the callback data pointer \fBsave_cbdata\fR, the \fBmxml_node_t\fR pointer,
-and a "when" value indicating where the whitespace is being added, for
-example:
-.PP
-\fB`\fRc
-const char \fImy_save_cb(void \fRcbdata, mxml_node_t *node, mxml_ws_t when)
-{
-  if (when == MXML_WS_BEFORE_OPEN || when == MXML_WS_AFTER_CLOSE)
-    return ("n");
-  else
-    return (NULL);
-}
-\fB`\fR
+Save options are provides via the \fBoptions\fR argument.  If \fBNULL\fR, the XML
+output will be wrapped at column 72 with no additional whitespace.  Use the
+\fImxmlOptionsNew\fR function to create options for saving XML data.
 .SS mxmlSaveIO
 Save an XML tree using a callback.
 .PP
 .nf
 bool  mxmlSaveIO (
     mxml_node_t *node,
-    mxml_write_cb_t write_cb,
-    void *write_cbdata,
-    mxml_save_cb_t save_cb,
-    void *save_cbdata
+    mxml_options_t *options,
+    mxml_io_cb_t io_cb,
+    void *io_cbdata
 );
 .fi
 .PP
 This function saves the XML tree \fBnode\fR using a write callback function
-\fBwrite_cb\fR.  The write callback is called with the callback data pointer
-\fBwrite_cbdata\fR, a buffer pointer, and the number of bytes to write, for
+\fBio_cb\fR.  The write callback is called with the callback data pointer
+\fBio_cbdata\fR, a buffer pointer, and the number of bytes to write, for
 example:
 .PP
 \fB`\fRc
-ssize_t my_write_cb(void \fIcbdata, const void \fRbuffer, size_t bytes)
+size_t my_io_cb(void \fIcbdata, const void \fRbuffer, size_t bytes)
 {
   ... write/copy bytes from buffer to the output ...
-  ... return the number of bytes written/copied or -1 on error ...
+  ... return the number of bytes written/copied or 0 on error ...
 }
 .nf
     
-    The callback function `save_cb` specifies a function that returns a
-    whitespace string or `NULL` before and after each element.  The function
-    receives the callback data pointer `save_cbdata`, the `mxml_node_t` pointer,
-    and a "when" value indicating where the whitespace is being added, for
-    example:
-    
-    ```c
-    const char *my_save_cb(void *cbdata, mxml_node_t *node, mxml_ws_t when)
-    {
-      if (when == MXML_WS_BEFORE_OPEN || when == MXML_WS_AFTER_CLOSE)
-        return ("n");
-      else
-        return (NULL);
-    }
-
+    Save options are provides via the `options` argument.  If `NULL`, the XML
+    output will be wrapped at column 72 with no additional whitespace.  Use the
+    @link mxmlOptionsNew@ function to create options for saving XML data.
 .fi
-
+, "real"))
+    return (MXML_TYPE_REAL);
+  else
+    return (MXML_TYPE_TEXT);
+}
+\fB`\fR
 .SS mxmlSaveString
 Save an XML node tree to a string.
 .PP
 .nf
 size_t  mxmlSaveString (
     mxml_node_t *node,
+    mxml_options_t *options,
     char *buffer,
-    size_t bufsize,
-    mxml_save_cb_t save_cb,
-    void *save_cbdata
+    size_t bufsize
 );
 .fi
 .PP
-This function saves the XML tree \fBnode\fR to a string buffer.
+This function saves the XML tree \fBnode\fR to a fixed-size string buffer.
 .PP
-The callback function \fBsave_cb\fR specifies a function that returns a
-whitespace string or \fBNULL\fR before and after each element.  The function
-receives the callback data pointer \fBsave_cbdata\fR, the \fBmxml_node_t\fR pointer,
-and a "when" value indicating where the whitespace is being added, for
-example:
-.PP
-\fB`\fRc
-const char \fImy_save_cb(void \fRcbdata, mxml_node_t *node, mxml_ws_t when)
-{
-  if (when == MXML_WS_BEFORE_OPEN || when == MXML_WS_AFTER_CLOSE)
-    return ("n");
-  else
-    return (NULL);
-}
-\fB`\fR
+Save options are provides via the \fBoptions\fR argument.  If \fBNULL\fR, the XML
+output will be wrapped at column 72 with no additional whitespace.  Use the
+\fImxmlOptionsNew\fR function to create options for saving XML data.
 .SS mxmlSetCDATA
 Set the data for a CDATA node.
 .PP
@@ -1479,7 +1643,8 @@ Set the data and destructor of a custom data node.
 bool  mxmlSetCustom (
     mxml_node_t *node,
     void *data,
-    mxml_custom_destroy_cb_t destroy_cb
+    mxml_custfree_cb_t free_cb,
+    void *free_cbdata
 );
 .fi
 .PP
@@ -1630,17 +1795,6 @@ bool  mxmlSetUserData (
     void *data
 );
 .fi
-.SS mxmlSetWrapMargin
-Set the wrap margin when saving XML data.
-.PP
-.nf
-void mxmlSetWrapMargin (
-    int column
-);
-.fi
-.PP
-This function sets the wrap margin used when saving XML data for the current
-thread.  Wrapping is disabled when \fBcolumn\fR is \fB0\fR.
 .SS mxmlWalkNext
 Walk to the next logical node in the tree.
 .PP
@@ -1676,23 +1830,23 @@ The \fBtop\fR argument constrains the walk to that node's children.
 .nf
 typedef enum mxml_add_e mxml_add_t;
 .fi
-.SS mxml_custom_destroy_cb_t
+.SS mxml_custfree_cb_t
 Custom data destructor
 .PP
 .nf
-typedef void(*)(void *) mxml_custom_destroy_cb_t;
+typedef void(*)(void *cbdata void *custdata) mxml_custfree_cb_t;
 .fi
-.SS mxml_custom_load_cb_t
+.SS mxml_custload_cb_t
 Custom data load callback function
 .PP
 .nf
-typedef bool(*)(void *cbdata mxml_node_t *node const char *s) mxml_custom_load_cb_t;
+typedef bool(*)(void *cbdata mxml_node_t *node const char *s) mxml_custload_cb_t;
 .fi
-.SS mxml_custom_save_cb_t
+.SS mxml_custsave_cb_t
 Custom data save callback function
 .PP
 .nf
-typedef char *(*)(void *cbdata mxml_node_t *node) mxml_custom_save_cb_t;
+typedef char *(*)(void *cbdata mxml_node_t *node) mxml_custsave_cb_t;
 .fi
 .SS mxml_descend_t
 \fImxmlFindElement\fR, \fImxmlWalkNext\fR, and \fImxmlWalkPrev\fR descend values
@@ -1713,34 +1867,28 @@ Error callback function
 typedef void(*)(void *cbdata const char *message) mxml_error_cb_t;
 .fi
 .SS mxml_index_t
-An XML node index.
+An XML node index
 .PP
 .nf
 typedef struct _mxml_index_s mxml_index_t;
 .fi
-.SS mxml_load_cb_t
-Load callback function
+.SS mxml_io_cb_t
+Read/write callback function
 .PP
 .nf
-typedef mxml_type_t(*)(void *cbdata mxml_node_t *node) mxml_load_cb_t;
+typedef size_t(*)(void *cbdata void *buffer size_t bytes) mxml_io_cb_t;
 .fi
 .SS mxml_node_t
-An XML node.
+An XML node
 .PP
 .nf
 typedef struct _mxml_node_s mxml_node_t;
 .fi
-.SS mxml_read_cb_t
-Read callback function
+.SS mxml_options_t
+XML options
 .PP
 .nf
-typedef ssize_t(*)(void *cbdata void *buffer size_t bytes) mxml_read_cb_t;
-.fi
-.SS mxml_save_cb_t
-Save callback function
-.PP
-.nf
-typedef const char *(*)(void *cbdata mxml_node_t *node mxml_ws_t when) mxml_save_cb_t;
+typedef struct _mxml_options_s mxml_options_t;
 .fi
 .SS mxml_sax_cb_t
 SAX callback function
@@ -1766,17 +1914,23 @@ String free callback
 .nf
 typedef void(*)(void *cbdata char *s) mxml_strfree_cb_t;
 .fi
+.SS mxml_type_cb_t
+Type callback function
+.PP
+.nf
+typedef mxml_type_t(*)(void *cbdata mxml_node_t *node) mxml_type_cb_t;
+.fi
 .SS mxml_type_t
 The XML node type.
 .PP
 .nf
 typedef enum mxml_type_e mxml_type_t;
 .fi
-.SS mxml_write_cb_t
-Write callback function
+.SS mxml_ws_cb_t
+Whitespace callback function
 .PP
 .nf
-typedef ssize_t(*)(void *cbdata const void *buffer size_t bytes) mxml_write_cb_t;
+typedef const char *(*)(void *cbdata mxml_node_t *node mxml_ws_t when) mxml_ws_cb_t;
 .fi
 .SS mxml_ws_t
 Whitespace periods

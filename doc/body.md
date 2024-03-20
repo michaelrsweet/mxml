@@ -5,8 +5,6 @@ copyright: Copyright © 2003-2024, All Rights Reserved.
 version: 4.0
 ...
 
-> TODO: Update for mxmlOptions APIs!
-
 
 Introduction
 ============
@@ -102,6 +100,80 @@ proper compiler and linker options for your installation:
 > `--disable-libmxml4-prefix` configure option the library is named "mxml".
 
 
+API Basics
+----------
+
+Every piece of information in an XML file is stored in memory in "nodes".  Nodes
+are represented by `mxml_node_t` pointers.  Each node has an associated type,
+value(s), a parent node, sibling nodes (previous and next), potentially first
+and last child nodes, and an optional user data pointer.
+
+For example, if you have an XML file like the following:
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<data>
+    <node>val1</node>
+    <node>val2</node>
+    <node>val3</node>
+    <group>
+        <node>val4</node>
+        <node>val5</node>
+        <node>val6</node>
+    </group>
+    <node>val7</node>
+    <node>val8</node>
+</data>
+```
+
+the node tree for the file would look like the following in memory:
+
+```
+<?xml version="1.0" encoding="utf-8"?>
+  |
+<data>
+  |
+<node> - <node> - <node> - <group> - <node> - <node>
+  |        |        |         |        |        |
+ val1     val2     val3       |       val7     val8
+                              |
+                            <node> - <node> - <node>
+                              |        |        |
+                             val4     val5     val6
+```
+
+where "-" is a pointer to the sibling node and "|" is a pointer to the first
+child or parent node.
+
+The [mxmlGetType](@@) function gets the type of a node which is represented as a
+`mxml_type_t` enumeration value:
+
+- `MXML_TYPE_CDATA`: CDATA such as `<![CDATA[...]]>`,
+- `MXML_TYPE_COMMENT`: A comment such as `<!-- my comment -->`,
+- `MXML_TYPE_CUSTOM`: A custom value defined by your application,
+- `MXML_TYPE_DECLARATION`: A declaration such as `<!DOCTYPE html>`,
+- `MXML_TYPE_DIRECTIVE`: A processing instruction such as
+  `<?xml version="1.0" encoding="utf-8"?>`,
+- `MXML_TYPE_ELEMENT`: An XML element with optional attributes such as
+  `<element name="value">`,
+- `MXML_TYPE_INTEGER`: A whitespace-delimited integer value such as `42`,
+- `MXML_TYPE_OPAQUE`: An opaque string value that preserves all whitespace
+  such as `All work and no play makes Johnny a dull boy.`,
+- `MXML_TYPE_REAL`: A whitespace-delimited floating point value such as
+  `123.4`, or
+- `MXML_TYPE_TEXT`: A whitespace-delimited text (fragment) value such as
+  `Word`.
+
+The parent, sibling, and child nodes are accessed using the [mxmlGetParent](@@),
+[mxmlGetNextSibling](@@), [mxmlGetPreviousSibling](@@), [mxmlGetFirstChild](@@),
+and [mxmlGetLastChild](@@) functions.
+
+The value(s) of a node are accessed using the [mxmlGetCDATA](@@),
+[mxmlGetComment](@@), [mxmlGetDeclaration](@@), [mxmlGetDirective](@@),
+[mxmlGetElement](@@), [mxmlElementGetAttr](@@), [mxmlGetInteger](@@),
+[mxmlGetOpaque](@@), [mxmlGetReal](@@), and [mxmlGetText](@@) functions.
+
+
 Loading an XML File
 -------------------
 
@@ -142,13 +214,14 @@ default load options:
 ```c
 mxml_node_t *xml;
 
-xml = mxmlLoadFilename(/*top*/NULL, /*options*/NULL, "example.xml");
+xml = mxmlLoadFilename(/*top*/NULL, /*options*/NULL,
+                       "example.xml");
 ```
 
 
 ### Load Options
 
-Load options are specified using a `mxml_options_t` object, which you create
+Load options are specified using a `mxml_options_t` pointer, which you create
 using the [mxmlOptionsNew](@@) function:
 
 ```c
@@ -176,42 +249,9 @@ mxmlOptionsSetTypeValue(options, my_type_cb, /*cbdata*/NULL);
 
 The `my_type_cb` function accepts the callback data pointer (`NULL` in this
 case) and the `mxml_node_t` pointer for the current element and returns a
-`mxml_type_t` enumeration value specifying the value type for child nodes:
-
-
-The `load_cb` argument specifies a function that assigns child (value) node
-types for each element in the document.  The default callback (`NULL`) supports
-passing a pointer to an `mxml_type_t` variable containing the type of value
-nodes.  For example, to load the XML file "filename.xml" containing literal
-strings you can use:
-
-```c
-mxml_node_t *tree;
-mxml_type_t type = MXML_TYPE_OPAQUE;
-
-tree = mxmlLoadFilename(/*top*/NULL, "filename.xml",
-                        /*load_cb*/NULL, /*load_cbdata*/&type,
-                        /*sax_cb*/NULL, /*sax_cbdata*/NULL);
-```
-
-
-The `load_xxx` arguments to the mxmlLoadXxx functions are a callback function
-and a data pointer which are used to determine the value type of each data node
-in an XML document.  The default (`NULL`) callback expects the `load_cbdata`
-argument to be a pointer to a `mxml_type_t` variable that contains the desired
-value node type - if `NULL`, it uses the `MXML_TYPE_TEXT` (whitespace-separated
-text) type.
-
-You can provide your own callback function for more complex XML documents. Your
-callback function will receive a pointer to the current element node and must
-return the value type of the immediate children for that element node:
-`MXML_TYPE_CUSTOM`, `MXML_TYPE_INTEGER`, `MXML_TYPE_OPAQUE`, `MXML_TYPE_REAL`,
-or `MXML_TYPE_TEXT`.  The function is called *after* the element and its
-attributes have been read so you can look at the element name, attributes, and
-attribute values to determine the proper value type to return.
-
-The following callback function looks for an attribute named "type" or the
-element name to determine the value type for its child nodes:
+`mxml_type_t` enumeration value specifying the value type for child nodes.  For
+example, the following function looks at the "type" attribute and the element
+name to determine the value types of the node's children:
 
 ```c
 mxml_type_t
@@ -241,176 +281,198 @@ my_load_cb(void *cbdata, mxml_node_t *node)
 }
 ```
 
-To use this callback function, simply specify it when you call any of the load
-functions:
+
+Finding Nodes
+-------------
+
+The [mxmlFindPath](@@) function finds the (first) value node under a specific
+element using a path.  The path string can contain the "*" wildcard to match a
+single element node in the hierarchy.  For example, the following code will find
+the first "node" element under the "group" element, first using an explicit path
+and then using a wildcard:
 
 ```c
-mxml_node_t *tree;
+mxml_node_t *directnode = mxmlFindPath(xml, "data/group/node");
 
-tree = mxmlLoadFilename(/*top*/NULL, "filename.xml",
-                        my_load_cb, /*load_cbdata*/NULL,
-                        /*sax_cb*/NULL, /*sax_cbdata*/NULL);
+mxml_node_t *wildnode = mxmlFindPath(xml, "data/*/node");
 ```
 
-
-Nodes
------
-
-Every piece of information in an XML file is stored in memory in "nodes".  Nodes
-are defined by the `mxml_node_t` structure.  Each node has a typed value,
-optional user data, a parent node, sibling nodes (previous and next), and
-potentially child nodes.
-
-For example, if you have an XML file like the following:
-
-    <?xml version="1.0" encoding="utf-8"?>
-    <data>
-        <node>val1</node>
-        <node>val2</node>
-        <node>val3</node>
-        <group>
-            <node>val4</node>
-            <node>val5</node>
-            <node>val6</node>
-        </group>
-        <node>val7</node>
-        <node>val8</node>
-    </data>
-
-the node tree for the file would look like the following in memory:
-
-    ?xml version="1.0" encoding="utf-8"?
-      |
-    data
-      |
-    node - node - node - group - node - node
-      |      |      |      |       |      |
-    val1   val2   val3     |     val7   val8
-                           |
-                         node - node - node
-                           |      |      |
-                         val4   val5   val6
-
-where "-" is a pointer to the sibling node and "|" is a pointer to the first
-child or parent node.
-
-The [mxmlGetType](@@) function gets the type of a node:
-
-```c
-mxml_type_t
-mxmlGetType(mxml_node_t *node);
-```
-
-- `MXML_TYPE_CDATA` : CDATA,
-- `MXML_TYPE_COMMENT` : A comment,
-- `MXML_TYPE_CUSTOM` : A custom value defined by your application,
-- `MXML_TYPE_DECLARATION` : A declaration such as `<!DOCTYPE html>`,
-- `MXML_TYPE_DIRECTIVE` : A processing instruction such as
-  `<?xml version="1.0"?>`,
-- `MXML_TYPE_ELEMENT` : An XML element,
-- `MXML_TYPE_INTEGER` : A whitespace-delimited integer value,
-- `MXML_TYPE_OPAQUE` : An opaque string value that preserves all whitespace,
-- `MXML_TYPE_REAL` : A whitespace-delimited floating point value, or
-- `MXML_TYPE_TEXT` : A whitespace-delimited text (fragment) value.
-
-The parent and sibling nodes are accessed using the [mxmlGetParent](@@),
-[mxmlGetNextSibling](@@), and [mxmlGetPreviousSibling](@@) functions, while the
-children of an element node are accessed using the [mxmlGetFirstChild](@@) or
-[mxmlGetLastChild](@@) functions:
+The [mxmlFindElement](@@) function can be used to find a named element,
+optionally matching an attribute and value:
 
 ```c
 mxml_node_t *
-mxmlGetFirstChild(mxml_node_t *node);
-
-mxml_node_t *
-mxmlGetLastChild(mxml_node_t *node);
-
-mxml_node_t *
-mxmlGetNextSibling(mxml_node_t *node);
-
-mxml_node_t *
-mxmlGetParent(mxml_node_t *node);
-
-mxml_node_t *
-mxmlGetPrevSibling(mxml_node_t *node);
+mxmlFindElement(mxml_node_t *node, mxml_node_t *top,
+                const char *element, const char *attr,
+                const char *value, int descend);
 ```
 
-The [mxmlGetUserData](@@) function gets any user (application) data associated
-with the node:
+The `element`, `attr`, and `value` arguments can be passed as `NULL` to act as
+wildcards, e.g.:
 
 ```c
-void *
-mxmlGetUserData(mxml_node_t *node);
+mxml_node_t *node;
+
+/* Find the first "a" element */
+node = mxmlFindElement(tree, tree, "a", NULL, NULL,
+                       MXML_DESCEND_ALL);
+
+/* Find the first "a" element with "href" attribute */
+node = mxmlFindElement(tree, tree, "a", "href", NULL,
+                       MXML_DESCEND_ALL);
+
+/* Find the first "a" element with "href" to a URL */
+node = mxmlFindElement(tree, tree, "a", "href",
+                       "http://msweet.org/",
+                       MXML_DESCEND_ALL);
+
+/* Find the first element with a "src" attribute*/
+node = mxmlFindElement(tree, tree, NULL, "src", NULL,
+                       MXML_DESCEND_ALL);
+
+/* Find the first element with a "src" = "foo.jpg" */
+node = mxmlFindElement(tree, tree, NULL, "src", "foo.jpg",
+                       MXML_DESCEND_ALL);
 ```
 
-
-Creating XML Documents
-----------------------
-
-You can create and update XML documents in memory using the various mxmlNewXxx
-functions. The following code will create the XML document described in the
-previous section:
+You can also iterate with the same function:
 
 ```c
-mxml_node_t *xml;    /* <?xml version="1.0"?> */
-mxml_node_t *data;   /* <data> */
-mxml_node_t *node;   /* <node> */
-mxml_node_t *group;  /* <group> */
+mxml_node_t *node;
 
-xml = mxmlNewXML("1.0");
-
-data = mxmlNewElement(xml, "data");
-
-    node = mxmlNewElement(data, "node");
-    mxmlNewText(node, false, "val1");
-    node = mxmlNewElement(data, "node");
-    mxmlNewText(node, false, "val2");
-    node = mxmlNewElement(data, "node");
-    mxmlNewText(node, false, "val3");
-
-    group = mxmlNewElement(data, "group");
-
-        node = mxmlNewElement(group, "node");
-        mxmlNewText(node, false, "val4");
-        node = mxmlNewElement(group, "node");
-        mxmlNewText(node, false, "val5");
-        node = mxmlNewElement(group, "node");
-        mxmlNewText(node, false, "val6");
-
-    node = mxmlNewElement(data, "node");
-    mxmlNewText(node, false, "val7");
-    node = mxmlNewElement(data, "node");
-    mxmlNewText(node, false, "val8");
+for (node = mxmlFindElement(tree, tree, "element", NULL,
+                            NULL, MXML_DESCEND_ALL);
+     node != NULL;
+     node = mxmlFindElement(node, tree, "element", NULL,
+                            NULL, MXML_DESCEND_ALL))
+{
+  ... do something ...
+}
 ```
 
-We start by creating the declaration node common to all XML files using the
-[mxmlNewXML](@@) function:
+The `descend` argument \(`MXML_DESCEND_ALL` in the previous examples) can be one
+of three constants:
+
+- `MXML_DESCEND_NONE`: ignore child nodes in the element hierarchy, instead
+  using siblings (same level) or parent nodes (above) until the top (root) node
+  is reached.
+
+- `MXML_DESCEND_FIRST`: start the search with the first child of the node, and
+  then search siblings.  You'll normally use this when iterating through direct
+  children of a parent node, e.g. all of the `<node>` and `<group>` elements
+  under the `<?xml ...?>` parent node in the previous example.
+
+- `MXML_DESCEND_ALL`: search child nodes first, then sibling nodes, and then
+  parent nodes.
+
+
+Getting the Value(s) from Nodes
+-------------------------------
+
+Once you have the node you can use one of the mxmlGetXxx functions to retrieve
+its value(s).
+
+Element \(`MXML_TYPE_ELEMENT`) nodes have an associated name and zero or more
+named attributes with (string) values.  The [mxmlGetElement](@@) function
+retrieves the element name while the [mxmlElementGetAttr](@@) function retrieves
+the value string for a named attribute.  For example, the following code looks
+for HTML heading elements and, when found, displays the "id" attribute for the
+heading:
 
 ```c
-xml = mxmlNewXML("1.0");
+const char *elemname = mxmlGetElement(node);
+const char *id_value = mxmlElementGetAttr(node, "id");
+
+if ((*elemname == 'h' || *elemname == 'H') &&
+    elemname[1] >= '1' && elemname[1] <= '6' &&
+    id_value != NULL)
+  printf("%s: %s\n", elemname, id_value);
 ```
 
-We then create the `<data>` node used for this document using the
-[mxmlNewElement](@@) function.  The first argument specifies the parent node
-\(`xml`) while the second specifies the element name \(`data`):
+The [mxmlElementGetAttrByIndex](@@) and [mxmlElementGetAttrCount](@@) functions
+allow you to iterate all attributes of an element.  For example, the following
+code prints the element name and each of its attributes:
 
 ```c
-data = mxmlNewElement(xml, "data");
+const char *elemname = mxmlGetElement(node);
+printf("%s:\n", elemname);
+
+size_t i, count;
+for (i = 0, count = mxmlElementGetAttrCount(node); i < count; i ++)
+{
+  const char *attrname, *attrvalue;
+
+  attrvalue = mxmlElementGetAttrByIndex(node, i, &attrname);
+
+  printf("    %s=\"%s\"\n", attrname, attrvalue);
+}
 ```
 
-Each `<node>...</node>` in the file is created using the [mxmlNewElement](@@)
-and [mxmlNewText](@@) functions.  The first argument of [mxmlNewText](@@)
-specifies the parent node \(`node`).  The second argument specifies whether
-whitespace appears before the text - `false` in this case.  The last argument
-specifies the actual text to add:
+CDATA \(`MXML_TYPE_CDATA`) nodes have an associated string value consisting of
+the text between the `<![CDATA[` and `]]>` delimiters.  The [mxmlGetCDATA](@@)
+function retrieves the CDATA string pointer for a node.  For example, the
+following code gets the CDATA string value:
 
 ```c
-node = mxmlNewElement(data, "node");
-mxmlNewText(node, false, "val1");
+const char *cdatavalue = mxmlGetCDATA(node);
 ```
 
-The resulting in-memory XML document can then be saved or processed just like
-one loaded from disk or a string.
+Comment \(`MXML_TYPE_COMMENT`) nodes have an associated string value consisting
+of the text between the `<!--` and `-->` delimiters.  The [mxmlGetComment](@@)
+function retrieves the comment string pointer for a node.  For example, the
+following code gets the comment string value:
+
+```c
+const char *commentvalue = mxmlGetComment(node);
+```
+
+Processing instruction \(`MXML_TYPE_DIRECTIVE`) nodes have an associated string
+value consisting of the text between the `<?` and `?>` delimiters.  The
+[mxmlGetDirective](@@) function retrieves the processing instruction string
+for a node.  For example, the following code gets the processing instruction
+string value:
+
+```c
+const char *instrvalue = mxmlGetDirective(node);
+```
+
+Integer \(`MXML_TYPE_INTEGER`) nodes have an associated `long` value.  The
+[mxmlGetInteger](@@) function retrieves the integer value for a node.  For
+example, the following code gets the integer value:
+
+```c
+long intvalue = mxmlGetInteger(node);
+```
+
+Opaque string \(`MXML_TYPE_OPAQUE`) nodes have an associated string value
+consisting of the text between elements.  The [mxmlGetOpaque](@@) function
+retrieves the opaque string pointer for a node.  For example, the following
+code gets the opaque string value:
+
+```c
+const char *opaquevalue = mxmlGetOpaque(node);
+```
+
+Real number \(`MXML_TYPE_REAL`) nodes have an associated `double` value.  The
+[mxmlGetReal](@@) function retrieves the real number for a node.  For example,
+the following code gets the real value:
+
+```c
+double realvalue = mxmlGetReal(node);
+```
+
+Whitespace-delimited text string \(`MXML_TYPE_TEXT`) nodes have an associated
+whitespace indicator and string value extracted from the text between elements.
+The [mxmlGetText](@@) function retrieves the text string pointer and whitespace
+boolean value for a node.  For example, the following code gets the text and
+whitespace indicator:
+
+```c
+const char *textvalue;
+bool whitespace;
+
+textvalue = mxmlGetText(node, &whitespace);
+```
 
 
 Saving an XML File
@@ -420,73 +482,68 @@ You save an XML file using the [mxmlSaveFilename](@@) function:
 
 ```c
 bool
-mxmlSaveFilename(mxml_node_t *node, const char *filename,
-                 mxml_save_cb_t cb, void *cbdata);
+mxmlSaveFilename(mxml_node_t *node, mxml_options_t *options,
+                 const char *filename);
 ```
 
-The `cb` and `cbdata` arguments specify a function and data pointer that is
-called to determine what whitespace (if any) is inserted before and after each
-element node.  A `NULL` value tells Mini-XML to not include any extra
-whitespace.  For example, so save an XML file to the file "filename.xml" with
-no extra whitespace:
-
-```c
-mxmlSaveFile(xml, "filename.xml", /*cb*/NULL, /*cbdata*/NULL);
-```
-
-Mini-XML also provides functions to save to a file descriptor, `FILE` pointer,
-or strings:
+Mini-XML also provides functions to save to a `FILE` pointer, a file descriptor,
+a string, or using a callback:
 
 ```c
 char *
-mxmlSaveAllocString(mxml_node_t *node, mxml_save_cb_t cb,
-                    void *cbdata);
+mxmlSaveAllocString(mxml_node_t *node, mxml_options_t *options);
 
 bool
-mxmlSaveFd(mxml_node_t *node, int fd, mxml_save_cb_t cb,
-           void *cbdata);
+mxmlSaveFd(mxml_node_t *node, mxml_options_t *options,
+           int fd);
 
 bool
-mxmlSaveFile(mxml_node_t *node, FILE *fp, mxml_save_cb_t cb,
-             void *cbdata);
+mxmlSaveFile(mxml_node_t *node, mxml_options_t *options,
+             FILE *fp);
+
+bool
+mxmlSaveIO(mxml_node_t *node, mxml_options_t *options,
+           mxml_io_cb_t *io_cb, void *io_cbdata);
 
 size_t
-mxmlSaveString(mxml_node_t *node, char *buffer, size_t bufsize,
-               mxml_save_cb_t cb, void *cbdata);
+mxmlSaveString(mxml_node_t *node, mxml_options_t *options,
+               char *buffer, size_t bufsize);
 ```
 
-
-### Controlling Line Wrapping
-
-When saving XML documents, Mini-XML normally wraps output lines at column 75 so
-that the text is readable in terminal windows.  The [mxmlSetWrapMargin](@@)
-function overrides the default wrap margin for the current thread:
+Each accepts a pointer to the top-most ("root") node, any save options, and (as
+needed) the destination.  For example, the following code saves an XML file to
+the file "example.xml" with the default options:
 
 ```c
-void mxmlSetWrapMargin(int column);
+mxmlSaveFile(xml, /*options*/NULL, "example.xml");
 ```
 
-For example, the following code sets the margin to 132 columns:
+
+### Save Options
+
+Save options are specified using a `mxml_options_t` pointer, which you create
+using the [mxmlOptionsNew](@@) function:
 
 ```c
-mxmlSetWrapMargin(132);
+mxml_options_t *options = mxmlOptionsNew();
 ```
 
-while the following code disables wrapping by setting the margin to 0:
+The default save options will wrap output lines at column 72 but not add any
+additional whitespace otherwise.  You can change the wrap column using the
+[mxmlOptionsSetWrapMargin](@@) function.  For example, the following will set
+the wrap column to 0 which disables wrapping:
 
 ```c
-mxmlSetWrapMargin(0);
+mxmlOptionsSetWrapMargin(options, 0);
 ```
 
-
-### Save Callbacks
-
-The last arguments to the mxmlSaveXxx functions are a callback function and data
-pointer which is used to automatically insert whitespace in an XML document.
-Your callback function will be called up to four times for each element node
-with a pointer to the node and a `where` value of `MXML_WS_BEFORE_OPEN`, `MXML_WS_AFTER_OPEN`, `MXML_WS_BEFORE_CLOSE`, or `MXML_WS_AFTER_CLOSE`.  The
-callback function should return `NULL` if no whitespace should be added or the
-string to insert (spaces, tabs, carriage returns, and newlines) otherwise.
+To add additional whitespace to the output, set a whitespace callback using the
+[mxmlOptionsSetWhitespaceCallback](@@) function.  A whitespace callback accepts
+a callback data pointer, the current node, and a whitespace position value of
+`MXML_WS_BEFORE_OPEN`, `MXML_WS_AFTER_OPEN`, `MXML_WS_BEFORE_CLOSE`, or
+`MXML_WS_AFTER_CLOSE`.  The callback should return `NULL` if no whitespace
+is to be inserted or a string of spaces, tabs, carriage returns, and newlines to
+insert otherwise.
 
 The following whitespace callback can be used to add whitespace to XHTML output
 to make it more readable in a standard text editor:
@@ -557,39 +614,93 @@ whitespace_cb(void *cbdata, mxml_node_t *node, mxml_ws_t where)
 }
 ```
 
-To use this callback function, simply use the name when you call any of the save
-functions:
+The following code will set the whitespace callback for the save options:
 
 ```c
-FILE *fp;
-mxml_node_t *tree;
-
-fp = fopen("filename.xml", "w");
-mxmlSaveFile(tree, fp, whitespace_cb, /*cbdata*/NULL);
-fclose(fp);
+mxmlOptionsSetWhitespaceCallback(options, whitespace_cb, /*cbdata*/NULL);
 ```
 
 
-Memory Management
------------------
+Freeing Memory
+--------------
 
 Once you are done with the XML data, use the [mxmlDelete](@@) function to
-free the memory that is used for a particular node and its children:
+free the memory that is used for a particular node and its children.  For
+example, the following code frees the XML data loaded by the previous examples:
 
 ```c
-void
-mxmlDelete(mxml_node_t *tree);
+mxmlDelete(xml);
 ```
 
-You can also use reference counting to manage memory usage.  The
-[mxmlRetain](@@) and [mxmlRelease](@@) functions increment and decrement a
-node's use count, respectively.  When the use count goes to zero,
-[mxmlRelease](@@) calls [mxmlDelete](@@) to actually free the memory used by the
-node tree.  New nodes start with a use count of `1`.
 
+Creating New XML Documents
+==========================
 
-More About Nodes
-================
+You can create new and update existing XML documents in memory using the various
+mxmlNewXxx functions. The following code will create the XML document described
+in the [Using Mini-XML](@) chapter:
+
+```c
+mxml_node_t *xml;    /* <?xml version="1.0" charset="utf-8"?> */
+mxml_node_t *data;   /* <data> */
+mxml_node_t *node;   /* <node> */
+mxml_node_t *group;  /* <group> */
+
+xml = mxmlNewXML("1.0");
+
+data = mxmlNewElement(xml, "data");
+
+  node = mxmlNewElement(data, "node");
+  mxmlNewText(node, false, "val1");
+  node = mxmlNewElement(data, "node");
+  mxmlNewText(node, false, "val2");
+  node = mxmlNewElement(data, "node");
+  mxmlNewText(node, false, "val3");
+
+  group = mxmlNewElement(data, "group");
+
+    node = mxmlNewElement(group, "node");
+    mxmlNewText(node, false, "val4");
+    node = mxmlNewElement(group, "node");
+    mxmlNewText(node, false, "val5");
+    node = mxmlNewElement(group, "node");
+    mxmlNewText(node, false, "val6");
+
+  node = mxmlNewElement(data, "node");
+  mxmlNewText(node, false, "val7");
+  node = mxmlNewElement(data, "node");
+  mxmlNewText(node, false, "val8");
+```
+
+We start by creating the processing instruction node common to all XML files
+using the [mxmlNewXML](@@) function:
+
+```c
+xml = mxmlNewXML("1.0");
+```
+
+We then create the `<data>` node used for this document using the
+[mxmlNewElement](@@) function.  The first argument specifies the parent node
+\(`xml`) while the second specifies the element name \(`data`):
+
+```c
+data = mxmlNewElement(xml, "data");
+```
+
+Each `<node>...</node>` in the file is created using the [mxmlNewElement](@@)
+and [mxmlNewText](@@) functions.  The first argument of [mxmlNewText](@@)
+specifies the parent node \(`node`).  The second argument specifies whether
+whitespace appears before the text - `false` in this case.  The last argument
+specifies the actual text to add:
+
+```c
+node = mxmlNewElement(data, "node");
+mxmlNewText(node, false, "val1");
+```
+
+The resulting in-memory XML document can then be saved or processed just like
+one loaded from disk or a string.
+
 
 Element Nodes
 -------------
@@ -615,32 +726,13 @@ mxmlElementSetAttrf(mxml_node_t *node, const char *name,
                     const char *format, ...);
 ```
 
-The [mxmlGetElement](@@) function retrieves the element name while the
-[mxmlElementGetAttr](@@) function retrieves the value string for a named
-attribute associated with the element.  The [mxmlElementGetAttrByIndex](@@) and
-[mxmlElementGetAttrCount](@@) functions retrieve attributes by index:
-
-```c
-const char *
-mxmlGetElement(mxml_node_t *node);
-
-const char *
-mxmlElementGetAttr(mxml_node_t *node, const char *name);
-
-const char *
-mxmlElementGetAttrByIndex(mxml_node_t *node, size_t idx,
-                          const char **name);
-
-size_t
-mxmlElementGetAttrCount(mxml_node_t *node);
-```
-
 
 CDATA Nodes
 -----------
 
 CDATA \(`MXML_TYPE_CDATA`) nodes are created using the [mxmlNewCDATA](@@)
-and [mxmlNewCDATAf](@@) functions:
+and [mxmlNewCDATAf](@@) functions and set using the [mxmlSetCDATA](@@) and
+[mxmlSetCDATAf](@@) functions:
 
 ```c
 mxml_node_t *
@@ -648,13 +740,12 @@ mxmlNewCDATA(mxml_node_t *parent, const char *string);
 
 mxml_node_t *
 mxmlNewCDATAf(mxml_node_t *parent, const char *format, ...);
-```
 
-The [mxmlGetCDATA](@@) function retrieves the CDATA string pointer for a node:
+void
+mxmlSetCDATA(mxml_node_t *node, const char *string);
 
-```c
-const char *
-mxmlGetCDATA(mxml_node_t *node);
+void
+mxmlSetCDATAf(mxml_node_t *node, const char *format, ...);
 ```
 
 
@@ -662,20 +753,21 @@ Comment Nodes
 -------------
 
 Comment \(`MXML_TYPE_COMMENT`) nodes are created using the [mxmlNewComment](@@)
-and [mxmlNewCommentf](@@) functions, for example:
+and [mxmlNewCommentf](@@) functions and set using the [mxmlSetComment](@@)
+and [mxmlSetCommentf](@@) functions:
 
 ```c
-mxml_node_t *node = mxmlNewComment(" This is a comment ");
+mxml_node_t *
+mxmlNewComment(mxml_node_t *parent, const char *string);
 
-mxml_node_t *node = mxmlNewCommentf(" This is comment %d ", 42);
-```
+mxml_node_t *
+mxmlNewCommentf(mxml_node_t *parent, const char *format, ...);
 
-Similarly, the [mxmlGetComment](@@) function retrieves the comment string
-pointer for a node:
+void
+mxmlSetComment(mxml_node_t *node, const char *string);
 
-```c
-const char *comment = mxmlGetComment(node);
-/* returns " This is a comment " */
+void
+mxmlSetCommentf(mxml_node_t *node, const char *format, ...);
 ```
 
 
@@ -683,20 +775,13 @@ Processing Instruction Nodes
 ----------------------------
 
 Processing instruction \(`MXML_TYPE_DIRECTIVE`) nodes are created using the
-[mxmlNewDirective](@@) and [mxmlNewDirectivef](@@) functions:
+[mxmlNewDirective](@@) and [mxmlNewDirectivef](@@) functions and set using the
+[mxmlSetDirective](@@) and [mxmlSetDirectivef](@@) functions:
 
 ```c
 mxml_node_t *node = mxmlNewDirective("xml-stylesheet type=\"text/css\" href=\"style.css\"");
 
 mxml_node_t *node = mxmlNewDirectivef("xml version=\"%s\"", version);
-```
-
-The [mxmlGetDirective](@@) function retrieves the processing instruction string
-for a node:
-
-```c
-const char *instr = mxmlGetElement(node);
-/* returns "xml-stylesheet type=\"text/css\" href=\"style.css\"" */
 ```
 
 The [mxmlNewXML](@@) function can be used to create the top-level "xml"
@@ -712,19 +797,14 @@ Integer Nodes
 -------------
 
 Integer \(`MXML_TYPE_INTEGER`) nodes are created using the [mxmlNewInteger](@@)
-function:
+function and set using the [mxmlSetInteger](@@) function:
 
 ```c
 mxml_node_t *
 mxmlNewInteger(mxml_node_t *parent, long integer);
-```
 
-The [mxmlGetInteger](@@) function retrieves the integer value for a node:
-
-
-```c
-long
-mxmlGetInteger(mxml_node_t *node);
+void
+mxmlSetInteger(mxml_node_t *node, long integer);
 ```
 
 
@@ -732,7 +812,8 @@ Opaque String Nodes
 -------------------
 
 Opaque string \(`MXML_TYPE_OPAQUE`) nodes are created using the
-[mxmlNewOpaque](@@) and [mxmlNewOpaquef](@@) functions:
+[mxmlNewOpaque](@@) and [mxmlNewOpaquef](@@) functions and set using the
+[mxmlSetOpaque](@@) and [mxmlSetOpaquef](@@) functions:
 
 ```c
 mxml_node_t *
@@ -740,13 +821,27 @@ mxmlNewOpaque(mxml_node_t *parent, const char *opaque);
 
 mxml_node_t *
 mxmlNewOpaquef(mxml_node_t *parent, const char *format, ...);
+
+void
+mxmlSetOpaque(mxml_node_t *node, const char *opaque);
+
+void
+mxmlSetOpaquef(mxml_node_t *node, const char *format, ...);
 ```
 
-The [mxmlGetOpaque](@@) function retrieves the opaque string pointer for a node:
+
+Real Number Nodes
+-----------------
+
+Real number \(`MXML_TYPE_REAL`) nodes are created using the [mxmlNewReal](@@)
+function and set using the [mxmlSetReal](@@) function:
 
 ```c
-const char *
-mxmlGetOpaque(mxml_node_t *node);
+mxml_node_t *
+mxmlNewReal(mxml_node_t *parent, double real);
+
+void
+mxmlSetReal(mxml_node_t *node, double real);
 ```
 
 
@@ -754,7 +849,8 @@ Text Nodes
 ----------
 
 Whitespace-delimited text string \(`MXML_TYPE_TEXT`) nodes are created using the
-[mxmlNewText](@@) and [mxmlNewTextf](@@) functions.  Each text node consists of
+[mxmlNewText](@@) and [mxmlNewTextf](@@) functions and set using the
+[mxmlSetText](@@) and [mxmlSetTextf](@@) functions.  Each text node consists of
 a text string and (leading) whitespace boolean value.
 
 ```c
@@ -765,130 +861,19 @@ mxmlNewText(mxml_node_t *parent, bool whitespace,
 mxml_node_t *
 mxmlNewTextf(mxml_node_t *parent, bool whitespace,
              const char *format, ...);
-```
 
-The [mxmlGetText](@@) function retrieves the text string pointer and whitespace
-boolean value for a node:
+void
+mxmlSetText(mxml_node_t *node, bool whitespace,
+            const char *string);
 
-```c
-const char *
-mxmlGetText(mxml_node_t *node, bool *whitespace);
-```
-
-
-Real Number Nodes
---------------------
-
-Real number \(`MXML_TYPE_REAL`) nodes are created using the [mxmlNewReal](@@)
-function:
-
-```c
-mxml_node_t *
-mxmlNewReal(mxml_node_t *parent, double real);
-```
-
-The [mxmlGetReal](@@) function retrieves the real number for a node:
-
-```c
-double
-mxmlGetReal(mxml_node_t *node);
+void
+mxmlSetTextf(mxml_node_t *node, bool whitespace,
+             const char *format, ...);
 ```
 
 
-Locating Data in an XML Document
-================================
-
-Mini-XML provides many functions for enumerating, searching, and indexing XML
-documents.
-
-
-Finding Nodes
--------------
-
-The [mxmlFindPath](@@) function finds the (first) value node under a specific
-element using a "path":
-
-```c
-mxml_node_t *
-mxmlFindPath(mxml_node_t *node, const char *path);
-```
-
-The `path` string can contain the "*" wildcard to match a single element node in
-the hierarchy.  For example, the following code will find the first "node"
-element under the "group" element, first using an explicit path and then using a
-wildcard:
-
-```c
-mxml_node_t *value = mxmlFindPath(xml, "data/group/node");
-
-mxml_node_t *value = mxmlFindPath(xml, "data/*/node");
-```
-
-The [mxmlFindElement](@@) function can be used to find a named element,
-optionally matching an attribute and value:
-
-```c
-mxml_node_t *
-mxmlFindElement(mxml_node_t *node, mxml_node_t *top,
-                const char *element, const char *attr,
-                const char *value, int descend);
-```
-
-The "element", "attr", and "value" arguments can be passed as `NULL` to act as
-wildcards, e.g.:
-
-```c
-/* Find the first "a" element */
-node = mxmlFindElement(tree, tree, "a", NULL, NULL,
-                       MXML_DESCEND_ALL);
-
-/* Find the first "a" element with "href" attribute */
-node = mxmlFindElement(tree, tree, "a", "href", NULL,
-                       MXML_DESCEND_ALL);
-
-/* Find the first "a" element with "href" to a URL */
-node = mxmlFindElement(tree, tree, "a", "href",
-                       "http://msweet.org/",
-                       MXML_DESCEND_ALL);
-
-/* Find the first element with a "src" attribute*/
-node = mxmlFindElement(tree, tree, NULL, "src", NULL,
-                       MXML_DESCEND_ALL);
-
-/* Find the first element with a "src" = "foo.jpg" */
-node = mxmlFindElement(tree, tree, NULL, "src", "foo.jpg",
-                       MXML_DESCEND_ALL);
-```
-
-You can also iterate with the same function:
-
-```c
-mxml_node_t *node;
-
-for (node = mxmlFindElement(tree, tree, "element", NULL,
-                            NULL, MXML_DESCEND_ALL);
-     node != NULL;
-     node = mxmlFindElement(node, tree, "element", NULL,
-                            NULL, MXML_DESCEND_ALL))
-{
-  ... do something ...
-}
-```
-
-The `descend` argument \(`MXML_DESCEND_ALL` in the examples above) can be one of
-three constants:
-
-- `MXML_DESCEND_NONE`: ignore child nodes in the element hierarchy, instead
-  using siblings (same level) or parent nodes (above) until the top (root) node
-  is reached.
-
-- `MXML_DESCEND_FIRST`: start the search with the first child of the node, and
-  then search siblings.  You'll normally use this when iterating through direct
-  children of a parent node, e.g. all of the "node" and "group" elements under
-  the "?xml" parent node in the previous example.
-
-- `MXML_DESCEND_ALL`: search child nodes first, then sibling nodes, and then
-  parent nodes.
+Iterating and Indexing the Tree
+===============================
 
 
 Iterating Nodes
@@ -912,7 +897,7 @@ mxmlWalkPrev(mxml_node_t *node, mxml_node_t *top,
 Depending on the value of the `descend` argument, these functions will
 automatically traverse child, sibling, and parent nodes until the `top` node is
 reached.  For example, the following code will iterate over all of the nodes in
-the sample XML document in the previous section:
+the sample XML document in the [Using Mini-XML](@) chapter:
 
 ```c
 mxml_node_t *node;
@@ -1030,13 +1015,17 @@ mxmlIndexDelete(mxml_index_t *ind);
 ```
 
 
-Custom Data Types
-=================
+Advanced Usage
+==============
 
-Mini-XML supports custom data types via per-thread load and save callbacks.
-Only a single set of callbacks can be active at any time for the current thread,
-however your callbacks can store additional information in order to support
-multiple custom data types as needed.  The `MXML_TYPE_CUSTOM` node type
+
+Custom Data Types
+-----------------
+
+Mini-XML supports custom data types via load and save callback options.
+Only a single set of callbacks can be active at any time for a `mxml_options_t`
+pointer, however your callbacks can store additional information in order to
+support multiple custom data types as needed.  The `MXML_TYPE_CUSTOM` node type
 identifies custom data nodes.
 
 The [mxmlGetCustom](@@) function retrieves the custom value pointer for a node.
@@ -1047,35 +1036,38 @@ mxmlGetCustom(mxml_node_t *node);
 ```
 
 Custom \(`MXML_TYPE_CUSTOM`) nodes are created using the [mxmlNewCustom](@@)
-function or using a custom per-thread load callbacks specified using the
-[mxmlSetCustomHandlers](@@) function:
+function or using the custom load callback specified using the
+[mxmlOptionsSetCustomCallbacks](@@) function:
 
 ```c
-typedef void (*mxml_custom_destroy_cb_t)(void *);
-typedef bool (*mxml_custom_load_cb_t)(mxml_node_t *, const char *);
-typedef char *(*mxml_custom_save_cb_t)(mxml_node_t *);
+typedef void (*mxml_custfree_cb_t)(void *cbdata, void *data);
+typedef bool (*mxml_custload_cb_t)(void *cbdata, mxml_node_t *, const char *);
+typedef char *(*mxml_custsave_cb_t)(void *cbdata, mxml_node_t *);
 
 mxml_node_t *
 mxmlNewCustom(mxml_node_t *parent, void *data,
-              mxml_custom_destroy_cb_t destroy);
+              mxml_custfree_cb_t free_cb, void *free_cbdata);
 
 int
 mxmlSetCustom(mxml_node_t *node, void *data,
-              mxml_custom_destroy_cb_t destroy);
+              mxml_custfree_cb_t free_cb, void *free_cbdata);
 
 void
-mxmlSetCustomHandlers(mxml_custom_load_cb_t load,
-                      mxml_custom_save_cb_t save);
+mxmlOptionsSetCustomCallbacks(mxml_option_t *options,
+                              mxml_custload_cb_t load_cb,
+                              mxml_custsave_cb_t save_cb,
+                              void *cbdata);
 ```
 
-The load callback receives a pointer to the current data node and a string of
-opaque character data from the XML source with character entities converted to
-the corresponding UTF-8 characters.  For example, if we wanted to support a
-custom date/time type whose value is encoded as "yyyy-mm-ddThh:mm:ssZ" (ISO
-format), the load callback would look like the following:
+The load callback receives the callback data pointer, a pointer to the current
+data node, and a string of opaque character data from the XML source with
+character entities converted to the corresponding UTF-8 characters.  For
+example, if we wanted to support a custom date/time type whose value is encoded
+as "yyyy-mm-ddThh:mm:ssZ" (ISO 8601 format), the load callback would look like
+the following:
 
 ```c
-typedef struct
+typedef struct iso_date_time_s
 {
   unsigned year,    /* Year */
            month,   /* Month */
@@ -1087,7 +1079,7 @@ typedef struct
 } iso_date_time_t;
 
 bool
-load_custom(mxml_node_t *node, const char *data)
+custom_load_cb(void *cbdata, mxml_node_t *node, const char *data)
 {
   iso_date_time_t *dt;
   struct tm tmdata;
@@ -1149,11 +1141,10 @@ load_custom(mxml_node_t *node, const char *data)
   dt->unix = gmtime(&tmdata);
 
  /*
-  * Assign custom node data and destroy (free) function
-  * pointers...
+  * Assign custom node data and free callback function/data...
   */
 
-  mxmlSetCustom(node, data, free);
+  mxmlSetCustom(node, data, custom_free_cb, cbdata);
 
  /*
   * Return with no errors...
@@ -1176,7 +1167,7 @@ our ISO date/time type:
 
 ```c
 char *
-save_custom(mxml_node_t *node)
+custom_save_cb(void *cbdata, mxml_node_t *node)
 {
   char data[255];
   iso_date_time_t *dt;
@@ -1193,16 +1184,17 @@ save_custom(mxml_node_t *node)
 }
 ```
 
-You register the callback functions using the [mxmlSetCustomCallbacks](@@)
-function:
+You register these callback functions using the
+[mxmlOptionsSetCustomCallbacks](@@) function:
 
 ```c
-mxmlSetCustomCallbacks(load_custom, save_custom);
+mxmlOptionsSetCustomCallbacks(options, custom_load_cb,
+                              custom_save_cb, /*cbdata*/NULL);
 ```
 
 
 SAX (Stream) Loading of Documents
-=================================
+---------------------------------
 
 Mini-XML supports an implementation of the Simple API for XML (SAX) which allows
 you to load and process an XML document as a stream of nodes.  Aside from
@@ -1210,9 +1202,11 @@ allowing you to process XML documents of any size, the Mini-XML implementation
 also allows you to retain portions of the document in memory for later
 processing.
 
-The mxmlLoadXxx functions support a SAX callback and associated data.  The
-callback function receives the data pointer you supplied, the node, and an event
-code and returns `true` to continue processing or `false` to stop:
+The mxmlLoadXxx functions support a SAX option that is enabled by setting a
+callback function and data pointer with the [mxmlOptionsSetSAXCallback](@@)
+function.  The callback function receives the data pointer you supplied, the
+node, and an event code and returns `true` to continue processing or `false`
+to stop:
 
 ```c
 bool
@@ -1310,11 +1304,14 @@ document from stdin and then shows the title and headings in the document would
 look like:
 
 ```c
-mxml_node_t *doc, *title, *body, *heading;
+mxml_options_t *options;
+mxml_node_t *xml, *title, *body, *heading;
 
-doc = mxmlLoadFd(/*top*/NULL, /*fd*/0,
-                 /*load_cb*/NULL, /*load_cbdata*/NULL,
-                 sax_cb, /*sax_cbdata*/NULL);
+options = mxmlOptionsNew();
+mxmlOptionsSetSAXCallback(options, sax_cb,
+                          /*cbdata*/NULL);
+
+xml = mxmlLoadFd(/*top*/NULL, options, /*fd*/0);
 
 title = mxmlFindElement(doc, doc, "title", NULL, NULL,
                         MXML_DESCEND_ALL);
@@ -1332,6 +1329,9 @@ if (body)
        heading = mxmlGetNextSibling(heading))
     print_children(heading);
 }
+
+mxmlDelete(xml);
+mxmlOptionsDelete(options);
 ```
 
 The `print_children` function is:
@@ -1361,15 +1361,146 @@ print_children(mxml_node_t *parent)
 ```
 
 
+User Data
+---------
+
+Each node has an associated user data pointer that can be used to store useful
+information for your application.  The memory used by the data pointer is *not*
+managed by Mini-XML so it is up to you to free it as necessary.
+
+The [mxmlSetUserData](@@) function sets any user (application) data associated
+with the node while the [mxmlGetUserData](@@) function gets any user
+(application) data associated with the node:
+
+```c
+void *
+mxmlGetUserData(mxml_node_t *node);
+
+void
+mxmlSetUserData(mxml_node_t *node, void *user_data);
+```
+
+
+Memory Management
+-----------------
+
+Nodes support reference counting to manage memory usage.  The [mxmlRetain](@@)
+and [mxmlRelease](@@) functions increment and decrement a node's reference
+count, respectively.  When the reference count goes to zero, [mxmlRelease](@@)
+calls [mxmlDelete](@@) to actually free the memory used by the node tree.  New
+nodes start with a reference count of `1`.  You can get a node's current
+reference count using the [mxmlGetRefCount](@@) function.
+
+Strings can also support different kinds of memory management.  The default is
+to use the standard C library strdup and free functions.  To use alternate an
+alternate mechanism, call the [mxmlSetStringCallbacks](@@) function to set
+string copy and free callbacks.  The copy callback receives the callback data
+pointer and the string to copy, and returns a new string that will persist for
+the life of the XML data.  The free callback receives the callback data pointer
+and the copied string and potentially frees the memory used for it.  For
+example, the following code implements a simple string pool that eliminates
+duplicate strings:
+
+```c
+typedef struct string_pool_s
+{
+  size_t num_strings;   // Number of strings
+  size_t alloc_strings; // Allocated strings
+  char   **strings;      // Array of strings
+} string_pool_t;
+
+char *
+copy_string(string_pool_t *pool, const char *s)
+{
+  size_t i;     // Looping var
+  char   *news; // Copy of string
+
+
+  // See if the string is already in the pool...
+  for (i = 0; i < pool->num_strings; i ++)
+  {
+    if (!strcmp(pool->strings[i], s))
+      return (pool->strings[i]);
+  }
+
+  // Not in the pool, add new string
+  if (pool->num_strings >= pool->alloc_strings)
+  {
+    // Expand the string pool...
+    char **temp; // New strings array
+
+    temp = realloc(pool->strings,
+                   (pool->alloc_strings + 32) *
+                       sizeof(char *));
+
+    if (temp == NULL)
+      return (NULL);
+
+    pool->alloc_strings += 32;
+    pool->strings = temp;
+  }
+
+  if ((news = strdup(s)) != NULL)
+    pool->strings[pool->num_strings ++] = news;
+
+  return (news);
+}
+
+void
+free_string(string_pool_t *pool, char *s)
+{
+  // Do nothing here...
+}
+
+void
+free_all_strings(string_pool_t *pool)
+{
+  size_t i; // Looping var
+
+
+  for (i = 0; i < pool->num_strings; i ++)
+    free(pool->strings[i]);
+  free(pool->strings);
+}
+
+...
+
+// Setup the string pool...
+string_pool_t pool = { 0, 0, NULL };
+
+mxmlSetStringCallbacks((mxml_strcopy_cb_t)copy_string,
+                       (mxml_strfree_cb_t)free_string,
+                       &pool);
+
+// Load an XML file...
+mxml_node_t *xml;
+
+xml = mxmlLoadFilename(/*top*/NULL, /*options*/NULL,
+                       "example.xml");
+
+// Process the XML file...
+...
+
+// Free memory used by the XML file...
+mxmlDelete(xml);
+
+// Free all strings in the pool...
+free_all_strings(&pool);
+```
+
+
 Migrating from Mini-XML v3.x
 ============================
 
 The following incompatible API changes were made in Mini-XML v4.0:
 
+- Load and save callbacks and options are now managed using `mxml_options_t`
+  values.
+- The mxmlSAXLoadXxx functions have been removed in favor of setting the SAX
+  callback function and data pointers of the `mxml_options_t` value prior to
+  calling the corresponding mxmlLoadXxx functions.
 - SAX events are now named `MXML_SAX_EVENT_foo` instead of `MXML_SAX_foo`.
 - SAX callbacks now return a boolean value.
-- The mxmlSAXLoadXxx functions have been removed in favor of passing the SAX
-  callback function and data pointers to the mxmlLoadXxx functions.
 - Node types are now named `MXML_TYPE_foo` instead of `MXML_foo`.
 - Descend values are now normalized to `MXML_DESCEND_ALL`, `MXML_DESCEND_FIRST`,
   and `MXML_DESCEND_NONE`.
@@ -1378,8 +1509,6 @@ The following incompatible API changes were made in Mini-XML v4.0:
 - CDATA nodes ("`<![CDATA[...]]>`") now have their own type (`MXML_TYPE_CDATA`).
 - Comment nodes ("`<!-- ... -->`") now have their own type
   (`MXML_TYPE_COMMENT`).
-- Custom node callbacks are now set using the [mxmlSetCustomCallbacks](@@)
-  function instead of mxmlSetCustomHandlers.
 - Declaration nodes ("`<!...>`") now have their own type
   (`MXML_TYPE_DECLARATION`).
 - Element attributes are now cleared with the [mxmlElementClearAttr](@@)
@@ -1389,3 +1518,6 @@ The following incompatible API changes were made in Mini-XML v4.0:
 - Integer nodes (`MXML_TYPE_INTEGER`) now use the `long` type.
 - Text nodes (`MXML_TYPE_TEXT`) now use the `bool` type for the whitespace
   value.
+- Custom node callbacks are now set using the
+  [mxmlOptionsSetCustomCallbacks](@@) function instead of the thread-global
+  mxmlSetCustomHandlers function.

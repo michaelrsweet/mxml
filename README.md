@@ -1,21 +1,16 @@
-Mini-XML - Tiny XML Parsing Library
-===================================
+Mini-XML - Tiny XML Parsing Library v4
+======================================
 
 ![Version](https://img.shields.io/github/v/release/michaelrsweet/mxml?include_prereleases)
 ![Apache 2.0](https://img.shields.io/github/license/michaelrsweet/mxml)
 ![Build](https://github.com/michaelrsweet/mxml/workflows/Build/badge.svg)
 [![Coverity Scan Status](https://img.shields.io/coverity/scan/23959.svg)](https://scan.coverity.com/projects/michaelrsweet-mxml)
 
-> Note: The master branch contains what will become Mini-XML v4.0.  See the
-> v3.x branch for the Mini-XML v3.x source code.  Version 4.0 is not 100% source
-> compatible with earlier versions of Mini-XML.  Changes will be documented in
-> the near future...
-
 
 Mini-XML is a small XML parsing library that you can use to read XML data files
 or strings in your application without requiring large non-standard libraries.
-Mini-XML only requires a "make" program and an ANSI C compatible compiler - GCC
-works, as do most vendors' ANSI C compilers.
+Mini-XML only requires a "make" program and a C99 compatible compiler - GCC
+works, as do most vendors' C compilers.
 
 Mini-XML provides the following functionality:
 
@@ -26,8 +21,7 @@ Mini-XML provides the following functionality:
 - SAX (streamed) reading of XML files and strings to minimize memory usage.
 - Supports arbitrary element names, attributes, and attribute values with no
   preset limits, just available memory.
-- Supports integer, real, opaque ("cdata"), text, and custom data types in
-  "leaf" nodes.
+- Supports integer, real, opaque, text, and custom data types in "leaf" nodes.
 - Functions for creating and managing trees of data.
 - "Find" and "walk" functions for easily locating and navigating trees of data.
 - Support for custom string memory management functions to implement string

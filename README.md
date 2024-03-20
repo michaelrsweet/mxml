@@ -87,26 +87,24 @@ Mini-XML provides a single header file which you include:
 
     #include <mxml.h>
 
-Nodes (elements, comments, processing directives, integers, opaque strings, real
-numbers, and text strings) are represented by `mxml_node_t` objects.  New nodes
-can be created using the mxmlNewComment, mxmlNewCustom, mxmlNewDeclaration,
-mxmlNewDirective, mxmlNewElement, mxmlNewInteger, mxmlNewOpaque, mxmlNewReal,
-and mxmlNewText functions.  The top node must be the "?xml ...?" processing
-instruction.
+Nodes (elements, comments, declarations, integers, opaque strings, processing
+instructions, real numbers, and text strings) are represented by `mxml_node_t`
+pointers.  New nodes can be created using the mxmlNewXxx functions.  The top
+node must be the `<?xml ...?>` processing instruction.
 
 You load an XML file using the mxmlLoadFilename function:
 
     mxml_node_t *tree;
 
-    tree = mxmlLoadFilename(NULL, "filename.xml",
-                            /*load_cb*/NULL, /*load_cbdata*/NULL);
+    tree = mxmlLoadFilename(/*top*/NULL, /*options*/NULL,
+                            "example.xml");
 
 Similarly, you save an XML file using the mxmlSaveFilename function:
 
     mxml_node_t *tree;
 
-    mxmlSaveFilename(tree, "filename.xml",
-                     /*load_cb*/NULL, /*load_cbdata*/NULL);
+    mxmlSaveFilename(tree, /*options*/NULL,
+                     "filename.xml");
 
 There are variations of these functions for loading from or saving to file
 descriptors, `FILE` pointers, strings, and IO callbacks.
@@ -114,38 +112,37 @@ descriptors, `FILE` pointers, strings, and IO callbacks.
 You can find a named element/node using the mxmlFindElement function:
 
     mxml_node_t *node = mxmlFindElement(tree, tree, "name", "attr",
-					"value", MXML_DESCEND);
+					"value", MXML_DESCEND_ALL);
 
 The `name`, `attr`, and `value` arguments can be passed as `NULL` to act as
 wildcards, e.g.:
 
     /* Find the first "a" element */
-    node = mxmlFindElement(tree, tree, "a", NULL, NULL, MXML_DESCEND);
+    node = mxmlFindElement(tree, tree, "a", NULL, NULL, MXML_DESCEND_ALL);
 
     /* Find the first "a" element with "href" attribute */
-    node = mxmlFindElement(tree, tree, "a", "href", NULL, MXML_DESCEND);
+    node = mxmlFindElement(tree, tree, "a", "href", NULL, MXML_DESCEND_ALL);
 
     /* Find the first "a" element with "href" to a URL */
     node = mxmlFindElement(tree, tree, "a", "href",
-			   "http://www.minixml.org/",
-			   MXML_DESCEND);
+                           "https://www.msweet.org/mxml", MXML_DESCEND_ALL);
 
     /* Find the first element with a "src" attribute*/
-    node = mxmlFindElement(tree, tree, NULL, "src", NULL, MXML_DESCEND);
+    node = mxmlFindElement(tree, tree, NULL, "src", NULL, MXML_DESCEND_ALL);
 
     /* Find the first element with a "src" = "foo.jpg" */
     node = mxmlFindElement(tree, tree, NULL, "src", "foo.jpg",
-			   MXML_DESCEND);
+                           MXML_DESCEND_ALL);
 
 You can also iterate with the same function:
 
     mxml_node_t *node;
 
     for (node = mxmlFindElement(tree, tree, "name", NULL, NULL,
-				MXML_DESCEND);
+				MXML_DESCEND_ALL);
 	 node != NULL;
 	 node = mxmlFindElement(node, tree, "name", NULL, NULL,
-				MXML_DESCEND))
+				MXML_DESCEND_ALL))
     {
       ... do something ...
     }
@@ -166,7 +163,7 @@ retrieve the corresponding value from a node:
 
     double realvalue = mxmlGetReal(node);
 
-    int whitespacevalue;
+    bool whitespacevalue;
     const char *textvalue = mxmlGetText(node, &whitespacevalue);
 
 Finally, once you are done with the XML data, use the mxmlDelete function to

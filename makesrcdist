@@ -49,17 +49,17 @@ if ! grep -q "Version: $version" mxml.spec; then
 	status=1
 fi
 
-if ! grep -q "<version>$version</version>" vcnet/libmxml2_native.nuspec; then
-	echo "Update vcnet/libmxml2_native.nuspec."
+if ! grep -q "<version>$version</version>" vcnet/libmxml4_native.nuspec; then
+	echo "Update vcnet/libmxml4_native.nuspec."
 	status=1
 fi
-if ! grep -q "version=\"$version\" />" vcnet/libmxml2_native.nuspec; then
-	echo "Update vcnet/libmxml2_native.nuspec."
+if ! grep -q "version=\"$version\" />" vcnet/libmxml4_native.nuspec; then
+	echo "Update vcnet/libmxml4_native.nuspec."
 	status=1
 fi
 
-if ! grep -q "<version>$version</version>" vcnet/libmxml2_native.redist.nuspec; then
-	echo "Update vcnet/libmxml2_native.redist.nuspec."
+if ! grep -q "<version>$version</version>" vcnet/libmxml4_native.redist.nuspec; then
+	echo "Update vcnet/libmxml4_native.redist.nuspec."
 	status=1
 fi
 

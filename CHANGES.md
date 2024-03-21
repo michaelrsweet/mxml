@@ -1,3 +1,8 @@
+# Changes in Mini-XML 4.0.1
+
+- Fixed missing "docdir" definition in makefile.
+
+
 # Changes in Mini-XML 4.0.0
 
 - Now require C99 support (Issue #300)

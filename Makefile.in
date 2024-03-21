@@ -115,6 +115,7 @@ OPTIM		=	@OPTIM@
 bindir		=	@bindir@
 datadir		=	@datadir@
 datarootdir	=	@datarootdir@
+docdir		=	@docdir@
 exec_prefix	=	@exec_prefix@
 includedir	=	@includedir@
 infodir		=	@infodir@

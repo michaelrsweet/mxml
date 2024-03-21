@@ -324,12 +324,16 @@ AC_ARG_WITH([ldflags], AS_HELP_STRING([--with-ldflags=...], [Specify additional 
 
 
 dnl Directories...
-AC_ARG_WITH([docdir], AS_HELP_STRING([--with-docdir], [set directory for documentation, default=${prefix}/share/doc/mxml]), [
+AC_ARG_WITH([docdir], AS_HELP_STRING([--with-docdir], [set directory for documentation, default=${prefix}/share/doc/mxml4]), [
     docdir="$withval"
 ], [
-    docdir="NONE"
+    AS_IF([test x$enable_libmxml4_prefix != xno], [
+	docdir="\${prefix}/share/doc/mxml4"
+    ], [
+	docdir="\${prefix}/share/doc/mxml"
+    ])
 ])
-AC_SUBST(docdir)
+AC_SUBST([docdir])
 
 AS_IF([test "$prefix" = NONE], [
     # Default prefix isn't bound until AC_OUTPUT...

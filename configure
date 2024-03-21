@@ -1389,7 +1389,7 @@ Optional Packages:
   --with-dsoflags=...     Specify additional DSOFLAGS
   --with-ldflags=...      Specify additional LDFLAGS
   --with-docdir           set directory for documentation,
-                          default=${prefix}/share/doc/mxml
+                          default=${prefix}/share/doc/mxml4
 
 Some influential environment variables:
   CC          C compiler command
@@ -4661,7 +4661,16 @@ then :
 
 else $as_nop
 
-    docdir="NONE"
+    if test x$enable_libmxml4_prefix != xno
+then :
+
+	docdir="\${prefix}/share/doc/mxml4"
+
+else $as_nop
+
+	docdir="\${prefix}/share/doc/mxml"
+
+fi
 
 fi
 

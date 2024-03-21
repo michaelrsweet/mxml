@@ -87,7 +87,7 @@ ARFLAGS		=	@ARFLAGS@
 # C compiler and preprocessor...
 #
 
-CFLAGS		=	@CFLAGS@
+CFLAGS		=	@CFLAGS@ $(CPPFLAGS) $(OPTIM) $(WARNINGS)
 CPPFLAGS	=	@CPPFLAGS@
 WARNINGS	=	@WARNINGS@
 

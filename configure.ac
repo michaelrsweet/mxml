@@ -14,7 +14,7 @@ AC_PREREQ([2.70])
 
 
 dnl Package name and version...
-AC_INIT([Mini-XML], [4.0.0], [https://github.com/michaelrsweet/mxml/issues], [mxml], [https://www.msweet.org/mxml])
+AC_INIT([Mini-XML], [4.0.1], [https://github.com/michaelrsweet/mxml/issues], [mxml], [https://www.msweet.org/mxml])
 AC_CONFIG_HEADERS([config.h])
 
 MXML_VERSION="AC_PACKAGE_VERSION"

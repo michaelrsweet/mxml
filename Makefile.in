@@ -203,7 +203,9 @@ distclean:	clean
 # Install everything...
 #
 
-install:	$(TARGETS) install-$(LIBMXML) @INSTALL_STATIC@
+.NOTPARALLEL: install install-$(LIBMXML) $(INSTALL_STATIC)
+
+install:	$(TARGETS) install-$(LIBMXML) $(INSTALL_STATIC)
 	echo Installing documentation in $(BUILDROOT)$(docdir)...
 	$(INSTALL_DIR) $(BUILDROOT)$(docdir)
 	for file in $(DOCFILES); do \

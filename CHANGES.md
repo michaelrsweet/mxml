@@ -1,6 +1,11 @@
+# Changes in Mini-XML 4.0.2
+
+- Fixed an issue with GNU make and parallel builds (Issue #314)
+
+
 # Changes in Mini-XML 4.0.1
 
-- Fixed missing "docdir" definition in makefile.
+- Fixed missing "docdir" definition in makefile (Issue #313)
 - Fixed missing CPPFLAGS, OPTIM, and WARNINGS in CFLAGS in makefile.
 - Fixed configure script issues.
 

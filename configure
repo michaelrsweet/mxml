@@ -660,6 +660,7 @@ LIBMXML_STATIC
 LIBMXML
 INSTALL_STATIC
 MXML_PC
+MXML_MAN
 LIBMXML_BASE
 ARFLAGS
 LN
@@ -3989,6 +3990,7 @@ fi
 if test x$enable_libmxml4_prefix != xno
 then :
 
+    MXML_MAN="mxml4.3"
     MXML_PC="mxml4.pc"
     INCLUDE_PREFIX="/libmxml4"
     LIBMXML_BASE="libmxml4"
@@ -3996,12 +3998,14 @@ then :
 
 else $as_nop
 
+    MXML_MAN="mxml.3"
     MXML_PC="mxml.pc"
     INCLUDE_PREFIX=""
     LIBMXML_BASE="libmxml"
     LINK_MXML="-lmxml"
 
 fi
+
 
 
 

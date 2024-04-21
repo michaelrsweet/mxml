@@ -57,6 +57,7 @@ INSTALL_MAN	=	$(INSTALL) -c -m 444
 LIBMXML		=	@LIBMXML@
 LIBMXML_BASE	=	@LIBMXML_BASE@
 LIBMXML_STATIC	=	@LIBMXML_STATIC@
+MXML_MAN	=	@MXML_MAN@
 MXML_PC		=	@MXML_PC@
 
 
@@ -219,7 +220,7 @@ install:	$(TARGETS) install-$(LIBMXML) $(INSTALL_STATIC)
 	$(INSTALL_DATA) mxml4.pc $(BUILDROOT)$(libdir)/pkgconfig/$(MXML_PC)
 	echo Installing man pages in $(BUILDROOT)$(mandir)...
 	$(INSTALL_DIR) $(BUILDROOT)$(mandir)/man3
-	$(INSTALL_MAN) doc/mxml.3 $(BUILDROOT)$(mandir)/man3/mxml.3
+	$(INSTALL_MAN) doc/mxml.3 $(BUILDROOT)$(mandir)/man3/$(MXML_MAN)
 
 install-libmxml.a:	libmxml.a
 	echo Installing libmxml.a to $(BUILDROOT)$(libdir)...
@@ -274,9 +275,9 @@ uninstall: uninstall-$(LIBMXML) @UNINSTALL_STATIC@
 	echo Uninstalling headers from $(BUILDROOT)$(includedir)...
 	$(RM) $(BUILDROOT)$(includedir)/mxml.h
 	echo Uninstalling pkgconfig files from $(BUILDROOT)$(libdir)/pkgconfig...
-	$(RM) $(BUILDROOT)$(libdir)/pkgconfig/mxml.pc
+	$(RM) $(BUILDROOT)$(libdir)/pkgconfig/$(MXML_PC)
 	echo Uninstalling man pages from $(BUILDROOT)$(mandir)...
-	$(RM) $(BUILDROOT)$(mandir)/man3/mxml.3
+	$(RM) $(BUILDROOT)$(mandir)/man3/$(MXML_MAN)
 
 uninstall-libmxml.a:
 	echo Uninstalling libmxml.a from $(BUILDROOT)$(libdir)...

@@ -83,17 +83,20 @@ dnl Library prefix...
 AC_ARG_ENABLE([libmxml4-prefix], AS_HELP_STRING([--disable-libmxml4-prefix], [do not add libmxml4 prefix to header/library files]))
 
 AS_IF([test x$enable_libmxml4_prefix != xno], [
+    MXML_MAN="mxml4.3"
     MXML_PC="mxml4.pc"
     INCLUDE_PREFIX="/libmxml4"
     LIBMXML_BASE="libmxml4"
     LINK_MXML="-lmxml4"
 ], [
+    MXML_MAN="mxml.3"
     MXML_PC="mxml.pc"
     INCLUDE_PREFIX=""
     LIBMXML_BASE="libmxml"
     LINK_MXML="-lmxml"
 ])
 AC_SUBST([LIBMXML_BASE])
+AC_SUBST([MXML_MAN])
 AC_SUBST([MXML_PC])
 
 

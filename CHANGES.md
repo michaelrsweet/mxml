@@ -7,6 +7,8 @@ Changes in Mini-XML 4.0.3
 
 - The configure script now defaults the `DSOFLAGS` value to `LDFLAGS` if not
   set (Issue #325)
+- Now install the man page as "mxml4" to allow parallel installation of Mini-XML
+  4.x and 3.x (Issue #324)
 
 
 Changes in Mini-XML 4.0.2

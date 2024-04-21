@@ -25,6 +25,9 @@
 #  else
 #    define MXML_DEBUG(...)
 #  endif // DEBUG
+#  ifndef MXML_ALLOC_SIZE
+#    define MXML_ALLOC_SIZE	16	// Allocation increment
+#  endif // !MXML_ALLOC_SIZE
 #  define MXML_TAB		8	// Tabs every N columns
 
 

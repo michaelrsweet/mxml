@@ -247,7 +247,7 @@ mxmlIndexNew(mxml_node_t *node,		// I - XML node tree
   {
     if (ind->num_nodes >= ind->alloc_nodes)
     {
-      if ((temp = realloc(ind->nodes, (ind->alloc_nodes + 64) * sizeof(mxml_node_t *))) == NULL)
+      if ((temp = realloc(ind->nodes, (ind->alloc_nodes + MXML_ALLOC_SIZE) * sizeof(mxml_node_t *))) == NULL)
       {
         // Unable to allocate memory for the index, so abort...
         mxmlIndexDelete(ind);
@@ -255,7 +255,7 @@ mxmlIndexNew(mxml_node_t *node,		// I - XML node tree
       }
 
       ind->nodes       = temp;
-      ind->alloc_nodes += 64;
+      ind->alloc_nodes += MXML_ALLOC_SIZE;
     }
 
     ind->nodes[ind->num_nodes ++] = current;

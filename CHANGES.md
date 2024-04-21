@@ -5,10 +5,12 @@ Changes in Mini-XML
 Changes in Mini-XML 4.0.3
 -------------------------
 
-- The configure script now defaults the `DSOFLAGS` value to `LDFLAGS` if not
-  set (Issue #325)
+- Now default the `DSOFLAGS` value to `LDFLAGS` in the configure script
+  (Issue #325)
 - Now install the man page as "mxml4" to allow parallel installation of Mini-XML
   4.x and 3.x (Issue #324)
+- Added `MXML_ALLOC_SIZE` define to control the allocation increment for
+  attributes and indices (Issue #318)
 - Fixed `mxmlSetDeclarationf` implementation (Issue #322)
 
 

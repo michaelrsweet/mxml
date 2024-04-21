@@ -250,11 +250,15 @@ mxml_set_attr(mxml_node_t *node,	// I - Element node
   }
 
   // Add a new attribute...
-  if ((attr = realloc(node->value.element.attrs, (node->value.element.num_attrs + 1) * sizeof(_mxml_attr_t))) == NULL)
-    return (false);
+  if ((node->value.element.num_attrs % MXML_ALLOC_SIZE) == 0)
+  {
+    if ((attr = realloc(node->value.element.attrs, (node->value.element.num_attrs + MXML_ALLOC_SIZE) * sizeof(_mxml_attr_t))) == NULL)
+      return (false);
 
-  node->value.element.attrs = attr;
-  attr += node->value.element.num_attrs;
+    node->value.element.attrs = attr;
+  }
+
+  attr = node->value.element.attrs + node->value.element.num_attrs;
 
   if ((attr->name = _mxml_strcopy(name)) == NULL)
     return (false);

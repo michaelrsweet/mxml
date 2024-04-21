@@ -14,7 +14,7 @@ AC_PREREQ([2.70])
 
 
 dnl Package name and version...
-AC_INIT([Mini-XML], [4.0.2], [https://github.com/michaelrsweet/mxml/issues], [mxml], [https://www.msweet.org/mxml])
+AC_INIT([Mini-XML], [4.0.3], [https://github.com/michaelrsweet/mxml/issues], [mxml], [https://www.msweet.org/mxml])
 AC_CONFIG_HEADERS([config.h])
 
 MXML_VERSION="AC_PACKAGE_VERSION"
@@ -42,10 +42,10 @@ AS_IF([test "x$host_os_version" = x], [
 dnl Compiler options...
 CFLAGS="${CFLAGS:=}"
 CPPFLAGS="${CPPFLAGS:=}"
-DSO=""
-DSOFLAGS="${DSOFLAGS:=}"
 LDFLAGS="${LDFLAGS:=}"
 LIBS="${LIBS:=}"
+DSO=""
+DSOFLAGS="${DSOFLAGS:=$LDFLAGS}"
 OPTIM="${OPTIM:=}"
 
 AC_SUBST([DSO])

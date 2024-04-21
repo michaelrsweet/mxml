@@ -1,16 +1,30 @@
-# Changes in Mini-XML 4.0.2
+Changes in Mini-XML
+===================
+
+
+Changes in Mini-XML 4.0.3
+-------------------------
+
+- The configure script now defaults the `DSOFLAGS` value to `LDFLAGS` if not
+  set (Issue #325)
+
+
+Changes in Mini-XML 4.0.2
+-------------------------
 
 - Fixed an issue with GNU make and parallel builds (Issue #314)
 
 
-# Changes in Mini-XML 4.0.1
+Changes in Mini-XML 4.0.1
+-------------------------
 
 - Fixed missing "docdir" definition in makefile (Issue #313)
 - Fixed missing CPPFLAGS, OPTIM, and WARNINGS in CFLAGS in makefile.
 - Fixed configure script issues.
 
 
-# Changes in Mini-XML 4.0.0
+Changes in Mini-XML 4.0.0
+-------------------------
 
 - Now require C99 support (Issue #300)
 - Now install as "libmxml4" to support installing both Mini-XML 3.x and 4.x at
@@ -34,18 +48,21 @@
 - Fixed real number support in non-English locales (Issue #311)
 
 
-# Changes in Mini-XML 3.3.2
+Changes in Mini-XML 3.3.2
+-------------------------
 
 - Updated the autoconf `config.guess` and `config.sub` scripts to support cross
   compilation for newer platforms (Issue #296)
 
 
-# Changes in Mini-XML 3.3.1
+Changes in Mini-XML 3.3.1
+-------------------------
 
 - Fixed POSIX thread cleanup bugs (Issue #293)
 
 
-# Changes in Mini-XML 3.3
+Changes in Mini-XML 3.3
+-----------------------
 
 - Cleaned up usage of `free` throughout the library (Issue #276)
 - Added more error handling to the library (Issue #277)
@@ -56,7 +73,8 @@
 - Fixed some minor memory leaks found by Coverity.
 
 
-# Changes in Mini-XML 3.2
+Changes in Mini-XML 3.2
+-----------------------
 
 - Added support for shared libraries on Haiku (Issue #262)
 - Fixed handling of unquoted attribute values that start with a Unicode
@@ -65,7 +83,8 @@
 - Fixed some minor issues identified by the LGTM security scanner.
 
 
-# Changes in Mini-XML 3.1
+Changes in Mini-XML 3.1
+-----------------------
 
 - The `mxmlLoad*` functions now print an error when the XML does not start with
   `<` and no parent node is supplied (Issue #256, Issue #259)
@@ -73,7 +92,8 @@
 - Fixed some DSO installation issues on Linux.
 
 
-# Changes in Mini-XML 3.0
+Changes in Mini-XML 3.0
+-----------------------
 
 - Changed the license to Apache 2.0 with exceptions (Issue #239)
 - All of the internal node structures are now moved out of the public header
@@ -90,7 +110,8 @@
 - The `_mxml_strdupf` function did not work on Windows (Issue #245)
 
 
-# Changes in Mini-XML 2.12
+Changes in Mini-XML 2.12
+------------------------
 
 - Added yet more documentation about using `MXML_OPAQUE_CALLBACK` when you want
   to get full strings for inline text instead of separated words (Issue #190)
@@ -106,7 +127,8 @@
 - Updated the markdown and ZIP container libraries used for mxmldoc.
 
 
-# Changes in Mini-XML 2.11
+Changes in Mini-XML 2.11
+------------------------
 
 - CDATA nodes now omit the trailing "]]" for convenience (Issue #170)
 - Fixed a memory leak in mxmlDelete (Issue #183)
@@ -131,7 +153,8 @@
   `@exclude man,html@`.
 
 
-# Changes in Mini-XML 2.10
+Changes in Mini-XML 2.10
+------------------------
 
 - The version number in mxml.h was wrong.
 - The mxml.spec file was out of date.
@@ -144,13 +167,15 @@
   stack space depending on the file. (CVE-2016-4571)
 
 
-# Changes in Mini-XML 2.9
+Changes in Mini-XML 2.9
+-----------------------
 
 - `mxmlLoad*` did not correctly load value nodes with `MXML_NO_CALLBACK` or
   `MXML_TEXT_CALLBACK`.
 
 
-# Changes in Mini-XML 2.8
+Changes in Mini-XML 2.8
+-----------------------
 
 - Now call docsetutil using xcrun on macOS.
 - mxmldoc did not escape special HTML characters inside @code foo@ comments.
@@ -161,7 +186,8 @@
 - Fixed an XML fragment loading problem.
 
 
-# Changes in Mini-XML 2.7
+Changes in Mini-XML 2.7
+-----------------------
 
 - Added 64-bit configurations to the VC++ project files.
 - Fixed conformance of mxmldoc's HTML and CSS output.
@@ -181,7 +207,8 @@
   and its children.
 
 
-# Changes in Mini-XML 2.6
+Changes in Mini-XML 2.6
+-----------------------
 
 - Documentation fixes.
 - The mxmldoc program did not handle typedef comments properly.
@@ -198,7 +225,8 @@
 - The mxmldoc program now handles "typedef enum name {} name" correctly.
 
 
-# Changes in Mini-XML 2.5
+Changes in Mini-XML 2.5
+-----------------------
 
 - The mxmldoc program now makes greater use of CSS and supports a `--css` option
   to embed an alternate stylesheet.
@@ -215,7 +243,8 @@
 - Spaces around the "=" in attributes were not supported.
 
 
-# Changes in Mini-XML 2.4
+Changes in Mini-XML 2.4
+-----------------------
 
 - Fixed shared library build problems on HP-UX and Mac macOS.
 - The mxmldoc program did not output argument descriptions for functions
@@ -234,7 +263,8 @@
   node with no children as the top node.
 
 
-# Changes in Mini-XML 2.3
+Changes in Mini-XML 2.3
+-----------------------
 
 - Added two exceptions to the LGPL to support static linking of applications
   against Mini-XML.
@@ -268,13 +298,15 @@
 - `mxmlLoad*` crashed when reporting an error in some invalid XML.
 
 
-# Changes in Mini-XML 2.2.2
+Changes in Mini-XML 2.2.2
+-------------------------
 
 - `mxmlLoad*` did not treat custom data as opaque, so whitespace characters
   would be lost.
 
 
-# Changes in Mini-XML 2.2.1
+Changes in Mini-XML 2.2.1
+-------------------------
 
 - `mxmlLoad*` now correctly return NULL on error.
 - `mxmlNewInteger`, `mxmlNewOpaque`, `mxmlNewReal`, `mxmlNewText`, and
@@ -285,7 +317,8 @@
 - Fixed a MingW/Cygwin compilation problem.
 
 
-# Changes in Mini-XML 2.2
+Changes in Mini-XML 2.2
+-----------------------
 
 - Added shared library support.
 - `mxmlLoad*` now return an error when an XML stream contains illegal control
@@ -298,7 +331,8 @@
 - Added checking for invalid comment termination: "--->" is not allowed.
 
 
-# Changes in Mini-XML 2.1
+Changes in Mini-XML 2.1
+-----------------------
 
 - Added support for custom data nodes.
 - Now treat UTF-8 sequences which are longer than necessary as an error.
@@ -309,7 +343,8 @@
 - Fixed multi-word UTF-16 handling.
 
 
-# Changes in Mini-XML 2.0
+Changes in Mini-XML 2.0
+-----------------------
 
 - New programmers manual.
 - Added Visual C++ project files for Microsoft Windows users.

@@ -57,7 +57,7 @@
 // Version number
 //
 
-#  define MXML_VERSION "Mini-XML v4.0.2"
+#  define MXML_VERSION "Mini-XML v4.0.3"
 
 
 //

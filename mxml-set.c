@@ -263,10 +263,10 @@ mxmlSetDeclarationf(mxml_node_t *node,	// I - Node
 
 
   // Range check input...
-  if (node && node->type == MXML_TYPE_ELEMENT && node->child && node->child->type == MXML_TYPE_COMMENT)
+  if (node && node->type == MXML_TYPE_ELEMENT && node->child && node->child->type == MXML_TYPE_DECLARATION)
     node = node->child;
 
-  if (!node || node->type != MXML_TYPE_COMMENT)
+  if (!node || node->type != MXML_TYPE_DECLARATION)
     return (false);
   else if (!format)
     return (false);

@@ -9,6 +9,7 @@ Changes in Mini-XML 4.0.3
   set (Issue #325)
 - Now install the man page as "mxml4" to allow parallel installation of Mini-XML
   4.x and 3.x (Issue #324)
+- Fixed `mxmlSetDeclarationf` implementation (Issue #322)
 
 
 Changes in Mini-XML 4.0.2

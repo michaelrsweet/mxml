@@ -538,7 +538,7 @@ _mxml_error(mxml_options_t *options,	// I - Load/save options
   va_end(ap);
 
   // And then display the error message...
-  if (options->error_cb)
+  if (options && options->error_cb)
     (options->error_cb)(options->error_cbdata, s);
   else
     fprintf(stderr, "%s\n", s);

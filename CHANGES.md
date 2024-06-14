@@ -2,6 +2,13 @@ Changes in Mini-XML
 ===================
 
 
+Changes in Mini-XML 4.0.4
+-------------------------
+
+- Fixed an issue when reporting errors with a `NULL` options pointer
+  (Issue #329)
+
+
 Changes in Mini-XML 4.0.3
 -------------------------
 

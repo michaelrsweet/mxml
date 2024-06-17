@@ -24,3 +24,6 @@
 /vcnet/packages
 /xcode/mxml.xcodeproj/project.xcworkspace
 /xcode/mxml.xcodeproj/xcuserdata
+
+# CMake
+build/

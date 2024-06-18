@@ -27,6 +27,7 @@ include(CheckTypeSize)
 
 set(MXML_VERSION ${CMAKE_PROJECT_VERSION})
 
+check_type_size("long long" SIZEOF_LONG_LONG)
 if(SIZEOF_LONG_LONG EQUAL "8")
     option(HAVE_LONG_LONG_INT "Enable LONG LONG" ON)
 else()

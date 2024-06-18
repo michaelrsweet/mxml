@@ -43,7 +43,7 @@ endif()
 # For now assume inline on.
 option(inline "Enable inline function support." ON)
 
-configure_file(cmakeconfig.h.in ${CMAKE_CURRENT_SOURCE_DIR}/config.h
+configure_file(cmakeconfig.h.in config.h
     @ONLY
 )
 
@@ -64,8 +64,10 @@ set(MXML_PRIVATE
 set(MXML_PUBLIC
     mxml.h
 
-    config.h # TODO: Cmake configure.
+    ${CMAKE_CURRENT_BINARY_DIR}/config.h
 )
+
+message(STATUS ${CMAKE_CURRENT_BINARY_DIR})
 
 set(MXML_COLLECTIVE
     ${MXML_PRIVATE}
@@ -76,7 +78,10 @@ add_library(${PROJECT_NAME}
     ${MXML_COLLECTIVE}
 )
 
-# Dfine the header(s) for this library and add to build path.
+# For config.h
+include_directories(${CMAKE_CURRENT_BINARY_DIR})
+
+# Define the header(s) for this library and add to build path.
 target_include_directories(${PROJECT_NAME} PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/>
 )

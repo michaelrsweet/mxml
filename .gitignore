@@ -25,5 +25,9 @@
 /xcode/mxml.xcodeproj/project.xcworkspace
 /xcode/mxml.xcodeproj/xcuserdata
 
+# IDE
+.vscode/
+
 # CMake
 build/
+CMakeUserPresets.json

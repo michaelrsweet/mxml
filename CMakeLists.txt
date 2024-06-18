@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.19) # First to support Apple Silicon.
-project(mxml C)
+project(mxml LANGUAGES C VERSION 4.0.4)
 enable_testing()
 
 # Don't allow source tree pollution.
@@ -17,6 +17,36 @@ if(WIN32)
         _WIN32_WINNT=0x0601
     )
 endif(WIN32)
+
+# ==================== CONFIG.H ====================
+# For now this is not thorough, but enough to work for 
+# the vast majority of cases.
+
+include(CheckIncludeFile)
+include(CheckTypeSize)
+
+set(MXML_VERSION ${CMAKE_PROJECT_VERSION})
+
+if(SIZEOF_LONG_LONG EQUAL "8")
+    option(HAVE_LONG_LONG_INT "Enable LONG LONG" ON)
+else()
+    option(HAVE_LONG_LONG_INT "Enable LONG LONG" OFF)
+endif()
+
+if (WIN32)
+    option(HAVE_PTHREAD_H "Disable PTHREAD for windows." OFF)
+else()
+    option(HAVE_PTHREAD_H "Enable PTHREAD as it's probably available." ON)
+endif()
+
+# For now assume inline on.
+option(inline "Enable inline function support." ON)
+
+configure_file(cmakeconfig.h.in ${CMAKE_CURRENT_SOURCE_DIR}/config.h
+    @ONLY
+)
+
+# ==================== /CONFIG.H ====================
 
 set(MXML_PRIVATE
     mxml-attr.c

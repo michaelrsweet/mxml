@@ -1,0 +1,42 @@
+//
+// A CMake compatible version for config.h.in -> config.h
+//
+
+#ifndef MXML_CONFIG_H
+#  define MXML_CONFIG_H
+#  include <stdio.h>
+#  include <stdlib.h>
+#  include <string.h>
+#  include <stdarg.h>
+#  include <ctype.h>
+
+
+//
+// Version number
+//
+
+#cmakedefine MXML_VERSION "@CMAKE_PROJECT_VERSION@"
+
+
+//
+// Inline function support
+//
+
+#cmakedefine inline
+
+
+//
+// Long long support
+//
+
+#cmakedefine01 HAVE_LONG_LONG_INT
+
+
+//
+// Have <pthread.h>?
+//
+
+#cmakedefine01 HAVE_PTHREAD_H
+
+
+#endif // !MXML_CONFIG_H

@@ -244,7 +244,7 @@ function.  For example, to specify a callback function called `my_type_cb` that
 has no callback data:
 
 ```c
-mxmlOptionsSetTypeValue(options, my_type_cb, /*cbdata*/NULL);
+mxmlOptionsSetTypeCallback(options, my_type_cb, /*cbdata*/NULL);
 ```
 
 The `my_type_cb` function accepts the callback data pointer (`NULL` in this

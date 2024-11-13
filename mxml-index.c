@@ -265,7 +265,7 @@ mxmlIndexNew(mxml_node_t *node,		// I - XML node tree
 
   // Sort nodes based upon the search criteria...
   if (ind->num_nodes > 1)
-    (ind, 0, ind->num_nodes - 1);
+    index_sort(ind, 0, ind->num_nodes - 1);
 
   // Return the new index...
   return (ind);

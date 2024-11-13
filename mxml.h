@@ -210,9 +210,9 @@ extern mxml_node_t	*mxmlNewText(mxml_node_t *parent, bool whitespace, const char
 extern mxml_node_t	*mxmlNewTextf(mxml_node_t *parent, bool whitespace, const char *format, ...) MXML_FORMAT(3,4);
 extern mxml_node_t	*mxmlNewXML(const char *version);
 
-extern int		mxmlRelease(mxml_node_t *node);
+extern size_t		mxmlRelease(mxml_node_t *node);
 extern void		mxmlRemove(mxml_node_t *node);
-extern int		mxmlRetain(mxml_node_t *node);
+extern size_t		mxmlRetain(mxml_node_t *node);
 
 extern char		*mxmlSaveAllocString(mxml_node_t *node, mxml_options_t *options);
 extern bool		mxmlSaveFd(mxml_node_t *node, mxml_options_t *options, int fd);

@@ -1733,7 +1733,7 @@ mxml_read_cb_fd(int    *fd,		// I - File descriptor
   int		rbytes;			// Bytes read
 
 
-  rbytes = read(*fd, buffer, bytes);
+  rbytes = read(*fd, buffer, (unsigned int)bytes);
 
 #else
   ssize_t	rbytes;			// Bytes read
@@ -1894,7 +1894,7 @@ mxml_io_cb_fd(int    *fd,		// I - File descriptor
   ssize_t	wbytes;			// Bytes written
 
 
-  while ((wbytes = write(*fd, buffer, bytes)) < 0)
+  while ((wbytes = write(*fd, buffer, (unsigned int)bytes)) < 0)
   {
     if (errno != EINTR && errno != EAGAIN)
       break;

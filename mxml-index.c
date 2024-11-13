@@ -80,7 +80,7 @@ mxmlIndexFind(mxml_index_t *ind,	// I - Index to search
               const char   *element,	// I - Element name to find, if any
 	      const char   *value)	// I - Attribute value, if any
 {
-  int		diff,			// Difference between names
+  size_t	diff,			// Difference between names
 		current,		// Current entity in search
 		first,			// First entity in search
 		last;			// Last entity in search

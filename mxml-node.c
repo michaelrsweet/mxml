@@ -801,7 +801,7 @@ mxmlNewXML(const char *version)		// I - Version number to use
 // is deleted via @link mxmlDelete@.
 //
 
-int					// O - New reference count
+size_t					// O - New reference count
 mxmlRelease(mxml_node_t *node)		// I - Node
 {
   if (node)
@@ -827,7 +827,7 @@ mxmlRelease(mxml_node_t *node)		// I - Node
 // 'mxmlRetain()' - Retain a node.
 //
 
-int					// O - New reference count
+size_t					// O - New reference count
 mxmlRetain(mxml_node_t *node)		// I - Node
 {
   if (node)

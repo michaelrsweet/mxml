@@ -7,6 +7,7 @@ Changes in Mini-XML 4.0.4
 
 - Fixed an issue when reporting errors with a `NULL` options pointer
   (Issue #329)
+- Fixed some compiler warnings (Issue #333)
 
 
 Changes in Mini-XML 4.0.3

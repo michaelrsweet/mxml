@@ -232,7 +232,7 @@ mxml_set_attr(mxml_node_t *node,	// I - Element node
               const char  *name,	// I - Attribute name
               char        *value)	// I - Attribute value
 {
-  int		i;			// Looping var
+  size_t	i;			// Looping var
   _mxml_attr_t	*attr;			// New attribute
 
 

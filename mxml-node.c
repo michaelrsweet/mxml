@@ -811,9 +811,13 @@ mxmlRelease(mxml_node_t *node)		// I - Node
       mxmlDelete(node);
       return (0);
     }
+    else if (node->ref_count < INT_MAX)
+    {
+      return ((int)node->ref_count);
+    }
     else
     {
-      return (node->ref_count);
+      return (INT_MAX);
     }
   }
   else
@@ -831,9 +835,18 @@ int					// O - New reference count
 mxmlRetain(mxml_node_t *node)		// I - Node
 {
   if (node)
-    return (++ node->ref_count);
+  {
+    node->ref_count ++;
+
+    if (node->ref_count < INT_MAX)
+      return ((int)node->ref_count);
+    else
+      return (INT_MAX);
+  }
   else
+  {
     return (-1);
+  }
 }
 
 

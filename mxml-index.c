@@ -18,7 +18,7 @@
 
 static int	index_compare(mxml_index_t *ind, mxml_node_t *first, mxml_node_t *second);
 static int	index_find(mxml_index_t *ind, const char *element, const char *value, mxml_node_t *node);
-static void	index_sort(mxml_index_t *ind, int left, int right);
+static void	index_sort(mxml_index_t *ind, size_t left, size_t right);
 
 
 //
@@ -80,8 +80,8 @@ mxmlIndexFind(mxml_index_t *ind,	// I - Index to search
               const char   *element,	// I - Element name to find, if any
 	      const char   *value)	// I - Attribute value, if any
 {
-  int		diff,			// Difference between names
-		current,		// Current entity in search
+  int		diff;			// Difference between names
+  size_t	current,		// Current entity in search
 		first,			// First entity in search
 		last;			// Last entity in search
 
@@ -369,12 +369,12 @@ index_find(mxml_index_t *ind,		// I - Index
 
 static void
 index_sort(mxml_index_t *ind,		// I - Index to sort
-           int          left,		// I - Left node in partition
-	   int          right)		// I - Right node in partition
+           size_t       left,		// I - Left node in partition
+	   size_t       right)		// I - Right node in partition
 {
   mxml_node_t	*pivot,			// Pivot node
 		*temp;			// Swap node
-  int		templ,			// Temporary left node
+  size_t	templ,			// Temporary left node
 		tempr;			// Temporary right node
 
 

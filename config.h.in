@@ -33,13 +33,6 @@
 
 
 //
-// Long long support
-//
-
-#  undef HAVE_LONG_LONG_INT
-
-
-//
 // Have <pthread.h>?
 //
 

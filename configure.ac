@@ -104,10 +104,6 @@ dnl Inline functions...
 AC_C_INLINE
 
 
-dnl Check for "long long" support...
-AC_TYPE_LONG_LONG_INT
-
-
 dnl Threading support
 AC_ARG_ENABLE([threads], AS_HELP_STRING([--disable-threads], [disable multi-threading support, default=no]))
 

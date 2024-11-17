@@ -1,4 +1,4 @@
-.TH mxml 3 "Mini-XML API" "2024-03-20" "Mini-XML API"
+.TH mxml 3 "Mini-XML API" "2024-11-17" "Mini-XML API"
 .SH NAME
 mxml \- Mini-XML API
 .SH INCLUDE FILE
@@ -852,10 +852,9 @@ mxml_node_t * mxmlNewCDATA (
 .fi
 .PP
 The new CDATA node is added to the end of the specified parent's child
-list.  The constant \fBMXML_NO_PARENT\fR can be used to specify that the new
-CDATA node has no parent.  The data string must be nul-terminated and
-is copied into the new node.  CDATA nodes currently use the
-\fBMXML_TYPE_ELEMENT\fR type.
+list.  The constant \fBNULL\fR can be used to specify that the new CDATA node
+has no parent.  The data string must be nul-terminated and is copied into the
+new node.
 .SS mxmlNewCDATAf
 Create a new formatted CDATA node.
 .PP
@@ -867,10 +866,10 @@ mxml_node_t * mxmlNewCDATAf (
 );
 .fi
 .PP
-The new CDATA node is added to the end of the specified parent's
-child list.  The constant \fBMXML_NO_PARENT\fR can be used to specify that
-the new opaque string node has no parent.  The format string must be
-nul-terminated and is formatted into the new node.
+The new CDATA node is added to the end of the specified parent's child list.
+The constant \fBNULL\fR can be used to specify that the new opaque string node
+has no parent.  The format string must be nul-terminated and is formatted
+into the new node.
 .SS mxmlNewComment
 Create a new comment node.
 .PP
@@ -882,9 +881,9 @@ mxml_node_t * mxmlNewComment (
 .fi
 .PP
 The new comment node is added to the end of the specified parent's child
-list.  The constant \fBMXML_NO_PARENT\fR can be used to specify that the new
-comment node has no parent.  The comment string must be nul-terminated and
-is copied into the new node.
+list.  The constant \fBNULL\fR can be used to specify that the new comment node
+has no parent.  The comment string must be nul-terminated and is copied into
+the new node.
 .SS mxmlNewCommentf
 Create a new formatted comment string node.
 .PP
@@ -897,9 +896,9 @@ mxml_node_t * mxmlNewCommentf (
 .fi
 .PP
 The new comment string node is added to the end of the specified parent's
-child list.  The constant \fBMXML_NO_PARENT\fR can be used to specify that
-the new opaque string node has no parent.  The format string must be
-nul-terminated and is formatted into the new node.
+child list.  The constant \fBNULL\fR can be used to specify that the new opaque
+string node has no parent.  The format string must be nul-terminated and is
+formatted into the new node.
 .SS mxmlNewCustom
 Create a new custom data node.
 .PP
@@ -926,7 +925,7 @@ mxml_node_t * mxmlNewDeclaration (
 .fi
 .PP
 The new declaration node is added to the end of the specified parent's child
-list.  The constant \fBMXML_NO_PARENT\fR can be used to specify that the new
+list.  The constant \fBNULL\fR can be used to specify that the new
 declaration node has no parent.  The declaration string must be nul-
 terminated and is copied into the new node.
 .SS mxmlNewDeclarationf
@@ -941,7 +940,7 @@ mxml_node_t * mxmlNewDeclarationf (
 .fi
 .PP
 The new declaration node is added to the end of the specified parent's
-child list.  The constant \fBMXML_NO_PARENT\fR can be used to specify that
+child list.  The constant \fBNULL\fR can be used to specify that
 the new opaque string node has no parent.  The format string must be
 nul-terminated and is formatted into the new node.
 .SS mxmlNewDirective
@@ -955,9 +954,9 @@ mxml_node_t * mxmlNewDirective (
 .fi
 .PP
 The new processing instruction node is added to the end of the specified
-parent's child list.  The constant \fBMXML_NO_PARENT\fR can be used to specify
-that the new processing instruction node has no parent.  The data string must
-be nul-terminated and is copied into the new node.
+parent's child list.  The constant \fBNULL\fR can be used to specify that the new
+processing instruction node has no parent.  The data string must be
+nul-terminated and is copied into the new node.
 .SS mxmlNewDirectivef
 Create a new formatted processing instruction node.
 .PP
@@ -969,9 +968,9 @@ mxml_node_t * mxmlNewDirectivef (
 );
 .fi
 .PP
-The new processing instruction node is added to the end of the specified parent's
-child list.  The constant \fBMXML_NO_PARENT\fR can be used to specify that
-the new opaque string node has no parent.  The format string must be
+The new processing instruction node is added to the end of the specified
+parent's child list.  The constant \fBNULL\fR can be used to specify that the new
+opaque string node has no parent.  The format string must be
 nul-terminated and is formatted into the new node.
 .SS mxmlNewElement
 Create a new element node.
@@ -984,8 +983,8 @@ mxml_node_t * mxmlNewElement (
 .fi
 .PP
 The new element node is added to the end of the specified parent's child
-list. The constant \fBMXML_NO_PARENT\fR can be used to specify that the new
-element node has no parent.
+list. The constant \fBNULL\fR can be used to specify that the new element node
+has no parent.
 .SS mxmlNewInteger
 Create a new integer node.
 .PP
@@ -997,8 +996,8 @@ mxml_node_t * mxmlNewInteger (
 .fi
 .PP
 The new integer node is added to the end of the specified parent's child
-list. The constant \fBMXML_NO_PARENT\fR can be used to specify that the new
-integer node has no parent.
+list. The constant \fBNULL\fR can be used to specify that the new integer node
+has no parent.
 .SS mxmlNewOpaque
 Create a new opaque string.
 .PP
@@ -1010,9 +1009,9 @@ mxml_node_t * mxmlNewOpaque (
 .fi
 .PP
 The new opaque string node is added to the end of the specified parent's
-child list.  The constant \fBMXML_NO_PARENT\fR can be used to specify that
-the new opaque string node has no parent.  The opaque string must be nul-
-terminated and is copied into the new node.
+child list.  The constant \fBNULL\fR can be used to specify that the new opaque
+string node has no parent.  The opaque string must be nul-terminated and is
+copied into the new node.
 .SS mxmlNewOpaquef
 Create a new formatted opaque string node.
 .PP
@@ -1025,9 +1024,9 @@ mxml_node_t * mxmlNewOpaquef (
 .fi
 .PP
 The new opaque string node is added to the end of the specified parent's
-child list.  The constant \fBMXML_NO_PARENT\fR can be used to specify that
-the new opaque string node has no parent.  The format string must be
-nul-terminated and is formatted into the new node.
+child list.  The constant \fBNULL\fR can be used to specify that the new opaque
+string node has no parent.  The format string must be nul-terminated and is
+formatted into the new node.
 .SS mxmlNewReal
 Create a new real number node.
 .PP
@@ -1039,8 +1038,8 @@ mxml_node_t * mxmlNewReal (
 .fi
 .PP
 The new real number node is added to the end of the specified parent's
-child list.  The constant \fBMXML_NO_PARENT\fR can be used to specify that
-the new real number node has no parent.
+child list.  The constant \fBNULL\fR can be used to specify that the new real
+number node has no parent.
 .SS mxmlNewText
 Create a new text fragment node.
 .PP
@@ -1053,10 +1052,10 @@ mxml_node_t * mxmlNewText (
 .fi
 .PP
 The new text node is added to the end of the specified parent's child
-list.  The constant \fBMXML_NO_PARENT\fR can be used to specify that the new
-text node has no parent.  The whitespace parameter is used to specify
-whether leading whitespace is present before the node.  The text
-string must be nul-terminated and is copied into the new node.
+list.  The constant \fBNULL\fR can be used to specify that the new text node has
+no parent.  The whitespace parameter is used to specify whether leading
+whitespace is present before the node.  The text string must be
+nul-terminated and is copied into the new node.
 .SS mxmlNewTextf
 Create a new formatted text fragment node.
 .PP
@@ -1070,10 +1069,10 @@ mxml_node_t * mxmlNewTextf (
 .fi
 .PP
 The new text node is added to the end of the specified parent's child
-list.  The constant \fBMXML_NO_PARENT\fR can be used to specify that the new
-text node has no parent.  The whitespace parameter is used to specify
-whether leading whitespace is present before the node.  The format
-string must be nul-terminated and is formatted into the new node.
+list.  The constant \fBNULL\fR can be used to specify that the new text node has
+no parent.  The whitespace parameter is used to specify whether leading
+whitespace is present before the node.  The format string must be
+nul-terminated and is formatted into the new node.
 .SS mxmlNewXML
 Create a new XML document tree.
 .PP

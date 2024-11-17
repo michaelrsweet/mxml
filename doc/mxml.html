@@ -191,13 +191,13 @@ span.comment {
   color: darkgreen;
 }
 span.directive {
-  color: purple;
+  color: red;
 }
 span.number {
   color: brown;
 }
 span.reserved {
-  color: darkcyan;
+  color: blue;
 }
 span.string {
   color: magenta;
@@ -472,19 +472,19 @@ span.string {
 <h3 class="title" id="api-basics">API Basics</h3>
 <p>Every piece of information in an XML file is stored in memory in &quot;nodes&quot;. Nodes are represented by <code>mxml_node_t</code> pointers. Each node has an associated type, value(s), a parent node, sibling nodes (previous and next), potentially first and last child nodes, and an optional user data pointer.</p>
 <p>For example, if you have an XML file like the following:</p>
-<pre><code class="language-xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
-&lt;data&gt;
-    &lt;node&gt;val1&lt;/node&gt;
-    &lt;node&gt;val2&lt;/node&gt;
-    &lt;node&gt;val3&lt;/node&gt;
-    &lt;group&gt;
-        &lt;node&gt;val4&lt;/node&gt;
-        &lt;node&gt;val5&lt;/node&gt;
-        &lt;node&gt;val6&lt;/node&gt;
-    &lt;/group&gt;
-    &lt;node&gt;val7&lt;/node&gt;
-    &lt;node&gt;val8&lt;/node&gt;
-&lt;/data&gt;
+<pre><code class="language-xml"><span class="directive">&lt;?xml version=</span><span class="string">&quot;1.0&quot;</span><span class="directive"> encoding=</span><span class="string">&quot;utf-8&quot;</span><span class="directive">?&gt;</span>
+<span class="reserved">&lt;data&gt;</span>
+    <span class="reserved">&lt;node&gt;</span>val1<span class="reserved">&lt;/node&gt;</span>
+    <span class="reserved">&lt;node&gt;</span>val2<span class="reserved">&lt;/node&gt;</span>
+    <span class="reserved">&lt;node&gt;</span>val3<span class="reserved">&lt;/node&gt;</span>
+    <span class="reserved">&lt;group&gt;</span>
+        <span class="reserved">&lt;node&gt;</span>val4<span class="reserved">&lt;/node&gt;</span>
+        <span class="reserved">&lt;node&gt;</span>val5<span class="reserved">&lt;/node&gt;</span>
+        <span class="reserved">&lt;node&gt;</span>val6<span class="reserved">&lt;/node&gt;</span>
+    <span class="reserved">&lt;/group&gt;</span>
+    <span class="reserved">&lt;node&gt;</span>val7<span class="reserved">&lt;/node&gt;</span>
+    <span class="reserved">&lt;node&gt;</span>val8<span class="reserved">&lt;/node&gt;</span>
+<span class="reserved">&lt;/data&gt;</span>
 </code></pre>
 <p>the node tree for the file would look like the following in memory:</p>
 <pre><code>&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
@@ -562,7 +562,7 @@ xml = mxmlLoadFilename(<span class="comment">/*top*/</span>NULL, <span class="co
 <pre><code class="language-c">mxmlOptionsSetTypeValue(options, MXML_TYPE_OPAQUE);
 </code></pre>
 <p>For more complex XML documents, you can specify a callback that returns the type of value for a given element node using the <a href="#mxmlOptionsSetTypeCallback">mxmlOptionsSetTypeCallback</a> function. For example, to specify a callback function called <code>my_type_cb</code> that has no callback data:</p>
-<pre><code class="language-c">mxmlOptionsSetTypeValue(options, my_type_cb, <span class="comment">/*cbdata*/</span>NULL);
+<pre><code class="language-c">mxmlOptionsSetTypeCallback(options, my_type_cb, <span class="comment">/*cbdata*/</span>NULL);
 </code></pre>
 <p>The <code>my_type_cb</code> function accepts the callback data pointer (<code>NULL</code> in this case) and the <code>mxml_node_t</code> pointer for the current element and returns a <code>mxml_type_t</code> enumeration value specifying the value type for child nodes. For example, the following function looks at the &quot;type&quot; attribute and the element name to determine the value types of the node's children:</p>
 <pre><code class="language-c">mxml_type_t
@@ -1445,7 +1445,7 @@ free_all_strings(&amp;pool);
 <h3 class="function"><a id="mxmlAdd">mxmlAdd</a></h3>
 <p class="description">Add a node to a tree.</p>
 <p class="code">
-void mxmlAdd(<a href="#mxml_node_t">mxml_node_t</a> *parent, <a href="#mxml_add_t">mxml_add_t</a> add, <a href="#mxml_node_t">mxml_node_t</a> *child, <a href="#mxml_node_t">mxml_node_t</a> *node);</p>
+<span class="reserved">void</span> mxmlAdd(<a href="#mxml_node_t">mxml_node_t</a> *parent, <a href="#mxml_add_t">mxml_add_t</a> add, <a href="#mxml_node_t">mxml_node_t</a> *child, <a href="#mxml_node_t">mxml_node_t</a> *node);</p>
 <h4 class="parameters">Parameters</h4>
 <table class="list"><tbody>
 <tr><th>parent</th>
@@ -1466,7 +1466,7 @@ is <code>NULL</code>, the new node is placed at the beginning of the child list
 <h3 class="function"><a id="mxmlDelete">mxmlDelete</a></h3>
 <p class="description">Delete a node and all of its children.</p>
 <p class="code">
-void mxmlDelete(<a href="#mxml_node_t">mxml_node_t</a> *node);</p>
+<span class="reserved">void</span> mxmlDelete(<a href="#mxml_node_t">mxml_node_t</a> *node);</p>
 <h4 class="parameters">Parameters</h4>
 <table class="list"><tbody>
 <tr><th>node</th>
@@ -1479,7 +1479,7 @@ parent using the <a href="#mxmlRemove"><code>mxmlRemove</code></a> function.</p>
 <h3 class="function"><a id="mxmlElementClearAttr">mxmlElementClearAttr</a></h3>
 <p class="description">Remove an attribute from an element.</p>
 <p class="code">
-void mxmlElementClearAttr(<a href="#mxml_node_t">mxml_node_t</a> *node, const char *name);</p>
+<span class="reserved">void</span> mxmlElementClearAttr(<a href="#mxml_node_t">mxml_node_t</a> *node, <span class="reserved">const</span> <span class="reserved">char</span> *name);</p>
 <h4 class="parameters">Parameters</h4>
 <table class="list"><tbody>
 <tr><th>node</th>
@@ -1492,7 +1492,7 @@ void mxmlElementClearAttr(<a href="#mxml_node_t">mxml_node_t</a> *node, const ch
 <h3 class="function"><a id="mxmlElementGetAttr">mxmlElementGetAttr</a></h3>
 <p class="description">Get the value of an attribute.</p>
 <p class="code">
-const char *mxmlElementGetAttr(<a href="#mxml_node_t">mxml_node_t</a> *node, const char *name);</p>
+<span class="reserved">const</span> <span class="reserved">char</span> *mxmlElementGetAttr(<a href="#mxml_node_t">mxml_node_t</a> *node, <span class="reserved">const</span> <span class="reserved">char</span> *name);</p>
 <h4 class="parameters">Parameters</h4>
 <table class="list"><tbody>
 <tr><th>node</th>
@@ -1509,7 +1509,7 @@ attribute does not exist.</p>
 <h3 class="function"><a id="mxmlElementGetAttrByIndex">mxmlElementGetAttrByIndex</a></h3>
 <p class="description">Get an attribute by index.</p>
 <p class="code">
-const char *mxmlElementGetAttrByIndex(<a href="#mxml_node_t">mxml_node_t</a> *node, size_t idx, const char **name);</p>
+<span class="reserved">const</span> <span class="reserved">char</span> *mxmlElementGetAttrByIndex(<a href="#mxml_node_t">mxml_node_t</a> *node, size_t idx, <span class="reserved">const</span> <span class="reserved">char</span> **name);</p>
 <h4 class="parameters">Parameters</h4>
 <table class="list"><tbody>
 <tr><th>node</th>
@@ -1543,7 +1543,7 @@ element.</p>
 <h3 class="function"><a id="mxmlElementSetAttr">mxmlElementSetAttr</a></h3>
 <p class="description">Set an attribute for an element.</p>
 <p class="code">
-void mxmlElementSetAttr(<a href="#mxml_node_t">mxml_node_t</a> *node, const char *name, const char *value);</p>
+<span class="reserved">void</span> mxmlElementSetAttr(<a href="#mxml_node_t">mxml_node_t</a> *node, <span class="reserved">const</span> <span class="reserved">char</span> *name, <span class="reserved">const</span> <span class="reserved">char</span> *value);</p>
 <h4 class="parameters">Parameters</h4>
 <table class="list"><tbody>
 <tr><th>node</th>
@@ -1560,7 +1560,7 @@ is replaced by the new string value.  The string value is copied.</p>
 <h3 class="function"><a id="mxmlElementSetAttrf">mxmlElementSetAttrf</a></h3>
 <p class="description">Set an attribute with a formatted value.</p>
 <p class="code">
-void mxmlElementSetAttrf(<a href="#mxml_node_t">mxml_node_t</a> *node, const char *name, const char *format, ...);</p>
+<span class="reserved">void</span> mxmlElementSetAttrf(<a href="#mxml_node_t">mxml_node_t</a> *node, <span class="reserved">const</span> <span class="reserved">char</span> *name, <span class="reserved">const</span> <span class="reserved">char</span> *format, ...);</p>
 <h4 class="parameters">Parameters</h4>
 <table class="list"><tbody>
 <tr><th>node</th>
@@ -1579,7 +1579,7 @@ attribute is replaced by the new formatted string value.</p>
 <h3 class="function"><a id="mxmlFindElement">mxmlFindElement</a></h3>
 <p class="description">Find the named element.</p>
 <p class="code">
-<a href="#mxml_node_t">mxml_node_t</a> *mxmlFindElement(<a href="#mxml_node_t">mxml_node_t</a> *node, <a href="#mxml_node_t">mxml_node_t</a> *top, const char *element, const char *attr, const char *value, <a href="#mxml_descend_t">mxml_descend_t</a> descend);</p>
+<a href="#mxml_node_t">mxml_node_t</a> *mxmlFindElement(<a href="#mxml_node_t">mxml_node_t</a> *node, <a href="#mxml_node_t">mxml_node_t</a> *top, <span class="reserved">const</span> <span class="reserved">char</span> *element, <span class="reserved">const</span> <span class="reserved">char</span> *attr, <span class="reserved">const</span> <span class="reserved">char</span> *value, <a href="#mxml_descend_t">mxml_descend_t</a> descend);</p>
 <h4 class="parameters">Parameters</h4>
 <table class="list"><tbody>
 <tr><th>node</th>
@@ -1610,7 +1610,7 @@ nodes; normally you will use <code>MXML_DESCEND_FIRST</code> for the initial sea
 <h3 class="function"><a id="mxmlFindPath">mxmlFindPath</a></h3>
 <p class="description">Find a node with the given path.</p>
 <p class="code">
-<a href="#mxml_node_t">mxml_node_t</a> *mxmlFindPath(<a href="#mxml_node_t">mxml_node_t</a> *top, const char *path);</p>
+<a href="#mxml_node_t">mxml_node_t</a> *mxmlFindPath(<a href="#mxml_node_t">mxml_node_t</a> *top, <span class="reserved">const</span> <span class="reserved">char</span> *path);</p>
 <h4 class="parameters">Parameters</h4>
 <table class="list"><tbody>
 <tr><th>top</th>
@@ -1631,7 +1631,7 @@ children and the first child is a value node.</p>
 <h3 class="function"><a id="mxmlGetCDATA">mxmlGetCDATA</a></h3>
 <p class="description">Get the value for a CDATA node.</p>
 <p class="code">
-const char *mxmlGetCDATA(<a href="#mxml_node_t">mxml_node_t</a> *node);</p>
+<span class="reserved">const</span> <span class="reserved">char</span> *mxmlGetCDATA(<a href="#mxml_node_t">mxml_node_t</a> *node);</p>
 <h4 class="parameters">Parameters</h4>
 <table class="list"><tbody>
 <tr><th>node</th>
@@ -1645,7 +1645,7 @@ the node is not a CDATA element.</p>
 <h3 class="function"><a id="mxmlGetComment">mxmlGetComment</a></h3>
 <p class="description">Get the value for a comment node.</p>
 <p class="code">
-const char *mxmlGetComment(<a href="#mxml_node_t">mxml_node_t</a> *node);</p>
+<span class="reserved">const</span> <span class="reserved">char</span> *mxmlGetComment(<a href="#mxml_node_t">mxml_node_t</a> *node);</p>
 <h4 class="parameters">Parameters</h4>
 <table class="list"><tbody>
 <tr><th>node</th>
@@ -1659,7 +1659,7 @@ if the node is not a comment.</p>
 <h3 class="function"><a id="mxmlGetCustom">mxmlGetCustom</a></h3>
 <p class="description">Get the value for a custom node.</p>
 <p class="code">
-const void *mxmlGetCustom(<a href="#mxml_node_t">mxml_node_t</a> *node);</p>
+<span class="reserved">const</span> <span class="reserved">void</span> *mxmlGetCustom(<a href="#mxml_node_t">mxml_node_t</a> *node);</p>
 <h4 class="parameters">Parameters</h4>
 <table class="list"><tbody>
 <tr><th>node</th>
@@ -1673,7 +1673,7 @@ the node (or its first child) is not a custom value node.</p>
 <h3 class="function"><a id="mxmlGetDeclaration">mxmlGetDeclaration</a></h3>
 <p class="description">Get the value for a declaration node.</p>
 <p class="code">
-const char *mxmlGetDeclaration(<a href="#mxml_node_t">mxml_node_t</a> *node);</p>
+<span class="reserved">const</span> <span class="reserved">char</span> *mxmlGetDeclaration(<a href="#mxml_node_t">mxml_node_t</a> *node);</p>
 <h4 class="parameters">Parameters</h4>
 <table class="list"><tbody>
 <tr><th>node</th>
@@ -1687,7 +1687,7 @@ returned if the node is not a declaration.</p>
 <h3 class="function"><a id="mxmlGetDirective">mxmlGetDirective</a></h3>
 <p class="description">Get the value for a processing instruction node.</p>
 <p class="code">
-const char *mxmlGetDirective(<a href="#mxml_node_t">mxml_node_t</a> *node);</p>
+<span class="reserved">const</span> <span class="reserved">char</span> *mxmlGetDirective(<a href="#mxml_node_t">mxml_node_t</a> *node);</p>
 <h4 class="parameters">Parameters</h4>
 <table class="list"><tbody>
 <tr><th>node</th>
@@ -1701,7 +1701,7 @@ returned if the node is not a processing instruction.</p>
 <h3 class="function"><a id="mxmlGetElement">mxmlGetElement</a></h3>
 <p class="description">Get the name for an element node.</p>
 <p class="code">
-const char *mxmlGetElement(<a href="#mxml_node_t">mxml_node_t</a> *node);</p>
+<span class="reserved">const</span> <span class="reserved">char</span> *mxmlGetElement(<a href="#mxml_node_t">mxml_node_t</a> *node);</p>
 <h4 class="parameters">Parameters</h4>
 <table class="list"><tbody>
 <tr><th>node</th>
@@ -1730,7 +1730,7 @@ has no children.</p>
 <p class="description">Get the integer value from the specified node or its
                      first child.</p>
 <p class="code">
-long mxmlGetInteger(<a href="#mxml_node_t">mxml_node_t</a> *node);</p>
+<span class="reserved">long</span> mxmlGetInteger(<a href="#mxml_node_t">mxml_node_t</a> *node);</p>
 <h4 class="parameters">Parameters</h4>
 <table class="list"><tbody>
 <tr><th>node</th>
@@ -1771,7 +1771,7 @@ if this is the last child for the current parent.</p>
 <h3 class="function"><a id="mxmlGetOpaque">mxmlGetOpaque</a></h3>
 <p class="description">Get an opaque string value for a node or its first child.</p>
 <p class="code">
-const char *mxmlGetOpaque(<a href="#mxml_node_t">mxml_node_t</a> *node);</p>
+<span class="reserved">const</span> <span class="reserved">char</span> *mxmlGetOpaque(<a href="#mxml_node_t">mxml_node_t</a> *node);</p>
 <h4 class="parameters">Parameters</h4>
 <table class="list"><tbody>
 <tr><th>node</th>
@@ -1812,7 +1812,7 @@ returned if this is the first child for the current parent.</p>
 <h3 class="function"><a id="mxmlGetReal">mxmlGetReal</a></h3>
 <p class="description">Get the real value for a node or its first child.</p>
 <p class="code">
-double mxmlGetReal(<a href="#mxml_node_t">mxml_node_t</a> *node);</p>
+<span class="reserved">double</span> mxmlGetReal(<a href="#mxml_node_t">mxml_node_t</a> *node);</p>
 <h4 class="parameters">Parameters</h4>
 <table class="list"><tbody>
 <tr><th>node</th>
@@ -1841,7 +1841,7 @@ reference count.</p>
 <h3 class="function"><a id="mxmlGetText">mxmlGetText</a></h3>
 <p class="description">Get the text value for a node or its first child.</p>
 <p class="code">
-const char *mxmlGetText(<a href="#mxml_node_t">mxml_node_t</a> *node, bool *whitespace);</p>
+<span class="reserved">const</span> <span class="reserved">char</span> *mxmlGetText(<a href="#mxml_node_t">mxml_node_t</a> *node, <span class="reserved">bool</span> *whitespace);</p>
 <h4 class="parameters">Parameters</h4>
 <table class="list"><tbody>
 <tr><th>node</th>
@@ -1879,7 +1879,7 @@ using the <a href="#mxmlGetOpaque"><code>mxmlGetOpaque</code></a> function inste
 <h3 class="function"><a id="mxmlGetUserData">mxmlGetUserData</a></h3>
 <p class="description">Get the user data pointer for a node.</p>
 <p class="code">
-void *mxmlGetUserData(<a href="#mxml_node_t">mxml_node_t</a> *node);</p>
+<span class="reserved">void</span> *mxmlGetUserData(<a href="#mxml_node_t">mxml_node_t</a> *node);</p>
 <h4 class="parameters">Parameters</h4>
 <table class="list"><tbody>
 <tr><th>node</th>
@@ -1892,7 +1892,7 @@ void *mxmlGetUserData(<a href="#mxml_node_t">mxml_node_t</a> *node);</p>
 <h3 class="function"><a id="mxmlIndexDelete">mxmlIndexDelete</a></h3>
 <p class="description">Delete an index.</p>
 <p class="code">
-void mxmlIndexDelete(<a href="#mxml_index_t">mxml_index_t</a> *ind);</p>
+<span class="reserved">void</span> mxmlIndexDelete(<a href="#mxml_index_t">mxml_index_t</a> *ind);</p>
 <h4 class="parameters">Parameters</h4>
 <table class="list"><tbody>
 <tr><th>ind</th>
@@ -1918,7 +1918,7 @@ index.</p>
 <h3 class="function"><a id="mxmlIndexFind">mxmlIndexFind</a></h3>
 <p class="description">Find the next matching node.</p>
 <p class="code">
-<a href="#mxml_node_t">mxml_node_t</a> *mxmlIndexFind(<a href="#mxml_index_t">mxml_index_t</a> *ind, const char *element, const char *value);</p>
+<a href="#mxml_node_t">mxml_node_t</a> *mxmlIndexFind(<a href="#mxml_index_t">mxml_index_t</a> *ind, <span class="reserved">const</span> <span class="reserved">char</span> *element, <span class="reserved">const</span> <span class="reserved">char</span> *value);</p>
 <h4 class="parameters">Parameters</h4>
 <table class="list"><tbody>
 <tr><th>ind</th>
@@ -1951,7 +1951,7 @@ size_t mxmlIndexGetCount(<a href="#mxml_index_t">mxml_index_t</a> *ind);</p>
 <h3 class="function"><a id="mxmlIndexNew">mxmlIndexNew</a></h3>
 <p class="description">Create a new index.</p>
 <p class="code">
-<a href="#mxml_index_t">mxml_index_t</a> *mxmlIndexNew(<a href="#mxml_node_t">mxml_node_t</a> *node, const char *element, const char *attr);</p>
+<a href="#mxml_index_t">mxml_index_t</a> *mxmlIndexNew(<a href="#mxml_node_t">mxml_node_t</a> *node, <span class="reserved">const</span> <span class="reserved">char</span> *element, <span class="reserved">const</span> <span class="reserved">char</span> *attr);</p>
 <h4 class="parameters">Parameters</h4>
 <table class="list"><tbody>
 <tr><th>node</th>
@@ -1990,7 +1990,7 @@ first time.</p>
 <h3 class="function"><a id="mxmlLoadFd">mxmlLoadFd</a></h3>
 <p class="description">Load a file descriptor into an XML node tree.</p>
 <p class="code">
-<a href="#mxml_node_t">mxml_node_t</a> *mxmlLoadFd(<a href="#mxml_node_t">mxml_node_t</a> *top, <a href="#mxml_options_t">mxml_options_t</a> *options, int fd);</p>
+<a href="#mxml_node_t">mxml_node_t</a> *mxmlLoadFd(<a href="#mxml_node_t">mxml_node_t</a> *top, <a href="#mxml_options_t">mxml_options_t</a> *options, <span class="reserved">int</span> fd);</p>
 <h4 class="parameters">Parameters</h4>
 <table class="list"><tbody>
 <tr><th>top</th>
@@ -2038,7 +2038,7 @@ function to create options when loading XML data.</p>
 <h3 class="function"><a id="mxmlLoadFilename">mxmlLoadFilename</a></h3>
 <p class="description">Load a file into an XML node tree.</p>
 <p class="code">
-<a href="#mxml_node_t">mxml_node_t</a> *mxmlLoadFilename(<a href="#mxml_node_t">mxml_node_t</a> *top, <a href="#mxml_options_t">mxml_options_t</a> *options, const char *filename);</p>
+<a href="#mxml_node_t">mxml_node_t</a> *mxmlLoadFilename(<a href="#mxml_node_t">mxml_node_t</a> *top, <a href="#mxml_options_t">mxml_options_t</a> *options, <span class="reserved">const</span> <span class="reserved">char</span> *filename);</p>
 <h4 class="parameters">Parameters</h4>
 <table class="list"><tbody>
 <tr><th>top</th>
@@ -2062,7 +2062,7 @@ function to create options when loading XML data.</p>
 <h3 class="function"><a id="mxmlLoadIO">mxmlLoadIO</a></h3>
 <p class="description">Load an XML node tree using a read callback.</p>
 <p class="code">
-<a href="#mxml_node_t">mxml_node_t</a> *mxmlLoadIO(<a href="#mxml_node_t">mxml_node_t</a> *top, <a href="#mxml_options_t">mxml_options_t</a> *options, <a href="#mxml_io_cb_t">mxml_io_cb_t</a> io_cb, void *io_cbdata);</p>
+<a href="#mxml_node_t">mxml_node_t</a> *mxmlLoadIO(<a href="#mxml_node_t">mxml_node_t</a> *top, <a href="#mxml_options_t">mxml_options_t</a> *options, <a href="#mxml_io_cb_t">mxml_io_cb_t</a> io_cb, <span class="reserved">void</span> *io_cbdata);</p>
 <h4 class="parameters">Parameters</h4>
 <table class="list"><tbody>
 <tr><th>top</th>
@@ -2101,7 +2101,7 @@ size_t my_io_cb(void <em>cbdata, void </em>buffer, size_t bytes)
 <h3 class="function"><a id="mxmlLoadString">mxmlLoadString</a></h3>
 <p class="description">Load a string into an XML node tree.</p>
 <p class="code">
-<a href="#mxml_node_t">mxml_node_t</a> *mxmlLoadString(<a href="#mxml_node_t">mxml_node_t</a> *top, <a href="#mxml_options_t">mxml_options_t</a> *options, const char *s);</p>
+<a href="#mxml_node_t">mxml_node_t</a> *mxmlLoadString(<a href="#mxml_node_t">mxml_node_t</a> *top, <a href="#mxml_options_t">mxml_options_t</a> *options, <span class="reserved">const</span> <span class="reserved">char</span> *s);</p>
 <h4 class="parameters">Parameters</h4>
 <table class="list"><tbody>
 <tr><th>top</th>
@@ -2125,11 +2125,11 @@ function to create options when loading XML data.</p>
 <h3 class="function"><a id="mxmlNewCDATA">mxmlNewCDATA</a></h3>
 <p class="description">Create a new CDATA node.</p>
 <p class="code">
-<a href="#mxml_node_t">mxml_node_t</a> *mxmlNewCDATA(<a href="#mxml_node_t">mxml_node_t</a> *parent, const char *data);</p>
+<a href="#mxml_node_t">mxml_node_t</a> *mxmlNewCDATA(<a href="#mxml_node_t">mxml_node_t</a> *parent, <span class="reserved">const</span> <span class="reserved">char</span> *data);</p>
 <h4 class="parameters">Parameters</h4>
 <table class="list"><tbody>
 <tr><th>parent</th>
-<td class="description">Parent node or <code>MXML_NO_PARENT</code></td></tr>
+<td class="description">Parent node or <code>NULL</code></td></tr>
 <tr><th>data</th>
 <td class="description">Data string</td></tr>
 </tbody></table>
@@ -2137,18 +2137,17 @@ function to create options when loading XML data.</p>
 <p class="description">New node</p>
 <h4 class="discussion">Discussion</h4>
 <p class="discussion">The new CDATA node is added to the end of the specified parent's child
-list.  The constant <code>MXML_NO_PARENT</code> can be used to specify that the new
-CDATA node has no parent.  The data string must be nul-terminated and
-is copied into the new node.  CDATA nodes currently use the
-<code>MXML_TYPE_ELEMENT</code> type.</p>
+list.  The constant <code>NULL</code> can be used to specify that the new CDATA node
+has no parent.  The data string must be nul-terminated and is copied into the
+new node.</p>
 <h3 class="function"><a id="mxmlNewCDATAf">mxmlNewCDATAf</a></h3>
 <p class="description">Create a new formatted CDATA node.</p>
 <p class="code">
-<a href="#mxml_node_t">mxml_node_t</a> *mxmlNewCDATAf(<a href="#mxml_node_t">mxml_node_t</a> *parent, const char *format, ...);</p>
+<a href="#mxml_node_t">mxml_node_t</a> *mxmlNewCDATAf(<a href="#mxml_node_t">mxml_node_t</a> *parent, <span class="reserved">const</span> <span class="reserved">char</span> *format, ...);</p>
 <h4 class="parameters">Parameters</h4>
 <table class="list"><tbody>
 <tr><th>parent</th>
-<td class="description">Parent node or <code>MXML_NO_PARENT</code></td></tr>
+<td class="description">Parent node or <code>NULL</code></td></tr>
 <tr><th>format</th>
 <td class="description">Printf-style format string</td></tr>
 <tr><th>...</th>
@@ -2157,18 +2156,18 @@ is copied into the new node.  CDATA nodes currently use the
 <h4 class="returnvalue">Return Value</h4>
 <p class="description">New node</p>
 <h4 class="discussion">Discussion</h4>
-<p class="discussion">The new CDATA node is added to the end of the specified parent's
-child list.  The constant <code>MXML_NO_PARENT</code> can be used to specify that
-the new opaque string node has no parent.  The format string must be
-nul-terminated and is formatted into the new node.</p>
+<p class="discussion">The new CDATA node is added to the end of the specified parent's child list.
+The constant <code>NULL</code> can be used to specify that the new opaque string node
+has no parent.  The format string must be nul-terminated and is formatted
+into the new node.</p>
 <h3 class="function"><a id="mxmlNewComment">mxmlNewComment</a></h3>
 <p class="description">Create a new comment node.</p>
 <p class="code">
-<a href="#mxml_node_t">mxml_node_t</a> *mxmlNewComment(<a href="#mxml_node_t">mxml_node_t</a> *parent, const char *comment);</p>
+<a href="#mxml_node_t">mxml_node_t</a> *mxmlNewComment(<a href="#mxml_node_t">mxml_node_t</a> *parent, <span class="reserved">const</span> <span class="reserved">char</span> *comment);</p>
 <h4 class="parameters">Parameters</h4>
 <table class="list"><tbody>
 <tr><th>parent</th>
-<td class="description">Parent node or <code>MXML_NO_PARENT</code></td></tr>
+<td class="description">Parent node or <code>NULL</code></td></tr>
 <tr><th>comment</th>
 <td class="description">Comment string</td></tr>
 </tbody></table>
@@ -2176,17 +2175,17 @@ nul-terminated and is formatted into the new node.</p>
 <p class="description">New node</p>
 <h4 class="discussion">Discussion</h4>
 <p class="discussion">The new comment node is added to the end of the specified parent's child
-list.  The constant <code>MXML_NO_PARENT</code> can be used to specify that the new
-comment node has no parent.  The comment string must be nul-terminated and
-is copied into the new node.</p>
+list.  The constant <code>NULL</code> can be used to specify that the new comment node
+has no parent.  The comment string must be nul-terminated and is copied into
+the new node.</p>
 <h3 class="function"><a id="mxmlNewCommentf">mxmlNewCommentf</a></h3>
 <p class="description">Create a new formatted comment string node.</p>
 <p class="code">
-<a href="#mxml_node_t">mxml_node_t</a> *mxmlNewCommentf(<a href="#mxml_node_t">mxml_node_t</a> *parent, const char *format, ...);</p>
+<a href="#mxml_node_t">mxml_node_t</a> *mxmlNewCommentf(<a href="#mxml_node_t">mxml_node_t</a> *parent, <span class="reserved">const</span> <span class="reserved">char</span> *format, ...);</p>
 <h4 class="parameters">Parameters</h4>
 <table class="list"><tbody>
 <tr><th>parent</th>
-<td class="description">Parent node or <code>MXML_NO_PARENT</code></td></tr>
+<td class="description">Parent node or <code>NULL</code></td></tr>
 <tr><th>format</th>
 <td class="description">Printf-style format string</td></tr>
 <tr><th>...</th>
@@ -2196,17 +2195,17 @@ is copied into the new node.</p>
 <p class="description">New node</p>
 <h4 class="discussion">Discussion</h4>
 <p class="discussion">The new comment string node is added to the end of the specified parent's
-child list.  The constant <code>MXML_NO_PARENT</code> can be used to specify that
-the new opaque string node has no parent.  The format string must be
-nul-terminated and is formatted into the new node.</p>
+child list.  The constant <code>NULL</code> can be used to specify that the new opaque
+string node has no parent.  The format string must be nul-terminated and is
+formatted into the new node.</p>
 <h3 class="function"><a id="mxmlNewCustom">mxmlNewCustom</a></h3>
 <p class="description">Create a new custom data node.</p>
 <p class="code">
-<a href="#mxml_node_t">mxml_node_t</a> *mxmlNewCustom(<a href="#mxml_node_t">mxml_node_t</a> *parent, void *data, <a href="#mxml_custfree_cb_t">mxml_custfree_cb_t</a> free_cb, void *free_cbdata);</p>
+<a href="#mxml_node_t">mxml_node_t</a> *mxmlNewCustom(<a href="#mxml_node_t">mxml_node_t</a> *parent, <span class="reserved">void</span> *data, <a href="#mxml_custfree_cb_t">mxml_custfree_cb_t</a> free_cb, <span class="reserved">void</span> *free_cbdata);</p>
 <h4 class="parameters">Parameters</h4>
 <table class="list"><tbody>
 <tr><th>parent</th>
-<td class="description">Parent node or <code>MXML_NO_PARENT</code></td></tr>
+<td class="description">Parent node or <code>NULL</code></td></tr>
 <tr><th>data</th>
 <td class="description">Pointer to data</td></tr>
 <tr><th>free_cb</th>
@@ -2223,11 +2222,11 @@ data when the node is deleted.</p>
 <h3 class="function"><a id="mxmlNewDeclaration">mxmlNewDeclaration</a></h3>
 <p class="description">Create a new declaraction node.</p>
 <p class="code">
-<a href="#mxml_node_t">mxml_node_t</a> *mxmlNewDeclaration(<a href="#mxml_node_t">mxml_node_t</a> *parent, const char *declaration);</p>
+<a href="#mxml_node_t">mxml_node_t</a> *mxmlNewDeclaration(<a href="#mxml_node_t">mxml_node_t</a> *parent, <span class="reserved">const</span> <span class="reserved">char</span> *declaration);</p>
 <h4 class="parameters">Parameters</h4>
 <table class="list"><tbody>
 <tr><th>parent</th>
-<td class="description">Parent node or <code>MXML_NO_PARENT</code></td></tr>
+<td class="description">Parent node or <code>NULL</code></td></tr>
 <tr><th>declaration</th>
 <td class="description">Declaration string</td></tr>
 </tbody></table>
@@ -2235,17 +2234,17 @@ data when the node is deleted.</p>
 <p class="description">New node</p>
 <h4 class="discussion">Discussion</h4>
 <p class="discussion">The new declaration node is added to the end of the specified parent's child
-list.  The constant <code>MXML_NO_PARENT</code> can be used to specify that the new
+list.  The constant <code>NULL</code> can be used to specify that the new
 declaration node has no parent.  The declaration string must be nul-
 terminated and is copied into the new node.</p>
 <h3 class="function"><a id="mxmlNewDeclarationf">mxmlNewDeclarationf</a></h3>
 <p class="description">Create a new formatted declaration node.</p>
 <p class="code">
-<a href="#mxml_node_t">mxml_node_t</a> *mxmlNewDeclarationf(<a href="#mxml_node_t">mxml_node_t</a> *parent, const char *format, ...);</p>
+<a href="#mxml_node_t">mxml_node_t</a> *mxmlNewDeclarationf(<a href="#mxml_node_t">mxml_node_t</a> *parent, <span class="reserved">const</span> <span class="reserved">char</span> *format, ...);</p>
 <h4 class="parameters">Parameters</h4>
 <table class="list"><tbody>
 <tr><th>parent</th>
-<td class="description">Parent node or <code>MXML_NO_PARENT</code></td></tr>
+<td class="description">Parent node or <code>NULL</code></td></tr>
 <tr><th>format</th>
 <td class="description">Printf-style format string</td></tr>
 <tr><th>...</th>
@@ -2255,17 +2254,17 @@ terminated and is copied into the new node.</p>
 <p class="description">New node</p>
 <h4 class="discussion">Discussion</h4>
 <p class="discussion">The new declaration node is added to the end of the specified parent's
-child list.  The constant <code>MXML_NO_PARENT</code> can be used to specify that
+child list.  The constant <code>NULL</code> can be used to specify that
 the new opaque string node has no parent.  The format string must be
 nul-terminated and is formatted into the new node.</p>
 <h3 class="function"><a id="mxmlNewDirective">mxmlNewDirective</a></h3>
 <p class="description">Create a new processing instruction node.</p>
 <p class="code">
-<a href="#mxml_node_t">mxml_node_t</a> *mxmlNewDirective(<a href="#mxml_node_t">mxml_node_t</a> *parent, const char *directive);</p>
+<a href="#mxml_node_t">mxml_node_t</a> *mxmlNewDirective(<a href="#mxml_node_t">mxml_node_t</a> *parent, <span class="reserved">const</span> <span class="reserved">char</span> *directive);</p>
 <h4 class="parameters">Parameters</h4>
 <table class="list"><tbody>
 <tr><th>parent</th>
-<td class="description">Parent node or <code>MXML_NO_PARENT</code></td></tr>
+<td class="description">Parent node or <code>NULL</code></td></tr>
 <tr><th>directive</th>
 <td class="description">Directive string</td></tr>
 </tbody></table>
@@ -2273,17 +2272,17 @@ nul-terminated and is formatted into the new node.</p>
 <p class="description">New node</p>
 <h4 class="discussion">Discussion</h4>
 <p class="discussion">The new processing instruction node is added to the end of the specified
-parent's child list.  The constant <code>MXML_NO_PARENT</code> can be used to specify
-that the new processing instruction node has no parent.  The data string must
-be nul-terminated and is copied into the new node.</p>
+parent's child list.  The constant <code>NULL</code> can be used to specify that the new
+processing instruction node has no parent.  The data string must be
+nul-terminated and is copied into the new node.</p>
 <h3 class="function"><a id="mxmlNewDirectivef">mxmlNewDirectivef</a></h3>
 <p class="description">Create a new formatted processing instruction node.</p>
 <p class="code">
-<a href="#mxml_node_t">mxml_node_t</a> *mxmlNewDirectivef(<a href="#mxml_node_t">mxml_node_t</a> *parent, const char *format, ...);</p>
+<a href="#mxml_node_t">mxml_node_t</a> *mxmlNewDirectivef(<a href="#mxml_node_t">mxml_node_t</a> *parent, <span class="reserved">const</span> <span class="reserved">char</span> *format, ...);</p>
 <h4 class="parameters">Parameters</h4>
 <table class="list"><tbody>
 <tr><th>parent</th>
-<td class="description">Parent node or <code>MXML_NO_PARENT</code></td></tr>
+<td class="description">Parent node or <code>NULL</code></td></tr>
 <tr><th>format</th>
 <td class="description">Printf-style format string</td></tr>
 <tr><th>...</th>
@@ -2292,18 +2291,18 @@ be nul-terminated and is copied into the new node.</p>
 <h4 class="returnvalue">Return Value</h4>
 <p class="description">New node</p>
 <h4 class="discussion">Discussion</h4>
-<p class="discussion">The new processing instruction node is added to the end of the specified parent's
-child list.  The constant <code>MXML_NO_PARENT</code> can be used to specify that
-the new opaque string node has no parent.  The format string must be
+<p class="discussion">The new processing instruction node is added to the end of the specified
+parent's child list.  The constant <code>NULL</code> can be used to specify that the new
+opaque string node has no parent.  The format string must be
 nul-terminated and is formatted into the new node.</p>
 <h3 class="function"><a id="mxmlNewElement">mxmlNewElement</a></h3>
 <p class="description">Create a new element node.</p>
 <p class="code">
-<a href="#mxml_node_t">mxml_node_t</a> *mxmlNewElement(<a href="#mxml_node_t">mxml_node_t</a> *parent, const char *name);</p>
+<a href="#mxml_node_t">mxml_node_t</a> *mxmlNewElement(<a href="#mxml_node_t">mxml_node_t</a> *parent, <span class="reserved">const</span> <span class="reserved">char</span> *name);</p>
 <h4 class="parameters">Parameters</h4>
 <table class="list"><tbody>
 <tr><th>parent</th>
-<td class="description">Parent node or <code>MXML_NO_PARENT</code></td></tr>
+<td class="description">Parent node or <code>NULL</code></td></tr>
 <tr><th>name</th>
 <td class="description">Name of element</td></tr>
 </tbody></table>
@@ -2311,16 +2310,16 @@ nul-terminated and is formatted into the new node.</p>
 <p class="description">New node</p>
 <h4 class="discussion">Discussion</h4>
 <p class="discussion">The new element node is added to the end of the specified parent's child
-list. The constant <code>MXML_NO_PARENT</code> can be used to specify that the new
-element node has no parent.</p>
+list. The constant <code>NULL</code> can be used to specify that the new element node
+has no parent.</p>
 <h3 class="function"><a id="mxmlNewInteger">mxmlNewInteger</a></h3>
 <p class="description">Create a new integer node.</p>
 <p class="code">
-<a href="#mxml_node_t">mxml_node_t</a> *mxmlNewInteger(<a href="#mxml_node_t">mxml_node_t</a> *parent, long integer);</p>
+<a href="#mxml_node_t">mxml_node_t</a> *mxmlNewInteger(<a href="#mxml_node_t">mxml_node_t</a> *parent, <span class="reserved">long</span> integer);</p>
 <h4 class="parameters">Parameters</h4>
 <table class="list"><tbody>
 <tr><th>parent</th>
-<td class="description">Parent node or <code>MXML_NO_PARENT</code></td></tr>
+<td class="description">Parent node or <code>NULL</code></td></tr>
 <tr><th>integer</th>
 <td class="description">Integer value</td></tr>
 </tbody></table>
@@ -2328,16 +2327,16 @@ element node has no parent.</p>
 <p class="description">New node</p>
 <h4 class="discussion">Discussion</h4>
 <p class="discussion">The new integer node is added to the end of the specified parent's child
-list. The constant <code>MXML_NO_PARENT</code> can be used to specify that the new
-integer node has no parent.</p>
+list. The constant <code>NULL</code> can be used to specify that the new integer node
+has no parent.</p>
 <h3 class="function"><a id="mxmlNewOpaque">mxmlNewOpaque</a></h3>
 <p class="description">Create a new opaque string.</p>
 <p class="code">
-<a href="#mxml_node_t">mxml_node_t</a> *mxmlNewOpaque(<a href="#mxml_node_t">mxml_node_t</a> *parent, const char *opaque);</p>
+<a href="#mxml_node_t">mxml_node_t</a> *mxmlNewOpaque(<a href="#mxml_node_t">mxml_node_t</a> *parent, <span class="reserved">const</span> <span class="reserved">char</span> *opaque);</p>
 <h4 class="parameters">Parameters</h4>
 <table class="list"><tbody>
 <tr><th>parent</th>
-<td class="description">Parent node or <code>MXML_NO_PARENT</code></td></tr>
+<td class="description">Parent node or <code>NULL</code></td></tr>
 <tr><th>opaque</th>
 <td class="description">Opaque string</td></tr>
 </tbody></table>
@@ -2345,17 +2344,17 @@ integer node has no parent.</p>
 <p class="description">New node</p>
 <h4 class="discussion">Discussion</h4>
 <p class="discussion">The new opaque string node is added to the end of the specified parent's
-child list.  The constant <code>MXML_NO_PARENT</code> can be used to specify that
-the new opaque string node has no parent.  The opaque string must be nul-
-terminated and is copied into the new node.</p>
+child list.  The constant <code>NULL</code> can be used to specify that the new opaque
+string node has no parent.  The opaque string must be nul-terminated and is
+copied into the new node.</p>
 <h3 class="function"><a id="mxmlNewOpaquef">mxmlNewOpaquef</a></h3>
 <p class="description">Create a new formatted opaque string node.</p>
 <p class="code">
-<a href="#mxml_node_t">mxml_node_t</a> *mxmlNewOpaquef(<a href="#mxml_node_t">mxml_node_t</a> *parent, const char *format, ...);</p>
+<a href="#mxml_node_t">mxml_node_t</a> *mxmlNewOpaquef(<a href="#mxml_node_t">mxml_node_t</a> *parent, <span class="reserved">const</span> <span class="reserved">char</span> *format, ...);</p>
 <h4 class="parameters">Parameters</h4>
 <table class="list"><tbody>
 <tr><th>parent</th>
-<td class="description">Parent node or <code>MXML_NO_PARENT</code></td></tr>
+<td class="description">Parent node or <code>NULL</code></td></tr>
 <tr><th>format</th>
 <td class="description">Printf-style format string</td></tr>
 <tr><th>...</th>
@@ -2365,17 +2364,17 @@ terminated and is copied into the new node.</p>
 <p class="description">New node</p>
 <h4 class="discussion">Discussion</h4>
 <p class="discussion">The new opaque string node is added to the end of the specified parent's
-child list.  The constant <code>MXML_NO_PARENT</code> can be used to specify that
-the new opaque string node has no parent.  The format string must be
-nul-terminated and is formatted into the new node.</p>
+child list.  The constant <code>NULL</code> can be used to specify that the new opaque
+string node has no parent.  The format string must be nul-terminated and is
+formatted into the new node.</p>
 <h3 class="function"><a id="mxmlNewReal">mxmlNewReal</a></h3>
 <p class="description">Create a new real number node.</p>
 <p class="code">
-<a href="#mxml_node_t">mxml_node_t</a> *mxmlNewReal(<a href="#mxml_node_t">mxml_node_t</a> *parent, double real);</p>
+<a href="#mxml_node_t">mxml_node_t</a> *mxmlNewReal(<a href="#mxml_node_t">mxml_node_t</a> *parent, <span class="reserved">double</span> real);</p>
 <h4 class="parameters">Parameters</h4>
 <table class="list"><tbody>
 <tr><th>parent</th>
-<td class="description">Parent node or <code>MXML_NO_PARENT</code></td></tr>
+<td class="description">Parent node or <code>NULL</code></td></tr>
 <tr><th>real</th>
 <td class="description">Real number value</td></tr>
 </tbody></table>
@@ -2383,16 +2382,16 @@ nul-terminated and is formatted into the new node.</p>
 <p class="description">New node</p>
 <h4 class="discussion">Discussion</h4>
 <p class="discussion">The new real number node is added to the end of the specified parent's
-child list.  The constant <code>MXML_NO_PARENT</code> can be used to specify that
-the new real number node has no parent.</p>
+child list.  The constant <code>NULL</code> can be used to specify that the new real
+number node has no parent.</p>
 <h3 class="function"><a id="mxmlNewText">mxmlNewText</a></h3>
 <p class="description">Create a new text fragment node.</p>
 <p class="code">
-<a href="#mxml_node_t">mxml_node_t</a> *mxmlNewText(<a href="#mxml_node_t">mxml_node_t</a> *parent, bool whitespace, const char *string);</p>
+<a href="#mxml_node_t">mxml_node_t</a> *mxmlNewText(<a href="#mxml_node_t">mxml_node_t</a> *parent, <span class="reserved">bool</span> whitespace, <span class="reserved">const</span> <span class="reserved">char</span> *string);</p>
 <h4 class="parameters">Parameters</h4>
 <table class="list"><tbody>
 <tr><th>parent</th>
-<td class="description">Parent node or <code>MXML_NO_PARENT</code></td></tr>
+<td class="description">Parent node or <code>NULL</code></td></tr>
 <tr><th>whitespace</th>
 <td class="description"><code>true</code> = leading whitespace, <code>false</code> = no whitespace</td></tr>
 <tr><th>string</th>
@@ -2402,18 +2401,18 @@ the new real number node has no parent.</p>
 <p class="description">New node</p>
 <h4 class="discussion">Discussion</h4>
 <p class="discussion">The new text node is added to the end of the specified parent's child
-list.  The constant <code>MXML_NO_PARENT</code> can be used to specify that the new
-text node has no parent.  The whitespace parameter is used to specify
-whether leading whitespace is present before the node.  The text
-string must be nul-terminated and is copied into the new node.</p>
+list.  The constant <code>NULL</code> can be used to specify that the new text node has
+no parent.  The whitespace parameter is used to specify whether leading
+whitespace is present before the node.  The text string must be
+nul-terminated and is copied into the new node.</p>
 <h3 class="function"><a id="mxmlNewTextf">mxmlNewTextf</a></h3>
 <p class="description">Create a new formatted text fragment node.</p>
 <p class="code">
-<a href="#mxml_node_t">mxml_node_t</a> *mxmlNewTextf(<a href="#mxml_node_t">mxml_node_t</a> *parent, bool whitespace, const char *format, ...);</p>
+<a href="#mxml_node_t">mxml_node_t</a> *mxmlNewTextf(<a href="#mxml_node_t">mxml_node_t</a> *parent, <span class="reserved">bool</span> whitespace, <span class="reserved">const</span> <span class="reserved">char</span> *format, ...);</p>
 <h4 class="parameters">Parameters</h4>
 <table class="list"><tbody>
 <tr><th>parent</th>
-<td class="description">Parent node or <code>MXML_NO_PARENT</code></td></tr>
+<td class="description">Parent node or <code>NULL</code></td></tr>
 <tr><th>whitespace</th>
 <td class="description"><code>true</code> = leading whitespace, <code>false</code> = no whitespace</td></tr>
 <tr><th>format</th>
@@ -2425,14 +2424,14 @@ string must be nul-terminated and is copied into the new node.</p>
 <p class="description">New node</p>
 <h4 class="discussion">Discussion</h4>
 <p class="discussion">The new text node is added to the end of the specified parent's child
-list.  The constant <code>MXML_NO_PARENT</code> can be used to specify that the new
-text node has no parent.  The whitespace parameter is used to specify
-whether leading whitespace is present before the node.  The format
-string must be nul-terminated and is formatted into the new node.</p>
+list.  The constant <code>NULL</code> can be used to specify that the new text node has
+no parent.  The whitespace parameter is used to specify whether leading
+whitespace is present before the node.  The format string must be
+nul-terminated and is formatted into the new node.</p>
 <h3 class="function"><a id="mxmlNewXML">mxmlNewXML</a></h3>
 <p class="description">Create a new XML document tree.</p>
 <p class="code">
-<a href="#mxml_node_t">mxml_node_t</a> *mxmlNewXML(const char *version);</p>
+<a href="#mxml_node_t">mxml_node_t</a> *mxmlNewXML(<span class="reserved">const</span> <span class="reserved">char</span> *version);</p>
 <h4 class="parameters">Parameters</h4>
 <table class="list"><tbody>
 <tr><th>version</th>
@@ -2446,7 +2445,7 @@ string must be nul-terminated and is formatted into the new node.</p>
 <h3 class="function"><a id="mxmlOptionsDelete">mxmlOptionsDelete</a></h3>
 <p class="description">Free load/save options.</p>
 <p class="code">
-void mxmlOptionsDelete(<a href="#mxml_options_t">mxml_options_t</a> *options);</p>
+<span class="reserved">void</span> mxmlOptionsDelete(<a href="#mxml_options_t">mxml_options_t</a> *options);</p>
 <h4 class="parameters">Parameters</h4>
 <table class="list"><tbody>
 <tr><th>options</th>
@@ -2455,7 +2454,7 @@ void mxmlOptionsDelete(<a href="#mxml_options_t">mxml_options_t</a> *options);</
 <h3 class="function"><a id="mxmlOptionsNew">mxmlOptionsNew</a></h3>
 <p class="description">Allocate load/save options.</p>
 <p class="code">
-<a href="#mxml_options_t">mxml_options_t</a> *mxmlOptionsNew(void);</p>
+<a href="#mxml_options_t">mxml_options_t</a> *mxmlOptionsNew(<span class="reserved">void</span>);</p>
 <h4 class="returnvalue">Return Value</h4>
 <p class="description">Options</p>
 <h4 class="discussion">Discussion</h4>
@@ -2488,7 +2487,7 @@ inline text as a series of whitespace-delimited words, instead of using the
 <h3 class="function"><a id="mxmlOptionsSetCustomCallbacks">mxmlOptionsSetCustomCallbacks</a></h3>
 <p class="description">Set the custom data callbacks.</p>
 <p class="code">
-void mxmlOptionsSetCustomCallbacks(<a href="#mxml_options_t">mxml_options_t</a> *options, <a href="#mxml_custload_cb_t">mxml_custload_cb_t</a> load_cb, <a href="#mxml_custsave_cb_t">mxml_custsave_cb_t</a> save_cb, void *cbdata);</p>
+<span class="reserved">void</span> mxmlOptionsSetCustomCallbacks(<a href="#mxml_options_t">mxml_options_t</a> *options, <a href="#mxml_custload_cb_t">mxml_custload_cb_t</a> load_cb, <a href="#mxml_custsave_cb_t">mxml_custsave_cb_t</a> save_cb, <span class="reserved">void</span> *cbdata);</p>
 <h4 class="parameters">Parameters</h4>
 <table class="list"><tbody>
 <tr><th>options</th>
@@ -2596,7 +2595,7 @@ my_custom_save_cb(void *cbdata, mxml_node_t *node)
 <h3 class="function"><a id="mxmlOptionsSetEntityCallback">mxmlOptionsSetEntityCallback</a></h3>
 <p class="description">Set the entity lookup callback to use when loading XML data.</p>
 <p class="code">
-void mxmlOptionsSetEntityCallback(<a href="#mxml_options_t">mxml_options_t</a> *options, <a href="#mxml_entity_cb_t">mxml_entity_cb_t</a> cb, void *cbdata);</p>
+<span class="reserved">void</span> mxmlOptionsSetEntityCallback(<a href="#mxml_options_t">mxml_options_t</a> *options, <a href="#mxml_entity_cb_t">mxml_entity_cb_t</a> cb, <span class="reserved">void</span> *cbdata);</p>
 <h4 class="parameters">Parameters</h4>
 <table class="list"><tbody>
 <tr><th>options</th>
@@ -2631,7 +2630,7 @@ entities which are required by the base XML specification.</pre>
 <h3 class="function"><a id="mxmlOptionsSetErrorCallback">mxmlOptionsSetErrorCallback</a></h3>
 <p class="description">Set the error message callback.</p>
 <p class="code">
-void mxmlOptionsSetErrorCallback(<a href="#mxml_options_t">mxml_options_t</a> *options, <a href="#mxml_error_cb_t">mxml_error_cb_t</a> cb, void *cbdata);</p>
+<span class="reserved">void</span> mxmlOptionsSetErrorCallback(<a href="#mxml_options_t">mxml_options_t</a> *options, <a href="#mxml_error_cb_t">mxml_error_cb_t</a> cb, <span class="reserved">void</span> *cbdata);</p>
 <h4 class="parameters">Parameters</h4>
 <table class="list"><tbody>
 <tr><th>options</th>
@@ -2660,7 +2659,7 @@ ack supports the &quot;euro&quot; entity:<br>
 <h3 class="function"><a id="mxmlOptionsSetSAXCallback">mxmlOptionsSetSAXCallback</a></h3>
 <p class="description">Set the SAX callback to use when reading XML data.</p>
 <p class="code">
-void mxmlOptionsSetSAXCallback(<a href="#mxml_options_t">mxml_options_t</a> *options, <a href="#mxml_sax_cb_t">mxml_sax_cb_t</a> cb, void *cbdata);</p>
+<span class="reserved">void</span> mxmlOptionsSetSAXCallback(<a href="#mxml_options_t">mxml_options_t</a> *options, <a href="#mxml_sax_cb_t">mxml_sax_cb_t</a> cb, <span class="reserved">void</span> *cbdata);</p>
 <h4 class="parameters">Parameters</h4>
 <table class="list"><tbody>
 <tr><th>options</th>
@@ -2707,7 +2706,7 @@ using the [mxmlRetain](@@) function.</pre>
 <h3 class="function"><a id="mxmlOptionsSetTypeCallback">mxmlOptionsSetTypeCallback</a></h3>
 <p class="description">Set the type callback for child/value nodes.</p>
 <p class="code">
-void mxmlOptionsSetTypeCallback(<a href="#mxml_options_t">mxml_options_t</a> *options, <a href="#mxml_type_cb_t">mxml_type_cb_t</a> cb, void *cbdata);</p>
+<span class="reserved">void</span> mxmlOptionsSetTypeCallback(<a href="#mxml_options_t">mxml_options_t</a> *options, <a href="#mxml_type_cb_t">mxml_type_cb_t</a> cb, <span class="reserved">void</span> *cbdata);</p>
 <h4 class="parameters">Parameters</h4>
 <table class="list"><tbody>
 <tr><th>options</th>
@@ -2752,7 +2751,7 @@ my_type_cb(void <em>cbdata, mxml_node_t </em>node)
 <h3 class="function"><a id="mxmlOptionsSetTypeValue">mxmlOptionsSetTypeValue</a></h3>
 <p class="description">Set the type to use for all child/value nodes.</p>
 <p class="code">
-void mxmlOptionsSetTypeValue(<a href="#mxml_options_t">mxml_options_t</a> *options, <a href="#mxml_type_t">mxml_type_t</a> type);</p>
+<span class="reserved">void</span> mxmlOptionsSetTypeValue(<a href="#mxml_options_t">mxml_options_t</a> *options, <a href="#mxml_type_t">mxml_type_t</a> type);</p>
 <h4 class="parameters">Parameters</h4>
 <table class="list"><tbody>
 <tr><th>options</th>
@@ -2765,7 +2764,7 @@ void mxmlOptionsSetTypeValue(<a href="#mxml_options_t">mxml_options_t</a> *optio
 <h3 class="function"><a id="mxmlOptionsSetWhitespaceCallback">mxmlOptionsSetWhitespaceCallback</a></h3>
 <p class="description">Set the whitespace callback.</p>
 <p class="code">
-void mxmlOptionsSetWhitespaceCallback(<a href="#mxml_options_t">mxml_options_t</a> *options, <a href="#mxml_ws_cb_t">mxml_ws_cb_t</a> cb, void *cbdata);</p>
+<span class="reserved">void</span> mxmlOptionsSetWhitespaceCallback(<a href="#mxml_options_t">mxml_options_t</a> *options, <a href="#mxml_ws_cb_t">mxml_ws_cb_t</a> cb, <span class="reserved">void</span> *cbdata);</p>
 <h4 class="parameters">Parameters</h4>
 <table class="list"><tbody>
 <tr><th>options</th>
@@ -2794,7 +2793,7 @@ const char <em>my_whitespace_cb(void </em>cbdata, mxml_node_t *node, mxml_ws_t w
 <h3 class="function"><a id="mxmlOptionsSetWrapMargin">mxmlOptionsSetWrapMargin</a></h3>
 <p class="description">Set the wrap margin when saving XML data.</p>
 <p class="code">
-void mxmlOptionsSetWrapMargin(<a href="#mxml_options_t">mxml_options_t</a> *options, int column);</p>
+<span class="reserved">void</span> mxmlOptionsSetWrapMargin(<a href="#mxml_options_t">mxml_options_t</a> *options, <span class="reserved">int</span> column);</p>
 <h4 class="parameters">Parameters</h4>
 <table class="list"><tbody>
 <tr><th>options</th>
@@ -2808,7 +2807,7 @@ disabled when <code>column</code> is <code>0</code>.</p>
 <h3 class="function"><a id="mxmlRelease">mxmlRelease</a></h3>
 <p class="description">Release a node.</p>
 <p class="code">
-int mxmlRelease(<a href="#mxml_node_t">mxml_node_t</a> *node);</p>
+<span class="reserved">int</span> mxmlRelease(<a href="#mxml_node_t">mxml_node_t</a> *node);</p>
 <h4 class="parameters">Parameters</h4>
 <table class="list"><tbody>
 <tr><th>node</th>
@@ -2822,7 +2821,7 @@ is deleted via <a href="#mxmlDelete"><code>mxmlDelete</code></a>.</p>
 <h3 class="function"><a id="mxmlRemove">mxmlRemove</a></h3>
 <p class="description">Remove a node from its parent.</p>
 <p class="code">
-void mxmlRemove(<a href="#mxml_node_t">mxml_node_t</a> *node);</p>
+<span class="reserved">void</span> mxmlRemove(<a href="#mxml_node_t">mxml_node_t</a> *node);</p>
 <h4 class="parameters">Parameters</h4>
 <table class="list"><tbody>
 <tr><th>node</th>
@@ -2834,7 +2833,7 @@ for that.  This function does nothing if the node has no parent.</p>
 <h3 class="function"><a id="mxmlRetain">mxmlRetain</a></h3>
 <p class="description">Retain a node.</p>
 <p class="code">
-int mxmlRetain(<a href="#mxml_node_t">mxml_node_t</a> *node);</p>
+<span class="reserved">int</span> mxmlRetain(<a href="#mxml_node_t">mxml_node_t</a> *node);</p>
 <h4 class="parameters">Parameters</h4>
 <table class="list"><tbody>
 <tr><th>node</th>
@@ -2845,7 +2844,7 @@ int mxmlRetain(<a href="#mxml_node_t">mxml_node_t</a> *node);</p>
 <h3 class="function"><a id="mxmlSaveAllocString">mxmlSaveAllocString</a></h3>
 <p class="description">Save an XML tree to an allocated string.</p>
 <p class="code">
-char *mxmlSaveAllocString(<a href="#mxml_node_t">mxml_node_t</a> *node, <a href="#mxml_options_t">mxml_options_t</a> *options);</p>
+<span class="reserved">char</span> *mxmlSaveAllocString(<a href="#mxml_node_t">mxml_node_t</a> *node, <a href="#mxml_options_t">mxml_options_t</a> *options);</p>
 <h4 class="parameters">Parameters</h4>
 <table class="list"><tbody>
 <tr><th>node</th>
@@ -2869,7 +2868,7 @@ output will be wrapped at column 72 with no additional whitespace.  Use the
 <h3 class="function"><a id="mxmlSaveFd">mxmlSaveFd</a></h3>
 <p class="description">Save an XML tree to a file descriptor.</p>
 <p class="code">
-bool mxmlSaveFd(<a href="#mxml_node_t">mxml_node_t</a> *node, <a href="#mxml_options_t">mxml_options_t</a> *options, int fd);</p>
+<span class="reserved">bool</span> mxmlSaveFd(<a href="#mxml_node_t">mxml_node_t</a> *node, <a href="#mxml_options_t">mxml_options_t</a> *options, <span class="reserved">int</span> fd);</p>
 <h4 class="parameters">Parameters</h4>
 <table class="list"><tbody>
 <tr><th>node</th>
@@ -2890,7 +2889,7 @@ output will be wrapped at column 72 with no additional whitespace.  Use the
 <h3 class="function"><a id="mxmlSaveFile">mxmlSaveFile</a></h3>
 <p class="description">Save an XML tree to a file.</p>
 <p class="code">
-bool mxmlSaveFile(<a href="#mxml_node_t">mxml_node_t</a> *node, <a href="#mxml_options_t">mxml_options_t</a> *options, FILE *fp);</p>
+<span class="reserved">bool</span> mxmlSaveFile(<a href="#mxml_node_t">mxml_node_t</a> *node, <a href="#mxml_options_t">mxml_options_t</a> *options, FILE *fp);</p>
 <h4 class="parameters">Parameters</h4>
 <table class="list"><tbody>
 <tr><th>node</th>
@@ -2911,7 +2910,7 @@ output will be wrapped at column 72 with no additional whitespace.  Use the
 <h3 class="function"><a id="mxmlSaveFilename">mxmlSaveFilename</a></h3>
 <p class="description">Save an XML tree to a file.</p>
 <p class="code">
-bool mxmlSaveFilename(<a href="#mxml_node_t">mxml_node_t</a> *node, <a href="#mxml_options_t">mxml_options_t</a> *options, const char *filename);</p>
+<span class="reserved">bool</span> mxmlSaveFilename(<a href="#mxml_node_t">mxml_node_t</a> *node, <a href="#mxml_options_t">mxml_options_t</a> *options, <span class="reserved">const</span> <span class="reserved">char</span> *filename);</p>
 <h4 class="parameters">Parameters</h4>
 <table class="list"><tbody>
 <tr><th>node</th>
@@ -2932,7 +2931,7 @@ output will be wrapped at column 72 with no additional whitespace.  Use the
 <h3 class="function"><a id="mxmlSaveIO">mxmlSaveIO</a></h3>
 <p class="description">Save an XML tree using a callback.</p>
 <p class="code">
-bool mxmlSaveIO(<a href="#mxml_node_t">mxml_node_t</a> *node, <a href="#mxml_options_t">mxml_options_t</a> *options, <a href="#mxml_io_cb_t">mxml_io_cb_t</a> io_cb, void *io_cbdata);</p>
+<span class="reserved">bool</span> mxmlSaveIO(<a href="#mxml_node_t">mxml_node_t</a> *node, <a href="#mxml_options_t">mxml_options_t</a> *options, <a href="#mxml_io_cb_t">mxml_io_cb_t</a> io_cb, <span class="reserved">void</span> *io_cbdata);</p>
 <h4 class="parameters">Parameters</h4>
 <table class="list"><tbody>
 <tr><th>node</th>
@@ -2972,7 +2971,7 @@ output will be wrapped at column 72 with no additional whitespace.  Use the
 <h3 class="function"><a id="mxmlSaveString">mxmlSaveString</a></h3>
 <p class="description">Save an XML node tree to a string.</p>
 <p class="code">
-size_t mxmlSaveString(<a href="#mxml_node_t">mxml_node_t</a> *node, <a href="#mxml_options_t">mxml_options_t</a> *options, char *buffer, size_t bufsize);</p>
+size_t mxmlSaveString(<a href="#mxml_node_t">mxml_node_t</a> *node, <a href="#mxml_options_t">mxml_options_t</a> *options, <span class="reserved">char</span> *buffer, size_t bufsize);</p>
 <h4 class="parameters">Parameters</h4>
 <table class="list"><tbody>
 <tr><th>node</th>
@@ -2995,7 +2994,7 @@ output will be wrapped at column 72 with no additional whitespace.  Use the
 <h3 class="function"><a id="mxmlSetCDATA">mxmlSetCDATA</a></h3>
 <p class="description">Set the data for a CDATA node.</p>
 <p class="code">
-bool mxmlSetCDATA(<a href="#mxml_node_t">mxml_node_t</a> *node, const char *data);</p>
+<span class="reserved">bool</span> mxmlSetCDATA(<a href="#mxml_node_t">mxml_node_t</a> *node, <span class="reserved">const</span> <span class="reserved">char</span> *data);</p>
 <h4 class="parameters">Parameters</h4>
 <table class="list"><tbody>
 <tr><th>node</th>
@@ -3011,7 +3010,7 @@ changed if it (or its first child) is not a CDATA node.</p>
 <h3 class="function"><a id="mxmlSetCDATAf">mxmlSetCDATAf</a></h3>
 <p class="description">Set the data for a CDATA to a formatted string.</p>
 <p class="code">
-bool mxmlSetCDATAf(<a href="#mxml_node_t">mxml_node_t</a> *node, const char *format, ...);</p>
+<span class="reserved">bool</span> mxmlSetCDATAf(<a href="#mxml_node_t">mxml_node_t</a> *node, <span class="reserved">const</span> <span class="reserved">char</span> *format, ...);</p>
 <h4 class="parameters">Parameters</h4>
 <table class="list"><tbody>
 <tr><th>node</th>
@@ -3029,7 +3028,7 @@ not changed if it (or its first child) is not a CDATA node.</p>
 <h3 class="function"><a id="mxmlSetComment">mxmlSetComment</a></h3>
 <p class="description">Set a comment to a literal string.</p>
 <p class="code">
-bool mxmlSetComment(<a href="#mxml_node_t">mxml_node_t</a> *node, const char *comment);</p>
+<span class="reserved">bool</span> mxmlSetComment(<a href="#mxml_node_t">mxml_node_t</a> *node, <span class="reserved">const</span> <span class="reserved">char</span> *comment);</p>
 <h4 class="parameters">Parameters</h4>
 <table class="list"><tbody>
 <tr><th>node</th>
@@ -3044,7 +3043,7 @@ bool mxmlSetComment(<a href="#mxml_node_t">mxml_node_t</a> *node, const char *co
 <h3 class="function"><a id="mxmlSetCommentf">mxmlSetCommentf</a></h3>
 <p class="description">Set a comment to a formatted string.</p>
 <p class="code">
-bool mxmlSetCommentf(<a href="#mxml_node_t">mxml_node_t</a> *node, const char *format, ...);</p>
+<span class="reserved">bool</span> mxmlSetCommentf(<a href="#mxml_node_t">mxml_node_t</a> *node, <span class="reserved">const</span> <span class="reserved">char</span> *format, ...);</p>
 <h4 class="parameters">Parameters</h4>
 <table class="list"><tbody>
 <tr><th>node</th>
@@ -3061,7 +3060,7 @@ bool mxmlSetCommentf(<a href="#mxml_node_t">mxml_node_t</a> *node, const char *f
 <h3 class="function"><a id="mxmlSetCustom">mxmlSetCustom</a></h3>
 <p class="description">Set the data and destructor of a custom data node.</p>
 <p class="code">
-bool mxmlSetCustom(<a href="#mxml_node_t">mxml_node_t</a> *node, void *data, <a href="#mxml_custfree_cb_t">mxml_custfree_cb_t</a> free_cb, void *free_cbdata);</p>
+<span class="reserved">bool</span> mxmlSetCustom(<a href="#mxml_node_t">mxml_node_t</a> *node, <span class="reserved">void</span> *data, <a href="#mxml_custfree_cb_t">mxml_custfree_cb_t</a> free_cb, <span class="reserved">void</span> *free_cbdata);</p>
 <h4 class="parameters">Parameters</h4>
 <table class="list"><tbody>
 <tr><th>node</th>
@@ -3082,7 +3081,7 @@ first child) is not a custom node.</p>
 <h3 class="function"><a id="mxmlSetDeclaration">mxmlSetDeclaration</a></h3>
 <p class="description">Set a declaration to a literal string.</p>
 <p class="code">
-bool mxmlSetDeclaration(<a href="#mxml_node_t">mxml_node_t</a> *node, const char *declaration);</p>
+<span class="reserved">bool</span> mxmlSetDeclaration(<a href="#mxml_node_t">mxml_node_t</a> *node, <span class="reserved">const</span> <span class="reserved">char</span> *declaration);</p>
 <h4 class="parameters">Parameters</h4>
 <table class="list"><tbody>
 <tr><th>node</th>
@@ -3097,7 +3096,7 @@ bool mxmlSetDeclaration(<a href="#mxml_node_t">mxml_node_t</a> *node, const char
 <h3 class="function"><a id="mxmlSetDeclarationf">mxmlSetDeclarationf</a></h3>
 <p class="description">Set a declaration to a formatted string.</p>
 <p class="code">
-bool mxmlSetDeclarationf(<a href="#mxml_node_t">mxml_node_t</a> *node, const char *format, ...);</p>
+<span class="reserved">bool</span> mxmlSetDeclarationf(<a href="#mxml_node_t">mxml_node_t</a> *node, <span class="reserved">const</span> <span class="reserved">char</span> *format, ...);</p>
 <h4 class="parameters">Parameters</h4>
 <table class="list"><tbody>
 <tr><th>node</th>
@@ -3114,7 +3113,7 @@ bool mxmlSetDeclarationf(<a href="#mxml_node_t">mxml_node_t</a> *node, const cha
 <h3 class="function"><a id="mxmlSetDirective">mxmlSetDirective</a></h3>
 <p class="description">Set a processing instruction to a literal string.</p>
 <p class="code">
-bool mxmlSetDirective(<a href="#mxml_node_t">mxml_node_t</a> *node, const char *directive);</p>
+<span class="reserved">bool</span> mxmlSetDirective(<a href="#mxml_node_t">mxml_node_t</a> *node, <span class="reserved">const</span> <span class="reserved">char</span> *directive);</p>
 <h4 class="parameters">Parameters</h4>
 <table class="list"><tbody>
 <tr><th>node</th>
@@ -3129,7 +3128,7 @@ bool mxmlSetDirective(<a href="#mxml_node_t">mxml_node_t</a> *node, const char *
 <h3 class="function"><a id="mxmlSetDirectivef">mxmlSetDirectivef</a></h3>
 <p class="description">Set a processing instruction to a formatted string.</p>
 <p class="code">
-bool mxmlSetDirectivef(<a href="#mxml_node_t">mxml_node_t</a> *node, const char *format, ...);</p>
+<span class="reserved">bool</span> mxmlSetDirectivef(<a href="#mxml_node_t">mxml_node_t</a> *node, <span class="reserved">const</span> <span class="reserved">char</span> *format, ...);</p>
 <h4 class="parameters">Parameters</h4>
 <table class="list"><tbody>
 <tr><th>node</th>
@@ -3147,7 +3146,7 @@ node.</p>
 <h3 class="function"><a id="mxmlSetElement">mxmlSetElement</a></h3>
 <p class="description">Set the name of an element node.</p>
 <p class="code">
-bool mxmlSetElement(<a href="#mxml_node_t">mxml_node_t</a> *node, const char *name);</p>
+<span class="reserved">bool</span> mxmlSetElement(<a href="#mxml_node_t">mxml_node_t</a> *node, <span class="reserved">const</span> <span class="reserved">char</span> *name);</p>
 <h4 class="parameters">Parameters</h4>
 <table class="list"><tbody>
 <tr><th>node</th>
@@ -3163,7 +3162,7 @@ it is not an element node.</p>
 <h3 class="function"><a id="mxmlSetInteger">mxmlSetInteger</a></h3>
 <p class="description">Set the value of an integer node.</p>
 <p class="code">
-bool mxmlSetInteger(<a href="#mxml_node_t">mxml_node_t</a> *node, long integer);</p>
+<span class="reserved">bool</span> mxmlSetInteger(<a href="#mxml_node_t">mxml_node_t</a> *node, <span class="reserved">long</span> integer);</p>
 <h4 class="parameters">Parameters</h4>
 <table class="list"><tbody>
 <tr><th>node</th>
@@ -3179,7 +3178,7 @@ it (or its first child) is not an integer node.</p>
 <h3 class="function"><a id="mxmlSetOpaque">mxmlSetOpaque</a></h3>
 <p class="description">Set the value of an opaque node.</p>
 <p class="code">
-bool mxmlSetOpaque(<a href="#mxml_node_t">mxml_node_t</a> *node, const char *opaque);</p>
+<span class="reserved">bool</span> mxmlSetOpaque(<a href="#mxml_node_t">mxml_node_t</a> *node, <span class="reserved">const</span> <span class="reserved">char</span> *opaque);</p>
 <h4 class="parameters">Parameters</h4>
 <table class="list"><tbody>
 <tr><th>node</th>
@@ -3195,7 +3194,7 @@ changed if it (or its first child) is not an opaque node.</p>
 <h3 class="function"><a id="mxmlSetOpaquef">mxmlSetOpaquef</a></h3>
 <p class="description">Set the value of an opaque string node to a formatted string.</p>
 <p class="code">
-bool mxmlSetOpaquef(<a href="#mxml_node_t">mxml_node_t</a> *node, const char *format, ...);</p>
+<span class="reserved">bool</span> mxmlSetOpaquef(<a href="#mxml_node_t">mxml_node_t</a> *node, <span class="reserved">const</span> <span class="reserved">char</span> *format, ...);</p>
 <h4 class="parameters">Parameters</h4>
 <table class="list"><tbody>
 <tr><th>node</th>
@@ -3213,7 +3212,7 @@ not changed if it (or its first child) is not an opaque node.</p>
 <h3 class="function"><a id="mxmlSetReal">mxmlSetReal</a></h3>
 <p class="description">Set the value of a real value node.</p>
 <p class="code">
-bool mxmlSetReal(<a href="#mxml_node_t">mxml_node_t</a> *node, double real);</p>
+<span class="reserved">bool</span> mxmlSetReal(<a href="#mxml_node_t">mxml_node_t</a> *node, <span class="reserved">double</span> real);</p>
 <h4 class="parameters">Parameters</h4>
 <table class="list"><tbody>
 <tr><th>node</th>
@@ -3229,7 +3228,7 @@ if it (or its first child) is not a real value node.</p>
 <h3 class="function"><a id="mxmlSetText">mxmlSetText</a></h3>
 <p class="description">Set the value of a text node.</p>
 <p class="code">
-bool mxmlSetText(<a href="#mxml_node_t">mxml_node_t</a> *node, bool whitespace, const char *string);</p>
+<span class="reserved">bool</span> mxmlSetText(<a href="#mxml_node_t">mxml_node_t</a> *node, <span class="reserved">bool</span> whitespace, <span class="reserved">const</span> <span class="reserved">char</span> *string);</p>
 <h4 class="parameters">Parameters</h4>
 <table class="list"><tbody>
 <tr><th>node</th>
@@ -3247,7 +3246,7 @@ is not changed if it (or its first child) is not a text node.</p>
 <h3 class="function"><a id="mxmlSetTextf">mxmlSetTextf</a></h3>
 <p class="description">Set the value of a text node to a formatted string.</p>
 <p class="code">
-bool mxmlSetTextf(<a href="#mxml_node_t">mxml_node_t</a> *node, bool whitespace, const char *format, ...);</p>
+<span class="reserved">bool</span> mxmlSetTextf(<a href="#mxml_node_t">mxml_node_t</a> *node, <span class="reserved">bool</span> whitespace, <span class="reserved">const</span> <span class="reserved">char</span> *format, ...);</p>
 <h4 class="parameters">Parameters</h4>
 <table class="list"><tbody>
 <tr><th>node</th>
@@ -3267,7 +3266,7 @@ The node is not changed if it (or its first child) is not a text node.</p>
 <h3 class="function"><a id="mxmlSetUserData">mxmlSetUserData</a></h3>
 <p class="description">Set the user data pointer for a node.</p>
 <p class="code">
-bool mxmlSetUserData(<a href="#mxml_node_t">mxml_node_t</a> *node, void *data);</p>
+<span class="reserved">bool</span> mxmlSetUserData(<a href="#mxml_node_t">mxml_node_t</a> *node, <span class="reserved">void</span> *data);</p>
 <h4 class="parameters">Parameters</h4>
 <table class="list"><tbody>
 <tr><th>node</th>

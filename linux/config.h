@@ -1,6 +1,5 @@
-/* config.h.  Generated from config.h.in by configure.  */
 //
-// Configuration file for Mini-XML, a small XML file parsing library.
+// Linux configuration file for Mini-XML, a small XML file parsing library.
 //
 // https://www.msweet.org/mxml
 //

@@ -136,14 +136,10 @@ BUILDROOT	=	$(DSTROOT)$(DESTDIR)
 
 
 #
-# Rules...
+# Silent build...
 #
 
 .SILENT:
-.SUFFIXES:	.c .man .o
-.c.o:
-	echo Compiling $<
-	$(CC) $(CFLAGS) -c -o $@ $<
 
 
 #
@@ -321,15 +317,6 @@ libmxml.a libmxml4.a:	$(LIBOBJS)
 
 
 #
-# libmxml2.dll
-#
-
-libmxml.dll libmxml4.dll:	$(LIBOBJS)
-	echo Creating $@...
-	$(DSO) $(DSOFLAGS) -o $@ $(LIBOBJS) $(LIBS)
-
-
-#
 # libmxml.so.2
 #
 
@@ -347,10 +334,6 @@ libmxml.so.2 libmxml4.so.2:	$(LIBOBJS)
 testmxml:	$(LIBMXML_STATIC) testmxml.o
 	echo Linking $@...
 	$(CC) $(LDFLAGS) -o $@ testmxml.o $(LIBMXML_STATIC) $(LIBS)
-
-testmxml-vg:	$(LIBOBJS) testmxml.o
-	echo Linking $@...
-	$(CC) $(LDFLAGS) -o $@ testmxml.o $(LIBOBJS) $(LIBS)
 
 
 #

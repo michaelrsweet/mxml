@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
     <metadata>
-        <id>libmxml2_native.redist</id>
+        <id>libmxml4_native.redist</id>
         <title>Small XML File Parsing Library for VS2019+ Redist</title>
-        <version>4.0.3</version>
+        <version>4.0.4</version>
         <authors>Michael R Sweet</authors>
         <owners>michaelrsweet</owners>
         <projectUrl>https://github.com/michaelrsweet/mxml</projectUrl>
@@ -19,7 +19,7 @@
     <files>
         <file src="..\doc\mxml-128.png" target="build\native" />
         <file src="..\README.md" target="build\native" />
-        <!--<file src="Win32\**\libmxml2.dll" target="build\native\bin\Win32" />-->
-        <file src="x64\**\libmxml2.dll" target="build\native\bin\x64" />
+        <!--<file src="Win32\**\mxml4.dll" target="build\native\bin\Win32" />-->
+        <file src="x64\**\mxml4.dll" target="build\native\bin\x64" />
     </files>
 </package>

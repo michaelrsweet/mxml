@@ -179,8 +179,8 @@ clean:
 	$(RM) mxml4.lib
 	$(RM) libmxml4.a
 	$(RM) libmxml4.so
-	$(RM) libmxml4.so.1
-	$(RM) libmxml4.1.dylib
+	$(RM) libmxml4.so.2
+	$(RM) libmxml4.2.dylib
 	$(RM) libmxml4.dylib
 
 
@@ -415,12 +415,17 @@ testmxml-vg:	$(LIBOBJS) testmxml.o
 
 testmxml.o:	mxml.h
 
+
+#
 # Fuzz-test the library <>
+#
+
 .PHONY: afl
 afl:
 	$(MAKE) -$(MAKEFLAGS) CC="afl-clang-fast" COMMONFLAGS="-g" clean all
 	test afl-output || rm -rf afl-output
 	afl-fuzz -x xml.dict -i afl-input -o afl-output -V 600 -e xml -t 5000 ./testmxml @@ temps.xml
+
 
 #
 # Analyze code with the Clang static analyzer <https://clang-analyzer.llvm.org>

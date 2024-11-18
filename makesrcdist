@@ -49,6 +49,16 @@ if ! grep -q "Version: $version" mxml.spec; then
 	status=1
 fi
 
+if test "$(grep MXML_VERSION linux/config.h | awk '${print $5}')" != "v$version\""; then
+	echo "Update MXML_VERSION in linux/config.h."
+	status=1
+fi
+
+if test "$(grep MXML_VERSION vcnet/config.h | awk '${print $5}')" != "v$version\""; then
+	echo "Update MXML_VERSION in vcnet/config.h."
+	status=1
+fi
+
 if ! grep -q "<version>$version</version>" vcnet/libmxml4_native.nuspec; then
 	echo "Update vcnet/libmxml4_native.nuspec."
 	status=1
@@ -60,6 +70,11 @@ fi
 
 if ! grep -q "<version>$version</version>" vcnet/libmxml4_native.redist.nuspec; then
 	echo "Update vcnet/libmxml4_native.redist.nuspec."
+	status=1
+fi
+
+if test "$(grep MXML_VERSION xcode/config.h | awk '${print $5}')" != "v$version\""; then
+	echo "Update MXML_VERSION in xcode/config.h."
 	status=1
 fi
 

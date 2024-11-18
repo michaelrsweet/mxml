@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
     <metadata>
-        <id>libmxml2_native</id>
+        <id>libmxml4_native</id>
         <title>Small XML File Parsing Library for VS2019+</title>
-        <version>4.0.3</version>
+        <version>4.0.4</version>
         <authors>Michael R Sweet</authors>
         <owners>michaelrsweet</owners>
         <projectUrl>https://github.com/michaelrsweet/mxml</projectUrl>
@@ -16,15 +16,15 @@
         <copyright>Copyright © 2003-2024 by Michael R Sweet</copyright>
         <tags>xml</tags>
 	<dependencies>
-	    <dependency id="libmxml2_native.redist" version="4.0.3" />
+	    <dependency id="libmxml4_native.redist" version="4.0.4" />
 	</dependencies>
     </metadata>
     <files>
         <file src="..\doc\mxml-128.png" target="build\native" />
         <file src="..\README.md" target="build\native" />
-        <file src="libmxml2_native.props" target="build\native" />
+        <file src="libmxml4_native.props" target="build\native" />
         <file src="..\mxml.h" target="build\native\include" />
-        <!--<file src="Win32\**\libmxml2.lib" target="build\native\lib\Win32" />-->
-        <file src="x64\**\libmxml2.lib" target="build\native\lib\x64" />
+        <!--<file src="Win32\**\mxml4.lib" target="build\native\lib\Win32" />-->
+        <file src="x64\**\mxml4.lib" target="build\native\lib\x64" />
     </files>
 </package>

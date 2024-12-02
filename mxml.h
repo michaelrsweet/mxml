@@ -180,6 +180,7 @@ extern mxml_node_t	*mxmlLoadFile(mxml_node_t *top, mxml_options_t *options, FILE
 extern mxml_node_t	*mxmlLoadFilename(mxml_node_t *top, mxml_options_t *options, const char *filename);
 extern mxml_node_t	*mxmlLoadIO(mxml_node_t *top, mxml_options_t *options, mxml_io_cb_t io_cb, void *io_cbdata);
 extern mxml_node_t	*mxmlLoadString(mxml_node_t *top, mxml_options_t *options, const char *s);
+extern mxml_node_t	*mxmlLoadBuffer(mxml_node_t *top, mxml_options_t *options, const char *buffer, size_t buflen);
 
 extern void		mxmlOptionsDelete(mxml_options_t *options);
 extern mxml_options_t	*mxmlOptionsNew(void);

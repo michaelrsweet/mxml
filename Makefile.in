@@ -228,6 +228,14 @@ install-libmxml.a:	libmxml.a
 	$(INSTALL_LIB) libmxml.a $(BUILDROOT)$(libdir)
 	$(RANLIB) $(BUILDROOT)$(libdir)/libmxml.a
 
+install-libmxml.dll:	libmxml.dll
+	echo Installing libmxml.dll to $(BUILDROOT)$(bindir)...
+	$(INSTALL_DIR) $(BUILDROOT)$(bindir)
+	$(INSTALL_LIB) libmxml.dll $(BUILDROOT)$(bindir)
+	echo Installing libmxml.a to $(BUILDROOT)$(libdir)...
+	$(INSTALL_DIR) $(BUILDROOT)$(libdir)
+	$(INSTALL_LIB) libmxml.a $(BUILDROOT)$(libdir)
+
 install-libmxml.so.2:	libmxml.so.2
 	echo Installing libmxml.so to $(BUILDROOT)$(libdir)...
 	$(INSTALL_DIR) $(BUILDROOT)$(libdir)
@@ -248,6 +256,14 @@ install-libmxml4.a:	libmxml4.a
 	$(INSTALL_DIR) $(BUILDROOT)$(libdir)
 	$(INSTALL_LIB) libmxml4.a $(BUILDROOT)$(libdir)
 	$(RANLIB) $(BUILDROOT)$(libdir)/libmxml4.a
+
+install-libmxml4.dll:	libmxml4.dll
+	echo Installing libmxml4.dll to $(BUILDROOT)$(bindir)...
+	$(INSTALL_DIR) $(BUILDROOT)$(bindir)
+	$(INSTALL_LIB) libmxml4.dll $(BUILDROOT)$(bindir)
+	echo Installing libmxml4.a to $(BUILDROOT)$(libdir)...
+	$(INSTALL_DIR) $(BUILDROOT)$(libdir)
+	$(INSTALL_LIB) libmxml4.a $(BUILDROOT)$(libdir)
 
 install-libmxml4.so.2:	libmxml4.so.2
 	echo Installing libmxml4.so to $(BUILDROOT)$(libdir)...

@@ -11,6 +11,7 @@ Changes in Mini-XML 4.0.4
   (Issue #329)
 - Fixed some compiler warnings (Issue #333)
 - Fixed some documentation issues (Issue #334)
+- Fixed installation on MingW (Issue #336)
 
 
 Changes in Mini-XML 4.0.3

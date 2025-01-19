@@ -4,7 +4,7 @@
 #
 # https://www.msweet.org/mxml
 #
-# Copyright © 2003-2024 by Michael R Sweet.
+# Copyright © 2003-2025 by Michael R Sweet.
 #
 # Licensed under Apache License v2.0.  See the file "LICENSE" for more
 # information.
@@ -24,7 +24,7 @@ version_minor=$(echo $version | awk -F. '{print $2}')
 
 status=0
 
-if ! grep -q "Changes in Mini-XML $version" CHANGES.md; then
+if ! grep -q "^v$version" CHANGES.md; then
 	echo "Update CHANGES.md."
 	status=1
 fi
@@ -49,12 +49,12 @@ if ! grep -q "Version: $version" mxml.spec; then
 	status=1
 fi
 
-if test "$(grep MXML_VERSION linux/config.h | awk '${print $5}')" != "v$version\""; then
+if test "$(grep MXML_VERSION linux/config.h | awk '{print $5}')" != "v$version\""; then
 	echo "Update MXML_VERSION in linux/config.h."
 	status=1
 fi
 
-if test "$(grep MXML_VERSION vcnet/config.h | awk '${print $5}')" != "v$version\""; then
+if test "$(grep MXML_VERSION vcnet/config.h | awk '{print $5}')" != "v$version\""; then
 	echo "Update MXML_VERSION in vcnet/config.h."
 	status=1
 fi
@@ -73,7 +73,7 @@ if ! grep -q "<version>$version</version>" vcnet/libmxml4_native.redist.nuspec; 
 	status=1
 fi
 
-if test "$(grep MXML_VERSION xcode/config.h | awk '${print $5}')" != "v$version\""; then
+if test "$(grep MXML_VERSION xcode/config.h | awk '{print $5}')" != "v$version\""; then
 	echo "Update MXML_VERSION in xcode/config.h."
 	status=1
 fi
@@ -81,7 +81,6 @@ fi
 if test $status = 1; then
 	exit 1
 fi
-
 
 # Create tag and archives...
 echo Creating tag for release...

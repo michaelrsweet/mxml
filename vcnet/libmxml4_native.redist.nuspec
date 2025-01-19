@@ -13,7 +13,7 @@
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <description>Redistributable components for package 'libmxml2_native'. This package should only be installed as a dependency.</description>
         <summary>Mini-XML is a small XML parsing library that you can use to read XML data files or strings in your application without requiring large non-standard libraries. This package provides the redistributable content for Mini-XML.</summary>
-        <copyright>Copyright © 2003-2024 by Michael R Sweet</copyright>
+        <copyright>Copyright © 2003-2025 by Michael R Sweet</copyright>
         <tags>xml</tags>
     </metadata>
     <files>

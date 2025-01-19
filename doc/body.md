@@ -1,7 +1,7 @@
 ---
 title: Mini-XML 4.0 Programming Manual
 author: Michael R Sweet
-copyright: Copyright © 2003-2024, All Rights Reserved.
+copyright: Copyright © 2003-2025, All Rights Reserved.
 version: 4.0
 ...
 

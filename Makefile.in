@@ -3,7 +3,7 @@
 #
 # https://www.msweet.org/mxml
 #
-# Copyright © 2003-2024 by Michael R Sweet.
+# Copyright © 2003-2025 by Michael R Sweet.
 #
 # Licensed under Apache License v2.0.  See the file "LICENSE" for more
 # information.
@@ -175,9 +175,14 @@ all:		$(TARGETS)
 clean:
 	echo Cleaning build files...
 	$(RM) $(OBJS) $(ALLTARGETS)
-	$(RM) mxml4.dll
-	$(RM) mxml4.lib
+	$(RM) libmxml.a
+	$(RM) libmxml.dll
+	$(RM) libmxml.so
+	$(RM) libmxml.so.2
+	$(RM) libmxml.2.dylib
+	$(RM) libmxml.dylib
 	$(RM) libmxml4.a
+	$(RM) libmxml4.dll
 	$(RM) libmxml4.so
 	$(RM) libmxml4.so.2
 	$(RM) libmxml4.2.dylib
@@ -299,6 +304,10 @@ uninstall-libmxml.a:
 	echo Uninstalling libmxml.a from $(BUILDROOT)$(libdir)...
 	$(RM) $(BUILDROOT)$(libdir)/libmxml.a
 
+uninstall-libmxml.dll:
+	echo Uninstalling libmxml.dll from $(BUILDROOT)$(bindir)...
+	$(RM) $(BUILDROOT)$(bindir)/libmxml.dll
+
 uninstall-libmxml.so.2:
 	echo Uninstalling libmxml.so from $(BUILDROOT)$(libdir)...
 	$(RM) $(BUILDROOT)$(libdir)/libmxml.so
@@ -313,6 +322,10 @@ uninstall-libmxml.2.dylib:
 uninstall-libmxml4.a:
 	echo Uninstalling libmxml4.a from $(BUILDROOT)$(libdir)...
 	$(RM) $(BUILDROOT)$(libdir)/libmxml4.a
+
+uninstall-libmxml4.dll:
+	echo Uninstalling libmxml4.dll from $(BUILDROOT)$(bindir)...
+	$(RM) $(BUILDROOT)$(bindir)/libmxml4.dll
 
 uninstall-libmxml4.so.2:
 	echo Uninstalling libmxml4.so from $(BUILDROOT)$(libdir)...

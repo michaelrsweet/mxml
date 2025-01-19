@@ -13,7 +13,7 @@
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <description>Small XML File Parsing Library</description>
         <summary>Mini-XML is a small XML parsing library that you can use to read XML data files or strings in your application without requiring large non-standard libraries.</summary>
-        <copyright>Copyright © 2003-2024 by Michael R Sweet</copyright>
+        <copyright>Copyright © 2003-2025 by Michael R Sweet</copyright>
         <tags>xml</tags>
 	<dependencies>
 	    <dependency id="libmxml4_native.redist" version="4.0.4" />

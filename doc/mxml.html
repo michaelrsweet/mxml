@@ -3,7 +3,7 @@
 <head>
 <title>Mini-XML 4.0 Programming Manual</title>
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
-<meta name="generator" content="codedoc v3.7">
+<meta name="generator" content="codedoc v3.8">
 <meta name="author" content="Michael R Sweet">
 <meta name="language" content="en-US">
 <meta name="copyright" content="Copyright © 2003-2024, All Rights Reserved.">
@@ -466,8 +466,9 @@ span.string {
 <p>If you have the <code>pkg-config</code> software installed, you can use it to determine the proper compiler and linker options for your installation:</p>
 <pre><code>gcc `pkg-config --cflags mxml4` -o myprogram myprogram.c `pkg-config --libs mxml4`
 </code></pre>
+<p>&gt; Note: The library name &quot;mxml4&quot; is a configure-time option. If you use the</p>
 <blockquote>
-<p>Note: The library name &quot;mxml4&quot; is a configure-time option. If you use the <code>--disable-libmxml4-prefix</code> configure option the library is named &quot;mxml&quot;.</p>
+<p><code>--disable-libmxml4-prefix</code> configure option the library is named &quot;mxml&quot;.</p>
 </blockquote>
 <h3 class="title" id="api-basics">API Basics</h3>
 <p>Every piece of information in an XML file is stored in memory in &quot;nodes&quot;. Nodes are represented by <code>mxml_node_t</code> pointers. Each node has an associated type, value(s), a parent node, sibling nodes (previous and next), potentially first and last child nodes, and an optional user data pointer.</p>
@@ -2469,21 +2470,20 @@ reused for multiple calls to these functions and should be freed using the
 The default load/save options load values using the constant type
 <code>MXML_TYPE_TEXT</code> and save XML data with a wrap margin of 72 columns.
 The various <code>mxmlOptionsSet</code> functions are used to change the defaults,
-for example:<br>
-<br>
-<code>`</code>c
-mxml_options_t <em>options = mxmlOptionsNew();
+for example:
 
-/</em> Load values as opaque strings */
-mxmlOptionsSetTypeValue(options, MXML_TYPE_OPAQUE);
 <pre>
+mxml_options_t *options = mxmlOptionsNew();
+
+/* Load values as opaque strings */
+mxmlOptionsSetTypeValue(options, MXML_TYPE_OPAQUE);
+</pre>
 
 Note: The most common programming error when using the Mini-XML library is
-to load an XML file using the `MXML_TYPE_TEXT` node type, which returns
+to load an XML file using the <code>MXML_TYPE_TEXT</code> node type, which returns
 inline text as a series of whitespace-delimited words, instead of using the
-`MXML_TYPE_OPAQUE` node type which returns the inline text as a single string
-(including whitespace).</pre>
-</p>
+<code>MXML_TYPE_OPAQUE</code> node type which returns the inline text as a single string
+(including whitespace).</p>
 <h3 class="function"><a id="mxmlOptionsSetCustomCallbacks">mxmlOptionsSetCustomCallbacks</a></h3>
 <p class="description">Set the custom data callbacks.</p>
 <p class="code">

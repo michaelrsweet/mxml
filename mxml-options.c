@@ -3,7 +3,7 @@
 //
 // https://www.msweet.org/mxml
 //
-// Copyright © 2003-2024 by Michael R Sweet.
+// Copyright © 2003-2025 by Michael R Sweet.
 //
 // Licensed under Apache License v2.0.  See the file "LICENSE" for more
 // information.
@@ -40,7 +40,7 @@ mxmlOptionsDelete(
 // The various `mxmlOptionsSet` functions are used to change the defaults,
 // for example:
 //
-// ```c
+// ```
 // mxml_options_t *options = mxmlOptionsNew();
 //
 // /* Load values as opaque strings */

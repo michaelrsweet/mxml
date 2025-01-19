@@ -8,7 +8,7 @@
 //
 // https://www.msweet.org/mxml
 //
-// Copyright © 2003-2024 by Michael R Sweet.
+// Copyright © 2003-2025 by Michael R Sweet.
 //
 // Licensed under Apache License v2.0.  See the file "LICENSE" for more
 // information.
@@ -615,6 +615,10 @@ main(int  argc,				// I - Number of command-line args
       return (1);
     }
   }
+
+  // Free memory used by options - not explicitly required here since we are
+  // just exiting, but long-running programs should do this...
+  mxmlOptionsDelete(options);
 
 #ifndef _WIN32
   // Debug hooks...

@@ -1,4 +1,4 @@
-.TH mxml 3 "Mini-XML API" "2024-11-17" "Mini-XML API"
+.TH mxml 3 "Mini-XML API" "2025-01-19" "Mini-XML API"
 .SH NAME
 mxml \- Mini-XML API
 .SH INCLUDE FILE
@@ -1112,20 +1112,19 @@ The default load/save options load values using the constant type
 The various \fBmxmlOptionsSet\fR functions are used to change the defaults,
 for example:
 .PP
-\fB`\fRc
-mxml_options_t \fIoptions = mxmlOptionsNew();
-
-/\fR Load values as opaque strings */
-mxmlOptionsSetTypeValue(options, MXML_TYPE_OPAQUE);
 .nf
+    mxml_options_t *options = mxmlOptionsNew();
     
-    Note: The most common programming error when using the Mini-XML library is
-    to load an XML file using the `MXML_TYPE_TEXT` node type, which returns
-    inline text as a series of whitespace-delimited words, instead of using the
-    `MXML_TYPE_OPAQUE` node type which returns the inline text as a single string
-    (including whitespace).
+    /* Load values as opaque strings */
+    mxmlOptionsSetTypeValue(options, MXML_TYPE_OPAQUE);
+
 .fi
 
+Note: The most common programming error when using the Mini-XML library is
+to load an XML file using the \fBMXML_TYPE_TEXT\fR node type, which returns
+inline text as a series of whitespace-delimited words, instead of using the
+\fBMXML_TYPE_OPAQUE\fR node type which returns the inline text as a single string
+(including whitespace).
 .SS mxmlOptionsSetCustomCallbacks
 Set the custom data callbacks.
 .PP

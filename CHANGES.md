@@ -7,11 +7,10 @@ Changes in Mini-XML 4.0.4
 
 - Added Linux-specific build files and dropped unused `long long` config tests
   (Issue #335)
-- Documentation fixes (Issue #337)
+- Documentation fixes (Issue #334, Issue #337)
 - Fixed an issue when reporting errors with a `NULL` options pointer
   (Issue #329)
 - Fixed some compiler warnings (Issue #333)
-- Fixed some documentation issues (Issue #334)
 - Fixed installation on MingW (Issue #336)
 
 

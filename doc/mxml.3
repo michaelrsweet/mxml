@@ -74,20 +74,22 @@ function:
     fclose(fp);
 .fi
 .PP
-The "mxmlLoadString()", "mxmlSaveAllocString()", and
+The "mxmlLoadString()", "mxmlLoadBuffer()", "mxmlSaveAllocString()", and
 "mxmlSaveString()" functions load XML node trees from and save
 XML node trees to strings:
 .nf
 
-    char buffer[8192];
+    const char *input;
+    char output[8192];
     char *ptr;
+    mxml_options_t *options;
     mxml_node_t *tree;
 
     ...
-    tree = mxmlLoadString(NULL, buffer, MXML_NO_CALLBACK);
+    tree = mxmlLoadString(NULL, options, input);
 
     ...
-    mxmlSaveString(tree, buffer, sizeof(buffer),
+    mxmlSaveString(tree, output, sizeof(output),
                    MXML_NO_CALLBACK);
 
     ...
@@ -837,6 +839,26 @@ This function loads the string into an XML node tree.  The nodes in the
 specified file are added to the specified node \fBtop\fR - if \fBNULL\fR the XML file
 MUST be well-formed with a single parent processing instruction node like
 \fB<?xml version="1.0"?>\fR at the start of the file.
+.PP
+Load options are provides via the \fBoptions\fR argument.  If \fBNULL\fR, all values
+will be loaded into \fBMXML_TYPE_TEXT\fR nodes.  Use the \fImxmlOptionsNew\fR
+function to create options when loading XML data.
+.SS mxmlLoadString
+Load a string into an XML node tree.
+.PP
+.nf
+mxml_node_t * mxmlLoadBuffer (
+    mxml_node_t *top,
+    mxml_options_t *options,
+    const char *buffer,
+    size_t buflen
+);
+.fi
+.PP
+This function loads up to buflen bytes from the buffer into an XML node tree.
+The nodes in the specified file are added to the specified node \fBtop\fR - if
+\fBNULL\fR the XML file MUST be well-formed with a single parent processing
+instruction node like \fB<?xml version="1.0"?>\fR at the start of the file.
 .PP
 Load options are provides via the \fBoptions\fR argument.  If \fBNULL\fR, all values
 will be loaded into \fBMXML_TYPE_TEXT\fR nodes.  Use the \fImxmlOptionsNew\fR

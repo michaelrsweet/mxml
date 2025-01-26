@@ -207,6 +207,42 @@ mxmlLoadIO(
 
 
 //
+// 'mxmlLoadBuffer()' - Load a buffer into an XML node tree.
+//
+// This function loads up to buflen bytes from the buffer into an XML node tree.
+// The nodes in the specified file are added to the specified node `top` - if
+// `NULL` the XML file MUST be well-formed with a single parent processing
+// instruction node like `<?xml version="1.0"?>` at the start of the file.
+//
+// Load options are provides via the `options` argument.  If `NULL`, all values
+// will be loaded into `MXML_TYPE_TEXT` nodes.  Use the @link mxmlOptionsNew@
+// function to create options when loading XML data.
+//
+mxml_node_t *				// O - First node or `NULL` if the string has errors.
+mxmlLoadBuffer(
+    mxml_node_t    *top,		// I - Top node
+    mxml_options_t *options,		// I - Options
+    const char     *buffer,		// I - Buffer to load
+    size_t         buflen)		// I - Buffer to load
+{
+  _mxml_stringbuf_t	sb;		// String buffer
+
+  // Range check input...
+  if (!buffer || !buflen)
+    return (NULL);
+
+  // Setup string buffer...
+  sb.buffer   = (char *)buffer;
+  sb.bufptr   = (char *)buffer;
+  sb.bufsize  = buflen;
+  sb.bufalloc = false;
+
+  // Read the XML data...
+  return (mxml_load_data(top, options, (mxml_io_cb_t)mxml_read_cb_string, &sb));
+}
+
+
+//
 // 'mxmlLoadString()' - Load a string into an XML node tree.
 //
 // This function loads the string into an XML node tree.  The nodes in the
@@ -225,23 +261,8 @@ mxmlLoadString(
     mxml_options_t *options,		// I - Options
     const char     *s)			// I - String to load
 {
-  _mxml_stringbuf_t	sb;		// String buffer
-
-
-  // Range check input...
-  if (!s)
-    return (NULL);
-
-  // Setup string buffer...
-  sb.buffer   = (char *)s;
-  sb.bufptr   = (char *)s;
-  sb.bufsize  = strlen(s);
-  sb.bufalloc = false;
-
-  // Read the XML data...
-  return (mxml_load_data(top, options, (mxml_io_cb_t)mxml_read_cb_string, &sb));
+  return mxmlLoadBuffer(top, options, s, s ? strlen(s) : 0);
 }
-
 
 //
 // 'mxmlSaveAllocString()' - Save an XML tree to an allocated string.

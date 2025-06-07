@@ -27,16 +27,22 @@
 //
 
 #if defined(__sun) || defined(_AIX)
+#  pragma init(_mxml_init)
 #  pragma fini(_mxml_fini)
+#  define _MXML_INIT _mxml_init
 #  define _MXML_FINI _mxml_fini
 #elif defined(__hpux)
+#  pragma INIT _mxml_init
 #  pragma FINI _mxml_fini
+#  define _MXML_INIT _mxml_init
 #  define _MXML_FINI _mxml_fini
 #elif defined(__GNUC__) // Linux and macOS
+#  define _MXML_INIT __attribute__((constructor)) _mxml_init
 #  define _MXML_FINI __attribute((destructor)) _mxml_fini
 #else
+#  define _MXML_INIT _init
 #  define _MXML_FINI _fini
-#endif // __sun
+#endif
 
 
 //
@@ -124,13 +130,25 @@ _mxml_strfree(char *s)			// I - String
 #ifdef HAVE_PTHREAD_H			// POSIX threading
 #  include <pthread.h>
 
+static pthread_t _mxml_loading_thread_id;
 static int		_mxml_initialized = 0;
 					// Have we been initialized?
 static pthread_key_t	_mxml_key;	// Thread local storage key
 static pthread_once_t	_mxml_key_once = PTHREAD_ONCE_INIT;
 					// One-time initialization object
-static void		_mxml_init(void);
+static void		_mxml_init_key(void);
 static void		_mxml_destructor(void *g);
+
+
+//
+// '_mxml_init()' - Prepare the terrain for the clean up at unlodading.
+//
+
+static void
+_MXML_INIT(void)
+{
+  _mxml_loading_thread_id = pthread_self();
+}
 
 
 //
@@ -151,8 +169,14 @@ _mxml_destructor(void *g)		// I - Global data
 static void
 _MXML_FINI(void)
 {
-  if (_mxml_initialized)
+  if (_mxml_initialized) {
+    if (_mxml_loading_thread_id == pthread_self()) {
+      void *g = pthread_getspecific(_mxml_key);
+      free(g);
+      pthread_setspecific(_mxml_key, NULL);
+    }
     pthread_key_delete(_mxml_key);
+  }
 }
 
 
@@ -166,7 +190,7 @@ _mxml_global(void)
   _mxml_global_t	*global;	// Global data
 
 
-  pthread_once(&_mxml_key_once, _mxml_init);
+  pthread_once(&_mxml_key_once, _mxml_init_key);
 
   if ((global = (_mxml_global_t *)pthread_getspecific(_mxml_key)) == NULL)
   {
@@ -179,11 +203,11 @@ _mxml_global(void)
 
 
 //
-// '_mxml_init()' - Initialize global data...
+// '_mxml_init_key()' - Initialize global data...
 //
 
 static void
-_mxml_init(void)
+_mxml_init_key(void)
 {
   _mxml_initialized = 1;
   pthread_key_create(&_mxml_key, _mxml_destructor);

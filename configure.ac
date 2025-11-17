@@ -3,7 +3,7 @@ dnl Configuration script for Mini-XML, a small XML file parsing library.
 dnl
 dnl https://www.msweet.org/mxml
 dnl
-dnl Copyright © 2003-2024 by Michael R Sweet.
+dnl Copyright © 2003-2025 by Michael R Sweet.
 dnl
 dnl Licensed under Apache License v2.0.  See the file "LICENSE" for more
 dnl information.
@@ -14,7 +14,7 @@ AC_PREREQ([2.70])
 
 
 dnl Package name and version...
-AC_INIT([Mini-XML], [4.0.4], [https://github.com/michaelrsweet/mxml/issues], [mxml], [https://www.msweet.org/mxml])
+AC_INIT([Mini-XML], [4.0.5], [https://github.com/michaelrsweet/mxml/issues], [mxml], [https://www.msweet.org/mxml])
 AC_CONFIG_HEADERS([config.h])
 
 MXML_VERSION="AC_PACKAGE_VERSION"

@@ -4,7 +4,7 @@
 //
 // https://www.msweet.org/mxml
 //
-// Copyright © 2003-2024 by Michael R Sweet.
+// Copyright © 2003-2025 by Michael R Sweet.
 //
 // Licensed under Apache License v2.0.  See the file "LICENSE" for more
 // information.
@@ -57,7 +57,7 @@
 // Version number
 //
 
-#  define MXML_VERSION "Mini-XML v4.0.4"
+#  define MXML_VERSION "Mini-XML v4.0.5"
 
 
 //

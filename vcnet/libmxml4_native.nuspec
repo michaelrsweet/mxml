@@ -3,7 +3,7 @@
     <metadata>
         <id>libmxml4_native</id>
         <title>Small XML File Parsing Library for VS2019+</title>
-        <version>4.0.4</version>
+        <version>4.0.5</version>
         <authors>Michael R Sweet</authors>
         <owners>michaelrsweet</owners>
         <projectUrl>https://github.com/michaelrsweet/mxml</projectUrl>
@@ -16,7 +16,7 @@
         <copyright>Copyright © 2003-2025 by Michael R Sweet</copyright>
         <tags>xml</tags>
 	<dependencies>
-	    <dependency id="libmxml4_native.redist" version="4.0.4" />
+	    <dependency id="libmxml4_native.redist" version="4.0.5" />
 	</dependencies>
     </metadata>
     <files>

@@ -170,7 +170,7 @@ tree:
 Getting Help And Reporting Problems
 -----------------------------------
 
-The [Mini-XML project page](https://www.msweet.org/mxml) provides access to the
+The [Mini-XML project page](https://www.msweet.org/mxml/) provides access to the
 current version of this software, documentation, and Github issue tracking page.
 
 

@@ -1343,8 +1343,6 @@ mxml_load_data(
 	  if ((ch = mxml_getc(options, io_cb, io_cbdata, &encoding)) != '>')
 	  {
 	    _mxml_error(options, "Expected > but got '%c' instead for element <%s/> on line %d.", ch, buffer, line);
-            mxmlDelete(node);
-            node = NULL;
             goto error;
 	  }
 
@@ -1438,6 +1436,9 @@ mxml_load_data(
 
   // Common error return...
   error:
+
+  if (node && node != first)
+    mxmlDelete(node);
 
   mxmlDelete(first);
 

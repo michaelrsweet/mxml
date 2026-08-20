@@ -9,6 +9,7 @@ v4.0.5 (YYYY-MM-DD)
 - Added support for Windows on ARM64 (Issue #352)
 - Fixed build issues with MingW (Issue #347)
 - Fixed an access issue in `mxmlIndexNew` (Issue #350)
+- Fixed a potential memory leak when loading bad XML (Issue #354)
 
 
 v4.0.4 (2025-01-19)

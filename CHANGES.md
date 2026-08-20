@@ -2,7 +2,7 @@ Changes in Mini-XML
 ===================
 
 
-v4.0.5 (YYYY-MM-DD)
+v4.0.5 - 2026-08-20
 -------------------
 
 - Added support for the "apos" entity (Issue #346)
@@ -12,7 +12,7 @@ v4.0.5 (YYYY-MM-DD)
 - Fixed a potential memory leak when loading bad XML (Issue #354)
 
 
-v4.0.4 (2025-01-19)
+v4.0.4 - 2025-01-19
 -------------------
 
 - Added Linux-specific build files and dropped unused `long long` config tests
@@ -24,7 +24,7 @@ v4.0.4 (2025-01-19)
 - Fixed installation on MingW (Issue #336)
 
 
-v4.0.3 (2024-04-21)
+v4.0.3 - 2024-04-21
 -------------------
 
 - Now default the `DSOFLAGS` value to `LDFLAGS` in the configure script
@@ -36,13 +36,13 @@ v4.0.3 (2024-04-21)
 - Fixed `mxmlSetDeclarationf` implementation (Issue #322)
 
 
-v4.0.2 (2024-03-24)
+v4.0.2 - 2024-03-24
 -------------------
 
 - Fixed an issue with GNU make and parallel builds (Issue #314)
 
 
-v4.0.1 (2024-03-22)
+v4.0.1 - 2024-03-22
 -------------------
 
 - Fixed missing "docdir" definition in makefile (Issue #313)
@@ -50,7 +50,7 @@ v4.0.1 (2024-03-22)
 - Fixed configure script issues.
 
 
-v4.0.0 (2024-03-20)
+v4.0.0 - 2024-03-20
 -------------------
 
 - Now require C99 support (Issue #300)

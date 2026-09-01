@@ -870,6 +870,13 @@ mxml_load_data(
       // Add a new value node...
       *bufptr = '\0';
 
+      if (!parent)
+      {
+	// Can't have a value node without a parent...
+	_mxml_error(options, "Value cannot be a root node on line %d.", line);
+	goto error;
+      }
+
       switch (type)
       {
 	case MXML_TYPE_INTEGER :
@@ -1344,6 +1351,13 @@ mxml_load_data(
 	  {
 	    _mxml_error(options, "Expected > but got '%c' instead for element <%s/> on line %d.", ch, buffer, line);
             goto error;
+	  }
+
+          if (!parent)
+	  {
+	    // Can't have an empty element without a parent...
+	    _mxml_error(options, "<%s /> cannot be a root element on line %d.", node->value.element.name, line);
+	    goto error;
 	  }
 
 	  ch = '/';

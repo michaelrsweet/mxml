@@ -45,6 +45,7 @@ typedef struct _mxml_stringbuf_s	// String buffer
 
 static bool		mxml_add_char(mxml_options_t *options, int ch, char **ptr, char **buffer, size_t *bufsize);
 static int		mxml_get_entity(mxml_options_t *options, mxml_io_cb_t io_cb, void *io_cbdata, _mxml_encoding_t *encoding, mxml_node_t *parent, int *line);
+static const char	*mxml_error_char(int ch, char *buffer, size_t bufsize);
 static int		mxml_getc(mxml_options_t *options, mxml_io_cb_t io_cb, void *io_cbdata, _mxml_encoding_t *encoding);
 static inline int	mxml_isspace(int ch)
 			{
@@ -616,6 +617,33 @@ mxml_get_entity(
 
 
 //
+// 'mxml_error_char()' - Format a character value for an error message.
+//
+// Error messages interpolate a Unicode character value.  Formatting it with
+// "%c" is wrong in two ways: a value whose low byte is 0 (U+0100, U+0200,
+// U+1F600, ...) writes a nul that truncates the message, and a value from
+// 0x80 to 0xff emits a lone byte that is not valid UTF-8.  Printable ASCII is
+// shown as-is and anything else as a character value, matching the existing
+// "Invalid UTF-8 sequence for character 0x%04x." messages.
+//
+
+static const char *			// O - Formatted character
+mxml_error_char(int    ch,		// I - Character value
+                char   *buffer,		// I - String buffer
+                size_t bufsize)		// I - Size of string buffer
+{
+  if (ch >= 0x20 && ch < 0x7f)
+    snprintf(buffer, bufsize, "%c", ch);
+  else if (ch == EOF)
+    snprintf(buffer, bufsize, "EOF");
+  else
+    snprintf(buffer, bufsize, "0x%04x", ch);
+
+  return (buffer);
+}
+
+
+//
 // 'mxml_getc()' - Read a character from a file descriptor.
 //
 
@@ -859,7 +887,11 @@ mxml_load_data(
   else if (ch != '<' && !top)
   {
     free(buffer);
-    _mxml_error(options, "XML does not start with '<' (saw '%c').", ch);
+    {
+      char		chbuf[16];	// Character value buffer
+
+      _mxml_error(options, "XML does not start with '<' (saw '%s').", mxml_error_char(ch, chbuf, sizeof(chbuf)));
+    }
     return (NULL);
   }
 
@@ -1349,7 +1381,11 @@ mxml_load_data(
 
 	  if ((ch = mxml_getc(options, io_cb, io_cbdata, &encoding)) != '>')
 	  {
-	    _mxml_error(options, "Expected > but got '%c' instead for element <%s/> on line %d.", ch, buffer, line);
+	    {
+	      char		chbuf[16];	// Character value buffer
+
+	      _mxml_error(options, "Expected > but got '%s' instead for element <%s/> on line %d.", mxml_error_char(ch, chbuf, sizeof(chbuf)), buffer, line);
+	    }
             goto error;
 	  }
 
@@ -1524,7 +1560,11 @@ mxml_parse_element(
 
       if (quote != '>')
       {
-        _mxml_error(options, "Expected '>' after '%c' for element %s, but got '%c' on line %d.", ch, mxmlGetElement(node), quote, *line);
+        {
+          char		chbuf[16], quotebuf[16];	// Character value buffers
+
+          _mxml_error(options, "Expected '>' after '%s' for element %s, but got '%s' on line %d.", mxml_error_char(ch, chbuf, sizeof(chbuf)), mxmlGetElement(node), mxml_error_char(quote, quotebuf, sizeof(quotebuf)), *line);
+        }
         goto error;
       }
 
@@ -1706,7 +1746,11 @@ mxml_parse_element(
 
       if (quote != '>')
       {
-        _mxml_error(options, "Expected '>' after '%c' for element %s, but got '%c' on line %d.", ch, mxmlGetElement(node), quote, *line);
+        {
+          char		chbuf[16], quotebuf[16];	// Character value buffers
+
+          _mxml_error(options, "Expected '>' after '%s' for element %s, but got '%s' on line %d.", mxml_error_char(ch, chbuf, sizeof(chbuf)), mxmlGetElement(node), mxml_error_char(quote, quotebuf, sizeof(quotebuf)), *line);
+        }
         ch = EOF;
       }
 

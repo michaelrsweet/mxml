@@ -859,7 +859,7 @@ mxml_load_data(
   else if (ch != '<' && !top)
   {
     free(buffer);
-    _mxml_error(options, "XML does not start with '<' (saw '%c').", ch);
+    _mxml_error(options, "XML does not start with '<' (saw U+%04X).", ch);
     return (NULL);
   }
 
@@ -1349,7 +1349,10 @@ mxml_load_data(
 
 	  if ((ch = mxml_getc(options, io_cb, io_cbdata, &encoding)) != '>')
 	  {
-	    _mxml_error(options, "Expected > but got '%c' instead for element <%s/> on line %d.", ch, buffer, line);
+	    if (ch == EOF)
+	      _mxml_error(options, "Expected > but got EOF instead for element <%s/> on line %d.", buffer, line);
+	    else
+	      _mxml_error(options, "Expected > but got U+%04X instead for element <%s/> on line %d.", ch, buffer, line);
             goto error;
 	  }
 
@@ -1505,7 +1508,7 @@ mxml_parse_element(
   // Loop until we hit a >, /, ?, or EOF...
   while ((ch = mxml_getc(options, io_cb, io_cbdata, encoding)) != EOF)
   {
-    MXML_DEBUG("mxml_parse_element: ch='%c'\n", ch);
+    MXML_DEBUG("mxml_parse_element: ch=U+%04X\n", ch);
 
     // Skip leading whitespace...
     if (mxml_isspace(ch))
@@ -1524,7 +1527,7 @@ mxml_parse_element(
 
       if (quote != '>')
       {
-        _mxml_error(options, "Expected '>' after '%c' for element %s, but got '%c' on line %d.", ch, mxmlGetElement(node), quote, *line);
+        _mxml_error(options, "Expected '>' after U+%04X for element %s, but got U+%04X on line %d.", ch, mxmlGetElement(node), quote, *line);
         goto error;
       }
 
@@ -1706,7 +1709,7 @@ mxml_parse_element(
 
       if (quote != '>')
       {
-        _mxml_error(options, "Expected '>' after '%c' for element %s, but got '%c' on line %d.", ch, mxmlGetElement(node), quote, *line);
+        _mxml_error(options, "Expected '>' after U+%04X for element %s, but got U+%04X on line %d.", ch, mxmlGetElement(node), quote, *line);
         ch = EOF;
       }
 

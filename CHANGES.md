@@ -2,7 +2,7 @@ Changes in Mini-XML
 ===================
 
 
-v4.0.6 - YYYY-MM-DD
+v4.0.6 - 2026-09-22
 -------------------
 
 - Fixed a potential memory leak when loading bad XML (Issue #356)

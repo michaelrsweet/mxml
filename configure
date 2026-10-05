@@ -4463,18 +4463,6 @@ fi
 
 
 
-if test "$prefix" = NONE
-then :
-
-    # Default prefix isn't bound until AC_OUTPUT...
-    realprefix="/usr/local"
-
-else $as_nop
-
-    realprefix="$prefix"
-
-fi
-
 if test "$includedir" = NONE -o "$includedir" = "\${prefix}/include"
 then :
 
@@ -4506,13 +4494,7 @@ else $as_nop
     PKGCONFIG_CFLAGS=""
 
 fi
-PKGCONFIG_LIBS="$LINK_MXML"
-if test "$realprefix" != "/usr" -a "$realprefix" != "/usr/local"
-then :
-
-    PKGCONFIG_LIBS="-L\${libdir} $PKGCONFIG_LIBS"
-
-fi
+PKGCONFIG_LIBS="-L\${libdir} $LINK_MXML"
 
 
 

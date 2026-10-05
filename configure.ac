@@ -330,13 +330,6 @@ AC_ARG_WITH([docdir], AS_HELP_STRING([--with-docdir], [set directory for documen
 ])
 AC_SUBST([docdir])
 
-AS_IF([test "$prefix" = NONE], [
-    # Default prefix isn't bound until AC_OUTPUT...
-    realprefix="/usr/local"
-], [
-    realprefix="$prefix"
-])
-
 AS_IF([test "$includedir" = NONE -o "$includedir" = "\${prefix}/include"], [
     includedir="\${prefix}/include$INCLUDE_PREFIX"
 ])
@@ -357,10 +350,7 @@ AS_IF([test "$includedir" != "/usr/include" -a "$includedir" != "/usr/local/incl
 ], [
     PKGCONFIG_CFLAGS=""
 ])
-PKGCONFIG_LIBS="$LINK_MXML"
-AS_IF([test "$realprefix" != "/usr" -a "$realprefix" != "/usr/local"], [
-    PKGCONFIG_LIBS="-L\${libdir} $PKGCONFIG_LIBS"
-])
+PKGCONFIG_LIBS="-L\${libdir} $LINK_MXML"
 
 AC_SUBST([PKGCONFIG_CFLAGS])
 AC_SUBST([PKGCONFIG_LIBS])

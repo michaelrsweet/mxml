@@ -350,7 +350,17 @@ AS_IF([test "$includedir" != "/usr/include" -a "$includedir" != "/usr/local/incl
 ], [
     PKGCONFIG_CFLAGS=""
 ])
-PKGCONFIG_LIBS="-L\${libdir} $LINK_MXML"
+# 2026-10-07: Resolve libdir for the system-directory check only.
+reallibdir=$(
+    test "$prefix" = NONE && prefix="$ac_default_prefix"
+    test "$exec_prefix" = NONE && exec_prefix="$prefix"
+    eval exec_prefix=\"$exec_prefix\"
+    eval echo \"$libdir\"
+)
+PKGCONFIG_LIBS="$LINK_MXML"
+AS_IF([test "$reallibdir" != "/usr/lib" -a "$reallibdir" != "/usr/local/lib"], [
+    PKGCONFIG_LIBS="-L\${libdir} $PKGCONFIG_LIBS"
+])
 
 AC_SUBST([PKGCONFIG_CFLAGS])
 AC_SUBST([PKGCONFIG_LIBS])

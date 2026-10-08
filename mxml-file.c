@@ -752,7 +752,7 @@ mxml_getc(mxml_options_t   *options,	// I  - Options
 
 	  lch = (buffer[2] << 8) | buffer[3];
 
-          if (lch < 0xdc00 || lch >= 0xdfff)
+          if (lch < 0xdc00 || lch > 0xdfff)
 	    return (EOF);
 
           ch = (((ch & 0x3ff) << 10) | (lch & 0x3ff)) + 0x10000;
@@ -776,7 +776,7 @@ mxml_getc(mxml_options_t   *options,	// I  - Options
 
 	  lch = (buffer[3] << 8) | buffer[2];
 
-          if (lch < 0xdc00 || lch >= 0xdfff)
+          if (lch < 0xdc00 || lch > 0xdfff)
 	    return (EOF);
 
           ch = (((ch & 0x3ff) << 10) | (lch & 0x3ff)) + 0x10000;
@@ -1857,7 +1857,7 @@ mxml_strtod(mxml_options_t *options,	// I - Options
 					// Length of decimal point
     bufptr ++;
 
-    if (declen <= (sizeof(temp) - (size_t)(tempptr - temp)))
+    if (declen <= (sizeof(temp) - 1 - (size_t)(tempptr - temp)))
     {
       memcpy(tempptr, options->loc->decimal_point, declen);
       tempptr += declen;

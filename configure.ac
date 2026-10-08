@@ -14,7 +14,7 @@ AC_PREREQ([2.70])
 
 
 dnl Package name and version...
-AC_INIT([Mini-XML], [4.0.6], [https://github.com/michaelrsweet/mxml/issues], [mxml], [https://www.msweet.org/mxml])
+AC_INIT([Mini-XML], [4.0.7], [https://github.com/michaelrsweet/mxml/issues], [mxml], [https://www.msweet.org/mxml])
 AC_CONFIG_HEADERS([config.h])
 
 MXML_VERSION="AC_PACKAGE_VERSION"
@@ -330,8 +330,27 @@ AC_ARG_WITH([docdir], AS_HELP_STRING([--with-docdir], [set directory for documen
 ])
 AC_SUBST([docdir])
 
+AS_IF([test "$prefix" = NONE], [
+    # Default prefix isn't bound until AC_OUTPUT...
+    realprefix="/usr/local"
+], [
+    realprefix="$prefix"
+])
+
+AS_IF([test "$exec_prefix" = "NONE"], [
+    AS_IF([test "$prefix" = "/"], [
+	exec_prefix="/usr"
+    ], [
+	exec_prefix="$realprefix"
+    ])
+])
+
 AS_IF([test "$includedir" = NONE -o "$includedir" = "\${prefix}/include"], [
-    includedir="\${prefix}/include$INCLUDE_PREFIX"
+    includedir="$realprefix/include$INCLUDE_PREFIX"
+])
+
+AS_IF([test "$libdir" = NONE -o "$libdir" = "\${exec_prefix}/lib"], [
+    libdir="$exec_prefix/lib"
 ])
 
 
@@ -350,7 +369,7 @@ AS_IF([test "$includedir" != "/usr/include" -a "$includedir" != "/usr/local/incl
 ], [
     PKGCONFIG_CFLAGS=""
 ])
-# 2026-10-07: Resolve libdir for the system-directory check only.
+# 2026-10-09: Resolve symbolic libdir only for the system-directory check.
 reallibdir=$(
     test "$prefix" = NONE && prefix="$ac_default_prefix"
     test "$exec_prefix" = NONE && exec_prefix="$prefix"
@@ -359,7 +378,7 @@ reallibdir=$(
 )
 PKGCONFIG_LIBS="$LINK_MXML"
 AS_IF([test "$reallibdir" != "/usr/lib" -a "$reallibdir" != "/usr/local/lib"], [
-    PKGCONFIG_LIBS="-L\${libdir} $PKGCONFIG_LIBS"
+    PKGCONFIG_LIBS="-L$libdir $PKGCONFIG_LIBS"
 ])
 
 AC_SUBST([PKGCONFIG_CFLAGS])

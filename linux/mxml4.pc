@@ -5,6 +5,6 @@ includedir=${prefix}/include/libmxml4
 
 Name: Mini-XML
 Description: Lightweight XML support library
-Version: 4.0.4
+Version: 4.0.7
 Libs: -lmxml4
-Cflags: -I${includedir} 
+Cflags: -I${includedir}

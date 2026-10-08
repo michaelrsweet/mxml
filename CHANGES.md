@@ -2,6 +2,13 @@ Changes in Mini-XML
 ===================
 
 
+v4.0.7 - YYYY-MM-DD
+-------------------
+
+- Fixed a potential overflow when reading real numbers.
+- Fixed UTF-16 surrogate handling for U+DFFF.
+
+
 v4.0.6 - 2026-09-22
 -------------------
 

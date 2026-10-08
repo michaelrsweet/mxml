@@ -4475,10 +4475,33 @@ else $as_nop
 
 fi
 
+if test "$exec_prefix" = "NONE"
+then :
+
+    if test "$prefix" = "/"
+then :
+
+	exec_prefix="/usr"
+
+else $as_nop
+
+	exec_prefix="$realprefix"
+
+fi
+
+fi
+
 if test "$includedir" = NONE -o "$includedir" = "\${prefix}/include"
 then :
 
-    includedir="\${prefix}/include$INCLUDE_PREFIX"
+    includedir="$realprefix/include$INCLUDE_PREFIX"
+
+fi
+
+if test "$libdir" = NONE -o "$libdir" = "\${exec_prefix}/lib"
+then :
+
+    libdir="$exec_prefix/lib"
 
 fi
 
@@ -4507,10 +4530,10 @@ else $as_nop
 
 fi
 PKGCONFIG_LIBS="$LINK_MXML"
-if test "$realprefix" != "/usr" -a "$realprefix" != "/usr/local"
+if test "$libdir" != "/usr/lib" -a "$libdir" != "/usr/local/lib"
 then :
 
-    PKGCONFIG_LIBS="-L\${libdir} $PKGCONFIG_LIBS"
+    PKGCONFIG_LIBS="-L$libdir $PKGCONFIG_LIBS"
 
 fi
 

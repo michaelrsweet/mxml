@@ -337,8 +337,20 @@ AS_IF([test "$prefix" = NONE], [
     realprefix="$prefix"
 ])
 
+AS_IF([test "$exec_prefix" = "NONE"], [
+    AS_IF([test "$prefix" = "/"], [
+	exec_prefix="/usr"
+    ], [
+	exec_prefix="$realprefix"
+    ])
+])
+
 AS_IF([test "$includedir" = NONE -o "$includedir" = "\${prefix}/include"], [
-    includedir="\${prefix}/include$INCLUDE_PREFIX"
+    includedir="$realprefix/include$INCLUDE_PREFIX"
+])
+
+AS_IF([test "$libdir" = NONE -o "$libdir" = "\${exec_prefix}/lib"], [
+    libdir="$exec_prefix/lib"
 ])
 
 
@@ -358,8 +370,8 @@ AS_IF([test "$includedir" != "/usr/include" -a "$includedir" != "/usr/local/incl
     PKGCONFIG_CFLAGS=""
 ])
 PKGCONFIG_LIBS="$LINK_MXML"
-AS_IF([test "$realprefix" != "/usr" -a "$realprefix" != "/usr/local"], [
-    PKGCONFIG_LIBS="-L\${libdir} $PKGCONFIG_LIBS"
+AS_IF([test "$libdir" != "/usr/lib" -a "$libdir" != "/usr/local/lib"], [
+    PKGCONFIG_LIBS="-L$libdir $PKGCONFIG_LIBS"
 ])
 
 AC_SUBST([PKGCONFIG_CFLAGS])

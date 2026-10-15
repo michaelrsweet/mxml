@@ -60,3 +60,26 @@ jobs:
       uses: microsoft/setup-msbuild@v1.0.2
     - name: Build Mini-XML
       run: msbuild vcnet\mxml.sln
+
+  build-zephyr:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Mini-XML sources
+      uses: actions/checkout@v4
+      with:
+        path: mxml
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.12"
+    - name: Set up Zephyr project
+      uses: zephyrproject-rtos/action-zephyr-setup@v1
+      with:
+        app-path: mxml
+        toolchains: arm-zephyr-eabi
+    - name: Build Mini-XML sample
+      run: west build -b qemu_cortex_m3 mxml/zephyr/samples/basic
+    - name: Test Mini-XML
+      run: west twister -T mxml/zephyr/tests -p qemu_cortex_m3 --inline-logs

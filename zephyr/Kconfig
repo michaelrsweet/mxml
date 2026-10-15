@@ -1,0 +1,40 @@
+#
+# Kconfig options for Mini-XML on Zephyr.
+#
+# Copyright © 2026 by Romain Pelletant.
+#
+# Licensed under Apache License v2.0.  See the file "LICENSE" for more
+# information.
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+menuconfig MXML
+	bool "Mini-XML library"
+	select COMMON_LIBC_MALLOC
+	select COMMON_LIBC_CALLOC
+	select POSIX_C_LIB_EXT
+	help
+	  Enable Mini-XML, a small XML parsing and serialization library.
+	  Mini-XML dynamically allocates its options, nodes, attributes, and
+	  strings. Enabling this option therefore also enables the common libc
+	  allocator and provides a default 4-KiB malloc arena. Applications can
+	  override CONFIG_COMMON_LIBC_MALLOC_ARENA_SIZE when needed.
+
+	  Mini-XML uses POSIX thread-local storage when CONFIG_POSIX_THREADS is
+	  enabled. Otherwise, string allocator callbacks are shared globally.
+
+config MXML_FILE_IO
+	bool "File-based XML input/output"
+	depends on MXML
+	depends on POSIX_FILE_SYSTEM
+	depends on FAT_FILESYSTEM_ELM || FILE_SYSTEM_LITTLEFS
+	help
+	  Declare support for mxmlLoadFilename(), mxmlSaveFilename(),
+	  mxmlLoadFile(), and mxmlSaveFile(). This option is available when the
+	  POSIX file-system layer and a LittleFS or FAT backend are enabled. The
+	  application must mount the file system before accessing XML files.
+
+config COMMON_LIBC_MALLOC_ARENA_SIZE
+	default 4096 if MXML
+

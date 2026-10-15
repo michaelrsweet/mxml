@@ -1,0 +1,19 @@
+//
+// Configuration file for Mini-XML on Zephyr.
+//
+// Copyright © 2026 by Romain Pelletant.
+//
+// Licensed under Apache License v2.0.  See the file "LICENSE" for more
+// information.
+//
+// SPDX-License-Identifier: Apache-2.0
+//
+
+#ifndef MXML_CONFIG_H
+#  define MXML_CONFIG_H
+
+#  define MXML_VERSION "@MXML_VERSION@"
+
+#cmakedefine HAVE_PTHREAD_H 1
+
+#endif // !MXML_CONFIG_H

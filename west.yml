@@ -1,0 +1,26 @@
+#
+# West manifest for developing and testing Mini-XML on Zephyr.
+#
+# Copyright © 2026 by Romain Pelletant.
+#
+# Licensed under Apache License v2.0.  See the file "LICENSE" for more
+# information.
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+manifest:
+  self:
+    path: mxml
+
+  remotes:
+    - name: zephyrproject-rtos
+      url-base: https://github.com/zephyrproject-rtos
+
+  projects:
+    - name: zephyr
+      remote: zephyrproject-rtos
+      revision: v4.4.0
+      import:
+        name-allowlist:
+          - cmsis_6

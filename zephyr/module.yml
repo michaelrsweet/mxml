@@ -1,0 +1,19 @@
+#
+# Zephyr module metadata for Mini-XML.
+#
+# Copyright © 2026 by Romain Pelletant.
+#
+# Licensed under Apache License v2.0.  See the file "LICENSE" for more
+# information.
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+name: mxml
+build:
+  cmake: zephyr
+  kconfig: zephyr/Kconfig
+
+security:
+  external-references:
+    - cpe:2.3:a:msweet:mini-xml:4.0.6:*:*:*:*:*:*:*
+    - pkg:github/michaelrsweet/mxml@v4.0.6

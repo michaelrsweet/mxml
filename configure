@@ -4529,8 +4529,15 @@ else $as_nop
     PKGCONFIG_CFLAGS=""
 
 fi
+# 2026-10-09: Resolve symbolic libdir only for the system-directory check.
+reallibdir=$(
+    test "$prefix" = NONE && prefix="$ac_default_prefix"
+    test "$exec_prefix" = NONE && exec_prefix="$prefix"
+    eval exec_prefix=\"$exec_prefix\"
+    eval echo \"$libdir\"
+)
 PKGCONFIG_LIBS="$LINK_MXML"
-if test "$libdir" != "/usr/lib" -a "$libdir" != "/usr/local/lib"
+if test "$reallibdir" != "/usr/lib" -a "$reallibdir" != "/usr/local/lib"
 then :
 
     PKGCONFIG_LIBS="-L$libdir $PKGCONFIG_LIBS"

@@ -369,8 +369,15 @@ AS_IF([test "$includedir" != "/usr/include" -a "$includedir" != "/usr/local/incl
 ], [
     PKGCONFIG_CFLAGS=""
 ])
+# 2026-10-09: Resolve symbolic libdir only for the system-directory check.
+reallibdir=$(
+    test "$prefix" = NONE && prefix="$ac_default_prefix"
+    test "$exec_prefix" = NONE && exec_prefix="$prefix"
+    eval exec_prefix=\"$exec_prefix\"
+    eval echo \"$libdir\"
+)
 PKGCONFIG_LIBS="$LINK_MXML"
-AS_IF([test "$libdir" != "/usr/lib" -a "$libdir" != "/usr/local/lib"], [
+AS_IF([test "$reallibdir" != "/usr/lib" -a "$reallibdir" != "/usr/local/lib"], [
     PKGCONFIG_LIBS="-L$libdir $PKGCONFIG_LIBS"
 ])
 

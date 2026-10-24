@@ -1,0 +1,20 @@
+#
+# Twister metadata for the Mini-XML Zephyr tests.
+#
+# Copyright © 2026 by Romain Pelletant.
+#
+# Licensed under Apache License v2.0.  See the file "LICENSE" for more
+# information.
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+tests:
+  libraries.mxml:
+    tags:
+      - mxml
+      - xml
+    platform_allow:
+      - native_sim
+      - qemu_cortex_m3
+

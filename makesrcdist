@@ -78,6 +78,16 @@ if test "$(grep MXML_VERSION xcode/config.h | awk '{print $5}')" != "v$version\"
 	status=1
 fi
 
+if ! grep -Fq "cpe:2.3:a:msweet:mini-xml:$version:" zephyr/module.yml; then
+    echo "Update CPE version in zephyr/module.yml."
+    status=1
+fi
+
+if ! grep -Fq "pkg:github/michaelrsweet/mxml@v$version" zephyr/module.yml; then
+    echo "Update PURL version in zephyr/module.yml."
+    status=1
+fi
+
 if test $status = 1; then
 	exit 1
 fi

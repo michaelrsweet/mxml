@@ -4503,6 +4503,11 @@ then :
 
     libdir="$exec_prefix/lib"
 
+elif test "$libdir" = "\${prefix}/lib"
+then :
+
+    libdir="$prefix/lib"
+
 fi
 
 

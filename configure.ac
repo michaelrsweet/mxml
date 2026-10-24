@@ -351,6 +351,8 @@ AS_IF([test "$includedir" = NONE -o "$includedir" = "\${prefix}/include"], [
 
 AS_IF([test "$libdir" = NONE -o "$libdir" = "\${exec_prefix}/lib"], [
     libdir="$exec_prefix/lib"
+], [test "$libdir" = "\${prefix}/lib"], [
+    libdir="$prefix/lib"
 ])
 
 

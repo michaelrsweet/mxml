@@ -1304,10 +1304,16 @@ mxml_load_data(
         // Handle close tag...
 	MXML_DEBUG("mxml_load_data: <%s>, parent=%p\n", buffer, parent);
 
-        if (!parent || strcmp(buffer + 1, parent->value.element.name))
+        if (!parent || parent == top)
 	{
 	  // Close tag doesn't match tree; print an error for now...
-	  _mxml_error(options, "Mismatched close tag <%s> under parent <%s> on line %d.", buffer, parent ? parent->value.element.name : "(null)", line);
+	  _mxml_error(options, "Mismatched close tag <%s> as root element on line %d.", buffer, line);
+          goto error;
+	}
+        else if (strcmp(buffer + 1, parent->value.element.name))
+	{
+	  // Close tag doesn't match tree; print an error for now...
+	  _mxml_error(options, "Mismatched close tag <%s> under parent <%s> on line %d.", buffer, parent->value.element.name, line);
           goto error;
 	}
 

@@ -15,5 +15,5 @@ build:
 
 security:
   external-references:
-    - cpe:2.3:a:msweet:mini-xml:4.0.6:*:*:*:*:*:*:*
-    - pkg:github/michaelrsweet/mxml@v4.0.6
+    - cpe:2.3:a:msweet:mini-xml:4.0.7:*:*:*:*:*:*:*
+    - pkg:github/michaelrsweet/mxml@v4.0.7

@@ -5,6 +5,7 @@ Changes in Mini-XML
 v4.0.7 - YYYY-MM-DD
 -------------------
 
+- Added Zephyr support (Issue #360)
 - Updated the generated pkg-config file based on the actual include and library
   directories (Issue #359)
 - Fixed a potential memory leak when reading invalid XML (Issue #358)

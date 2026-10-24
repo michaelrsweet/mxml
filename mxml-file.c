@@ -832,7 +832,18 @@ mxml_load_data(
 		};
 
 
-  // Read elements and other nodes from the file...
+  // Verify we have the beginnings of an XML document...
+  if ((ch = mxml_getc(options, io_cb, io_cbdata, &encoding)) == EOF)
+  {
+    return (NULL);
+  }
+  else if (ch != '<' && !top)
+  {
+    _mxml_error(options, "XML does not start with '<' (saw U+%04X).", ch);
+    return (NULL);
+  }
+
+  // Allocate a string buffer for element names...
   if ((buffer = malloc(64)) == NULL)
   {
     _mxml_error(options, "Unable to allocate string buffer.");
@@ -844,6 +855,7 @@ mxml_load_data(
   parent     = top;
   first      = NULL;
 
+  // Determine the initial value type...
   if (options && options->type_cb && parent)
     type = (options->type_cb)(options->type_cbdata, parent);
   else if (options && !options->type_cb)
@@ -851,18 +863,7 @@ mxml_load_data(
   else
     type = MXML_TYPE_IGNORE;
 
-  if ((ch = mxml_getc(options, io_cb, io_cbdata, &encoding)) == EOF)
-  {
-    free(buffer);
-    return (NULL);
-  }
-  else if (ch != '<' && !top)
-  {
-    free(buffer);
-    _mxml_error(options, "XML does not start with '<' (saw U+%04X).", ch);
-    return (NULL);
-  }
-
+  // Read elements and other nodes from the file...
   do
   {
     if ((ch == '<' || (mxml_isspace(ch) && type != MXML_TYPE_OPAQUE && type != MXML_TYPE_CUSTOM)) && bufptr > buffer)
@@ -937,7 +938,10 @@ mxml_load_data(
       if (options && options->sax_cb)
       {
         if (!(options->sax_cb)(options->sax_cbdata, node, MXML_SAX_EVENT_DATA))
-          goto error;
+	{
+	  mxmlDelete(node);
+	  goto error;
+	}
 
         if (!mxmlRelease(node))
           node = NULL;
@@ -964,7 +968,10 @@ mxml_load_data(
 	if (options && options->sax_cb)
 	{
 	  if (!(options->sax_cb)(options->sax_cbdata, node, MXML_SAX_EVENT_DATA))
+          {
+            mxmlDelete(node);
 	    goto error;
+	  }
 
 	  if (!mxmlRelease(node))
 	    node = NULL;
@@ -1048,7 +1055,7 @@ mxml_load_data(
         if (!parent && first)
 	{
 	  // There can only be one root element!
-	  _mxml_error(options, "<%s--> cannot be a second root node after <%s> on line %d.", buffer, first->value.element.name, line);
+	  _mxml_error(options, "<%s--> cannot be a second root node on line %d.", buffer, line);
           goto error;
 	}
 
@@ -1064,7 +1071,10 @@ mxml_load_data(
         if (options && options->sax_cb)
         {
           if (!(options->sax_cb)(options->sax_cbdata, node, MXML_SAX_EVENT_COMMENT))
+          {
+            mxmlDelete(node);
 	    goto error;
+	  }
 
           if (!mxmlRelease(node))
             node = NULL;
@@ -1107,7 +1117,7 @@ mxml_load_data(
         if (!parent && first)
 	{
 	  // There can only be one root element!
-	  _mxml_error(options, "<%s]]> cannot be a second root node after <%s> on line %d.", buffer, first->value.element.name, line);
+	  _mxml_error(options, "<%s]]> cannot be a second root node on line %d.", buffer, line);
           goto error;
 	}
 
@@ -1123,7 +1133,10 @@ mxml_load_data(
         if (options && options->sax_cb)
         {
           if (!(options->sax_cb)(options->sax_cbdata, node, MXML_SAX_EVENT_CDATA))
+          {
+            mxmlDelete(node);
 	    goto error;
+	  }
 
           if (!mxmlRelease(node))
             node = NULL;
@@ -1160,7 +1173,7 @@ mxml_load_data(
         if (!parent && first)
 	{
 	  // There can only be one root element!
-	  _mxml_error(options, "<%s?> cannot be a second root node after <%s> on line %d.", buffer, first->value.element.name, line);
+	  _mxml_error(options, "<%s?> cannot be a second root node on line %d.", buffer, line);
           goto error;
 	}
 
@@ -1176,7 +1189,10 @@ mxml_load_data(
         if (options && options->sax_cb)
         {
           if (!(options->sax_cb)(options->sax_cbdata, node, MXML_SAX_EVENT_DIRECTIVE))
+          {
+            mxmlDelete(node);
 	    goto error;
+	  }
 
           if (strncmp(node->value.directive, "xml ", 4) && !mxmlRelease(node))
             node = NULL;
@@ -1240,7 +1256,7 @@ mxml_load_data(
         if (!parent && first)
 	{
 	  // There can only be one root element!
-	  _mxml_error(options, "<%s> cannot be a second root node after <%s> on line %d.", buffer, first->value.element.name, line);
+	  _mxml_error(options, "<%s> cannot be a second root node on line %d.", buffer, line);
           goto error;
 	}
 
@@ -1256,7 +1272,10 @@ mxml_load_data(
         if (options && options->sax_cb)
         {
           if (!(options->sax_cb)(options->sax_cbdata, node, MXML_SAX_EVENT_DECLARATION))
+          {
+            mxmlDelete(node);
 	    goto error;
+	  }
 
           if (!mxmlRelease(node))
             node = NULL;
@@ -1302,15 +1321,13 @@ mxml_load_data(
         if (options && options->sax_cb)
         {
           if (!(options->sax_cb)(options->sax_cbdata, node, MXML_SAX_EVENT_ELEMENT_CLOSE))
-	    goto error;
-
-          if (!mxmlRelease(node))
           {
-            if (first == node)
-	      first = NULL;
-
-	    node = NULL;
+            mxmlDelete(node);
+	    goto error;
 	  }
+
+          if (!mxmlRelease(node) && first == node)
+	    first = NULL;
         }
 
         // Ascend into the parent and set the value type as needed...
@@ -1325,7 +1342,7 @@ mxml_load_data(
         if (!parent && first)
 	{
 	  // There can only be one root element!
-	  _mxml_error(options, "<%s> cannot be a second root node after <%s> on line %d.", buffer, first->value.element.name, line);
+	  _mxml_error(options, "<%s> cannot be a second root node on line %d.", buffer, line);
           goto error;
 	}
 
@@ -1341,7 +1358,10 @@ mxml_load_data(
 	  MXML_DEBUG("mxml_load_data: node=%p(<%s...>), parent=%p\n", node, buffer, parent);
 
 	  if ((ch = mxml_parse_element(options, io_cb, io_cbdata, node, &encoding, &line)) == EOF)
+	  {
+	    mxmlDelete(node);
 	    goto error;
+	  }
         }
         else if (ch == '/')
 	{
@@ -1353,6 +1373,8 @@ mxml_load_data(
 	      _mxml_error(options, "Expected > but got EOF instead for element <%s/> on line %d.", buffer, line);
 	    else
 	      _mxml_error(options, "Expected > but got U+%04X instead for element <%s/> on line %d.", ch, buffer, line);
+
+	    mxmlDelete(node);
             goto error;
 	  }
 
@@ -1360,6 +1382,7 @@ mxml_load_data(
 	  {
 	    // Can't have an empty element without a parent...
 	    _mxml_error(options, "<%s /> cannot be a root element on line %d.", node->value.element.name, line);
+	    mxmlDelete(node);
 	    goto error;
 	  }
 
@@ -1369,7 +1392,10 @@ mxml_load_data(
         if (options && options->sax_cb)
         {
           if (!(options->sax_cb)(options->sax_cbdata, node, MXML_SAX_EVENT_ELEMENT_OPEN))
+          {
+            mxmlDelete(node);
 	    goto error;
+	  }
 	}
 
         if (!first)
@@ -1395,13 +1421,8 @@ mxml_load_data(
           if (!(options->sax_cb)(options->sax_cbdata, node, MXML_SAX_EVENT_ELEMENT_CLOSE))
 	    goto error;
 
-          if (!mxmlRelease(node))
-          {
-            if (first == node)
-	      first = NULL;
-
-	    node = NULL;
-	  }
+          if (!mxmlRelease(node) && first == node)
+	    first = NULL;
         }
       }
 
@@ -1425,10 +1446,14 @@ mxml_load_data(
   }
   while ((ch = mxml_getc(options, io_cb, io_cbdata, &encoding)) != EOF);
 
-  // Free the string buffer - we don't need it anymore...
-  free(buffer);
+  // See if we have trailing data...
+  if (bufptr > buffer && !mxml_isspace(buffer[0]))
+  {
+    _mxml_error(options, "Trailing data on line %d.", line);
+    goto error;
+  }
 
-  // Find the top element and return it...
+  // Verify that we had a well-formed document...
   if (parent)
   {
     node = parent;
@@ -1439,28 +1464,32 @@ mxml_load_data(
     if (node != parent)
     {
       _mxml_error(options, "Missing close tag </%s> under parent <%s> on line %d.", mxmlGetElement(node), node->parent ? node->parent->value.element.name : "(null)", line);
-
-      mxmlDelete(first);
-
-      return (NULL);
+      goto error;
     }
   }
 
-  if (parent)
-    return (parent);
-  else
-    return (first);
-
-  // Common error return...
-  error:
-
-  if (node && node != first)
-    mxmlDelete(node);
-
-  mxmlDelete(first);
-
+  // Free the string buffer - we don't need it anymore...
   free(buffer);
 
+  // Return the first/top-most element we read...
+  return (first);
+
+  // Common error return/cleanup point...
+  error:
+
+  // Free memory...
+  free(buffer);
+
+  while (first)
+  {
+    node = first->next;
+
+    mxmlDelete(first);
+
+    first = node;
+  }
+
+  // Return NULL (error)...
   return (NULL);
 }
 

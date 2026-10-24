@@ -15,6 +15,8 @@
 //
 
 #include "mxml-private.h"
+#include "test.h"
+#include <math.h>
 #include <fcntl.h>
 #ifndef O_BINARY
 #  define O_BINARY 0
@@ -32,9 +34,10 @@ int		event_counts[7];
 // Local functions...
 //
 
-bool		sax_cb(void *cbdata, mxml_node_t *node, mxml_sax_event_t event);
-mxml_type_t	type_cb(void *cbdata, mxml_node_t *node);
-const char	*whitespace_cb(void *cbdata, mxml_node_t *node, mxml_ws_t where);
+static int		do_unit_tests(mxml_options_t *options);
+static bool		sax_cb(void *cbdata, mxml_node_t *node, mxml_sax_event_t event);
+static mxml_type_t	type_cb(void *cbdata, mxml_node_t *node);
+static const char	*whitespace_cb(void *cbdata, mxml_node_t *node, mxml_ws_t where);
 
 
 //
@@ -45,391 +48,32 @@ int					// O - Exit status
 main(int  argc,				// I - Number of command-line args
      char *argv[])			// I - Command-line args
 {
-  int			i;		// Looping var
   FILE			*fp;		// File to read
   int			fd;		// File descriptor
   mxml_options_t	*options;	// Load/save options
   mxml_node_t		*xml,		// <?xml ...?> node
-			*tree,		// Element tree
 			*node;		// Node which should be in test.xml
-  mxml_index_t		*ind;		// XML index
   char			buffer[16384];	// Save string
   const char		*text;		// Text string
-  bool			whitespace;	// Whitespace before text string
-  static const char	*types[] =	// Strings for node types
-			{
-			  "MXML_TYPE_CDATA",
-			  "MXML_TYPE_COMMENT",
-			  "MXML_TYPE_DECLARATION",
-			  "MXML_TYPE_DIRECTIVE",
-			  "MXML_TYPE_ELEMENT",
-			  "MXML_TYPE_INTEGER",
-			  "MXML_TYPE_OPAQUE",
-			  "MXML_TYPE_REAL",
-			  "MXML_TYPE_TEXT",
-			  "MXML_TYPE_CUSTOM"
-			};
 
 
   // Check arguments...
-  if (argc != 2 && argc != 3)
+  if (argc > 3)
   {
-    fputs("Usage: testmxml filename.xml [string-output.xml]\n", stderr);
+    fputs("Usage: testmxml [FILENAME.xml [STRING-OUTPUT.xml]]\n", stderr);
     return (1);
   }
 
-  // Test the basic functionality...
   options = mxmlOptionsNew();
-  xml     = mxmlNewXML("1.0");
-  tree    = mxmlNewElement(xml, "element");
 
-  if (!tree)
+  if (argc == 1)
   {
-    fputs("ERROR: No parent node in basic test.\n", stderr);
-    return (1);
+    int ret = do_unit_tests(options);	// Exit status
+
+    mxmlOptionsDelete(options);
+
+    return (ret);
   }
-
-  if (mxmlGetType(tree) != MXML_TYPE_ELEMENT)
-  {
-    fprintf(stderr, "ERROR: Parent has type %d(%s), expected MXML_TYPE_ELEMENT.\n", mxmlGetType(tree), types[mxmlGetType(tree)]);
-    mxmlDelete(tree);
-    return (1);
-  }
-
-  if (strcmp(mxmlGetElement(tree), "element"))
-  {
-    fprintf(stderr, "ERROR: Parent value is \"%s\", expected \"element\".\n", mxmlGetElement(tree));
-    mxmlDelete(tree);
-    return (1);
-  }
-
-  mxmlNewInteger(tree, 123);
-  mxmlNewOpaque(tree, "opaque");
-  mxmlNewReal(tree, 123.4);
-  mxmlNewText(tree, 1, "text");
-
-  mxmlOptionsSetTypeValue(options, MXML_TYPE_TEXT);
-  mxmlLoadString(tree, options, "<group type='string'>string string string</group>");
-
-  mxmlOptionsSetTypeValue(options, MXML_TYPE_INTEGER);
-  mxmlLoadString(tree, options, "<group type='integer'>1 2 3</group>");
-
-  mxmlOptionsSetTypeValue(options, MXML_TYPE_REAL);
-  mxmlLoadString(tree, options, "<group type='real'>1.0 2.0 3.0</group>");
-
-  mxmlOptionsSetTypeValue(options, MXML_TYPE_OPAQUE);
-  mxmlLoadString(tree, options, "<group>opaque opaque opaque</group>");
-  mxmlLoadString(tree, options,  "<foo><bar><one><two>value<two>value2</two></two></one></bar></foo>");
-
-  mxmlNewCDATA(tree, "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef\n");
-  mxmlNewCDATA(tree,
-               "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef\n"
-               "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef\n"
-               "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef\n"
-               "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef\n");
-  mxmlNewCDATA(tree,
-               "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef\n"
-               "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef\n"
-               "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef\n"
-               "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef\n"
-               "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef\n"
-               "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef\n"
-               "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef\n"
-               "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef\n");
-
-  node = mxmlGetFirstChild(tree);
-
-  if (!node)
-  {
-    fputs("ERROR: No first child node in basic test.\n", stderr);
-    mxmlDelete(tree);
-    return (1);
-  }
-
-  if (mxmlGetType(node) != MXML_TYPE_INTEGER)
-  {
-    fprintf(stderr, "ERROR: First child has type %d(%s), expected MXML_TYPE_INTEGER.\n", mxmlGetType(node), types[mxmlGetType(node)]);
-    mxmlDelete(tree);
-    return (1);
-  }
-
-  if (mxmlGetInteger(node) != 123)
-  {
-    fprintf(stderr, "ERROR: First child value is %ld, expected 123.\n", mxmlGetInteger(node));
-    mxmlDelete(tree);
-    return (1);
-  }
-
-  node = mxmlGetNextSibling(node);
-
-  if (!node)
-  {
-    fputs("ERROR: No second child node in basic test.\n", stderr);
-    mxmlDelete(tree);
-    return (1);
-  }
-
-  if (mxmlGetType(node) != MXML_TYPE_OPAQUE)
-  {
-    fprintf(stderr, "ERROR: Second child has type %s (%d), expected MXML_TYPE_OPAQUE.\n", mxmlGetType(node) < MXML_TYPE_ELEMENT || mxmlGetType(node) > MXML_TYPE_TEXT ? "UNKNOWN" : types[mxmlGetType(node)], mxmlGetType(node));
-    mxmlDelete(tree);
-    return (1);
-  }
-
-  if (!mxmlGetOpaque(node) || strcmp(mxmlGetOpaque(node), "opaque"))
-  {
-    fprintf(stderr, "ERROR: Second child value is \"%s\", expected \"opaque\".\n", mxmlGetOpaque(node) ? mxmlGetOpaque(node) : "(null)");
-    mxmlDelete(tree);
-    return (1);
-  }
-
-  node = mxmlGetNextSibling(node);
-
-  if (!node)
-  {
-    fputs("ERROR: No third child node in basic test.\n", stderr);
-    mxmlDelete(tree);
-    return (1);
-  }
-
-  if (mxmlGetType(node) != MXML_TYPE_REAL)
-  {
-    fprintf(stderr, "ERROR: Third child has type %s (%d), expected MXML_TYPE_REAL.\n", mxmlGetType(node) < MXML_TYPE_ELEMENT || mxmlGetType(node) > MXML_TYPE_TEXT ? "UNKNOWN" : types[mxmlGetType(node)], mxmlGetType(node));
-    mxmlDelete(tree);
-    return (1);
-  }
-
-  if (mxmlGetReal(node) != 123.4)
-  {
-    fprintf(stderr, "ERROR: Third child value is %f, expected 123.4.\n", mxmlGetReal(node));
-    mxmlDelete(tree);
-    return (1);
-  }
-
-  node = mxmlGetNextSibling(node);
-
-  if (!node)
-  {
-    fputs("ERROR: No fourth child node in basic test.\n", stderr);
-    mxmlDelete(tree);
-    return (1);
-  }
-
-  if (mxmlGetType(node) != MXML_TYPE_TEXT)
-  {
-    fprintf(stderr, "ERROR: Fourth child has type %s (%d), expected MXML_TYPE_TEXT.\n", mxmlGetType(node) < MXML_TYPE_ELEMENT || mxmlGetType(node) > MXML_TYPE_TEXT ? "UNKNOWN" : types[mxmlGetType(node)], mxmlGetType(node));
-    mxmlDelete(tree);
-    return (1);
-  }
-
-  text = mxmlGetText(node, &whitespace);
-
-  if (!whitespace || !text || strcmp(text, "text"))
-  {
-    fprintf(stderr, "ERROR: Fourth child value is %s,\"%s\", expected true,\"text\".\n", whitespace ? "true" : "false", text);
-    mxmlDelete(tree);
-    return (1);
-  }
-
-  for (i = 0; i < 4; i ++)
-  {
-    node = mxmlGetNextSibling(node);
-
-    if (!node)
-    {
-      fprintf(stderr, "ERROR: No group #%d child node in basic test.\n", i + 1);
-      mxmlDelete(tree);
-      return (1);
-    }
-
-    if (mxmlGetType(node) != MXML_TYPE_ELEMENT)
-    {
-      fprintf(stderr, "ERROR: Group child #%d has type %d(%s), expected MXML_TYPE_ELEMENT.\n", i + 1, mxmlGetType(node), types[mxmlGetType(node)]);
-      mxmlDelete(tree);
-      return (1);
-    }
-  }
-
-  // Test mxmlFindPath...
-  node = mxmlFindPath(tree, "*/two");
-  if (!node)
-  {
-    fputs("ERROR: Unable to find value for \"*/two\".\n", stderr);
-    mxmlDelete(tree);
-    return (1);
-  }
-  else if (mxmlGetType(node) != MXML_TYPE_OPAQUE || strcmp(mxmlGetOpaque(node), "value"))
-  {
-    fprintf(stderr, "ERROR: Bad value for \"*/two\" - node=%p(%s), opaque=\"%s\"\n", node, types[mxmlGetType(node)], mxmlGetOpaque(node));
-    mxmlDelete(tree);
-    return (1);
-  }
-
-  node = mxmlFindPath(tree, "foo/*/two");
-  if (!node)
-  {
-    fputs("ERROR: Unable to find value for \"foo/*/two\".\n", stderr);
-    mxmlDelete(tree);
-    return (1);
-  }
-  else if (mxmlGetType(node) != MXML_TYPE_OPAQUE || strcmp(mxmlGetOpaque(node), "value"))
-  {
-    fputs("ERROR: Bad value for \"foo/*/two\".\n", stderr);
-    mxmlDelete(tree);
-    return (1);
-  }
-
-  node = mxmlFindPath(tree, "foo/bar/one/two");
-  if (!node)
-  {
-    fputs("ERROR: Unable to find value for \"foo/bar/one/two\".\n", stderr);
-    mxmlDelete(tree);
-    return (1);
-  }
-  else if (mxmlGetType(node) != MXML_TYPE_OPAQUE || strcmp(mxmlGetOpaque(node), "value"))
-  {
-    fputs("ERROR: Bad value for \"foo/bar/one/two\".\n", stderr);
-    mxmlDelete(tree);
-    return (1);
-  }
-
-  // Test indices...
-  ind = mxmlIndexNew(tree, NULL, NULL);
-  if (!ind)
-  {
-    fputs("ERROR: Unable to create index of all nodes.\n", stderr);
-    mxmlDelete(tree);
-    return (1);
-  }
-
-  if (mxmlIndexGetCount(ind) != 10)
-  {
-    fprintf(stderr, "ERROR: Index of all nodes contains %lu nodes; expected 10.\n", (unsigned long)mxmlIndexGetCount(ind));
-    mxmlIndexDelete(ind);
-    mxmlDelete(tree);
-    return (1);
-  }
-
-  mxmlIndexReset(ind);
-  if (!mxmlIndexFind(ind, "group", NULL))
-  {
-    fputs("ERROR: mxmlIndexFind for \"group\" failed.\n", stderr);
-    mxmlIndexDelete(ind);
-    mxmlDelete(tree);
-    return (1);
-  }
-
-  mxmlIndexDelete(ind);
-
-  ind = mxmlIndexNew(tree, "group", NULL);
-  if (!ind)
-  {
-    fputs("ERROR: Unable to create index of groups.\n", stderr);
-    mxmlDelete(tree);
-    return (1);
-  }
-
-  if (mxmlIndexGetCount(ind) != 4)
-  {
-    fprintf(stderr, "ERROR: Index of groups contains %lu nodes; expected 4.\n", (unsigned long)mxmlIndexGetCount(ind));
-    mxmlIndexDelete(ind);
-    mxmlDelete(tree);
-    return (1);
-  }
-
-  mxmlIndexReset(ind);
-  if (!mxmlIndexEnum(ind))
-  {
-    fputs("ERROR: mxmlIndexEnum failed.\n", stderr);
-    mxmlIndexDelete(ind);
-    mxmlDelete(tree);
-    return (1);
-  }
-
-  mxmlIndexDelete(ind);
-
-  ind = mxmlIndexNew(tree, NULL, "type");
-  if (!ind)
-  {
-    fputs("ERROR: Unable to create index of type attributes.\n", stderr);
-    mxmlDelete(tree);
-    return (1);
-  }
-
-  if (mxmlIndexGetCount(ind) != 3)
-  {
-    fprintf(stderr, "ERROR: Index of type attributes contains %lu nodes; expected 3.\n", (unsigned long)mxmlIndexGetCount(ind));
-    mxmlIndexDelete(ind);
-    mxmlDelete(tree);
-    return (1);
-  }
-
-  mxmlIndexReset(ind);
-  if (!mxmlIndexFind(ind, NULL, "string"))
-  {
-    fputs("ERROR: mxmlIndexFind for \"string\" failed.\n", stderr);
-    mxmlIndexDelete(ind);
-    mxmlDelete(tree);
-    return (1);
-  }
-
-  mxmlIndexDelete(ind);
-
-  ind = mxmlIndexNew(tree, "group", "type");
-  if (!ind)
-  {
-    fputs("ERROR: Unable to create index of elements and attributes.\n", stderr);
-    mxmlDelete(tree);
-    return (1);
-  }
-
-  if (mxmlIndexGetCount(ind) != 3)
-  {
-    fprintf(stderr, "ERROR: Index of elements and attributes contains %lu nodes; expected 3.\n", (unsigned long)mxmlIndexGetCount(ind));
-    mxmlIndexDelete(ind);
-    mxmlDelete(tree);
-    return (1);
-  }
-
-  mxmlIndexReset(ind);
-  if (!mxmlIndexFind(ind, "group", "string"))
-  {
-    fputs("ERROR: mxmlIndexFind for \"string\" failed.\n", stderr);
-    mxmlIndexDelete(ind);
-    mxmlDelete(tree);
-    return (1);
-  }
-
-  mxmlIndexDelete(ind);
-
-  // Check the mxmlDelete() works properly...
-  for (i = 0; i < 12; i ++)
-  {
-    if (mxmlGetFirstChild(tree))
-    {
-      mxmlDelete(mxmlGetFirstChild(tree));
-    }
-    else
-    {
-      fprintf(stderr, "ERROR: Child pointer prematurely NULL on child #%d\n", i + 1);
-      mxmlDelete(tree);
-      return (1);
-    }
-  }
-
-  if (mxmlGetFirstChild(tree))
-  {
-    fputs("ERROR: Child pointer not NULL after deleting all children.\n", stderr);
-    return (1);
-  }
-
-  if (mxmlGetLastChild(tree))
-  {
-    fputs("ERROR: Last child pointer not NULL after deleting all children.\n", stderr);
-    return (1);
-  }
-
-  mxmlDelete(xml);
 
   // Open the file/string using the default callback...
   mxmlOptionsSetTypeValue(options, MXML_TYPE_TEXT);
@@ -442,7 +86,7 @@ main(int  argc,				// I - Number of command-line args
   if (!xml)
   {
     fputs("Unable to read XML file with default callback.\n", stderr);
-    return (1);
+    goto error;
   }
 
   if (!strcmp(argv[1], "test.xml"))
@@ -451,23 +95,20 @@ main(int  argc,				// I - Number of command-line args
     if ((node = mxmlFindPath(xml, "group/option/keyword")) == NULL)
     {
       fputs("Unable to find group/option/keyword element in XML tree.\n", stderr);
-      mxmlDelete(tree);
-      return (1);
+      goto error;
     }
 
     if (mxmlGetType(node) != MXML_TYPE_TEXT)
     {
       fputs("No child node of group/option/keyword.\n", stderr);
       mxmlSaveFile(xml, options, stderr);
-      mxmlDelete(xml);
-      return (1);
+      goto error;
     }
 
     if ((text = mxmlGetText(node, NULL)) == NULL || strcmp(text, "InputSlot"))
     {
       fprintf(stderr, "Child node of group/option/value has value \"%s\" instead of \"InputSlot\".\n", text ? text : "(null)");
-      mxmlDelete(xml);
-      return (1);
+      goto error;
     }
   }
 
@@ -484,7 +125,7 @@ main(int  argc,				// I - Number of command-line args
   if (!xml)
   {
     fputs("Unable to read XML file.\n", stderr);
-    return (1);
+    goto error;
   }
 
   if (!strcmp(argv[1], "test.xml"))
@@ -493,15 +134,13 @@ main(int  argc,				// I - Number of command-line args
     if ((node = mxmlFindElement(xml, xml, "choice", NULL, NULL, MXML_DESCEND_ALL)) == NULL)
     {
       fputs("Unable to find first <choice> element in XML tree.\n", stderr);
-      mxmlDelete(tree);
-      return (1);
+      goto error;
     }
 
     if (!mxmlFindElement(node, xml, "choice", NULL, NULL, MXML_DESCEND_NONE))
     {
       fputs("Unable to find second <choice> element in XML tree.\n", stderr);
-      mxmlDelete(tree);
-      return (1);
+      goto error;
     }
   }
 
@@ -522,6 +161,7 @@ main(int  argc,				// I - Number of command-line args
 
   // Delete the tree...
   mxmlDelete(xml);
+  xml = NULL;
 
   // Read from/write to file descriptors...
   if (argv[1][0] != '<')
@@ -530,7 +170,7 @@ main(int  argc,				// I - Number of command-line args
     if ((fd = open(argv[1], O_RDONLY | O_BINARY)) < 0)
     {
       perror(argv[1]);
-      return (1);
+      goto error;
     }
 
     // Read the file...
@@ -544,8 +184,7 @@ main(int  argc,				// I - Number of command-line args
     if ((fd = open(buffer, O_WRONLY | O_CREAT | O_TRUNC | O_BINARY, 0666)) < 0)
     {
       perror(buffer);
-      mxmlDelete(tree);
-      return (1);
+      goto error;
     }
 
     // Write the file...
@@ -555,6 +194,7 @@ main(int  argc,				// I - Number of command-line args
 
     // Delete the tree...
     mxmlDelete(xml);
+    xml = NULL;
   }
 
   // Test SAX methods...
@@ -572,43 +212,43 @@ main(int  argc,				// I - Number of command-line args
     if (event_counts[MXML_SAX_EVENT_CDATA] != 1)
     {
       fprintf(stderr, "MXML_SAX_EVENT_CDATA seen %d times, expected 1 times.\n", event_counts[MXML_SAX_EVENT_CDATA]);
-      return (1);
+      goto error;
     }
 
     if (event_counts[MXML_SAX_EVENT_COMMENT] != 1)
     {
       fprintf(stderr, "MXML_SAX_EVENT_COMMENT seen %d times, expected 1 times.\n", event_counts[MXML_SAX_EVENT_COMMENT]);
-      return (1);
+      goto error;
     }
 
     if (event_counts[MXML_SAX_EVENT_DATA] != 61)
     {
       fprintf(stderr, "MXML_SAX_EVENT_DATA seen %d times, expected 61 times.\n", event_counts[MXML_SAX_EVENT_DATA]);
-      return (1);
+      goto error;
     }
 
     if (event_counts[MXML_SAX_EVENT_DECLARATION] != 0)
     {
       fprintf(stderr, "MXML_SAX_EVENT_DECLARATION seen %d times, expected 0 times.\n", event_counts[MXML_SAX_EVENT_DECLARATION]);
-      return (1);
+      goto error;
     }
 
     if (event_counts[MXML_SAX_EVENT_DIRECTIVE] != 1)
     {
       fprintf(stderr, "MXML_SAX_EVENT_DIRECTIVE seen %d times, expected 1 times.\n", event_counts[MXML_SAX_EVENT_DIRECTIVE]);
-      return (1);
+      goto error;
     }
 
     if (event_counts[MXML_SAX_EVENT_ELEMENT_CLOSE] != 20)
     {
       fprintf(stderr, "MXML_SAX_EVENT_ELEMENT_CLOSE seen %d times, expected 20 times.\n", event_counts[MXML_SAX_EVENT_ELEMENT_CLOSE]);
-      return (1);
+      goto error;
     }
 
     if (event_counts[MXML_SAX_EVENT_ELEMENT_OPEN] != 20)
     {
       fprintf(stderr, "MXML_SAX_EVENT_ELEMENT_OPEN seen %d times, expected 20 times.\n", event_counts[MXML_SAX_EVENT_ELEMENT_OPEN]);
-      return (1);
+      goto error;
     }
   }
 
@@ -635,6 +275,583 @@ main(int  argc,				// I - Number of command-line args
 
   // Return...
   return (0);
+
+
+  // If we get here something bad happened...
+  error:
+
+  mxmlDelete(xml);
+  mxmlOptionsDelete(options);
+  return (1);
+}
+
+
+//
+// 'do_unit_tests()' - Do basic unit tests.
+//
+
+static int				// O - Exit status
+do_unit_tests(mxml_options_t *options)	// I - Options
+{
+  int			ret = 1;	// Return value
+  int			i;		// Looping var
+  mxml_node_t		*xml,		// <?xml ...?> node
+			*tree,		// Element tree
+			*node;		// Node which should be in test.xml
+  mxml_index_t		*ind;		// XML index
+  const char		*text;		// Text string
+  bool			whitespace;	// Whitespace before text string
+  static const char	*types[] =	// Strings for node types
+			{
+			  "MXML_TYPE_CDATA",
+			  "MXML_TYPE_COMMENT",
+			  "MXML_TYPE_DECLARATION",
+			  "MXML_TYPE_DIRECTIVE",
+			  "MXML_TYPE_ELEMENT",
+			  "MXML_TYPE_INTEGER",
+			  "MXML_TYPE_OPAQUE",
+			  "MXML_TYPE_REAL",
+			  "MXML_TYPE_TEXT",
+			  "MXML_TYPE_CUSTOM"
+			};
+
+
+  // Test the basic functionality...
+  testBegin("mxmlNewXML");
+  if ((xml = mxmlNewXML("1.0")) == NULL)
+  {
+    testEnd(false);
+    goto done;
+  }
+  else if (mxmlGetType(xml) != MXML_TYPE_DIRECTIVE)
+  {
+    testEndMessage(false, "Node has type %d(%s), expected MXML_TYPE_DIRECTIVE.", mxmlGetType(xml), types[mxmlGetType(xml)]);
+    goto done;
+  }
+  else
+  {
+    testEnd(true);
+  }
+
+  testBegin("mxmlNewElement(element)");
+  if ((tree = mxmlNewElement(xml, "element")) == NULL)
+  {
+    testEnd(false);
+    goto done;
+  }
+  else if (mxmlGetType(tree) != MXML_TYPE_ELEMENT)
+  {
+    testEndMessage(false, "Node has type %d(%s), expected MXML_TYPE_ELEMENT.", mxmlGetType(tree), types[mxmlGetType(tree)]);
+    goto done;
+  }
+  else if (strcmp(mxmlGetElement(tree), "element"))
+  {
+    testEndMessage(false, "Node value is \"%s\", expected \"element\".", mxmlGetElement(tree));
+    goto done;
+  }
+  else
+  {
+    testEnd(true);
+  }
+
+  testBegin("mxmlNewInteger(123)");
+  if ((node = mxmlNewInteger(tree, 123)) == NULL)
+  {
+    testEnd(false);
+    goto done;
+  }
+  else if (mxmlGetType(node) != MXML_TYPE_INTEGER)
+  {
+    testEndMessage(false, "Node has type %d(%s), expected MXML_TYPE_INTEGER.", mxmlGetType(node), types[mxmlGetType(node)]);
+    goto done;
+  }
+  else if (mxmlGetInteger(node) != 123)
+  {
+    testEndMessage(false, "Node value is %d, expected 123.", mxmlGetInteger(node));
+    goto done;
+  }
+  else
+  {
+    testEnd(true);
+  }
+
+  testBegin("mxmlNewOpaque(opaque)");
+  if ((node = mxmlNewOpaque(tree, "opaque")) == NULL)
+  {
+    testEnd(false);
+    goto done;
+  }
+  else if (mxmlGetType(node) != MXML_TYPE_OPAQUE)
+  {
+    testEndMessage(false, "Node has type %d(%s), expected MXML_TYPE_OPAQUE.", mxmlGetType(node), types[mxmlGetType(node)]);
+    goto done;
+  }
+  else if ((text = mxmlGetOpaque(node)) == NULL || strcmp(text, "opaque"))
+  {
+    testEndMessage(false, "Node value is \"%s\", expected \"element\".", text);
+    goto done;
+  }
+  else
+  {
+    testEnd(true);
+  }
+
+  testBegin("mxmlNewReal(123.4)");
+  if ((node = mxmlNewReal(tree, 123.4)) == NULL)
+  {
+    testEnd(false);
+    goto done;
+  }
+  else if (mxmlGetType(node) != MXML_TYPE_REAL)
+  {
+    testEndMessage(false, "Node has type %d(%s), expected MXML_TYPE_REAL.", mxmlGetType(node), types[mxmlGetType(node)]);
+    goto done;
+  }
+  else if (fabs(mxmlGetReal(node) - 123.4) > 0.01)
+  {
+    testEndMessage(false, "Node value is %g, expected 123.4.", mxmlGetReal(node));
+    goto done;
+  }
+  else
+  {
+    testEnd(true);
+  }
+
+  testBegin("mxmlNewText(true, text)");
+  if ((node = mxmlNewText(tree, true, "text")) == NULL)
+  {
+    testEnd(false);
+    goto done;
+  }
+  else if (mxmlGetType(node) != MXML_TYPE_TEXT)
+  {
+    testEndMessage(false, "Node has type %d(%s), expected MXML_TYPE_TEXT.", mxmlGetType(node), types[mxmlGetType(node)]);
+    goto done;
+  }
+  else if ((text = mxmlGetText(node, &whitespace)) == NULL || strcmp(text, "text") || !whitespace)
+  {
+    testEndMessage(false, "Node value is %s \"%s\", expected true, \"text\".", whitespace ? "true" : "false", text);
+    goto done;
+  }
+  else
+  {
+    testEnd(true);
+  }
+
+  testBegin("mxmlLoadString(string values)");
+  mxmlOptionsSetTypeValue(options, MXML_TYPE_TEXT);
+  if ((node = mxmlLoadString(tree, options, "<group type='string'>string1 string2 string3</group>")) == NULL)
+  {
+    testEnd(false);
+    goto done;
+  }
+  else if ((text = mxmlGetText(node, &whitespace)) == NULL || whitespace || strcmp(text, "string1"))
+  {
+    testEndMessage(false, "Node value is %s \"%s\", expected false, \"string1\".", whitespace ? "true" : "false", text);
+    goto done;
+  }
+  else
+  {
+    testEnd(true);
+  }
+
+  testBegin("mxmlLoadString(integer values)");
+  mxmlOptionsSetTypeValue(options, MXML_TYPE_INTEGER);
+  if ((node = mxmlLoadString(tree, options, "<group type='integer'>1 2 3</group>")) == NULL)
+  {
+    testEnd(false);
+    goto done;
+  }
+  else if (mxmlGetInteger(node) != 1)
+  {
+    testEndMessage(false, "Node value is %d, expected 1.", mxmlGetInteger(node));
+    goto done;
+  }
+  else
+  {
+    testEnd(true);
+  }
+
+  testBegin("mxmlLoadString(real values)");
+  mxmlOptionsSetTypeValue(options, MXML_TYPE_REAL);
+  if ((node = mxmlLoadString(tree, options, "<group type='real'>1.0 2.0 3.0</group>")) == NULL)
+  {
+    testEnd(false);
+    goto done;
+  }
+  else if (fabs(mxmlGetReal(node) - 1.0) > 0.01)
+  {
+    testEndMessage(false, "Node value is %g, expected 1.0.", mxmlGetReal(node));
+    goto done;
+  }
+  else
+  {
+    testEnd(true);
+  }
+
+  testBegin("mxmlLoadString(opaque values)");
+  mxmlOptionsSetTypeValue(options, MXML_TYPE_OPAQUE);
+  if ((node = mxmlLoadString(tree, options, "<group>opaque1 opaque2\nopaque3</group>")) == NULL)
+  {
+    testEnd(false);
+    goto done;
+  }
+  else if ((text = mxmlGetOpaque(node)) == NULL || strcmp(text, "opaque1 opaque2\nopaque3"))
+  {
+    testEndMessage(false, "Node value is \"%s\", expected \"opaque1 opaque2\\nopaque3\".", text);
+    goto done;
+  }
+  else
+  {
+    testEnd(true);
+  }
+
+  testBegin("mxmlLoadString(find path values)");
+  testEnd(mxmlLoadString(tree, options, "<foo><bar><one><two>value<two>value2</two></two></one></bar></foo>") != NULL);
+
+  // TODO: Annotate these tests...
+  mxmlNewCDATA(tree, "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef\n");
+  mxmlNewCDATA(tree,
+               "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef\n"
+               "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef\n"
+               "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef\n"
+               "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef\n");
+  mxmlNewCDATA(tree,
+               "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef\n"
+               "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef\n"
+               "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef\n"
+               "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef\n"
+               "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef\n"
+               "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef\n"
+               "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef\n"
+               "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef\n");
+
+  testBegin("mxmlGetFirstChild");
+  if ((node = mxmlGetFirstChild(tree)) == NULL)
+  {
+    testEndMessage(false, "No first child node in basic test.");
+    goto done;
+  }
+  else if (mxmlGetType(node) != MXML_TYPE_INTEGER)
+  {
+    testEndMessage(false, "First child has type %d(%s), expected MXML_TYPE_INTEGER.", mxmlGetType(node), types[mxmlGetType(node)]);
+    goto done;
+  }
+  else if (mxmlGetInteger(node) != 123)
+  {
+    testEndMessage(false, "First child value is %ld, expected 123.", mxmlGetInteger(node));
+    goto done;
+  }
+  else
+  {
+    testEnd(true);
+  }
+
+  testBegin("mxmlGetNextSibling(2nd)");
+  if ((node = mxmlGetNextSibling(node)) == NULL)
+  {
+    testEndMessage(false, "No second child node in basic test.");
+    goto done;
+  }
+  else if (mxmlGetType(node) != MXML_TYPE_OPAQUE)
+  {
+    testEndMessage(false, "Second child has type %d(%s), expected MXML_TYPE_OPAQUE.", mxmlGetType(node), types[mxmlGetType(node)]);
+    goto done;
+  }
+  else if ((text = mxmlGetOpaque(node)) == NULL || strcmp(text, "opaque"))
+  {
+    testEndMessage(false, "Second child value is \"%s\", expected \"opaque\".", text);
+    goto done;
+  }
+  else
+  {
+    testEnd(true);
+  }
+
+  testBegin("mxmlGetNextSibling(3rd)");
+  if ((node = mxmlGetNextSibling(node)) == NULL)
+  {
+    testEndMessage(false, "No third child node in basic test.");
+    goto done;
+  }
+  else if (mxmlGetType(node) != MXML_TYPE_REAL)
+  {
+    testEndMessage(false, "Third child has type %d(%s), expected MXML_TYPE_REAL.", mxmlGetType(node), types[mxmlGetType(node)]);
+    goto done;
+  }
+  else if (fabs(mxmlGetReal(node) - 123.4) > 0.01)
+  {
+    testEndMessage(false, "Third child value is %g, expected 123.4.", mxmlGetReal(node));
+    goto done;
+  }
+  else
+  {
+    testEnd(true);
+  }
+
+  testBegin("mxmlGetNextSibling(4th)");
+
+  if ((node = mxmlGetNextSibling(node)) == NULL)
+  {
+    testEndMessage(false, "No fourth child node in basic test.");
+    goto done;
+  }
+  else  if (mxmlGetType(node) != MXML_TYPE_TEXT)
+  {
+    testEndMessage(false, "Fourth child has type %d(%s), expected MXML_TYPE_TEXT.", mxmlGetType(node), types[mxmlGetType(node)]);
+    goto done;
+  }
+  else if ((text = mxmlGetText(node, &whitespace)) == NULL || !whitespace || strcmp(text, "text"))
+  {
+    testEndMessage(false, "Fourth child value is %s \"%s\", expected true \"text\".", whitespace ? "true" : "false", text);
+    goto done;
+  }
+  else
+  {
+    testEnd(true);
+  }
+
+  for (i = 0; i < 4; i ++)
+  {
+    testBegin("mxmlGetNextSibling(%dth)", i + 5);
+    if ((node = mxmlGetNextSibling(node)) == NULL)
+    {
+      testEndMessage(false, "No group #%d child node in basic test.", i + 1);
+      goto done;
+    }
+    else if (mxmlGetType(node) != MXML_TYPE_ELEMENT)
+    {
+      testEndMessage(false, "Group child #%d has type %d(%s), expected MXML_TYPE_ELEMENT.", i + 1, mxmlGetType(node), types[mxmlGetType(node)]);
+      goto done;
+    }
+    else
+    {
+      testEnd(true);
+    }
+  }
+
+  // Test mxmlFindPath...
+  testBegin("mxmlFindPath(*/two)");
+  if ((node = mxmlFindPath(tree, "*/two")) == NULL)
+  {
+    testEndMessage(false, "Unable to find value for \"*/two\".");
+    goto done;
+  }
+  else if (mxmlGetType(node) != MXML_TYPE_OPAQUE || (text = mxmlGetOpaque(node)) == NULL || strcmp(text, "value"))
+  {
+    testEndMessage(false, "Bad value for \"*/two\" - node=%d(%s), opaque=\"%s\"\n", mxmlGetType(node), types[mxmlGetType(node)], text);
+    goto done;
+  }
+  else
+  {
+    testEnd(true);
+  }
+
+  testBegin("mxmlFindPath(foo/*/two)");
+  if ((node = mxmlFindPath(tree, "foo/*/two")) == NULL)
+  {
+    testEndMessage(false, "Unable to find value for \"foo/*/two\".");
+    goto done;
+  }
+  else if (mxmlGetType(node) != MXML_TYPE_OPAQUE || (text = mxmlGetOpaque(node)) == NULL || strcmp(text, "value"))
+  {
+    testEndMessage(false, "Bad value for \"foo/*/two\".");
+    goto done;
+  }
+  else
+  {
+    testEnd(true);
+  }
+
+  node = mxmlFindPath(tree, "foo/bar/one/two");
+  if (!node)
+  {
+    fputs("ERROR: Unable to find value for \"foo/bar/one/two\".\n", stderr);
+    goto done;
+  }
+  else if (mxmlGetType(node) != MXML_TYPE_OPAQUE || strcmp(mxmlGetOpaque(node), "value"))
+  {
+    fputs("ERROR: Bad value for \"foo/bar/one/two\".\n", stderr);
+    goto done;
+  }
+
+  testBegin("mxmlFindPath(bar/*/two)");
+  if ((node = mxmlFindPath(tree, "bar/*/two")) != NULL)
+  {
+    testEndMessage(false, "Got a node of type %d(%s).", mxmlGetType(node), types[mxmlGetType(node)]);
+    goto done;
+  }
+  else
+  {
+    testEndMessage(true, "correctly did not find node");
+  }
+
+  // Test indices...
+  testBegin("mxmlIndexNew(NULL, NULL)");
+  if ((ind = mxmlIndexNew(tree, NULL, NULL)) == NULL)
+  {
+    testEndMessage(false, "Unable to create index of all nodes.");
+    goto done;
+  }
+  else if (mxmlIndexGetCount(ind) != 10)
+  {
+    testEndMessage(false, "Index contains %lu nodes; expected 10.", (unsigned long)mxmlIndexGetCount(ind));
+    mxmlIndexDelete(ind);
+    goto done;
+  }
+  else
+  {
+    testEnd(true);
+  }
+
+  testBegin("mxmlIndexFind(group)");
+  mxmlIndexReset(ind);
+  if (!mxmlIndexFind(ind, "group", NULL))
+  {
+    testEnd(false);
+    mxmlIndexDelete(ind);
+    goto done;
+  }
+  else
+  {
+    testEnd(true);
+  }
+
+  mxmlIndexDelete(ind);
+
+  testBegin("mxmlIndexNew(group, NULL)");
+  if ((ind = mxmlIndexNew(tree, "group", NULL)) == NULL)
+  {
+    testEndMessage(false, "Unable to create index of groups.");
+    goto done;
+  }
+  else if (mxmlIndexGetCount(ind) != 4)
+  {
+    testEndMessage(false, "Index of groups contains %lu nodes; expected 4.", (unsigned long)mxmlIndexGetCount(ind));
+    mxmlIndexDelete(ind);
+    goto done;
+  }
+  else
+  {
+    testEnd(true);
+  }
+
+  testBegin("mxmlIndexEnum");
+  mxmlIndexReset(ind);
+  if (!mxmlIndexEnum(ind))
+  {
+    testEnd(false);
+    mxmlIndexDelete(ind);
+    goto done;
+  }
+  else
+  {
+    testEnd(true);
+  }
+
+  mxmlIndexDelete(ind);
+
+  testBegin("mxmlIndexNew(NULL, type)");
+  if ((ind = mxmlIndexNew(tree, NULL, "type")) == NULL)
+  {
+    testEndMessage(false, "Unable to create index of type attributes.");
+    goto done;
+  }
+  else if (mxmlIndexGetCount(ind) != 3)
+  {
+    testEndMessage(false, "Index of type attributes contains %lu nodes; expected 3.", (unsigned long)mxmlIndexGetCount(ind));
+    mxmlIndexDelete(ind);
+    goto done;
+  }
+  else
+  {
+    testEnd(true);
+  }
+
+  testBegin("mxmlIndexFind(string)");
+  mxmlIndexReset(ind);
+  if (!mxmlIndexFind(ind, NULL, "string"))
+  {
+    testEnd(false);
+    mxmlIndexDelete(ind);
+    goto done;
+  }
+  else
+  {
+    testEnd(true);
+  }
+
+  mxmlIndexDelete(ind);
+
+  testBegin("mxmlIndexNew(group, type)");
+  if ((ind = mxmlIndexNew(tree, "group", "type")) == NULL)
+  {
+    testEndMessage(false, "Unable to create index of elements and attributes.");
+    goto done;
+  }
+  else if (mxmlIndexGetCount(ind) != 3)
+  {
+    testEndMessage(false, "Index of elements and attributes contains %lu nodes; expected 3.", (unsigned long)mxmlIndexGetCount(ind));
+    mxmlIndexDelete(ind);
+    goto done;
+  }
+  else
+  {
+    testEnd(true);
+  }
+
+  testBegin("mxmlIndexFind(group, string)");
+  mxmlIndexReset(ind);
+  if (!mxmlIndexFind(ind, "group", "string"))
+  {
+    testEnd(false);
+    mxmlIndexDelete(ind);
+    goto done;
+  }
+  else
+  {
+    testEnd(true);
+  }
+
+  mxmlIndexDelete(ind);
+
+  // Check the mxmlDelete() works properly...
+  testBegin("mxmlDelete");
+  for (i = 0; i < 12; i ++)
+  {
+    if (mxmlGetFirstChild(tree))
+    {
+      mxmlDelete(mxmlGetFirstChild(tree));
+    }
+    else
+    {
+      testEndMessage(false, "Child pointer prematurely NULL on child #%d", i + 1);
+      goto done;
+    }
+  }
+
+  if (mxmlGetFirstChild(tree))
+  {
+    testEndMessage(false, "Child pointer not NULL after deleting all children.");
+    goto done;
+  }
+  else  if (mxmlGetLastChild(tree))
+  {
+    testEndMessage(false, "Last child pointer not NULL after deleting all children.");
+    goto done;
+  }
+  else
+  {
+    testEnd(true);
+  }
+
+  ret = 0;
+
+  done:
+
+  mxmlDelete(xml);
+
+  return (ret);
 }
 
 

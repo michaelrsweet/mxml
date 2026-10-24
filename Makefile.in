@@ -3,7 +3,7 @@
 #
 # https://www.msweet.org/mxml
 #
-# Copyright © 2003-2025 by Michael R Sweet.
+# Copyright © 2003-2026 by Michael R Sweet.
 #
 # Licensed under Apache License v2.0.  See the file "LICENSE" for more
 # information.
@@ -345,6 +345,7 @@ uninstall-libmxml4.2.dylib:
 
 test:	testmxml
 	@echo Testing library...
+	./testmxml
 	./testmxml test.xml temp1s.xml >temp1.xml
 	./testmxml temp1.xml temp2s.xml >temp2.xml
 	@if cmp temp1.xml temp2.xml; then \
@@ -391,8 +392,6 @@ libmxml.a libmxml4.a:	$(LIBOBJS)
 	$(RM) $@
 	$(AR) $(ARFLAGS) $@ $(LIBOBJS)
 	$(RANLIB) $@
-
-$(LIBOBJS):	mxml.h mxml-private.h
 
 
 #
@@ -442,7 +441,7 @@ testmxml-vg:	$(LIBOBJS) testmxml.o
 	echo Linking $@...
 	$(CC) $(LDFLAGS) -o $@ testmxml.o $(LIBOBJS) $(LIBS)
 
-testmxml.o:	mxml.h
+testmxml.o:	test.h
 
 
 #
@@ -500,7 +499,7 @@ doc:	mxml.h $(PUBLIBOBJS:.o=.c) \
 
 
 #
-# All object files depend on the makefile and config header...
+# All object files depend on the makefile, config header, and Mini-XML headers...
 #
 
-$(OBJS):	Makefile config.h
+$(OBJS):	Makefile config.h mxml.h mxml-private.h

@@ -509,22 +509,25 @@ do_unit_tests(mxml_options_t *options)	// I - Options
   testBegin("mxmlLoadString(find path values)");
   testEnd(mxmlLoadString(tree, options, "<foo><bar><one><two>value<two>value2</two></two></one></bar></foo>") != NULL);
 
-  // TODO: Annotate these tests...
-  mxmlNewCDATA(tree, "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef\n");
-  mxmlNewCDATA(tree,
-               "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef\n"
-               "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef\n"
-               "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef\n"
-               "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef\n");
-  mxmlNewCDATA(tree,
-               "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef\n"
-               "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef\n"
-               "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef\n"
-               "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef\n"
-               "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef\n"
-               "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef\n"
-               "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef\n"
-               "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef\n");
+  testBegin("mxmlNewCDATA(1 line)");
+  testEnd(mxmlNewCDATA(tree, "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef\n") != NULL);
+
+  testBegin("mxmlNewCDATA(4 lines)");
+  testEnd(mxmlNewCDATA(tree,
+		       "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef\n"
+		       "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef\n"
+		       "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef\n"
+		       "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef\n") != NULL);
+  testBegin("mxmlNewCDATA(8 lines)");
+  testEnd(mxmlNewCDATA(tree,
+		       "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef\n"
+		       "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef\n"
+		       "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef\n"
+		       "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef\n"
+		       "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef\n"
+		       "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef\n"
+		       "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef\n"
+		       "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef\n") != NULL);
 
   testBegin("mxmlGetFirstChild");
   if ((node = mxmlGetFirstChild(tree)) == NULL)

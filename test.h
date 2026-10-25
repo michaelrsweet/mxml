@@ -1,7 +1,7 @@
 //
 // Unit test header for C/C++ programs.
 //
-// Copyright © 2021-2022 by Michael R Sweet.
+// Copyright © 2021-2026 by Michael R Sweet.
 //
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met:
@@ -34,6 +34,8 @@
 #  include <string.h>
 #  if _WIN32
 #    define isatty(f) _isatty(f)
+#  elif defined(__ZEPHYR__)
+#    define isatty(f) 0
 #  else
 #    include <unistd.h>
 #  endif // !_WIN32

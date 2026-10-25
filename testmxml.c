@@ -3,8 +3,8 @@
 //
 // Usage:
 //
-//   ./testmxml input.xml [string-output.xml] >stdio-output.xml
-//   ./testmxml "<?xml ..." [string-output.xml] >stdio-output.xml
+//   ./testmxml INPUT.xml [STRING-OUTPUT.xml] >STDIO-OUTPUT.xml
+//   ./testmxml "<?xml ..." [STRING-OUTPUT.xml] >STDIO-OUTPUT.xml
 //
 // https://www.msweet.org/mxml
 //

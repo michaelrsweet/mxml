@@ -1328,6 +1328,9 @@ mxml_load_data(
         {
           if (!(options->sax_cb)(options->sax_cbdata, node, MXML_SAX_EVENT_ELEMENT_CLOSE))
           {
+            if (first == node)
+              first = NULL;
+
             mxmlDelete(node);
 	    goto error;
 	  }

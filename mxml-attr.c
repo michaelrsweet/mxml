@@ -57,7 +57,10 @@ mxmlElementClearAttr(mxml_node_t *node,	// I - Element
       node->value.element.num_attrs --;
 
       if (node->value.element.num_attrs == 0)
+      {
         free(node->value.element.attrs);
+        node->value.element.attrs = NULL;
+      }
       return;
     }
   }

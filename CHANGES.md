@@ -2,7 +2,7 @@ Changes in Mini-XML
 ===================
 
 
-v4.0.7 - YYYY-MM-DD
+v4.0.7 - 2026-11-27
 -------------------
 
 - Added Zephyr support (Issue #360)
